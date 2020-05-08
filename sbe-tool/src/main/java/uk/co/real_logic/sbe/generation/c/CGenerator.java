@@ -978,10 +978,10 @@ public class CGenerator implements CodeGenerator
         }
 
         return String.format(
-            "if (codec->acting_version < %1$d)\n" +
-            "{\n" +
-            "    return %2$s;\n" +
-            "}\n\n",
+            "    if (codec->acting_version < %1$d)\n" +
+            "    {\n" +
+            "        return %2$s;\n" +
+            "    }\n\n",
             sinceVersion,
             generateLiteral(encoding.primitiveType(), encoding.applicableNullValue().toString()));
     }
@@ -994,10 +994,10 @@ public class CGenerator implements CodeGenerator
         }
 
         return String.format(
-            "if (codec->acting_version < %1$d)\n" +
-            "{\n" +
-            "    return 0;\n" +
-            "}\n\n",
+            "    if (codec->acting_version < %1$d)\n" +
+            "    {\n" +
+            "        return 0;\n" +
+            "    }\n\n",
             sinceVersion);
     }
 
@@ -1009,10 +1009,10 @@ public class CGenerator implements CodeGenerator
         }
 
         return String.format(
-            "if (codec->acting_version < %1$d)\n" +
-            "{\n" +
-            "    return {NULL, 0};\n" +
-            "}\n\n",
+            "    if (codec->acting_version < %1$d)\n" +
+            "    {\n" +
+            "        return { NULL, 0 };\n" +
+            "    }\n\n",
             sinceVersion);
     }
 
@@ -1024,10 +1024,10 @@ public class CGenerator implements CodeGenerator
         }
 
         return String.format(
-            "if (codec->acting_version < %1$d)\n" +
-            "{\n" +
-            "    return NULL;\n" +
-            "}\n\n",
+            "    if (codec->acting_version < %1$d)\n" +
+            "    {\n" +
+            "        return NULL;\n" +
+            "    }\n\n",
             sinceVersion);
     }
 
@@ -1351,8 +1351,7 @@ public class CGenerator implements CodeGenerator
 
         if (primitiveType == PrimitiveType.FLOAT || primitiveType == PrimitiveType.DOUBLE)
         {
-            final String stackUnion =
-                (primitiveType == PrimitiveType.FLOAT) ? "float" : "double";
+            final String stackUnion = primitiveType == PrimitiveType.FLOAT ? "float" : "double";
 
             sb.append(String.format(
                 "    union %1$s_%2$s_as_uint val;\n" +
@@ -1418,8 +1417,7 @@ public class CGenerator implements CodeGenerator
 
         if (primitiveType == PrimitiveType.FLOAT || primitiveType == PrimitiveType.DOUBLE)
         {
-            final String stackUnion =
-                (primitiveType == PrimitiveType.FLOAT) ? "float" : "double";
+            final String stackUnion = primitiveType == PrimitiveType.FLOAT ? "float" : "double";
 
             sb.append(String.format(
                 "    union %1$s_%2$s_as_uint val;\n" +
@@ -2167,6 +2165,21 @@ public class CGenerator implements CodeGenerator
             outermostStruct));
     }
 
+    private static CharSequence generateEnumFieldNotPresentCondition(final int sinceVersion)
+    {
+        if (0 == sinceVersion)
+        {
+            return "";
+        }
+
+        return String.format(
+            "    if (codec->acting_version < %1$d)\n" +
+            "    {\n" +
+            "        return false;\n" +
+            "    }\n\n",
+            sinceVersion);
+    }
+
     private static CharSequence generateEnumFieldNotPresentCondition(final int sinceVersion, final String enumName)
     {
         if (0 == sinceVersion)
@@ -2175,10 +2188,10 @@ public class CGenerator implements CodeGenerator
         }
 
         return String.format(
-            "if (codec->acting_version < %1$d)\n" +
-            "{\n" +
-            "    return %2$s_NULL_VALUE;\n" +
-            "}\n\n",
+            "    if (codec->acting_version < %1$d)\n" +
+            "    {\n" +
+            "        return %2$s_NULL_VALUE;\n" +
+            "    }\n\n",
             sinceVersion,
             enumName);
     }
@@ -2245,7 +2258,7 @@ public class CGenerator implements CodeGenerator
                 "}\n",
                 enumName,
                 propertyName,
-                generateEnumFieldNotPresentCondition(token.version(), enumName),
+                generateEnumFieldNotPresentCondition(token.version()),
                 formatByteOrderEncoding(token.encoding().byteOrder(), token.encoding().primitiveType()),
                 typeName,
                 offset,
