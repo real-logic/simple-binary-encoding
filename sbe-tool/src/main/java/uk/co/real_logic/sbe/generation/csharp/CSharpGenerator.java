@@ -35,6 +35,7 @@ import static uk.co.real_logic.sbe.ir.GenerationUtil.collectVarData;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectGroups;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectFields;
 
+@SuppressWarnings("MethodLength")
 public class CSharpGenerator implements CodeGenerator
 {
     private static final String META_ATTRIBUTE_ENUM = "MetaAttribute";
@@ -357,7 +358,10 @@ public class CSharpGenerator implements CodeGenerator
             final Token token = tokens.get(i);
             if (token.signal() == Signal.BEGIN_VAR_DATA)
             {
-                generateCommonFieldMethods(sb, token, indent);
+                generateFieldIdMethod(sb, token, indent);
+                generateSinceActingDeprecated(sb, indent, CSharpUtil.formatPropertyName(token.name()), token);
+                generateOffsetMethod(sb, token, indent);
+
                 final Token varDataToken = Generators.findFirst("varData", tokens, i);
                 final String characterEncoding = varDataToken.encoding().characterEncoding();
                 generateCharacterEncodingMethod(sb, token.name(), characterEncoding, indent);
@@ -376,6 +380,7 @@ public class CSharpGenerator implements CodeGenerator
                     indent + "public const int %sHeaderSize = %d;\n",
                     propertyName,
                     sizeOfLengthField));
+
                 sb.append(String.format(indent + "\n" +
                     indent + "public int %1$sLength()\n" +
                     indent + "{\n" +
@@ -386,10 +391,12 @@ public class CSharpGenerator implements CodeGenerator
                     sizeOfLengthField,
                     lengthTypePrefix,
                     byteOrderStr));
+
                 sb.append(String.format("\n" +
                     indent + "public int Get%1$s(byte[] dst, int dstOffset, int length) =>\n" +
                     indent + INDENT + "Get%1$s(new Span<byte>(dst, dstOffset, length));\n",
                     propertyName));
+
                 sb.append(String.format("\n" +
                     indent + "public int Get%1$s(Span<byte> dst)\n" +
                     indent + "{\n" +
@@ -408,6 +415,7 @@ public class CSharpGenerator implements CodeGenerator
                     sizeOfLengthField,
                     lengthTypePrefix,
                     byteOrderStr));
+
                 sb.append(String.format(indent + "\n" +
                     indent + "// Allocates and returns a new byte array\n" +
                     indent + "public byte[] Get%1$sBytes()\n" +
@@ -418,7 +426,6 @@ public class CSharpGenerator implements CodeGenerator
                     indent + INDENT + "int dataLength = (int)_buffer.%3$sGet%4$s(limit);\n" +
                     indent + INDENT + "byte[] data = new byte[dataLength];\n" +
                     indent + INDENT + "_parentMessage.Limit = limit + sizeOfLengthField + dataLength;\n" +
-
                     indent + INDENT + "_buffer.GetBytes(limit + sizeOfLengthField, data);\n\n" +
                     indent + INDENT + "return data;\n" +
                     indent + "}\n",
@@ -426,10 +433,12 @@ public class CSharpGenerator implements CodeGenerator
                     sizeOfLengthField,
                     lengthTypePrefix,
                     byteOrderStr));
+
                 sb.append(String.format("\n" +
                     indent + "public int Set%1$s(byte[] src, int srcOffset, int length) =>\n" +
                     indent + INDENT + "Set%1$s(new ReadOnlySpan<byte>(src, srcOffset, length));\n",
                     propertyName));
+
                 sb.append(String.format("\n" +
                     indent + "public int Set%1$s(ReadOnlySpan<byte> src)\n" +
                     indent + "{\n" +
@@ -447,6 +456,7 @@ public class CSharpGenerator implements CodeGenerator
                     byteOrderStr));
             }
         }
+
         return sb;
     }
 
@@ -1130,7 +1140,10 @@ public class CSharpGenerator implements CodeGenerator
                 final Token encodingToken = tokens.get(i + 1);
                 final String propertyName = signalToken.name();
 
-                generateCommonFieldMethods(sb, signalToken, indent + INDENT);
+                generateFieldIdMethod(sb, signalToken, indent + INDENT);
+                generateSinceActingDeprecated(
+                    sb, indent, CSharpUtil.formatPropertyName(signalToken.name()), signalToken);
+                generateOffsetMethod(sb, signalToken, indent + INDENT);
                 generateFieldMetaAttributeMethod(sb, signalToken, indent + INDENT);
 
                 switch (encodingToken.signal())
@@ -1157,15 +1170,16 @@ public class CSharpGenerator implements CodeGenerator
         return sb;
     }
 
-    private void generateCommonFieldMethods(final StringBuilder sb, final Token token, final String indent)
+    private void generateFieldIdMethod(final StringBuilder sb, final Token token, final String indent)
     {
         sb.append(String.format("\n" +
             indent + "public const int %sId = %d;\n",
             CSharpUtil.formatPropertyName(token.name()),
             token.id()));
+    }
 
-        generateSinceActingDeprecated(sb, indent, CSharpUtil.formatPropertyName(token.name()), token);
-
+    private void generateOffsetMethod(final StringBuilder sb, final Token token, final String indent)
+    {
         sb.append(String.format("\n" +
             indent + "public const int %sOffset = %d;\n",
             CSharpUtil.formatPropertyName(token.name()),
