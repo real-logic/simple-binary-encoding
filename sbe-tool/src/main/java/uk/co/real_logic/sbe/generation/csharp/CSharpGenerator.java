@@ -1029,17 +1029,28 @@ public class CSharpGenerator implements CodeGenerator
 
     private CharSequence generateFixedFlyweightCode(final int size)
     {
+        final String schemaIdType = cSharpTypeName(ir.headerStructure().schemaIdType());
+        final String schemaVersionType = cSharpTypeName(ir.headerStructure().schemaVersionType());
+
         return String.format(
+            INDENT + INDENT + "public const %1$s SchemaId = %2$s;\n" +
+            INDENT + INDENT + "public const %3$s SchemaVersion = %4$s;\n" +
+            INDENT + INDENT + "public const int Size = %5$d;\n\n",
+
             INDENT + INDENT + "private DirectBuffer _buffer;\n" +
             INDENT + INDENT + "private int _offset;\n" +
             INDENT + INDENT + "private int _actingVersion;\n\n" +
+
             INDENT + INDENT + "public void Wrap(DirectBuffer buffer, int offset, int actingVersion)\n" +
             INDENT + INDENT + "{\n" +
             INDENT + INDENT + INDENT + "_offset = offset;\n" +
             INDENT + INDENT + INDENT + "_actingVersion = actingVersion;\n" +
             INDENT + INDENT + INDENT + "_buffer = buffer;\n" +
             INDENT + INDENT + "}\n\n" +
-            INDENT + INDENT + "public const int Size = %d;\n",
+            schemaIdType,
+            generateLiteral(ir.headerStructure().schemaIdType(), Integer.toString(ir.id())),
+            schemaVersionType,
+            generateLiteral(ir.headerStructure().schemaVersionType(), Integer.toString(ir.version())),
             size);
     }
 
