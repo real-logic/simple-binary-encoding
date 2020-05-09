@@ -1029,13 +1029,10 @@ public class CSharpGenerator implements CodeGenerator
 
     private CharSequence generateFixedFlyweightCode(final int size)
     {
-        final String schemaIdType = cSharpTypeName(ir.headerStructure().schemaIdType());
-        final String schemaVersionType = cSharpTypeName(ir.headerStructure().schemaVersionType());
-
         return String.format(
-            INDENT + INDENT + "public const %1$s SchemaId = %2$s;\n" +
-            INDENT + INDENT + "public const %3$s SchemaVersion = %4$s;\n" +
-            INDENT + INDENT + "public const int Size = %5$d;\n\n",
+            INDENT + INDENT + "public const %1$s SbeSchemaId = %2$s;\n" +
+            INDENT + INDENT + "public const %3$s SbeSchemaVersion = %4$s;\n" +
+            INDENT + INDENT + "public const int Size = %5$d;\n\n" +
 
             INDENT + INDENT + "private DirectBuffer _buffer;\n" +
             INDENT + INDENT + "private int _offset;\n" +
@@ -1046,10 +1043,10 @@ public class CSharpGenerator implements CodeGenerator
             INDENT + INDENT + INDENT + "_offset = offset;\n" +
             INDENT + INDENT + INDENT + "_actingVersion = actingVersion;\n" +
             INDENT + INDENT + INDENT + "_buffer = buffer;\n" +
-            INDENT + INDENT + "}\n\n" +
-            schemaIdType,
+            INDENT + INDENT + "}\n\n",
+            cSharpTypeName(ir.headerStructure().schemaIdType()),
             generateLiteral(ir.headerStructure().schemaIdType(), Integer.toString(ir.id())),
-            schemaVersionType,
+            cSharpTypeName(ir.headerStructure().schemaVersionType()),
             generateLiteral(ir.headerStructure().schemaVersionType(), Integer.toString(ir.version())),
             size);
     }
