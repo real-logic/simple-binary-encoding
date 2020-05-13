@@ -894,8 +894,8 @@ public class CSharpGenerator implements CodeGenerator
             "%1$s" +
             indent + "public ReadOnlySpan<%2$s> %3$s\n" +
             indent + "{\n" +
-            indent + INDENT + "get => _buffer.AsReadOnlySpan<byte>(_offset + %4$s, %3$sLength);\n" +
-            indent + INDENT + "set => value.CopyTo(_buffer.AsSpan<byte>(_offset + %4$s, %3$sLength));\n" +
+            indent + INDENT + "get => _buffer.AsReadOnlySpan<%2$s>(_offset + %4$s, %3$sLength);\n" +
+            indent + INDENT + "set => value.CopyTo(_buffer.AsSpan<%2$s>(_offset + %4$s, %3$sLength));\n" +
             indent + "}\n",
             generateDocumentation(indent, fieldToken),
             typeName, propName, offset));
