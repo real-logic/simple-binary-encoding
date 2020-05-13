@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2019 Real Logic Ltd.
+ * Copyright 2013-2020 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,13 @@
  */
 package uk.co.real_logic.sbe.xml;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.co.real_logic.sbe.TestUtil;
 
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 public class CompositeElementsTest

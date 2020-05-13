@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2019 Real Logic Ltd.
+ * Copyright 2013-2020 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,12 @@
 package uk.co.real_logic.sbe.generation.java;
 
 import org.agrona.concurrent.UnsafeBuffer;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.co.real_logic.sbe.EncodedCarTestBase;
 
 import java.nio.ByteBuffer;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ToStringTest extends EncodedCarTestBase
 {
@@ -39,7 +39,7 @@ public class ToStringTest extends EncodedCarTestBase
             "(sbeTemplateId=1|sbeSchemaId=1|sbeSchemaVersion=0|sbeBlockLength=45):" +
             "serialNumber=1234|modelYear=2013|available=T|code=A|" +
             "someNumbers=[0,1,2,3,4]|" +
-            "vehicleCode=abcdef|" +
+            "vehicleCode=ab\"def|" +
             "extras={sportsPack,cruiseControl}|" +
             "engine=(capacity=2000|numCylinders=4|manufacturerCode=123|)|" +
             "fuelFigures=[" +
@@ -49,7 +49,7 @@ public class ToStringTest extends EncodedCarTestBase
             "performanceFigures=[" +
             "(octaneRating=95|acceleration=[(mph=30|seconds=4.0),(mph=60|seconds=7.5),(mph=100|seconds=12.2)])," +
             "(octaneRating=99|acceleration=[(mph=30|seconds=3.8),(mph=60|seconds=7.1),(mph=100|seconds=11.8)])]|" +
-            "manufacturer='Honda'|model='Civic VTi'|activationCode=''",
+            "manufacturer='Honda'|model='Civic VTi'|activationCode='315\\8'",
             result);
     }
 

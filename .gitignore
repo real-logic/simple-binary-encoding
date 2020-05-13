@@ -1,7 +1,6 @@
 # editors
 *~
 *.swp
-.idea
 .project
 .classpath
 .factorypath
@@ -9,6 +8,12 @@
 .settings
 *.sublime-project
 *.sublime-workspace
+
+# intellij
+.idea
+*.iml
+*.ipr
+*.iws
 
 # Build tools
 build-local.properties
@@ -100,13 +105,6 @@ csharp/sbe-generated/mktdata/*.cs
 csharp/sbe-generated/uk_co_real_logic_sbe_benchmarks_fix
 csharp/sbe-tests/*.sbe
 csharp/nuget/
-
-# rust
-rust/car_example/.vscode
-rust/car_example/car_example_data.sbe
-rust/car_example/Cargo.lock
-rust/car_example/src/car_example_generated_codec.rs
-rust/car_example/target
 
 # Mac
 .DS_Store

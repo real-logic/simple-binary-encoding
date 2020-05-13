@@ -18,6 +18,7 @@ public class FrameCodecDecoder
 
     private final FrameCodecDecoder parentMessage = this;
     private DirectBuffer buffer;
+    protected int initialOffset;
     protected int offset;
     protected int limit;
     protected int actingBlockLength;
@@ -53,18 +54,27 @@ public class FrameCodecDecoder
         return buffer;
     }
 
+    public int initialOffset()
+    {
+        return initialOffset;
+    }
+
     public int offset()
     {
         return offset;
     }
 
     public FrameCodecDecoder wrap(
-        final DirectBuffer buffer, final int offset, final int actingBlockLength, final int actingVersion)
+        final DirectBuffer buffer,
+        final int offset,
+        final int actingBlockLength,
+        final int actingVersion)
     {
         if (buffer != this.buffer)
         {
             this.buffer = buffer;
         }
+        this.initialOffset = offset;
         this.offset = offset;
         this.actingBlockLength = actingBlockLength;
         this.actingVersion = actingVersion;
@@ -110,12 +120,9 @@ public class FrameCodecDecoder
 
     public static String irIdMetaAttribute(final MetaAttribute metaAttribute)
     {
-        switch (metaAttribute)
+        if (MetaAttribute.PRESENCE == metaAttribute)
         {
-            case EPOCH: return "";
-            case TIME_UNIT: return "";
-            case SEMANTIC_TYPE: return "";
-            case PRESENCE: return "required";
+            return "required";
         }
 
         return "";
@@ -164,12 +171,9 @@ public class FrameCodecDecoder
 
     public static String irVersionMetaAttribute(final MetaAttribute metaAttribute)
     {
-        switch (metaAttribute)
+        if (MetaAttribute.PRESENCE == metaAttribute)
         {
-            case EPOCH: return "";
-            case TIME_UNIT: return "";
-            case SEMANTIC_TYPE: return "";
-            case PRESENCE: return "required";
+            return "required";
         }
 
         return "";
@@ -218,12 +222,9 @@ public class FrameCodecDecoder
 
     public static String schemaVersionMetaAttribute(final MetaAttribute metaAttribute)
     {
-        switch (metaAttribute)
+        if (MetaAttribute.PRESENCE == metaAttribute)
         {
-            case EPOCH: return "";
-            case TIME_UNIT: return "";
-            case SEMANTIC_TYPE: return "";
-            case PRESENCE: return "required";
+            return "required";
         }
 
         return "";
@@ -267,12 +268,9 @@ public class FrameCodecDecoder
 
     public static String packageNameMetaAttribute(final MetaAttribute metaAttribute)
     {
-        switch (metaAttribute)
+        if (MetaAttribute.PRESENCE == metaAttribute)
         {
-            case EPOCH: return "unix";
-            case TIME_UNIT: return "nanosecond";
-            case SEMANTIC_TYPE: return "";
-            case PRESENCE: return "required";
+            return "required";
         }
 
         return "";
@@ -286,14 +284,25 @@ public class FrameCodecDecoder
     public int packageNameLength()
     {
         final int limit = parentMessage.limit();
-        return (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        return (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+    }
+
+    public int skipPackageName()
+    {
+        final int headerLength = 2;
+        final int limit = parentMessage.limit();
+        final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        final int dataOffset = limit + headerLength;
+        parentMessage.limit(dataOffset + dataLength);
+
+        return dataLength;
     }
 
     public int getPackageName(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
-        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
         final int bytesCopied = Math.min(length, dataLength);
         parentMessage.limit(limit + headerLength + dataLength);
         buffer.getBytes(limit + headerLength, dst, dstOffset, bytesCopied);
@@ -305,7 +314,7 @@ public class FrameCodecDecoder
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
-        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
         final int bytesCopied = Math.min(length, dataLength);
         parentMessage.limit(limit + headerLength + dataLength);
         buffer.getBytes(limit + headerLength, dst, dstOffset, bytesCopied);
@@ -317,7 +326,7 @@ public class FrameCodecDecoder
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
-        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
         parentMessage.limit(limit + headerLength + dataLength);
         wrapBuffer.wrap(buffer, limit + headerLength, dataLength);
     }
@@ -326,7 +335,7 @@ public class FrameCodecDecoder
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
-        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
         parentMessage.limit(limit + headerLength + dataLength);
 
         if (0 == dataLength)
@@ -367,12 +376,9 @@ public class FrameCodecDecoder
 
     public static String namespaceNameMetaAttribute(final MetaAttribute metaAttribute)
     {
-        switch (metaAttribute)
+        if (MetaAttribute.PRESENCE == metaAttribute)
         {
-            case EPOCH: return "unix";
-            case TIME_UNIT: return "nanosecond";
-            case SEMANTIC_TYPE: return "";
-            case PRESENCE: return "required";
+            return "required";
         }
 
         return "";
@@ -386,14 +392,25 @@ public class FrameCodecDecoder
     public int namespaceNameLength()
     {
         final int limit = parentMessage.limit();
-        return (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        return (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+    }
+
+    public int skipNamespaceName()
+    {
+        final int headerLength = 2;
+        final int limit = parentMessage.limit();
+        final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        final int dataOffset = limit + headerLength;
+        parentMessage.limit(dataOffset + dataLength);
+
+        return dataLength;
     }
 
     public int getNamespaceName(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
-        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
         final int bytesCopied = Math.min(length, dataLength);
         parentMessage.limit(limit + headerLength + dataLength);
         buffer.getBytes(limit + headerLength, dst, dstOffset, bytesCopied);
@@ -405,7 +422,7 @@ public class FrameCodecDecoder
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
-        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
         final int bytesCopied = Math.min(length, dataLength);
         parentMessage.limit(limit + headerLength + dataLength);
         buffer.getBytes(limit + headerLength, dst, dstOffset, bytesCopied);
@@ -417,7 +434,7 @@ public class FrameCodecDecoder
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
-        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
         parentMessage.limit(limit + headerLength + dataLength);
         wrapBuffer.wrap(buffer, limit + headerLength, dataLength);
     }
@@ -426,7 +443,7 @@ public class FrameCodecDecoder
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
-        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
         parentMessage.limit(limit + headerLength + dataLength);
 
         if (0 == dataLength)
@@ -467,12 +484,9 @@ public class FrameCodecDecoder
 
     public static String semanticVersionMetaAttribute(final MetaAttribute metaAttribute)
     {
-        switch (metaAttribute)
+        if (MetaAttribute.PRESENCE == metaAttribute)
         {
-            case EPOCH: return "unix";
-            case TIME_UNIT: return "nanosecond";
-            case SEMANTIC_TYPE: return "";
-            case PRESENCE: return "required";
+            return "required";
         }
 
         return "";
@@ -486,14 +500,25 @@ public class FrameCodecDecoder
     public int semanticVersionLength()
     {
         final int limit = parentMessage.limit();
-        return (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        return (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+    }
+
+    public int skipSemanticVersion()
+    {
+        final int headerLength = 2;
+        final int limit = parentMessage.limit();
+        final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        final int dataOffset = limit + headerLength;
+        parentMessage.limit(dataOffset + dataLength);
+
+        return dataLength;
     }
 
     public int getSemanticVersion(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
-        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
         final int bytesCopied = Math.min(length, dataLength);
         parentMessage.limit(limit + headerLength + dataLength);
         buffer.getBytes(limit + headerLength, dst, dstOffset, bytesCopied);
@@ -505,7 +530,7 @@ public class FrameCodecDecoder
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
-        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
         final int bytesCopied = Math.min(length, dataLength);
         parentMessage.limit(limit + headerLength + dataLength);
         buffer.getBytes(limit + headerLength, dst, dstOffset, bytesCopied);
@@ -517,7 +542,7 @@ public class FrameCodecDecoder
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
-        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
         parentMessage.limit(limit + headerLength + dataLength);
         wrapBuffer.wrap(buffer, limit + headerLength, dataLength);
     }
@@ -526,7 +551,7 @@ public class FrameCodecDecoder
     {
         final int headerLength = 2;
         final int limit = parentMessage.limit();
-        final int dataLength = (int)(buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
         parentMessage.limit(limit + headerLength + dataLength);
 
         if (0 == dataLength)
@@ -550,16 +575,28 @@ public class FrameCodecDecoder
         return value;
     }
 
-
     public String toString()
     {
-        return appendTo(new StringBuilder(100)).toString();
+        if (null == buffer)
+        {
+            return "";
+        }
+
+        final FrameCodecDecoder decoder = new FrameCodecDecoder();
+        decoder.wrap(buffer, initialOffset, actingBlockLength, actingVersion);
+
+        return decoder.appendTo(new StringBuilder()).toString();
     }
 
     public StringBuilder appendTo(final StringBuilder builder)
     {
+        if (null == buffer)
+        {
+            return builder;
+        }
+
         final int originalLimit = limit();
-        limit(offset + actingBlockLength);
+        limit(initialOffset + actingBlockLength);
         builder.append("[FrameCodec](sbeTemplateId=");
         builder.append(TEMPLATE_ID);
         builder.append("|sbeSchemaId=");
@@ -579,32 +616,23 @@ public class FrameCodecDecoder
         }
         builder.append(BLOCK_LENGTH);
         builder.append("):");
-        //Token{signal=BEGIN_FIELD, name='irId', referencedName='null', description='null', id=1, version=0, deprecated=0, encodedLength=4, offset=0, componentTokenCount=3, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
-        //Token{signal=ENCODING, name='int32', referencedName='null', description='null', id=-1, version=0, deprecated=0, encodedLength=4, offset=0, componentTokenCount=1, encoding=Encoding{presence=REQUIRED, primitiveType=INT32, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
         builder.append("irId=");
         builder.append(irId());
         builder.append('|');
-        //Token{signal=BEGIN_FIELD, name='irVersion', referencedName='null', description='null', id=2, version=0, deprecated=0, encodedLength=4, offset=4, componentTokenCount=3, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
-        //Token{signal=ENCODING, name='int32', referencedName='null', description='null', id=-1, version=0, deprecated=0, encodedLength=4, offset=4, componentTokenCount=1, encoding=Encoding{presence=REQUIRED, primitiveType=INT32, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
         builder.append("irVersion=");
         builder.append(irVersion());
         builder.append('|');
-        //Token{signal=BEGIN_FIELD, name='schemaVersion', referencedName='null', description='null', id=3, version=0, deprecated=0, encodedLength=4, offset=8, componentTokenCount=3, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
-        //Token{signal=ENCODING, name='int32', referencedName='null', description='null', id=-1, version=0, deprecated=0, encodedLength=4, offset=8, componentTokenCount=1, encoding=Encoding{presence=REQUIRED, primitiveType=INT32, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='null', timeUnit=null, semanticType='null'}}
         builder.append("schemaVersion=");
         builder.append(schemaVersion());
         builder.append('|');
-        //Token{signal=BEGIN_VAR_DATA, name='packageName', referencedName='null', description='null', id=4, version=0, deprecated=0, encodedLength=0, offset=12, componentTokenCount=6, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='unix', timeUnit=nanosecond, semanticType='null'}}
         builder.append("packageName=");
-        builder.append('\'' + packageName() + '\'');
+        builder.append('\'').append(packageName()).append('\'');
         builder.append('|');
-        //Token{signal=BEGIN_VAR_DATA, name='namespaceName', referencedName='null', description='null', id=5, version=0, deprecated=0, encodedLength=0, offset=-1, componentTokenCount=6, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='unix', timeUnit=nanosecond, semanticType='null'}}
         builder.append("namespaceName=");
-        builder.append('\'' + namespaceName() + '\'');
+        builder.append('\'').append(namespaceName()).append('\'');
         builder.append('|');
-        //Token{signal=BEGIN_VAR_DATA, name='semanticVersion', referencedName='null', description='null', id=6, version=0, deprecated=0, encodedLength=0, offset=-1, componentTokenCount=6, encoding=Encoding{presence=REQUIRED, primitiveType=null, byteOrder=LITTLE_ENDIAN, minValue=null, maxValue=null, nullValue=null, constValue=null, characterEncoding='null', epoch='unix', timeUnit=nanosecond, semanticType='null'}}
         builder.append("semanticVersion=");
-        builder.append('\'' + semanticVersion() + '\'');
+        builder.append('\'').append(semanticVersion()).append('\'');
 
         limit(originalLimit);
 

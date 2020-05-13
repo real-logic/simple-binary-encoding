@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2019 Real Logic Ltd.
+ * Copyright 2013-2020 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -160,7 +160,7 @@ public class Message
      */
     public int blockLength()
     {
-        return blockLength > computedBlockLength ? blockLength : computedBlockLength;
+        return Math.max(blockLength, computedBlockLength);
     }
 
     private List<Field> parseMembers(final Node node) throws XPathExpressionException
@@ -339,8 +339,8 @@ public class Message
             .presence(Presence.get(getAttributeValue(node, "presence", "required")))
             .sinceVersion(Integer.parseInt(getAttributeValue(node, "sinceVersion", "0")))
             .deprecated(Integer.parseInt(getAttributeValue(node, "deprecated", "0")))
-            .epoch(getAttributeValue(node, "epoch", "unix"))
-            .timeUnit(getAttributeValue(node, "timeUnit", "nanosecond"))
+            .epoch(getAttributeValueOrNull(node, "epoch"))
+            .timeUnit(getAttributeValueOrNull(node, "timeUnit"))
             .type(fieldType)
             .variableLength(true)
             .build();

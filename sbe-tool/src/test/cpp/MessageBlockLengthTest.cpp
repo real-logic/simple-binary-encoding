@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2019 Real Logic Ltd.
+ * Copyright 2013-2020 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -151,7 +151,7 @@ public:
     }
 };
 
-TEST_F(MessageBlockLengthIrTest, shouldHandleAllEventsCorrectltInOrder)
+TEST_F(MessageBlockLengthIrTest, shouldHandleAllEventsCorrectlyInOrder)
 {
     std::uint64_t sz = encodeHdrAndMsg();
     const char *bufferPtr = m_buffer;
@@ -171,7 +171,8 @@ TEST_F(MessageBlockLengthIrTest, shouldHandleAllEventsCorrectltInOrder)
     ASSERT_GE(m_irDecoder.decode("message-block-length-test.sbeir"), 0);
 
     std::shared_ptr<std::vector<Token>> headerTokens = m_irDecoder.header();
-    std::shared_ptr<std::vector<Token>> messageTokens = m_irDecoder.message(MsgName::sbeTemplateId(), MsgName::sbeSchemaVersion());
+    std::shared_ptr<std::vector<Token>> messageTokens = m_irDecoder.message(
+        MsgName::sbeTemplateId(), MsgName::sbeSchemaVersion());
 
     ASSERT_TRUE(headerTokens != nullptr);
     ASSERT_TRUE(messageTokens!= nullptr);
@@ -184,8 +185,8 @@ TEST_F(MessageBlockLengthIrTest, shouldHandleAllEventsCorrectltInOrder)
     std::uint64_t actingVersion = headerDecoder.getSchemaVersion(m_buffer);
     std::uint64_t blockLength = headerDecoder.getBlockLength(m_buffer);
 
-    const std::size_t result =
-        OtfMessageDecoder::decode(messageBuffer, length, actingVersion, blockLength, messageTokens, *this);
+    const std::size_t result = OtfMessageDecoder::decode(
+        messageBuffer, length, actingVersion, blockLength, messageTokens, *this);
     EXPECT_EQ(result, static_cast<std::size_t>(54 - MessageHeader::encodedLength()));
 
     EXPECT_EQ(m_eventNumber, 7);

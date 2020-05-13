@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2019 Real Logic Ltd.
+ * Copyright 2013-2020 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,14 +15,13 @@
  */
 package uk.co.real_logic.sbe.xml;
 
+import org.junit.jupiter.api.Test;
+import org.xml.sax.InputSource;
+
 import java.io.File;
 import java.net.URL;
 
-import org.junit.Assert;
-import org.junit.Test;
-
-import org.xml.sax.InputSource;
-
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 public class RelativeXIncludeTest
@@ -32,13 +31,13 @@ public class RelativeXIncludeTest
         throws Exception
     {
         final URL testResource = getClass().getClassLoader().getResource("sub/basic-schema.xml");
-        Assert.assertNotNull(testResource);
+        assertNotNull(testResource);
 
         final InputSource is = new InputSource(testResource.openStream());
         final File file = new File(testResource.getFile());
         is.setSystemId(file.toPath().toAbsolutePath().getParent().toUri().toString());
         final MessageSchema messageSchema = parse(is, ParserOptions.DEFAULT);
 
-        Assert.assertNotNull(messageSchema.getType("Symbol"));
+        assertNotNull(messageSchema.getType("Symbol"));
     }
 }

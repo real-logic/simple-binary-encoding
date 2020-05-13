@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2019 Real Logic Ltd.
+ * Copyright 2013-2020 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,23 +74,23 @@ public:
 
         marketData_.wrapForDecode((char *)buffer, messageHeader_.encodedLength(), actingBlockLength, actingVersion, bufferLength);
 
-        marketData_.transactTime();
-        marketData_.eventTimeDelta();
-        marketData_.matchEventIndicator();
+        static_cast<void>(marketData_.transactTime());
+        static_cast<void>(marketData_.eventTimeDelta());
+        static_cast<void>(marketData_.matchEventIndicator());
 
         MarketDataIncrementalRefreshTrades::MdIncGrp &mdIncGrp = marketData_.mdIncGrp();
         while (mdIncGrp.hasNext())
         {
             mdIncGrp.next();
-            mdIncGrp.tradeId();
-            mdIncGrp.securityId();
-            mdIncGrp.mdEntryPx().mantissa();
-            mdIncGrp.mdEntrySize().mantissa();
-            mdIncGrp.numberOfOrders();
-            mdIncGrp.mdUpdateAction();
-            mdIncGrp.rptSeq();
-            mdIncGrp.aggressorSide();
-            mdIncGrp.mdEntryType();
+            static_cast<void>(mdIncGrp.tradeId());
+            static_cast<void>(mdIncGrp.securityId());
+            static_cast<void>(mdIncGrp.mdEntryPx().mantissa());
+            static_cast<void>(mdIncGrp.mdEntrySize().mantissa());
+            static_cast<void>(mdIncGrp.numberOfOrders());
+            static_cast<void>(mdIncGrp.mdUpdateAction());
+            static_cast<void>(mdIncGrp.rptSeq());
+            static_cast<void>(mdIncGrp.aggressorSide());
+            static_cast<void>(mdIncGrp.mdEntryType());
         }
 
         return MessageHeader::encodedLength() + marketData_.encodedLength();

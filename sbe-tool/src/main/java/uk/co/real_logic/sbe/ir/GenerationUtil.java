@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2019 Real Logic Ltd.
+ * Copyright 2013-2020 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,6 @@ package uk.co.real_logic.sbe.ir;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
-
-import static java.util.stream.Collectors.joining;
 
 /**
  * Common code generation utility functions to be used by the different language specific backends.
@@ -66,16 +63,6 @@ public final class GenerationUtil
     public static List<Token> getMessageBody(final List<Token> tokens)
     {
         return tokens.subList(1, tokens.size() - 1);
-    }
-
-    public static CharSequence concatTokens(
-        final List<Token> tokens, final Signal signal, final Function<Token, CharSequence> mapper)
-    {
-        return tokens
-            .stream()
-            .filter((token) -> token.signal() == signal)
-            .map(mapper)
-            .collect(joining());
     }
 
     public static int findEndSignal(

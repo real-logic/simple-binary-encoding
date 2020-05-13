@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2019 Real Logic Ltd.
+ * Copyright 2013-2020 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -312,10 +312,10 @@ TEST_P(HeaderBoundsCheckTest, shouldExceptionWhenBufferTooShortForDecodeOfHeader
     }, std::runtime_error);
 }
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     HeaderLengthTest,
     HeaderBoundsCheckTest,
-    ::testing::Range(0, static_cast<int>(encodedHdrSz), 1), );
+    ::testing::Range(0, static_cast<int>(encodedHdrSz), 1));
 
 class MessageBoundsCheckTest : public BoundsCheckTest, public ::testing::WithParamInterface<int>
 {
@@ -356,7 +356,7 @@ TEST_P(MessageBoundsCheckTest, shouldExceptionWhenBufferTooShortForDecodeOfMessa
     }, std::runtime_error);
 }
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     MessageLengthTest,
     MessageBoundsCheckTest,
-    ::testing::Range(0, static_cast<int>(encodedCarSz), 1), );
+    ::testing::Range(0, static_cast<int>(encodedCarSz), 1));

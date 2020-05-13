@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2019 Real Logic Ltd.
+ * Copyright 2013-2020 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -380,7 +380,8 @@ public:
             {
                 EXPECT_EQ(encoding.primitiveType(), PrimitiveType::CHAR);
                 EXPECT_EQ(typeToken.encodedLength(), MANUFACTURER_CODE_LENGTH);
-                EXPECT_EQ(std::string(buffer, MANUFACTURER_CODE_LENGTH), std::string(MANUFACTURER_CODE, MANUFACTURER_CODE_LENGTH));
+                EXPECT_EQ(std::string(buffer, MANUFACTURER_CODE_LENGTH),
+                    std::string(MANUFACTURER_CODE, MANUFACTURER_CODE_LENGTH));
                 break;
             }
 
@@ -794,9 +795,7 @@ public:
         m_eventNumber++;
     }
 
-    void onGroupHeader(
-        Token& token,
-        std::uint64_t numInGroup)
+    void onGroupHeader(Token& token, std::uint64_t numInGroup)
     {
         std::cout << m_eventNumber << ": Group Header " << token.name() << " num " << numInGroup << "\n";
 
@@ -838,12 +837,10 @@ public:
 
     }
 
-    void onBeginGroup(
-        Token& token,
-        std::uint64_t groupIndex,
-        std::uint64_t numInGroup)
+    void onBeginGroup(Token& token, std::uint64_t groupIndex, std::uint64_t numInGroup)
     {
-        std::cout << m_eventNumber << ": Begin Group " << token.name() << " " << groupIndex + 1 << "/" << numInGroup << "\n";
+        std::cout << m_eventNumber << ": Begin Group " << token.name()
+                  << " " << groupIndex + 1 << "/" << numInGroup << "\n";
 
         switch (EventNumber(m_eventNumber))
         {
@@ -942,12 +939,10 @@ public:
         m_eventNumber++;
     }
 
-    void onEndGroup(
-        Token& token,
-        std::uint64_t groupIndex,
-        std::uint64_t numInGroup)
+    void onEndGroup(Token& token, std::uint64_t groupIndex, std::uint64_t numInGroup)
     {
-        std::cout << m_eventNumber << ": End Group " << token.name() << " " << groupIndex + 1 << "/" << numInGroup << "\n";
+        std::cout << m_eventNumber << ": End Group " << token.name()
+                  << " " << groupIndex + 1 << "/" << numInGroup << "\n";
 
         switch (EventNumber(m_eventNumber))
         {
@@ -1150,7 +1145,8 @@ TEST_F(Rc3OtfFullIrTest, shouldHandleAllEventsCorrectlyAndInOrder)
     ASSERT_GE(m_irDecoder.decode(SCHEMA_FILENAME), 0);
 
     std::shared_ptr<std::vector<Token>> headerTokens = m_irDecoder.header();
-    std::shared_ptr<std::vector<Token>> messageTokens = m_irDecoder.message(Car::sbeTemplateId(), Car::sbeSchemaVersion());
+    std::shared_ptr<std::vector<Token>> messageTokens = m_irDecoder.message(
+        Car::sbeTemplateId(), Car::sbeSchemaVersion());
 
     ASSERT_TRUE(headerTokens != nullptr);
     ASSERT_TRUE(messageTokens!= nullptr);
@@ -1163,7 +1159,8 @@ TEST_F(Rc3OtfFullIrTest, shouldHandleAllEventsCorrectlyAndInOrder)
     std::uint64_t actingVersion = headerDecoder.getSchemaVersion(m_buffer);
     std::uint64_t blockLength = headerDecoder.getBlockLength(m_buffer);
 
-    const std::size_t result = OtfMessageDecoder::decode(messageBuffer, length, actingVersion, blockLength, messageTokens, *this);
+    const std::size_t result = OtfMessageDecoder::decode(
+        messageBuffer, length, actingVersion, blockLength, messageTokens, *this);
     EXPECT_EQ(result, static_cast<std::size_t>(encodedCarAndHdrLength - MessageHeader::encodedLength()));
 }
 
@@ -1174,7 +1171,8 @@ TEST_P(Rc3OtfFullIrLengthTest, shouldExceptionIfLengthTooShort)
     ASSERT_GE(m_irDecoder.decode(SCHEMA_FILENAME), 0);
 
     std::shared_ptr<std::vector<Token>> headerTokens = m_irDecoder.header();
-    std::shared_ptr<std::vector<Token>> messageTokens = m_irDecoder.message(Car::sbeTemplateId(), Car::sbeSchemaVersion());
+    std::shared_ptr<std::vector<Token>> messageTokens = m_irDecoder.message(
+        Car::sbeTemplateId(), Car::sbeSchemaVersion());
 
     ASSERT_TRUE(headerTokens != nullptr);
     ASSERT_TRUE(messageTokens!= nullptr);
@@ -1197,7 +1195,7 @@ TEST_P(Rc3OtfFullIrLengthTest, shouldExceptionIfLengthTooShort)
     }, std::runtime_error);
 }
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     LengthUpToHdrAndCar,
     Rc3OtfFullIrLengthTest,
-    ::testing::Range(0, static_cast<int>(encodedCarAndHdrLength - MessageHeader::encodedLength()), 1), );
+    ::testing::Range(0, static_cast<int>(encodedCarAndHdrLength - MessageHeader::encodedLength()), 1));

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2019 Real Logic Ltd.
+ * Copyright 2013-2020 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,7 +87,7 @@ public class EnumType extends Type
             default:
                 // might not have ran into this type yet, so look for it
                 final Node encodingTypeNode = (Node)xPath.compile(
-                    String.format("%s[@name=\'%s\']", XmlSchemaParser.TYPE_XPATH_EXPR, encodingTypeStr))
+                    String.format("%s[@name='%s']", XmlSchemaParser.TYPE_XPATH_EXPR, encodingTypeStr))
                     .evaluate(node.getOwnerDocument(), XPathConstants.NODE);
 
                 if (null == encodingTypeNode)

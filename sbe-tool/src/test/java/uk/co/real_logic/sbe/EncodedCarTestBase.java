@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2019 Real Logic Ltd.
+ * Copyright 2013-2020 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@ package uk.co.real_logic.sbe;
 
 import baseline.*;
 import org.agrona.concurrent.UnsafeBuffer;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
@@ -32,12 +32,12 @@ public class EncodedCarTestBase
     private static byte[] manufacturer;
     private static byte[] model;
 
-    @BeforeClass
+    @BeforeAll
     public static void setupExampleData()
     {
         try
         {
-            vehicleCode = "abcdef".getBytes(CarEncoder.vehicleCodeCharacterEncoding());
+            vehicleCode = "ab\"def".getBytes(CarEncoder.vehicleCodeCharacterEncoding());
             manufacturerCode = "123".getBytes(EngineEncoder.manufacturerCodeCharacterEncoding());
             manufacturer = "Honda".getBytes(CarEncoder.manufacturerCharacterEncoding());
             model = "Civic VTi".getBytes(CarEncoder.modelCharacterEncoding());
@@ -108,6 +108,7 @@ public class EncodedCarTestBase
 
         CAR.manufacturer(new String(manufacturer));
         CAR.putModel(model, srcOffset, model.length);
+        CAR.activationCode("315\\8");
 
         bufferOffset += CAR.encodedLength();
 

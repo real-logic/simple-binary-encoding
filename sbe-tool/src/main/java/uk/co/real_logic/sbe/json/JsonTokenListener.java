@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2019 Real Logic Ltd.
+ * Copyright 2013-2020 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -184,7 +184,9 @@ public class JsonTokenListener implements TokenListener
 
             final byte[] tempBuffer = new byte[length];
             buffer.getBytes(bufferIndex, tempBuffer, 0, length);
-            output.append(new String(tempBuffer, 0, length, typeToken.encoding().characterEncoding()));
+            final String str = new String(tempBuffer, 0, length, typeToken.encoding().characterEncoding());
+
+            escape(str);
 
             doubleQuote();
             next();
@@ -223,13 +225,12 @@ public class JsonTokenListener implements TokenListener
             if (encoding.primitiveType() == CHAR)
             {
                 doubleQuote();
-            }
-
-            output.append(constOrNotPresentValue.toString());
-
-            if (encoding.primitiveType() == CHAR)
-            {
+                output.append(constOrNotPresentValue.toString());
                 doubleQuote();
+            }
+            else
+            {
+                output.append(constOrNotPresentValue.toString());
             }
 
             return;
@@ -244,7 +245,7 @@ public class JsonTokenListener implements TokenListener
 
             for (int i = 0; i < size; i++)
             {
-                output.append((char)buffer.getByte(index + (i * elementSize)));
+                escape((char)buffer.getByte(index + (i * elementSize)));
             }
 
             doubleQuote();
@@ -258,7 +259,7 @@ public class JsonTokenListener implements TokenListener
 
             for (int i = 0; i < size; i++)
             {
-                Types.appendAsString(output, buffer, index + (i * elementSize), encoding);
+                Types.appendAsJsonString(output, buffer, index + (i * elementSize), encoding);
                 output.append(", ");
             }
 
@@ -347,5 +348,23 @@ public class JsonTokenListener implements TokenListener
         }
 
         return Types.getLong(buffer, bufferIndex, typeToken.encoding());
+    }
+
+    private void escape(final String str)
+    {
+        for (int i = 0, length = str.length(); i < length; i++)
+        {
+            escape(str.charAt(i));
+        }
+    }
+
+    private void escape(final char c)
+    {
+        if ('"' == c || '\\' == c || '\b' == c || '\f' == c || '\n' == c || '\r' == c || '\t' == c)
+        {
+            output.append('\\');
+        }
+
+        output.append(c);
     }
 }

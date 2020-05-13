@@ -1,5 +1,5 @@
 #
-# Copyright 2013-2019 Real Logic Ltd.
+# Copyright 2013-2020 Real Logic Limited.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,21 +22,20 @@ set(CODECS
     uk_co_real_logic_sbe_ir_generated/PrimitiveTypeCodec.h
     uk_co_real_logic_sbe_ir_generated/SignalCodec.h
     uk_co_real_logic_sbe_ir_generated/TokenCodec.h
-    uk_co_real_logic_sbe_ir_generated/VarDataEncoding.h
-)
+    uk_co_real_logic_sbe_ir_generated/VarDataEncoding.h)
 
 find_package(Java REQUIRED)
 
 add_custom_command(OUTPUT ${CODECS}
     COMMAND
         ${Java_JAVA_EXECUTABLE}
-        "-Dsbe.output.dir=${CMAKE_CURRENT_SOURCE_DIR}"
-        "-Dsbe.target.language=CPP"
-        "-jar" "${SBE_JAR}"
-        "../resources/sbe-ir.xml"
-    DEPENDS ${SBE_JAR} sbe-jar "../resources/sbe-ir.xml"
-    WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
-    COMMENT "Generate IR codecs"
+            "-Dsbe.output.dir=${CMAKE_CURRENT_SOURCE_DIR}"
+            "-Dsbe.target.language=CPP"
+            "-jar" "${SBE_JAR}"
+            "../resources/sbe-ir.xml"
+            DEPENDS ${SBE_JAR} sbe-jar "../resources/sbe-ir.xml"
+            WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+            COMMENT "Generate IR codecs"
 )
 
 add_custom_target(
@@ -49,8 +48,7 @@ set(HEADERS
     otf/Token.h
     otf/Encoding.h
     otf/OtfMessageDecoder.h
-    otf/OtfHeaderDecoder.h
-)
+    otf/OtfHeaderDecoder.h)
 
 add_library(sbe INTERFACE)
 target_include_directories(sbe INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})

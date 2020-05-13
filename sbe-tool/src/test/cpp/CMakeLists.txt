@@ -1,5 +1,5 @@
 #
-# Copyright 2013-2019 Real Logic Ltd.
+# Copyright 2013-2020 Real Logic Limited.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,9 +26,9 @@ function(sbe_test name)
     target_link_libraries("${name}" sbe ${GTEST_LIBS} ${CMAKE_THREAD_LIBS_INIT})
     add_test(NAME ${name} COMMAND ${name} WORKING_DIRECTORY ${CXX_CODEC_TARGET_DIR})
     add_dependencies(${name} gtest)
-    if(${ARGC} GREATER 1)
+    if (${ARGC} GREATER 1)
         add_dependencies(${name} ${ARGV1})
-    endif()
+    endif ()
 endfunction()
 
 find_package(Java REQUIRED)
@@ -46,7 +46,7 @@ set(GENERATED_CODECS
 add_custom_command(
     OUTPUT ${GENERATED_CODECS}
     DEPENDS ${CODE_GENERATION_SCHEMA} ${CODE_GENERATION_SCHEMA_CPP} ${COMPOSITE_OFFSETS_SCHEMA} ${MESSAGE_BLOCK_LENGTH_TEST}
-            sbe-jar ${SBE_JAR}
+    sbe-jar ${SBE_JAR}
     COMMAND
         ${Java_JAVA_EXECUTABLE}
             -Dsbe.output.dir=${CXX_CODEC_TARGET_DIR}

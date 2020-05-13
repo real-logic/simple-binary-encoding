@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2019 Real Logic Ltd.
+ * Copyright 2013-2020 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -169,6 +169,101 @@ public class Types
             case DOUBLE:
                 sb.append(buffer.getDouble(index, encoding.byteOrder()));
                 break;
+        }
+    }
+
+    /**
+     * Append an encoding as a Json String to a {@link StringBuilder}.
+     *
+     * @param sb       to append the encoding to.
+     * @param buffer   containing the encoded value.
+     * @param index    at which the encoded value exists.
+     * @param encoding representing the encoded value.
+     */
+    public static void appendAsJsonString(
+        final StringBuilder sb, final DirectBuffer buffer, final int index, final Encoding encoding)
+    {
+        switch (encoding.primitiveType())
+        {
+            case CHAR:
+                sb.append('\'').append((char)buffer.getByte(index)).append('\'');
+                break;
+
+            case INT8:
+                sb.append(buffer.getByte(index));
+                break;
+
+            case INT16:
+                sb.append(buffer.getShort(index, encoding.byteOrder()));
+                break;
+
+            case INT32:
+                sb.append(buffer.getInt(index, encoding.byteOrder()));
+                break;
+
+            case INT64:
+                sb.append(buffer.getLong(index, encoding.byteOrder()));
+                break;
+
+            case UINT8:
+                sb.append((short)(buffer.getByte(index) & 0xFF));
+                break;
+
+            case UINT16:
+                sb.append(buffer.getShort(index, encoding.byteOrder()) & 0xFFFF);
+                break;
+
+            case UINT32:
+                sb.append(buffer.getInt(index, encoding.byteOrder()) & 0xFFFF_FFFFL);
+                break;
+
+            case UINT64:
+                sb.append(buffer.getLong(index, encoding.byteOrder()));
+                break;
+
+            case FLOAT:
+            {
+                final float value = buffer.getFloat(index, encoding.byteOrder());
+                if (Float.isNaN(value))
+                {
+                    sb.append("0/0");
+                }
+                else if (value == Float.POSITIVE_INFINITY)
+                {
+                    sb.append("1/0");
+                }
+                else if (value == Float.NEGATIVE_INFINITY)
+                {
+                    sb.append("-1/0");
+                }
+                else
+                {
+                    sb.append(value);
+                }
+                break;
+            }
+
+            case DOUBLE:
+            {
+                final double value = buffer.getDouble(index, encoding.byteOrder());
+                if (Double.isNaN(value))
+                {
+                    sb.append("0/0");
+                }
+                else if (value == Double.POSITIVE_INFINITY)
+                {
+                    sb.append("1/0");
+                }
+                else if (value == Double.NEGATIVE_INFINITY)
+                {
+                    sb.append("-1/0");
+                }
+                else
+                {
+                    sb.append(value);
+                }
+                break;
+            }
         }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2019 Real Logic Ltd.
+ * Copyright 2013-2020 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,7 @@
  */
 package uk.co.real_logic.sbe.xml;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -34,8 +33,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.co.real_logic.sbe.PrimitiveValue.parse;
 
 public class EncodedDataTypeTest
@@ -125,40 +126,37 @@ public class EncodedDataTypeTest
         assertThat(map.get("testTypeConstant").presence(), is(Presence.CONSTANT));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowExceptionWhenUnknownPresenceSpecified()
-        throws Exception
     {
         final String testXmlString =
             "<types>" +
             "    <type name=\"testTyeUnknown\" presence=\"XXXXX\" primitiveType=\"char\"/>" +
             "</types>";
 
-        parseTestXmlWithMap("/types/type", testXmlString);
+        assertThrows(IllegalArgumentException.class, () -> parseTestXmlWithMap("/types/type", testXmlString));
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldThrowExceptionWhenNoPrimitiveTypeSpecified()
-        throws Exception
     {
         final String testXmlString =
             "<types>" +
             "    <type name=\"testType\"/>" +
             "</types>";
 
-        parseTestXmlWithMap("/types/type", testXmlString);
+        assertThrows(IllegalStateException.class, () -> parseTestXmlWithMap("/types/type", testXmlString));
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldThrowExceptionWhenNoNameSpecified()
-        throws Exception
     {
         final String testXmlString =
             "<types>" +
             "    <type primitiveType=\"char\"/>" +
             "</types>";
 
-        parseTestXmlWithMap("/types/type", testXmlString);
+        assertThrows(IllegalStateException.class, () -> parseTestXmlWithMap("/types/type", testXmlString));
     }
 
     @Test
@@ -195,16 +193,16 @@ public class EncodedDataTypeTest
         assertThat(((EncodedDataType)map.get("testTypeDouble")).primitiveType(), is(PrimitiveType.DOUBLE));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowExceptionWhenUnknownPrimitiveTypeSpecified()
-        throws Exception
     {
         final String testXmlString =
             "<types>" +
             "    <type name=\"testTypeUnknown\" primitiveType=\"XXXX\"/>" +
             "</types>";
 
-        parseTestXmlWithMap("/types/type", testXmlString);
+        assertThrows(IllegalArgumentException.class,
+            () -> parseTestXmlWithMap("/types/type", testXmlString));
     }
 
     @Test
@@ -267,7 +265,7 @@ public class EncodedDataTypeTest
         final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
         final String description = map.get("testTypeNoDescription").description();
 
-        Assert.assertNull(description);
+        assertNull(description);
     }
 
     @Test
@@ -296,19 +294,18 @@ public class EncodedDataTypeTest
 
         final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
 
-        Assert.assertNull(map.get("testType").semanticType());
+        assertNull(map.get("testType").semanticType());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowExceptionWhenConstantPresenceButNoDataSpecified()
-        throws Exception
     {
         final String testXmlString =
             "<types>" +
             "    <type name=\"testTypePresenceConst\" primitiveType=\"char\" presence=\"constant\"></type>" +
             "</types>";
 
-        parseTestXmlWithMap("/types/type", testXmlString);
+        assertThrows(IllegalArgumentException.class, () -> parseTestXmlWithMap("/types/type", testXmlString));
     }
 
     @Test
@@ -356,7 +353,7 @@ public class EncodedDataTypeTest
 
         final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
 
-        Assert.assertNull(((EncodedDataType)map.get("testTypeDefaultCharMinValue")).minValue());
+        assertNull(((EncodedDataType)map.get("testTypeDefaultCharMinValue")).minValue());
     }
 
     @Test
@@ -370,7 +367,7 @@ public class EncodedDataTypeTest
 
         final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
 
-        Assert.assertNull(((EncodedDataType)map.get("testTypeDefaultCharMaxValue")).maxValue());
+        assertNull(((EncodedDataType)map.get("testTypeDefaultCharMaxValue")).maxValue());
     }
 
     @Test
@@ -384,7 +381,7 @@ public class EncodedDataTypeTest
 
         final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
 
-        Assert.assertNull(((EncodedDataType)map.get("testTypeDefaultCharNullValue")).nullValue());
+        assertNull(((EncodedDataType)map.get("testTypeDefaultCharNullValue")).nullValue());
     }
 
     @Test

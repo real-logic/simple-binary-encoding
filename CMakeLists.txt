@@ -1,5 +1,5 @@
 #
-# Copyright 2013-2019 Real Logic Ltd.
+# Copyright 2013-2020 Real Logic Limited.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,9 +25,9 @@ project("sbe" VERSION "${SBE_VERSION_NUMERIC}")
 include(ExternalProject)
 include(CheckLibraryExists)
 
-if(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
-   set(STANDALONE_BUILD TRUE)
-endif()
+if (${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
+    set(STANDALONE_BUILD TRUE)
+endif ()
 
 option(SBE_TESTS "Enable tests" ${STANDALONE_BUILD})
 option(SBE_BUILD_SAMPLES "Enable building the sample projects" ${STANDALONE_BUILD})
@@ -35,41 +35,41 @@ option(SBE_BUILD_BENCHMARKS "Enable building the benchmarks" ${STANDALONE_BUILD}
 
 unset(STANDALONE_BUILD)
 
-if(SBE_TESTS)
+if (SBE_TESTS)
     enable_testing()
-endif()
+endif ()
 
 # default built type is Release
-if(NOT CMAKE_BUILD_TYPE)
+if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build" FORCE)
-endif(NOT CMAKE_BUILD_TYPE)
+endif (NOT CMAKE_BUILD_TYPE)
 
-if(NOT DEFINED CMAKE_CXX_STANDARD)
-   set(CMAKE_CXX_STANDARD 11)
-endif()
+if (NOT DEFINED CMAKE_CXX_STANDARD)
+    set(CMAKE_CXX_STANDARD 11)
+endif ()
 
-if(NOT DEFINED CMAKE_CXX_EXTENSIONS)
-   set(CMAKE_CXX_EXTENSIONS OFF)
-endif()
+if (NOT DEFINED CMAKE_CXX_EXTENSIONS)
+    set(CMAKE_CXX_EXTENSIONS OFF)
+endif ()
 
-if(NOT DEFINED CMAKE_C_STANDARD)
-   set(CMAKE_C_STANDARD 11)
-endif()
+if (NOT DEFINED CMAKE_C_STANDARD)
+    set(CMAKE_C_STANDARD 11)
+endif ()
 
-if(NOT DEFINED CMAKE_C_EXTENSIONS)
-   set(CMAKE_C_EXTENSIONS OFF)
-endif()
+if (NOT DEFINED CMAKE_C_EXTENSIONS)
+    set(CMAKE_C_EXTENSIONS OFF)
+endif ()
 
-if(SBE_TESTS)
+if (SBE_TESTS)
     set(SBE_THIRDPARTY_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/thirdparty")
 
     ExternalProject_Add(
         gtest
-        URL ${CMAKE_CURRENT_SOURCE_DIR}/cppbuild/googletest-release-1.8.0.zip
-        URL_MD5 adfafc8512ab65fd3cf7955ef0100ff5
+        URL ${CMAKE_CURRENT_SOURCE_DIR}/cppbuild/googletest-release-1.10.0.zip
+        URL_MD5 82358affdd7ab94854c8ee73a180fc53
         PREFIX "${SBE_THIRDPARTY_BINARY_DIR}/gtest"
         CMAKE_ARGS -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER};-DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
-        BUILD_BYPRODUCTS "${SBE_THIRDPARTY_BINARY_DIR}/gtest/src/gtest-build/googlemock/${CMAKE_CFG_INTDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}gmock${CMAKE_STATIC_LIBRARY_SUFFIX};${SBE_THIRDPARTY_BINARY_DIR}/gtest/src/gtest-build/googlemock/${CMAKE_CFG_INTDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}gmock_main${CMAKE_STATIC_LIBRARY_SUFFIX}"
+        BUILD_BYPRODUCTS "${SBE_THIRDPARTY_BINARY_DIR}/gtest/src/gtest-build/lib/${CMAKE_CFG_INTDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}gmock${CMAKE_STATIC_LIBRARY_SUFFIX};${SBE_THIRDPARTY_BINARY_DIR}/gtest/src/gtest-build/lib/${CMAKE_CFG_INTDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}gmock_main${CMAKE_STATIC_LIBRARY_SUFFIX}"
         INSTALL_COMMAND ""
         LOG_CONFIGURE ON
         LOG_BUILD ON
@@ -81,29 +81,30 @@ if(SBE_TESTS)
     set(GTEST_BINARY_DIR ${binary_dir})
 
     set(GTEST_LIBS
-        ${GTEST_BINARY_DIR}/googlemock/${CMAKE_CFG_INTDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}gmock${CMAKE_STATIC_LIBRARY_SUFFIX}
-        ${GTEST_BINARY_DIR}/googlemock/${CMAKE_CFG_INTDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}gmock_main${CMAKE_STATIC_LIBRARY_SUFFIX}
+        ${GTEST_BINARY_DIR}/lib/${CMAKE_CFG_INTDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}gmock${CMAKE_STATIC_LIBRARY_SUFFIX}
+        ${GTEST_BINARY_DIR}/lib/${CMAKE_CFG_INTDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}gtest${CMAKE_STATIC_LIBRARY_SUFFIX}
+        ${GTEST_BINARY_DIR}/lib/${CMAKE_CFG_INTDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}gtest_main${CMAKE_STATIC_LIBRARY_SUFFIX}
     )
-endif()
+endif ()
 
 find_package(Threads)
 
-if(UNIX)
+if (UNIX)
     add_compile_options(-Wall -Wpedantic -Wextra -Wno-unused-parameter)
-endif()
+endif ()
 
-if(APPLE)
+if (APPLE)
     # -Wall doesn't enable everything we want to see
     add_compile_options(-Wsign-compare)
     add_definitions(-DDarwin)
-elseif(MSVC)
+elseif (MSVC)
     add_definitions(-DWIN32)
 
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd /Od /Zi")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
-else()
+else ()
     add_definitions(-D_GNU_SOURCE)
-endif()
+endif ()
 
 set(LIBPREFIX "${CMAKE_STATIC_LIBRARY_PREFIX}")
 set(LIBSUFFIX "${CMAKE_STATIC_LIBRARY_SUFFIX}")
@@ -118,14 +119,14 @@ file(GLOB_RECURSE SBE_SOURCES
 )
 
 add_custom_command(OUTPUT ${SBE_JAR}
-    COMMAND ./gradlew -x test -x check -x javadoc
+    COMMAND ./gradlew assemble -x javadoc
     DEPENDS ${SBE_SOURCES}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     COMMENT "Generating SBE jar"
 )
 
 add_custom_target(sbe-jar
-   DEPENDS ${SBE_JAR}
+    DEPENDS ${SBE_JAR}
 )
 
 set(CODEC_TARGET_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated")
@@ -137,15 +138,15 @@ set(CODEC_EXAMPLES_SCHEMA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/sbe-samples/src/main/
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/sbe-tool/src/main/cpp)
 
-if(SBE_TESTS)
+if (SBE_TESTS)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/sbe-tool/src/test/c)
     add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/sbe-tool/src/test/cpp)
-endif()
+endif ()
 
-if(SBE_BUILD_SAMPLES)
-   add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/sbe-samples/src/main/cpp)
-endif()
+if (SBE_BUILD_SAMPLES)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/sbe-samples/src/main/cpp)
+endif ()
 
-if(SBE_BUILD_BENCHMARKS)
-   add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/sbe-benchmarks/src/main/cpp)
-endif()
+if (SBE_BUILD_BENCHMARKS)
+    add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/sbe-benchmarks/src/main/cpp)
+endif ()

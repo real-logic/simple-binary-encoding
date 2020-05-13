@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2019 Real Logic Ltd.
+ * Copyright 2013-2020 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 package uk.co.real_logic.sbe.ir;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
@@ -23,9 +23,8 @@ import uk.co.real_logic.sbe.xml.ParserOptions;
 
 import java.util.List;
 
-import static java.lang.Integer.valueOf;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 import static uk.co.real_logic.sbe.TestUtil.getLocalResource;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
@@ -52,7 +51,7 @@ public class GroupWithDataIrTest
         /* assert on the group token */
         assertThat(groupToken.signal(), is(Signal.BEGIN_GROUP));
         assertThat(groupToken.name(), is("Entries"));
-        assertThat(valueOf(groupToken.id()), is(valueOf(2)));
+        assertThat(groupToken.id(), is(2));
 
         /* assert on the comp token for dimensions */
         assertThat(dimensionsCompToken.signal(), is(Signal.BEGIN_COMPOSITE));
@@ -64,7 +63,7 @@ public class GroupWithDataIrTest
 
         assertThat(varDataFieldToken.signal(), is(Signal.BEGIN_VAR_DATA));
         assertThat(varDataFieldToken.name(), is("varDataField"));
-        assertThat(valueOf(varDataFieldToken.id()), is(valueOf(5)));
+        assertThat(varDataFieldToken.id(), is(5));
 
         assertThat(lengthEncToken.signal(), is(Signal.ENCODING));
         assertThat(lengthEncToken.encoding().primitiveType(), is(PrimitiveType.UINT8));
@@ -91,15 +90,15 @@ public class GroupWithDataIrTest
         /* assert on the group token */
         assertThat(groupToken.signal(), is(Signal.BEGIN_GROUP));
         assertThat(groupToken.name(), is("Entries"));
-        assertThat(valueOf(groupToken.id()), is(valueOf(2)));
+        assertThat(groupToken.id(), is(2));
 
         assertThat(varDataField1Token.signal(), is(Signal.BEGIN_VAR_DATA));
         assertThat(varDataField1Token.name(), is("varDataField1"));
-        assertThat(valueOf(varDataField1Token.id()), is(valueOf(5)));
+        assertThat(varDataField1Token.id(), is(5));
 
         assertThat(varDataField2Token.signal(), is(Signal.BEGIN_VAR_DATA));
         assertThat(varDataField2Token.name(), is("varDataField2"));
-        assertThat(valueOf(varDataField2Token.id()), is(valueOf(6)));
+        assertThat(varDataField2Token.id(), is(6));
     }
 
     @Test
@@ -120,19 +119,19 @@ public class GroupWithDataIrTest
 
         assertThat(groupToken.signal(), is(Signal.BEGIN_GROUP));
         assertThat(groupToken.name(), is("Entries"));
-        assertThat(valueOf(groupToken.id()), is(valueOf(2)));
+        assertThat(groupToken.id(), is(2));
 
         assertThat(nestedGroupToken.signal(), is(Signal.BEGIN_GROUP));
         assertThat(nestedGroupToken.name(), is("NestedEntries"));
-        assertThat(valueOf(nestedGroupToken.id()), is(valueOf(4)));
+        assertThat(nestedGroupToken.id(), is(4));
 
         assertThat(varDataFieldNestedToken.signal(), is(Signal.BEGIN_VAR_DATA));
         assertThat(varDataFieldNestedToken.name(), is("varDataFieldNested"));
-        assertThat(valueOf(varDataFieldNestedToken.id()), is(valueOf(6)));
+        assertThat(varDataFieldNestedToken.id(), is(6));
 
         assertThat(varDataFieldToken.signal(), is(Signal.BEGIN_VAR_DATA));
         assertThat(varDataFieldToken.name(), is("varDataField"));
-        assertThat(valueOf(varDataFieldToken.id()), is(valueOf(7)));
+        assertThat(varDataFieldToken.id(), is(7));
     }
 
     @Test
@@ -153,14 +152,14 @@ public class GroupWithDataIrTest
         /* assert on the group token */
         assertThat(groupToken.signal(), is(Signal.BEGIN_GROUP));
         assertThat(groupToken.name(), is("Entries"));
-        assertThat(valueOf(groupToken.id()), is(valueOf(2)));
+        assertThat(groupToken.id(), is(2));
 
         assertThat(varDataField1Token.signal(), is(Signal.BEGIN_VAR_DATA));
         assertThat(varDataField1Token.name(), is("varDataField1"));
-        assertThat(valueOf(varDataField1Token.id()), is(valueOf(5)));
+        assertThat(varDataField1Token.id(), is(5));
 
         assertThat(varDataField2Token.signal(), is(Signal.BEGIN_VAR_DATA));
         assertThat(varDataField2Token.name(), is("varDataField2"));
-        assertThat(valueOf(varDataField2Token.id()), is(valueOf(6)));
+        assertThat(varDataField2Token.id(), is(6));
     }
 }

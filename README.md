@@ -2,10 +2,11 @@ Simple Binary Encoding (SBE)
 ============================
 
 [![Javadocs](https://www.javadoc.io/badge/uk.co.real-logic/sbe-tool.svg)](https://www.javadoc.io/doc/uk.co.real-logic/sbe-tool)
-[![Build Status](https://travis-ci.org/real-logic/simple-binary-encoding.svg?branch=master)](https://travis-ci.org/real-logic/simple-binary-encoding)
 [![GitHub](https://img.shields.io/github/license/real-logic/simple-binary-encoding.svg)](https://github.com/real-logic/simple-binary-encoding/blob/master/LICENSE)
-[![Code Quality: Java](https://img.shields.io/lgtm/grade/java/g/real-logic/simple-binary-encoding.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/real-logic/simple-binary-encoding/context:java)
+
+[![Actions Status](https://github.com/real-logic/simple-binary-encoding/workflows/Continuous%20Integration/badge.svg)](https://github.com/real-logic/simple-binary-encoding/actions)
 [![Total Alerts](https://img.shields.io/lgtm/alerts/g/real-logic/simple-binary-encoding.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/real-logic/simple-binary-encoding/alerts)
+[![Code Quality: Java](https://img.shields.io/lgtm/grade/java/g/real-logic/simple-binary-encoding.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/real-logic/simple-binary-encoding/context:java)
 
 [SBE](https://github.com/FIXTradingCommunity/fix-simple-binary-encoding) is an OSI layer 6 presentation for 
 encoding and decoding binary application messages for low-latency financial applications. This repository contains 
@@ -24,7 +25,6 @@ The Java and C++ SBE implementations are designed with work very efficiently wit
 high-throughput communications. The Java SBE implementation has a dependency on
 [Agrona](https://github.com/real-logic/agrona) for its buffer implementations.
 
-
 Binaries
 --------
 Binaries and dependency information for Maven, Ivy, Gradle, and others can be found at 
@@ -36,7 +36,7 @@ Example for Maven:
 <dependency>
     <groupId>uk.co.real-logic</groupId>
     <artifactId>sbe-all</artifactId>
-    <version>1.12.8</version>
+    <version>1.17.0</version>
 </dependency>
 ```
 
@@ -53,7 +53,6 @@ Run the Java examples
 
     $ ./gradlew runJavaExamples
 
-
 Distribution
 ------------
 Jars for the executable, source, and javadoc for the various modules can be found in the following directories:
@@ -65,8 +64,7 @@ Jars for the executable, source, and javadoc for the various modules can be foun
 
 An example to execute a Jar from command line using the 'all' jar which includes the Agrona dependency:
 
-    java -Dsbe.generate.ir=true -Dsbe.target.language=Cpp -Dsbe.target.namespace=sbe -Dsbe.output.dir=include/gen -Dsbe.errorLog=yes -jar sbe-all/build/libs/sbe-all-1.12.9-SNAPSHOT.jar my_sbe_input.xml
-
+    java -Dsbe.generate.ir=true -Dsbe.target.language=Cpp -Dsbe.target.namespace=sbe -Dsbe.output.dir=include/gen -Dsbe.errorLog=yes -jar sbe-all/build/libs/sbe-all-${SBE_LIB_VERSION}.jar my-sbe-messages.xml
 
 C++ Build using CMake
 ---------------------
@@ -86,8 +84,8 @@ If you are comfortable with using CMake, then a full clean, build, and test look
     $ cmake --build . --clean-first
     $ ctest
 
-__Note__: A C generator is included with the C++ build. And is built with the C++ build. Currently, the C generator is a work
-in progress.
+__Note__: A C generator is included with the C++ build. And is built with the C++ build. Currently, the C generator is
+ a work in progress.
 
 Golang Build
 ------------
@@ -110,26 +108,15 @@ documentation](https://github.com/real-logic/simple-binary-encoding/wiki/Golang-
 Developers wishing to enhance the golang generator should see the [developer
 documentation](https://github.com/real-logic/simple-binary-encoding/blob/master/gocode/README.md)
 
-
 C# Build
 --------
-As of May 2017, the CSharp build is considered a preview release. API stability is not yet guaranteed. User and Developer guides are not yet released or are incomplete.
+Users of CSharp generated code should see the [user documentation](https://github.com/real-logic/simple-binary-encoding/wiki/Csharp-User-Guide).
 
-First build using Gradle to generate the SBE jar and then use it to generate the C# code used for testing and the examples.
-
-    $ ./gradlew
-    $ ./gradlew generateCSharpCodecs
-
-You can then use the [Visual Studio 2017 Community solution](https://github.com/real-logic/simple-binary-encoding/blob/master/csharp/csharp.sln) to build and explore the example. This solution also builds some tests which can be run via the provided [runtests.sh](https://github.com/real-logic/simple-binary-encoding/blob/master/csharp/runtests.sh) script.
-
-Users of CSharp generated code should see the [user documentation (coming)](https://github.com/real-logic/simple-binary-encoding/wiki/Csharp-User-Guide).
-
-Developers wishing to enhance the CSharp generator should see the [developer documentation (coming)](https://github.com/real-logic/simple-binary-encoding/blob/master/csharp/README.md)
-
+Developers wishing to enhance the CSharp generator should see the [developer documentation](https://github.com/real-logic/simple-binary-encoding/blob/master/csharp/README.md)
 
 License (See LICENSE file for full license)
 -------------------------------------------
-Copyright 2013-2019 Real Logic Limited  
+Copyright 2013-2020 Real Logic Limited  
 Copyright 2017 MarketFactory Inc
 
 Licensed under the Apache License, Version 2.0 (the "License");

@@ -4,7 +4,7 @@
                    id="1"
                    version="0"
                    byteOrder="littleEndian"
-                   description="SBE IR Serialization">
+                   description="SBE IR Serialization Codecs.">
     <types>
         <composite name="messageHeader" description="Message identifiers and length of message root">
             <type name="blockLength" primitiveType="uint16"/>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2019 Real Logic Ltd.
+ * Copyright 2013-2020 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,16 +77,16 @@ public:
         car.putModel(MODEL, MODELLEN);
 
         return car.encodedLength();
-    };
+    }
 
     virtual std::uint64_t decode(const char *buffer, const std::uint64_t bufferLength)
     {
         car.wrapForDecode((char *)buffer, 0, Car::sbeBlockLength(), Car::sbeSchemaVersion(), bufferLength);
 
-        int64_t tmpInt;
-        const char *tmpChar;
-        double tmpDouble;
-        bool tmpBool;
+        volatile int64_t tmpInt;
+        volatile const char *tmpChar;
+        volatile double tmpDouble;
+        volatile bool tmpBool;
 
         tmpInt = car.serialNumber();
         tmpInt = car.modelYear();
@@ -133,13 +133,13 @@ public:
         tmpChar = car.manufacturer();
         tmpChar = car.model();
 
-        (void)tmpInt;
-        (void)tmpChar;
-        (void)tmpDouble;
-        (void)tmpBool;
+        static_cast<void>(tmpInt);
+        static_cast<void>(tmpChar);
+        static_cast<void>(tmpDouble);
+        static_cast<void>(tmpBool);
 
         return car.encodedLength();
-    };
+    }
 
 private:
     Car car;

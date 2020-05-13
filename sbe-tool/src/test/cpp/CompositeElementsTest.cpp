@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2019 Real Logic Ltd.
+ * Copyright 2013-2020 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -210,6 +210,8 @@ TEST_F(CompositeElementsTest, shouldEncodeMsgCorrectly)
     std::uint64_t offset = 0;
 
     ASSERT_EQ(sz, 8u + 22u);
+    ASSERT_EQ(Msg::isConstLength(), true);
+    EXPECT_EQ(sz, Msg::sbeBlockAndHeaderLength());
 
     EXPECT_EQ(*((std::uint16_t *)(bufferPtr + offset)), Msg::sbeBlockLength());
     offset += sizeof(std::uint16_t);
@@ -267,7 +269,7 @@ TEST_F(CompositeElementsTest, shouldEncodeAndDecodeMsgCorrectly)
     EXPECT_EQ(msg.encodedLength(), sz - MessageHeader::encodedLength());
 }
 
-TEST_F(CompositeElementsTest, shouldHandleAllEventsCorrectltInOrder)
+TEST_F(CompositeElementsTest, shouldHandleAllEventsCorrectlyInOrder)
 {
     std::uint64_t sz = encodeHdrAndMsg();
 

@@ -1,5 +1,5 @@
 #
-# Copyright 2013-2019 Real Logic Ltd.
+# Copyright 2013-2020 Real Logic Limited.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,9 +26,9 @@ function(sbe_test name)
     target_link_libraries("C${name}" ${GTEST_LIBS} ${CMAKE_THREAD_LIBS_INIT})
     add_test(NAME C${name} COMMAND C${name} WORKING_DIRECTORY ${C_CODEC_TARGET_DIR})
     add_dependencies(C${name} gtest)
-    if(${ARGC} GREATER 1)
+    if (${ARGC} GREATER 1)
         add_dependencies(C${name} ${ARGV1})
-    endif()
+    endif ()
 endfunction()
 
 find_package(Java REQUIRED)

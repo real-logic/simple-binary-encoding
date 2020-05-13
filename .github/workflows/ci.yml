@@ -1,0 +1,170 @@
+name: Continuous Integration
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types: [opened, synchronize]
+    branches:
+      - master
+
+env:
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+
+jobs:
+  java-build:
+    name: Java ${{ matrix.java }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        java: [ '8', '11' ]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v1
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: Cache Gradle wrappers
+        uses: actions/cache@v1
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
+      - name: Setup java
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.java }}
+      - name: Build with Gradle
+        run: ./gradlew
+
+  csharp-build:
+    name: C# ${{ matrix.dotnet }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        dotnet: [ '2.2.103' ]
+    env:
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v1
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: Cache Gradle wrappers
+        uses: actions/cache@v1
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
+      - name: Cache NuGet dependencies
+        uses: actions/cache@v1
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('csharp/**/*.sln') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ matrix.dotnet }}
+      - name: Build
+        run: ./csharp/build.sh
+      - name: Run tests
+        run: ./csharp/runtests.sh
+      - name: Pack
+        run: ./csharp/pack.sh
+
+  cpp-gcc-build:
+    name: C++ GCC ${{ matrix.version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        version: [ '6', '7', '8', '9' ]
+    env:
+      CC: gcc-${{ matrix.version }}
+      CXX: g++-${{ matrix.version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v1
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: Cache Gradle wrappers
+        uses: actions/cache@v1
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
+      - name: Install compiler
+        run: |
+          sudo apt-get install -y g++-${{ matrix.version }} libsparsehash-dev
+      - name: Build
+        run: ./cppbuild/cppbuild
+
+  cpp-clang-build:
+    name: C++ Clang ${{ matrix.version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        version: [ '6.0', '7', '8', '9' ]
+    env:
+      CC: clang-${{ matrix.version }}
+      CXX: clang++-${{ matrix.version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v1
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: Cache Gradle wrappers
+        uses: actions/cache@v1
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
+      - name: Install compiler
+        run: |
+          sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-${{ matrix.version }} main"
+
+          sudo apt-get update
+
+          sudo apt-get install -y clang-${{ matrix.version }} libsparsehash-dev
+      - name: Build
+        run: ./cppbuild/cppbuild
+
+  cpp-clang-macos-build:
+    name: C++ Xcode ${{ matrix.version }} (macOS)
+    runs-on: macOS-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        version: [ '11.2.1' ]
+    env:
+      CC: clang
+      CXX: clang++
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install compiler
+        run: |
+          sudo xcode-select -switch /Applications/Xcode_${{ matrix.version }}.app
+      - name: Build
+        run: ./cppbuild/cppbuild

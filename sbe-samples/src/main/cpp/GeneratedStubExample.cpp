@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2019 Real Logic Ltd.
+ * Copyright 2013-2020 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,6 +85,8 @@ std::size_t encodeCar(Car &car, char *buffer, std::uint64_t offset, std::uint64_
        .capacity(2000)
        .numCylinders((short)4)
        .putManufacturerCode(MANUFACTURER_CODE)
+       .efficiency((std::int8_t)35)
+       .boosterEnabled(BooleanType::T)
        .booster().boostType(BoostType::NITROUS).horsePower(200);
 
     Car::FuelFigures& fuelFigures = car.fuelFiguresCount(3);
@@ -123,7 +125,6 @@ std::size_t encodeCar(Car &car, char *buffer, std::uint64_t offset, std::uint64_
 
     return car.encodedLength();
 }
-
 
 const char *format(BooleanType::Value value)
 {
@@ -174,8 +175,12 @@ const char *format(bool value)
 }
 
 std::size_t decodeCar(
-    Car &car, char *buffer, std::uint64_t offset, std::uint64_t actingBlockLength,
-    std::uint64_t actingVersion, std::uint64_t bufferLength)
+    Car &car,
+    char *buffer,
+    std::uint64_t offset,
+    std::uint64_t actingBlockLength,
+    std::uint64_t actingVersion,
+    std::uint64_t bufferLength)
 {
     car.wrapForDecode(buffer, offset, actingBlockLength, actingVersion, bufferLength);
 
@@ -250,6 +255,8 @@ std::size_t decodeCar(
 
     char tmp[1024];
     std::uint64_t bytesCopied = engine.getFuel(tmp, sizeof(tmp));
+    std::cout << "\ncar.engine.efficiency=" << (int)engine.efficiency();
+    std::cout << "\ncar.engine.boosterEnabled=" << format(engine.boosterEnabled());
     std::cout << "\ncar.engine.fuelLength=" << bytesCopied;
     std::cout << "\ncar.engine.fuel=" << std::string(tmp, bytesCopied);
     std::cout << "\ncar.engine.booster.boostType=" << format(engine.booster().boostType());
@@ -307,9 +314,9 @@ int main(int argc, const char* argv[])
 
     std::size_t encodeHdrLength = encodeHdr(hdr, car, buffer, 0, sizeof(buffer));
     std::size_t encodeMsgLength = encodeCar(car, buffer, hdr.encodedLength(), sizeof(buffer));
+    std::size_t predictedLength = Car::computeLength({11, 14, 13}, {3, 3}, 5, 9, 8);
 
-    cout << "Encoded Lengths are " << encodeHdrLength << " + " << encodeMsgLength << endl;
-    cout << "Encoded json: '" << car << "'" << endl;
+    cout << "Encoded Lengths are " << encodeHdrLength << " + " << encodeMsgLength << " (" << predictedLength << ")" << endl;
 
     std::size_t decodeHdrLength = decodeHdr(hdr, buffer, 0, sizeof(buffer));
     std::size_t decodeMsgLength = decodeCar(car, buffer, hdr.encodedLength(), hdr.blockLength(), hdr.version(), sizeof(buffer));
@@ -327,6 +334,9 @@ int main(int argc, const char* argv[])
         cerr << "Encode/Decode message lengths do not match\n";
         return EXIT_FAILURE;
     }
+
+    car.wrapForDecode(buffer, hdr.encodedLength(), hdr.blockLength(), hdr.version(), sizeof(buffer));
+    cout << "Encoded json: '" << car << "'" << endl;
 
     return EXIT_SUCCESS;
 }

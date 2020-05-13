@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2019 Real Logic Ltd.
+ * Copyright 2013-2020 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -102,9 +102,7 @@ public:
 
     }
 
-    void onGroupHeader(
-        Token& token,
-        std::uint64_t numInGroup)
+    void onGroupHeader(Token& token, std::uint64_t numInGroup)
     {
         switch (m_eventNumber++)
         {
@@ -138,14 +136,15 @@ TEST_F(CompositeOffsetsIrTest, shouldHandleDecodingOfMessageHeaderCorrectly)
     EXPECT_EQ(headerDecoder.getSchemaVersion(m_buffer), TestMessage1::sbeSchemaVersion());
 }
 
-TEST_F(CompositeOffsetsIrTest, shouldHandleAllEventsCorrectltInOrder)
+TEST_F(CompositeOffsetsIrTest, shouldHandleAllEventsCorrectlyInOrder)
 {
     ASSERT_EQ(encodeHdrAndMsg(), 52u);
 
     ASSERT_GE(m_irDecoder.decode(SCHEMA_FILENAME), 0);
 
     std::shared_ptr<std::vector<Token>> headerTokens = m_irDecoder.header();
-    std::shared_ptr<std::vector<Token>> messageTokens = m_irDecoder.message(TestMessage1::sbeTemplateId(), TestMessage1::sbeSchemaVersion());
+    std::shared_ptr<std::vector<Token>> messageTokens = m_irDecoder.message(
+        TestMessage1::sbeTemplateId(), TestMessage1::sbeSchemaVersion());
 
     ASSERT_TRUE(headerTokens != nullptr);
     ASSERT_TRUE(messageTokens!= nullptr);

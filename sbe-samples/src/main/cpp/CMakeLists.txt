@@ -1,5 +1,5 @@
 #
-# Copyright 2013-2019 Real Logic Ltd.
+# Copyright 2013-2020 Real Logic Limited.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,8 +17,7 @@
 find_package(Java REQUIRED)
 
 set(GENERATED_CODECS
-    ${CXX_CODEC_TARGET_DIR}/baseline
-)
+    ${CXX_CODEC_TARGET_DIR}/baseline)
 
 set(EXAMPLES_SCHEMA ${CODEC_EXAMPLES_SCHEMA_DIR}/example-schema.xml)
 
