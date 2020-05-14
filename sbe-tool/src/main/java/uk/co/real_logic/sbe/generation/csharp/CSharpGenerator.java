@@ -905,7 +905,7 @@ public class CSharpGenerator implements CodeGenerator
             "%1$s" +
             indent + "public Span<%2$s> %3$sAsSpan()\n" +
             indent + "{\n" +
-            indent + INDENT + "return _buffer.AsSpan<byte>(_offset + %4$s, %3$sLength);\n" +
+            indent + INDENT + "return _buffer.AsSpan<%2$s>(_offset + %4$s, %3$sLength);\n" +
             indent + "}\n",
             generateDocumentation(indent, fieldToken),
             typeName, propName, offset));
