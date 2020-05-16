@@ -889,6 +889,27 @@ public class CSharpGenerator implements CodeGenerator
             generateDocumentation(indent, fieldToken),
             propName, typeName, fieldLength, typePrefix, offset, typeSize, byteOrderStr));
 
+        // Expose the array as a ReadOnlySpan
+        sb.append(String.format("\n" +
+            "%1$s" +
+            indent + "public ReadOnlySpan<%2$s> %3$s\n" +
+            indent + "{\n" +
+            indent + INDENT + "get => _buffer.AsReadOnlySpan<%2$s>(_offset + %4$s, %3$sLength);\n" +
+            indent + INDENT + "set => value.CopyTo(_buffer.AsSpan<%2$s>(_offset + %4$s, %3$sLength));\n" +
+            indent + "}\n",
+            generateDocumentation(indent, fieldToken),
+            typeName, propName, offset));
+
+        // Expose the array as a Span
+        sb.append(String.format("\n" +
+            "%1$s" +
+            indent + "public Span<%2$s> %3$sAsSpan()\n" +
+            indent + "{\n" +
+            indent + INDENT + "return _buffer.AsSpan<%2$s>(_offset + %4$s, %3$sLength);\n" +
+            indent + "}\n",
+            generateDocumentation(indent, fieldToken),
+            typeName, propName, offset));
+
         if (typeToken.encoding().primitiveType() == PrimitiveType.CHAR)
         {
             generateCharacterEncodingMethod(sb, propertyName, typeToken.encoding().characterEncoding(), indent);
