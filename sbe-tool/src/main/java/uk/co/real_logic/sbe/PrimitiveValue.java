@@ -192,7 +192,7 @@ public class PrimitiveValue
                 {
                     throw new IllegalArgumentException("Constant char value malformed: " + value);
                 }
-                return new PrimitiveValue((long)value.getBytes(US_ASCII)[0], 1);
+                return new PrimitiveValue(value.getBytes(US_ASCII)[0], 1);
 
             case INT8:
                 return new PrimitiveValue(Byte.parseByte(value), 1);
