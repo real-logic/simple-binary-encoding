@@ -17,6 +17,7 @@ package uk.co.real_logic.sbe.generation.java;
 
 import org.agrona.*;
 import org.agrona.generation.OutputManager;
+import org.agrona.sbe.*;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.generation.CodeGenerator;
 import uk.co.real_logic.sbe.generation.Generators;
@@ -48,11 +49,6 @@ public class JavaGenerator implements CodeGenerator
     private static final String PACKAGE_INFO = "package-info";
     private static final String BASE_INDENT = "";
     private static final String INDENT = "    ";
-    private static final String FLYWEIGHT = "Flyweight";
-    private static final String COMPOSITE_DECODER_FLYWEIGHT = "CompositeDecoderFlyweight";
-    private static final String COMPOSITE_ENCODER_FLYWEIGHT = "CompositeEncoderFlyweight";
-    private static final String MESSAGE_DECODER_FLYWEIGHT = "MessageDecoderFlyweight";
-    private static final String MESSAGE_ENCODER_FLYWEIGHT = "MessageEncoderFlyweight";
 
     private final Ir ir;
     private final OutputManager outputManager;
@@ -193,7 +189,7 @@ public class JavaGenerator implements CodeGenerator
         throws IOException
     {
         final String className = formatClassName(encoderName(msgToken.name()));
-        final String implementsString = implementsInterface(MESSAGE_ENCODER_FLYWEIGHT);
+        final String implementsString = implementsInterface(MessageEncoderFlyweight.class.getSimpleName());
 
         try (Writer out = outputManager.createOutput(className))
         {
@@ -220,7 +216,7 @@ public class JavaGenerator implements CodeGenerator
         throws IOException
     {
         final String className = formatClassName(decoderName(msgToken.name()));
-        final String implementsString = implementsInterface(MESSAGE_DECODER_FLYWEIGHT);
+        final String implementsString = implementsInterface(MessageDecoderFlyweight.class.getSimpleName());
 
         try (Writer out = outputManager.createOutput(className))
         {
@@ -1187,7 +1183,7 @@ public class JavaGenerator implements CodeGenerator
         final String decoderName = decoderName(bitSetName);
         final String encoderName = encoderName(bitSetName);
         final List<Token> messageBody = getMessageBody(tokens);
-        final String implementsString = implementsInterface(FLYWEIGHT);
+        final String implementsString = implementsInterface(Flyweight.class.getSimpleName());
 
         try (Writer out = outputManager.createOutput(decoderName))
         {
@@ -1261,7 +1257,7 @@ public class JavaGenerator implements CodeGenerator
 
         try (Writer out = outputManager.createOutput(decoderName))
         {
-            final String implementsString = implementsInterface(COMPOSITE_DECODER_FLYWEIGHT);
+            final String implementsString = implementsInterface(CompositeDecoderFlyweight.class.getSimpleName());
             generateCompositeFlyweightHeader(
                 token, decoderName, out, readOnlyBuffer, fqReadOnlyBuffer, implementsString);
 
@@ -1309,7 +1305,7 @@ public class JavaGenerator implements CodeGenerator
 
         try (Writer out = outputManager.createOutput(encoderName))
         {
-            final String implementsString = implementsInterface(COMPOSITE_ENCODER_FLYWEIGHT);
+            final String implementsString = implementsInterface(CompositeEncoderFlyweight.class.getSimpleName());
             generateCompositeFlyweightHeader(token, encoderName, out, mutableBuffer, fqMutableBuffer, implementsString);
 
             for (int i = 1, end = tokens.size() - 1; i < end;)
