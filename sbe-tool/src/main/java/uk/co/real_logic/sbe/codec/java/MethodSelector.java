@@ -27,6 +27,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Selects sorted methods of a class that are annotated with {@link GroupOrder}.
+ */
 public class MethodSelector
 {
     private final Set<String> ignoredMethods;

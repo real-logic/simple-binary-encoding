@@ -27,6 +27,9 @@ import java.util.List;
 
 import static uk.co.real_logic.sbe.PrimitiveType.CHAR;
 
+/**
+ * Listener for tokens when dynamically decoding a message which converts them to Json for output.
+ */
 public class JsonTokenListener implements TokenListener
 {
     private final StringBuilder output;

@@ -21,6 +21,8 @@ import uk.co.real_logic.sbe.PrimitiveType;
 import java.util.EnumMap;
 import java.util.Map;
 
+import static uk.co.real_logic.sbe.generation.Generators.toUpperFirstChar;
+
 /**
  * Utilities for mapping between IR and the C# language.
  */
@@ -55,28 +57,6 @@ public class CSharpUtil
     public static String cSharpTypeName(final PrimitiveType primitiveType)
     {
         return PRIMITIVE_TYPE_STRING_ENUM_MAP.get(primitiveType);
-    }
-
-    /**
-     * Uppercase the first character of a given String.
-     *
-     * @param str to have the first character upper cased.
-     * @return a new String with the first character in uppercase.
-     */
-    public static String toUpperFirstChar(final String str)
-    {
-        return Character.toUpperCase(str.charAt(0)) + str.substring(1);
-    }
-
-    /**
-     * Lowercase the first character of a given String.
-     *
-     * @param str to have the first character upper cased.
-     * @return a new String with the first character in uppercase.
-     */
-    public static String toLowerFirstChar(final String str)
-    {
-        return Character.toLowerCase(str.charAt(0)) + str.substring(1);
     }
 
     /**

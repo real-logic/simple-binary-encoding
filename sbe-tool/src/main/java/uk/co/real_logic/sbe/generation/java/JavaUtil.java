@@ -32,7 +32,7 @@ import java.util.Map;
 import static java.lang.reflect.Modifier.STATIC;
 
 /**
- * Utilities for mapping between IR and the Java language.
+ * Utilities for mapping between {@link uk.co.real_logic.sbe.ir.Ir} and the Java language.
  */
 public class JavaUtil
 {

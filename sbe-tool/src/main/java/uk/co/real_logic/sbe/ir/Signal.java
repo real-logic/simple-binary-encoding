@@ -22,87 +22,87 @@ package uk.co.real_logic.sbe.ir;
 public enum Signal
 {
     /**
-     * Denotes the beginning of a message
+     * Denotes the beginning of a message.
      */
     BEGIN_MESSAGE,
 
     /**
-     * Denotes the end of a message
+     * Denotes the end of a message.
      */
     END_MESSAGE,
 
     /**
-     * Denotes the beginning of a composite
+     * Denotes the beginning of a composite.
      */
     BEGIN_COMPOSITE,
 
     /**
-     * Denotes the end of a composite
+     * Denotes the end of a composite.
      */
     END_COMPOSITE,
 
     /**
-     * Denotes the beginning of a field
+     * Denotes the beginning of a field.
      */
     BEGIN_FIELD,
 
     /**
-     * Denotes the end of a field
+     * Denotes the end of a field.
      */
     END_FIELD,
 
     /**
-     * Denotes the beginning of a repeating group
+     * Denotes the beginning of a repeating group.
      */
     BEGIN_GROUP,
 
     /**
-     * Denotes the end of a repeating group
+     * Denotes the end of a repeating group.
      */
     END_GROUP,
 
     /**
-     * Denotes the beginning of an enumeration
+     * Denotes the beginning of an enumeration.
      */
     BEGIN_ENUM,
 
     /**
-     * Denotes a value of an enumeration
+     * Denotes a value of an enumeration.
      */
     VALID_VALUE,
 
     /**
-     * Denotes the end of an enumeration
+     * Denotes the end of an enumeration.
      */
     END_ENUM,
 
     /**
-     * Denotes the beginning of a bitset
+     * Denotes the beginning of a bitset.
      */
     BEGIN_SET,
 
     /**
-     * Denotes a bit value (choice) of a bitset
+     * Denotes a bit value (choice) of a bitset.
      */
     CHOICE,
 
     /**
-     * Denotes the end of a bitset
+     * Denotes the end of a bitset.
      */
     END_SET,
 
     /**
-     * Denotes the beginning of a variable data block
+     * Denotes the beginning of a variable data block.
      */
     BEGIN_VAR_DATA,
 
     /**
-     * Denotes the end of a variable data block
+     * Denotes the end of a variable data block.
      */
     END_VAR_DATA,
 
     /**
-     * Denotes the {@link uk.co.real_logic.sbe.ir.Token} is an encoding
+     * Denotes the {@link uk.co.real_logic.sbe.ir.Token} is an encoding.
      */
     ENCODING
 }

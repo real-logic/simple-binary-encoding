@@ -21,6 +21,9 @@ import uk.co.real_logic.sbe.ir.Token;
 import java.util.List;
 import java.util.function.BiConsumer;
 
+/**
+ * Common operations available to all {@link CodeGenerator}s.
+ */
 public class Generators
 {
     /**

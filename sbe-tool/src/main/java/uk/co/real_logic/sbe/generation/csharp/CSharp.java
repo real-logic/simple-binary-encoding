@@ -19,6 +19,9 @@ import uk.co.real_logic.sbe.generation.CodeGenerator;
 import uk.co.real_logic.sbe.generation.TargetCodeGenerator;
 import uk.co.real_logic.sbe.ir.Ir;
 
+/**
+ * {@link CodeGenerator} factory for the CSharp target programming language.
+ */
 public class CSharp implements TargetCodeGenerator
 {
     public CodeGenerator newInstance(final Ir ir, final String outputDir)

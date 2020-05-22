@@ -27,8 +27,15 @@ import uk.co.real_logic.sbe.ir.Ir;
 
 import static uk.co.real_logic.sbe.SbeTool.*;
 
+/**
+ * Loader for {@link CodeGenerator}s which target a language. This provide convenient short names rather than the
+ * fully qualified class name of the generator.
+ */
 public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
 {
+    /**
+     * Generates codecs for the Java 8 programming language.
+     */
     JAVA()
     {
         public CodeGenerator newInstance(final Ir ir, final String outputDir)
@@ -44,6 +51,9 @@ public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
         }
     },
 
+    /**
+     * Generates codecs for the C11 programming language.
+     */
     C()
     {
         public CodeGenerator newInstance(final Ir ir, final String outputDir)
@@ -52,6 +62,9 @@ public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
         }
     },
 
+    /**
+     * Generates codecs for the C++11 programming language with some conditional includes for C++14 and C++17.
+     */
     CPP()
     {
         public CodeGenerator newInstance(final Ir ir, final String outputDir)
@@ -60,6 +73,9 @@ public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
         }
     },
 
+    /**
+     * Generates codecs for the Go programming language.
+     */
     GOLANG()
     {
         public CodeGenerator newInstance(final Ir ir, final String outputDir)

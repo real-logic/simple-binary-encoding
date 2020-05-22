@@ -33,11 +33,15 @@ import java.util.Scanner;
 import java.util.TreeSet;
 
 import static uk.co.real_logic.sbe.PrimitiveType.CHAR;
+import static uk.co.real_logic.sbe.generation.Generators.toUpperFirstChar;
 import static uk.co.real_logic.sbe.generation.golang.GolangUtil.*;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectVarData;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectGroups;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectFields;
 
+/**
+ * Codec generator for the Go Lang programming language.
+ */
 @SuppressWarnings("MethodLength")
 public class GolangGenerator implements CodeGenerator
 {

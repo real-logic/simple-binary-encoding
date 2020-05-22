@@ -36,6 +36,9 @@ import static uk.co.real_logic.sbe.generation.java.JavaGenerator.CodecType.ENCOD
 import static uk.co.real_logic.sbe.generation.java.JavaUtil.*;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.*;
 
+/**
+ * Generate codecs for the Java 8 programming language.
+ */
 @SuppressWarnings("MethodLength")
 public class JavaGenerator implements CodeGenerator
 {

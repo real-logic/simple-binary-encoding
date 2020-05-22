@@ -33,9 +33,14 @@ import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
 
+import static uk.co.real_logic.sbe.generation.Generators.toLowerFirstChar;
+import static uk.co.real_logic.sbe.generation.Generators.toUpperFirstChar;
 import static uk.co.real_logic.sbe.generation.cpp.CppUtil.*;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.*;
 
+/**
+ * Codec generator for the C++11 programming language with conditional complication for C++14 and C++17 features.
+ */
 @SuppressWarnings("MethodLength")
 public class CppGenerator implements CodeGenerator
 {

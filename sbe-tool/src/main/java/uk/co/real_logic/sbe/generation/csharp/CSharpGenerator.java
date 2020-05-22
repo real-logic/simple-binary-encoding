@@ -30,11 +30,16 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
+import static uk.co.real_logic.sbe.generation.Generators.toLowerFirstChar;
+import static uk.co.real_logic.sbe.generation.Generators.toUpperFirstChar;
 import static uk.co.real_logic.sbe.generation.csharp.CSharpUtil.*;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectVarData;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectGroups;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectFields;
 
+/**
+ * Codec generator for the CSharp programming language.
+ */
 @SuppressWarnings("MethodLength")
 public class CSharpGenerator implements CodeGenerator
 {

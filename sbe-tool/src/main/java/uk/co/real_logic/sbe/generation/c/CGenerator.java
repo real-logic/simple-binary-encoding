@@ -31,9 +31,14 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
+import static uk.co.real_logic.sbe.generation.Generators.toLowerFirstChar;
+import static uk.co.real_logic.sbe.generation.Generators.toUpperFirstChar;
 import static uk.co.real_logic.sbe.generation.c.CUtil.*;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.*;
 
+/**
+ * Codec generator for the C11 programming language.
+ */
 @SuppressWarnings("MethodLength")
 public class CGenerator implements CodeGenerator
 {
