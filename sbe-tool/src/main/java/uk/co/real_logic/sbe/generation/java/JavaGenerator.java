@@ -171,6 +171,7 @@ public class JavaGenerator implements CodeGenerator
         {
             final Token msgToken = tokens.get(0);
             final List<Token> messageBody = getMessageBody(tokens);
+            final boolean hasVarData = -1 != findSignal(messageBody, Signal.BEGIN_VAR_DATA);
 
             int i = 0;
             final List<Token> fields = new ArrayList<>();
@@ -182,13 +183,17 @@ public class JavaGenerator implements CodeGenerator
             final List<Token> varData = new ArrayList<>();
             collectVarData(messageBody, i, varData);
 
-            generateDecoder(fields, groups, varData, msgToken);
-            generateEncoder(fields, groups, varData, msgToken);
+            generateDecoder(msgToken, fields, groups, varData, hasVarData);
+            generateEncoder(msgToken, fields, groups, varData, hasVarData);
         }
     }
 
     private void generateEncoder(
-        final List<Token> fields, final List<Token> groups, final List<Token> varData, final Token msgToken)
+        final Token msgToken,
+        final List<Token> fields,
+        final List<Token> groups,
+        final List<Token> varData,
+        final boolean hasVarData)
         throws IOException
     {
         final String className = formatClassName(encoderName(msgToken.name()));
@@ -196,7 +201,7 @@ public class JavaGenerator implements CodeGenerator
 
         try (Writer out = outputManager.createOutput(className))
         {
-            out.append(generateMainHeader(ir.applicableNamespace(), ENCODER, !varData.isEmpty()));
+            out.append(generateMainHeader(ir.applicableNamespace(), ENCODER, hasVarData));
 
             generateAnnotations(BASE_INDENT, className, groups, out, 0, this::encoderName);
             out.append(generateDeclaration(className, implementsString, msgToken));
@@ -215,7 +220,11 @@ public class JavaGenerator implements CodeGenerator
     }
 
     private void generateDecoder(
-        final List<Token> fields, final List<Token> groups, final List<Token> varData, final Token msgToken)
+        final Token msgToken,
+        final List<Token> fields,
+        final List<Token> groups,
+        final List<Token> varData,
+        final boolean hasVarData)
         throws IOException
     {
         final String className = formatClassName(decoderName(msgToken.name()));
@@ -223,7 +232,7 @@ public class JavaGenerator implements CodeGenerator
 
         try (Writer out = outputManager.createOutput(className))
         {
-            out.append(generateMainHeader(ir.applicableNamespace(), DECODER, !varData.isEmpty()));
+            out.append(generateMainHeader(ir.applicableNamespace(), DECODER, hasVarData));
 
             generateAnnotations(BASE_INDENT, className, groups, out, 0, this::decoderName);
             out.append(generateDeclaration(className, implementsString, msgToken));

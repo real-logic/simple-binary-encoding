@@ -107,4 +107,17 @@ public final class GenerationUtil
 
         return groupNames;
     }
+
+    public static int findSignal(final List<Token> tokens, final Signal signal)
+    {
+        for (int i = 0, endIndex = tokens.size() - 1; i < endIndex; i++)
+        {
+            if (signal == tokens.get(i).signal())
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
 }
