@@ -12,17 +12,15 @@ Simple Binary Encoding (SBE)
 encoding and decoding binary application messages for low-latency financial applications. This repository contains 
 the reference implementations in Java, C++, Golang, and C#.
 
-Further details on the background and usage of SBE can be found on the
-[Wiki](https://github.com/real-logic/simple-binary-encoding/wiki).
+For more details on the design and usage of SBE can be found on the [Wiki](https://github.com/real-logic/simple-binary-encoding/wiki).
 
 An XSD for SBE specs can be found
 [here](https://github.com/real-logic/simple-binary-encoding/blob/master/sbe-tool/src/main/resources/fpl/sbe.xsd). Please address questions about the specification to the [SBE FIX community](https://github.com/FIXTradingCommunity/fix-simple-binary-encoding).
 
 For the latest version information and changes see the [Change Log](https://github.com/real-logic/simple-binary-encoding/wiki/Change-Log) with **downloads** at [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Csbe). 
 
-The Java and C++ SBE implementations are designed with work very efficiently with the
-[Aeron](https://github.com/real-logic/aeron) messaging system for low-latency and
-high-throughput communications. The Java SBE implementation has a dependency on
+The Java and C++ SBE implementations work very efficiently with the [Aeron](https://github.com/real-logic/aeron)
+messaging system for low-latency and high-throughput communications. The Java SBE implementation has a dependency on
 [Agrona](https://github.com/real-logic/agrona) for its buffer implementations.
 
 Binaries
@@ -36,7 +34,7 @@ Example for Maven:
 <dependency>
     <groupId>uk.co.real-logic</groupId>
     <artifactId>sbe-all</artifactId>
-    <version>1.17.0</version>
+    <version>1.18.0</version>
 </dependency>
 ```
 
