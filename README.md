@@ -12,7 +12,7 @@ Simple Binary Encoding (SBE)
 encoding and decoding binary application messages for low-latency financial applications. This repository contains 
 the reference implementations in Java, C++, Golang, and C#.
 
-For more details on the design and usage of SBE can be found on the [Wiki](https://github.com/real-logic/simple-binary-encoding/wiki).
+More details on the design and usage of SBE can be found on the [Wiki](https://github.com/real-logic/simple-binary-encoding/wiki).
 
 An XSD for SBE specs can be found
 [here](https://github.com/real-logic/simple-binary-encoding/blob/master/sbe-tool/src/main/resources/fpl/sbe.xsd). Please address questions about the specification to the [SBE FIX community](https://github.com/FIXTradingCommunity/fix-simple-binary-encoding).
