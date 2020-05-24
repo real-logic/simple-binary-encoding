@@ -2403,24 +2403,39 @@ public class CGenerator implements CodeGenerator
                 break;
 
             case UINT32:
-            case INT32:
-                literal = value;
+            {
+                final long intValue = Long.parseLong(value);
+                literal = "UINT32_C(0x" + Integer.toHexString((int)intValue) + ")";
                 break;
+            }
+
+            case INT32:
+            {
+                final long intValue = Long.parseLong(value);
+                literal = "INT32_C(" + Integer.toString((int)intValue) + ")";
+                break;
+            }
 
             case FLOAT:
                 literal = value.endsWith("NaN") ? "SBE_FLOAT_NAN" : value + "f";
                 break;
 
             case INT64:
-                literal = value + "L";
-                if (value.equals("-9223372036854775808"))
+            {
+                final long longValue = Long.parseLong(value);
+                if (longValue == -9223372036854775808L)
                 {
                     literal = "INT64_MIN";
                 }
+                else
+                {
+                    literal = "INT64_C(" + String.valueOf(longValue) + ")";
+                }
                 break;
+            }
 
             case UINT64:
-                literal = "0x" + Long.toHexString(Long.parseLong(value)) + "L";
+                literal = "UINT64_C(0x" + Long.toHexString(Long.parseLong(value)) + ")";
                 break;
 
             case DOUBLE:
