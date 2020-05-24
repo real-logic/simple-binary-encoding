@@ -127,7 +127,7 @@ enum EventNumber
     EN_engine_manufacturerCode,
     EN_engine_fuel,
     EN_beginBooster,
-    EN_engine_booster_boostType,
+    EN_engine_booster_BoostType,
     EN_engine_booster_horsePower,
     EN_endBooster,
     EN_endEngine,
@@ -647,7 +647,7 @@ public:
                 break;
             }
 
-            case EN_engine_booster_boostType:
+            case EN_engine_booster_BoostType:
             {
                 EXPECT_EQ(encoding.primitiveType(), PrimitiveType::CHAR);
 

@@ -19,10 +19,10 @@
 
 #include <gtest/gtest.h>
 
-#include <group_with_data/testMessage1.h>
-#include <group_with_data/testMessage2.h>
-#include <group_with_data/testMessage3.h>
-#include <group_with_data/testMessage4.h>
+#include <group_with_data/TestMessage1.h>
+#include <group_with_data/TestMessage2.h>
+#include <group_with_data/TestMessage3.h>
+#include <group_with_data/TestMessage4.h>
 
 #define GWD(name) group_with_data_##name
 
@@ -84,168 +84,168 @@ public:
 
     std::uint64_t encodeTestMessage1(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
     {
-        if (!GWD(testMessage1_wrap_for_encode)(&m_msg1, buffer, offset, bufferLength))
+        if (!GWD(TestMessage1_wrap_for_encode)(&m_msg1, buffer, offset, bufferLength))
         {
             throw std::runtime_error(sbe_strerror(errno));
         }
 
-        GWD(testMessage1_set_tag1)(&m_msg1, TAG_1);
+        GWD(TestMessage1_set_Tag1)(&m_msg1, TAG_1);
 
-        GWD(testMessage1_entries) entries;
-        if (!GWD(testMessage1_entries_set_count)(&m_msg1, &entries, ENTRIES_COUNT))
+        GWD(TestMessage1_Entries) entries;
+        if (!GWD(TestMessage1_Entries_set_count)(&m_msg1, &entries, ENTRIES_COUNT))
         {
             throw std::runtime_error(sbe_strerror(errno));
         }
 
-        GWD(testMessage1_entries_next)(&entries);
-        GWD(testMessage1_entries_put_tagGroup1)(&entries, TAG_GROUP_1_IDX_0);
-        GWD(testMessage1_entries_set_tagGroup2)(&entries, TAG_GROUP_2_IDX_0);
+        GWD(TestMessage1_Entries_next)(&entries);
+        GWD(TestMessage1_Entries_put_TagGroup1)(&entries, TAG_GROUP_1_IDX_0);
+        GWD(TestMessage1_Entries_set_TagGroup2)(&entries, TAG_GROUP_2_IDX_0);
 
-        GWD(testMessage1_entries_put_varDataField)(&entries, VAR_DATA_FIELD_IDX_0, VAR_DATA_FIELD_IDX_0_LENGTH);
+        GWD(TestMessage1_Entries_put_varDataField)(&entries, VAR_DATA_FIELD_IDX_0, VAR_DATA_FIELD_IDX_0_LENGTH);
 
-        GWD(testMessage1_entries_next)(&entries);
-        GWD(testMessage1_entries_put_tagGroup1)(&entries, TAG_GROUP_1_IDX_1);
-        GWD(testMessage1_entries_set_tagGroup2)(&entries, TAG_GROUP_2_IDX_1);
+        GWD(TestMessage1_Entries_next)(&entries);
+        GWD(TestMessage1_Entries_put_TagGroup1)(&entries, TAG_GROUP_1_IDX_1);
+        GWD(TestMessage1_Entries_set_TagGroup2)(&entries, TAG_GROUP_2_IDX_1);
 
-        GWD(testMessage1_entries_put_varDataField)(&entries, VAR_DATA_FIELD_IDX_1, VAR_DATA_FIELD_IDX_1_LENGTH);
+        GWD(TestMessage1_Entries_put_varDataField)(&entries, VAR_DATA_FIELD_IDX_1, VAR_DATA_FIELD_IDX_1_LENGTH);
 
 
-        return GWD(testMessage1_encoded_length)(&m_msg1);
+        return GWD(TestMessage1_encoded_length)(&m_msg1);
     }
 
     std::uint64_t encodeTestMessage2(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
     {
-        if (!GWD(testMessage2_wrap_for_encode)(&m_msg2, buffer, offset, bufferLength))
+        if (!GWD(TestMessage2_wrap_for_encode)(&m_msg2, buffer, offset, bufferLength))
         {
             throw std::runtime_error(sbe_strerror(errno));
         }
 
-        GWD(testMessage2_set_tag1)(&m_msg2, TAG_1);
+        GWD(TestMessage2_set_Tag1)(&m_msg2, TAG_1);
 
-        GWD(testMessage2_entries) entries;
-        if (!GWD(testMessage2_entries_set_count)(&m_msg2, &entries, ENTRIES_COUNT))
+        GWD(TestMessage2_Entries) entries;
+        if (!GWD(TestMessage2_Entries_set_count)(&m_msg2, &entries, ENTRIES_COUNT))
         {
             throw std::runtime_error(sbe_strerror(errno));
         }
 
-        GWD(testMessage2_entries_next)(&entries);
-        GWD(testMessage2_entries_put_tagGroup1)(&entries, TAG_GROUP_1_IDX_0);
-        GWD(testMessage2_entries_set_tagGroup2)(&entries, TAG_GROUP_2_IDX_0);
+        GWD(TestMessage2_Entries_next)(&entries);
+        GWD(TestMessage2_Entries_put_TagGroup1)(&entries, TAG_GROUP_1_IDX_0);
+        GWD(TestMessage2_Entries_set_TagGroup2)(&entries, TAG_GROUP_2_IDX_0);
 
-        GWD(testMessage2_entries_put_varDataField1)(&entries, VAR_DATA_FIELD_1_IDX_0, VAR_DATA_FIELD_1_IDX_0_LENGTH);
-        GWD(testMessage2_entries_put_varDataField2)(&entries, VAR_DATA_FIELD_2_IDX_0, VAR_DATA_FIELD_2_IDX_0_LENGTH);
+        GWD(TestMessage2_Entries_put_varDataField1)(&entries, VAR_DATA_FIELD_1_IDX_0, VAR_DATA_FIELD_1_IDX_0_LENGTH);
+        GWD(TestMessage2_Entries_put_varDataField2)(&entries, VAR_DATA_FIELD_2_IDX_0, VAR_DATA_FIELD_2_IDX_0_LENGTH);
 
-        GWD(testMessage2_entries_next)(&entries);
-        GWD(testMessage2_entries_put_tagGroup1)(&entries, TAG_GROUP_1_IDX_1);
-        GWD(testMessage2_entries_set_tagGroup2)(&entries, TAG_GROUP_2_IDX_1);
+        GWD(TestMessage2_Entries_next)(&entries);
+        GWD(TestMessage2_Entries_put_TagGroup1)(&entries, TAG_GROUP_1_IDX_1);
+        GWD(TestMessage2_Entries_set_TagGroup2)(&entries, TAG_GROUP_2_IDX_1);
 
-        GWD(testMessage2_entries_put_varDataField1)(&entries, VAR_DATA_FIELD_1_IDX_1, VAR_DATA_FIELD_1_IDX_1_LENGTH);
-        GWD(testMessage2_entries_put_varDataField2)(&entries, VAR_DATA_FIELD_2_IDX_1, VAR_DATA_FIELD_2_IDX_1_LENGTH);
+        GWD(TestMessage2_Entries_put_varDataField1)(&entries, VAR_DATA_FIELD_1_IDX_1, VAR_DATA_FIELD_1_IDX_1_LENGTH);
+        GWD(TestMessage2_Entries_put_varDataField2)(&entries, VAR_DATA_FIELD_2_IDX_1, VAR_DATA_FIELD_2_IDX_1_LENGTH);
 
-        return GWD(testMessage2_encoded_length)(&m_msg2);
+        return GWD(TestMessage2_encoded_length)(&m_msg2);
     }
 
     std::uint64_t encodeTestMessage3(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
     {
-        if (!GWD(testMessage3_wrap_for_encode)(&m_msg3, buffer, offset, bufferLength))
+        if (!GWD(TestMessage3_wrap_for_encode)(&m_msg3, buffer, offset, bufferLength))
         {
             throw std::runtime_error(sbe_strerror(errno));
         }
 
-        GWD(testMessage3_set_tag1)(&m_msg3, TAG_1);
+        GWD(TestMessage3_set_Tag1)(&m_msg3, TAG_1);
 
-        GWD(testMessage3_entries) entries;
-        if (!GWD(testMessage3_entries_set_count)(&m_msg3, &entries, ENTRIES_COUNT))
+        GWD(TestMessage3_Entries) entries;
+        if (!GWD(TestMessage3_Entries_set_count)(&m_msg3, &entries, ENTRIES_COUNT))
         {
             throw std::runtime_error(sbe_strerror(errno));
         }
 
-        GWD(testMessage3_entries_next)(&entries);
-        GWD(testMessage3_entries_put_tagGroup1)(&entries, TAG_GROUP_1_IDX_0);
+        GWD(TestMessage3_Entries_next)(&entries);
+        GWD(TestMessage3_Entries_put_TagGroup1)(&entries, TAG_GROUP_1_IDX_0);
 
-        GWD(testMessage3_entries_nestedEntries) nestedEntries0;
-        if (!GWD(testMessage3_entries_nestedEntries_set_count)(&entries, &nestedEntries0, NESTED_ENTRIES_COUNT))
+        GWD(TestMessage3_Entries_NestedEntries) nestedEntries0;
+        if (!GWD(TestMessage3_Entries_NestedEntries_set_count)(&entries, &nestedEntries0, NESTED_ENTRIES_COUNT))
         {
             throw std::runtime_error(sbe_strerror(errno));
         }
-        GWD(testMessage3_entries_nestedEntries_next)(&nestedEntries0);
-        GWD(testMessage3_entries_nestedEntries_set_tagGroup2)(&nestedEntries0, TAG_GROUP_2_IDX_0);
+        GWD(TestMessage3_Entries_NestedEntries_next)(&nestedEntries0);
+        GWD(TestMessage3_Entries_NestedEntries_set_TagGroup2)(&nestedEntries0, TAG_GROUP_2_IDX_0);
 
-        GWD(testMessage3_entries_nestedEntries_put_varDataFieldNested)(&nestedEntries0, VAR_DATA_FIELD_NESTED_IDX_0, VAR_DATA_FIELD_NESTED_IDX_0_LENGTH);
+        GWD(TestMessage3_Entries_NestedEntries_put_varDataFieldNested)(&nestedEntries0, VAR_DATA_FIELD_NESTED_IDX_0, VAR_DATA_FIELD_NESTED_IDX_0_LENGTH);
 
-        GWD(testMessage3_entries_nestedEntries_next)(&nestedEntries0);
-        GWD(testMessage3_entries_nestedEntries_set_tagGroup2)(&nestedEntries0, TAG_GROUP_2_IDX_1);
+        GWD(TestMessage3_Entries_NestedEntries_next)(&nestedEntries0);
+        GWD(TestMessage3_Entries_NestedEntries_set_TagGroup2)(&nestedEntries0, TAG_GROUP_2_IDX_1);
 
-        GWD(testMessage3_entries_nestedEntries_put_varDataFieldNested)(&nestedEntries0, VAR_DATA_FIELD_NESTED_IDX_1, VAR_DATA_FIELD_NESTED_IDX_1_LENGTH);
+        GWD(TestMessage3_Entries_NestedEntries_put_varDataFieldNested)(&nestedEntries0, VAR_DATA_FIELD_NESTED_IDX_1, VAR_DATA_FIELD_NESTED_IDX_1_LENGTH);
 
-        GWD(testMessage3_entries_nestedEntries_next)(&nestedEntries0);
-        GWD(testMessage3_entries_nestedEntries_set_tagGroup2)(&nestedEntries0, TAG_GROUP_2_IDX_2);
+        GWD(TestMessage3_Entries_NestedEntries_next)(&nestedEntries0);
+        GWD(TestMessage3_Entries_NestedEntries_set_TagGroup2)(&nestedEntries0, TAG_GROUP_2_IDX_2);
 
-        GWD(testMessage3_entries_nestedEntries_put_varDataFieldNested)(&nestedEntries0, VAR_DATA_FIELD_NESTED_IDX_2, VAR_DATA_FIELD_NESTED_IDX_2_LENGTH);
+        GWD(TestMessage3_Entries_NestedEntries_put_varDataFieldNested)(&nestedEntries0, VAR_DATA_FIELD_NESTED_IDX_2, VAR_DATA_FIELD_NESTED_IDX_2_LENGTH);
 
-        GWD(testMessage3_entries_put_varDataField)(&entries, VAR_DATA_FIELD_IDX_0, VAR_DATA_FIELD_IDX_0_LENGTH);
+        GWD(TestMessage3_Entries_put_varDataField)(&entries, VAR_DATA_FIELD_IDX_0, VAR_DATA_FIELD_IDX_0_LENGTH);
 
-        GWD(testMessage3_entries_next)(&entries);
-        GWD(testMessage3_entries_put_tagGroup1)(&entries, TAG_GROUP_1_IDX_1);
+        GWD(TestMessage3_Entries_next)(&entries);
+        GWD(TestMessage3_Entries_put_TagGroup1)(&entries, TAG_GROUP_1_IDX_1);
 
-        GWD(testMessage3_entries_nestedEntries) nestedEntries1;
-        if (!GWD(testMessage3_entries_nestedEntries_set_count)(&entries, &nestedEntries1, NESTED_ENTRIES_COUNT))
+        GWD(TestMessage3_Entries_NestedEntries) nestedEntries1;
+        if (!GWD(TestMessage3_Entries_NestedEntries_set_count)(&entries, &nestedEntries1, NESTED_ENTRIES_COUNT))
         {
             throw std::runtime_error(sbe_strerror(errno));
         }
-        GWD(testMessage3_entries_nestedEntries_next)(&nestedEntries1);
-        GWD(testMessage3_entries_nestedEntries_set_tagGroup2)(&nestedEntries1, TAG_GROUP_2_IDX_3);
+        GWD(TestMessage3_Entries_NestedEntries_next)(&nestedEntries1);
+        GWD(TestMessage3_Entries_NestedEntries_set_TagGroup2)(&nestedEntries1, TAG_GROUP_2_IDX_3);
 
-        GWD(testMessage3_entries_nestedEntries_put_varDataFieldNested)(&nestedEntries1, VAR_DATA_FIELD_NESTED_IDX_3, VAR_DATA_FIELD_NESTED_IDX_3_LENGTH);
+        GWD(TestMessage3_Entries_NestedEntries_put_varDataFieldNested)(&nestedEntries1, VAR_DATA_FIELD_NESTED_IDX_3, VAR_DATA_FIELD_NESTED_IDX_3_LENGTH);
 
-        GWD(testMessage3_entries_nestedEntries_next)(&nestedEntries1);
-        GWD(testMessage3_entries_nestedEntries_set_tagGroup2)(&nestedEntries1, TAG_GROUP_2_IDX_4);
+        GWD(TestMessage3_Entries_NestedEntries_next)(&nestedEntries1);
+        GWD(TestMessage3_Entries_NestedEntries_set_TagGroup2)(&nestedEntries1, TAG_GROUP_2_IDX_4);
 
 
-        GWD(testMessage3_entries_nestedEntries_put_varDataFieldNested)(&nestedEntries1, VAR_DATA_FIELD_NESTED_IDX_4, VAR_DATA_FIELD_NESTED_IDX_4_LENGTH);
+        GWD(TestMessage3_Entries_NestedEntries_put_varDataFieldNested)(&nestedEntries1, VAR_DATA_FIELD_NESTED_IDX_4, VAR_DATA_FIELD_NESTED_IDX_4_LENGTH);
 
-        GWD(testMessage3_entries_nestedEntries_next)(&nestedEntries1);
-        GWD(testMessage3_entries_nestedEntries_set_tagGroup2)(&nestedEntries1, TAG_GROUP_2_IDX_5);
+        GWD(TestMessage3_Entries_NestedEntries_next)(&nestedEntries1);
+        GWD(TestMessage3_Entries_NestedEntries_set_TagGroup2)(&nestedEntries1, TAG_GROUP_2_IDX_5);
 
-        GWD(testMessage3_entries_nestedEntries_put_varDataFieldNested)(&nestedEntries1, VAR_DATA_FIELD_NESTED_IDX_5, VAR_DATA_FIELD_NESTED_IDX_5_LENGTH);
+        GWD(TestMessage3_Entries_NestedEntries_put_varDataFieldNested)(&nestedEntries1, VAR_DATA_FIELD_NESTED_IDX_5, VAR_DATA_FIELD_NESTED_IDX_5_LENGTH);
 
-        GWD(testMessage3_entries_put_varDataField)(&entries, VAR_DATA_FIELD_IDX_1, VAR_DATA_FIELD_IDX_1_LENGTH);
+        GWD(TestMessage3_Entries_put_varDataField)(&entries, VAR_DATA_FIELD_IDX_1, VAR_DATA_FIELD_IDX_1_LENGTH);
 
-        return GWD(testMessage3_encoded_length)(&m_msg3);
+        return GWD(TestMessage3_encoded_length)(&m_msg3);
     }
 
     std::uint64_t encodeTestMessage4(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
     {
-        if (!GWD(testMessage4_wrap_for_encode)(&m_msg4, buffer, offset, bufferLength))
+        if (!GWD(TestMessage4_wrap_for_encode)(&m_msg4, buffer, offset, bufferLength))
         {
             throw std::runtime_error(sbe_strerror(errno));
         }
 
-        GWD(testMessage4_set_tag1)(&m_msg4, TAG_1);
+        GWD(TestMessage4_set_Tag1)(&m_msg4, TAG_1);
 
-        GWD(testMessage4_entries) entries;
-        if (!GWD(testMessage4_entries_set_count)(&m_msg4, &entries, ENTRIES_COUNT))
+        GWD(TestMessage4_Entries) entries;
+        if (!GWD(TestMessage4_Entries_set_count)(&m_msg4, &entries, ENTRIES_COUNT))
         {
             throw std::runtime_error(sbe_strerror(errno));
         }
 
-        GWD(testMessage4_entries_next)(&entries);
+        GWD(TestMessage4_Entries_next)(&entries);
 
-        GWD(testMessage4_entries_put_varDataField1)(&entries, VAR_DATA_FIELD_1_IDX_0, VAR_DATA_FIELD_1_IDX_0_LENGTH);
-        GWD(testMessage4_entries_put_varDataField2)(&entries, VAR_DATA_FIELD_2_IDX_0, VAR_DATA_FIELD_2_IDX_0_LENGTH);
+        GWD(TestMessage4_Entries_put_varDataField1)(&entries, VAR_DATA_FIELD_1_IDX_0, VAR_DATA_FIELD_1_IDX_0_LENGTH);
+        GWD(TestMessage4_Entries_put_varDataField2)(&entries, VAR_DATA_FIELD_2_IDX_0, VAR_DATA_FIELD_2_IDX_0_LENGTH);
 
-        GWD(testMessage4_entries_next)(&entries);
+        GWD(TestMessage4_Entries_next)(&entries);
 
-        GWD(testMessage4_entries_put_varDataField1)(&entries, VAR_DATA_FIELD_1_IDX_1, VAR_DATA_FIELD_1_IDX_1_LENGTH);
-        GWD(testMessage4_entries_put_varDataField2)(&entries, VAR_DATA_FIELD_2_IDX_1, VAR_DATA_FIELD_2_IDX_1_LENGTH);
+        GWD(TestMessage4_Entries_put_varDataField1)(&entries, VAR_DATA_FIELD_1_IDX_1, VAR_DATA_FIELD_1_IDX_1_LENGTH);
+        GWD(TestMessage4_Entries_put_varDataField2)(&entries, VAR_DATA_FIELD_2_IDX_1, VAR_DATA_FIELD_2_IDX_1_LENGTH);
 
-        return GWD(testMessage4_encoded_length)(&m_msg4);
+        return GWD(TestMessage4_encoded_length)(&m_msg4);
     }
 
-    GWD(testMessage1) m_msg1;
-    GWD(testMessage2) m_msg2;
-    GWD(testMessage3) m_msg3;
-    GWD(testMessage4) m_msg4;
+    GWD(TestMessage1) m_msg1;
+    GWD(TestMessage2) m_msg2;
+    GWD(TestMessage3) m_msg3;
+    GWD(TestMessage4) m_msg4;
 };
 
 TEST_F(GroupWithDataTest, shouldBeAbleToEncodeTestMessage1Correctly)
@@ -256,7 +256,7 @@ TEST_F(GroupWithDataTest, shouldBeAbleToEncodeTestMessage1Correctly)
 
     std::uint64_t offset = 0;
     EXPECT_EQ(*(std::uint32_t *)(bp + offset), TAG_1);
-    EXPECT_EQ(GWD(testMessage1_sbe_block_length)(), 16);
+    EXPECT_EQ(GWD(TestMessage1_sbe_block_length)(), 16);
     offset += 16;  // root blockLength of 16
 
     // entries
@@ -293,40 +293,40 @@ TEST_F(GroupWithDataTest, shouldBeAbleToEncodeAndDecodeTestMessage1Correctly)
 
     EXPECT_EQ(sz, expectedTestMessage1Size);
 
-    GWD(testMessage1) msg1Decoder;
-    if (!GWD(testMessage1_reset)(&msg1Decoder, buffer, 0, sizeof(buffer), GWD(testMessage1_sbe_block_length)(), GWD(testMessage1_sbe_schema_version)()))
+    GWD(TestMessage1) msg1Decoder;
+    if (!GWD(TestMessage1_reset)(&msg1Decoder, buffer, 0, sizeof(buffer), GWD(TestMessage1_sbe_block_length)(), GWD(TestMessage1_sbe_schema_version)()))
     {
         throw std::runtime_error(sbe_strerror(errno));
     }
 
-    EXPECT_EQ(GWD(testMessage1_tag1)(&msg1Decoder), TAG_1);
+    EXPECT_EQ(GWD(TestMessage1_Tag1)(&msg1Decoder), TAG_1);
 
-    GWD(testMessage1_entries) entries;
-    if (!GWD(testMessage1_get_entries)(&msg1Decoder, &entries))
+    GWD(TestMessage1_Entries) entries;
+    if (!GWD(TestMessage1_get_Entries)(&msg1Decoder, &entries))
     {
         throw std::runtime_error(sbe_strerror(errno));
     }
-    EXPECT_EQ(GWD(testMessage1_entries_count)(&entries), ENTRIES_COUNT);
+    EXPECT_EQ(GWD(TestMessage1_Entries_count)(&entries), ENTRIES_COUNT);
 
-    ASSERT_TRUE(GWD(testMessage1_entries_has_next)(&entries));
-    GWD(testMessage1_entries_next)(&entries);
+    ASSERT_TRUE(GWD(TestMessage1_Entries_has_next)(&entries));
+    GWD(TestMessage1_Entries_next)(&entries);
 
-    EXPECT_EQ(GWD(testMessage1_entries_tagGroup1_length)(), TAG_GROUP_1_IDX_0_LENGTH);
-    EXPECT_EQ(std::string(GWD(testMessage1_entries_tagGroup1_buffer)(&entries), GWD(testMessage1_entries_tagGroup1_length)()), std::string(TAG_GROUP_1_IDX_0, TAG_GROUP_1_IDX_0_LENGTH));
-    EXPECT_EQ(GWD(testMessage1_entries_tagGroup2)(&entries), TAG_GROUP_2_IDX_0);
-    EXPECT_EQ(GWD(testMessage1_entries_varDataField_length)(&entries), VAR_DATA_FIELD_IDX_0_LENGTH);
-    EXPECT_EQ(std::string(GWD(testMessage1_entries_varDataField)(&entries), VAR_DATA_FIELD_IDX_0_LENGTH), VAR_DATA_FIELD_IDX_0);
+    EXPECT_EQ(GWD(TestMessage1_Entries_TagGroup1_length)(), TAG_GROUP_1_IDX_0_LENGTH);
+    EXPECT_EQ(std::string(GWD(TestMessage1_Entries_TagGroup1_buffer)(&entries), GWD(TestMessage1_Entries_TagGroup1_length)()), std::string(TAG_GROUP_1_IDX_0, TAG_GROUP_1_IDX_0_LENGTH));
+    EXPECT_EQ(GWD(TestMessage1_Entries_TagGroup2)(&entries), TAG_GROUP_2_IDX_0);
+    EXPECT_EQ(GWD(TestMessage1_Entries_varDataField_length)(&entries), VAR_DATA_FIELD_IDX_0_LENGTH);
+    EXPECT_EQ(std::string(GWD(TestMessage1_Entries_varDataField)(&entries), VAR_DATA_FIELD_IDX_0_LENGTH), VAR_DATA_FIELD_IDX_0);
 
-    ASSERT_TRUE(GWD(testMessage1_entries_has_next)(&entries));
-    GWD(testMessage1_entries_next)(&entries);
+    ASSERT_TRUE(GWD(TestMessage1_Entries_has_next)(&entries));
+    GWD(TestMessage1_Entries_next)(&entries);
 
-    EXPECT_EQ(GWD(testMessage1_entries_tagGroup1_length)(), TAG_GROUP_1_IDX_1_LENGTH);
-    EXPECT_EQ(std::string(GWD(testMessage1_entries_tagGroup1_buffer)(&entries), GWD(testMessage1_entries_tagGroup1_length)()), std::string(TAG_GROUP_1_IDX_1, TAG_GROUP_1_IDX_1_LENGTH));
-    EXPECT_EQ(GWD(testMessage1_entries_tagGroup2)(&entries), TAG_GROUP_2_IDX_1);
-    EXPECT_EQ(GWD(testMessage1_entries_varDataField_length)(&entries), VAR_DATA_FIELD_IDX_1_LENGTH);
-    EXPECT_EQ(std::string(GWD(testMessage1_entries_varDataField)(&entries), VAR_DATA_FIELD_IDX_1_LENGTH), VAR_DATA_FIELD_IDX_1);
+    EXPECT_EQ(GWD(TestMessage1_Entries_TagGroup1_length)(), TAG_GROUP_1_IDX_1_LENGTH);
+    EXPECT_EQ(std::string(GWD(TestMessage1_Entries_TagGroup1_buffer)(&entries), GWD(TestMessage1_Entries_TagGroup1_length)()), std::string(TAG_GROUP_1_IDX_1, TAG_GROUP_1_IDX_1_LENGTH));
+    EXPECT_EQ(GWD(TestMessage1_Entries_TagGroup2)(&entries), TAG_GROUP_2_IDX_1);
+    EXPECT_EQ(GWD(TestMessage1_Entries_varDataField_length)(&entries), VAR_DATA_FIELD_IDX_1_LENGTH);
+    EXPECT_EQ(std::string(GWD(TestMessage1_Entries_varDataField)(&entries), VAR_DATA_FIELD_IDX_1_LENGTH), VAR_DATA_FIELD_IDX_1);
 
-    EXPECT_EQ(GWD(testMessage1_encoded_length)(&msg1Decoder), expectedTestMessage1Size);
+    EXPECT_EQ(GWD(TestMessage1_encoded_length)(&msg1Decoder), expectedTestMessage1Size);
 }
 
 TEST_F(GroupWithDataTest, shouldBeAbleToEncodeTestMessage2Correctly)
@@ -337,7 +337,7 @@ TEST_F(GroupWithDataTest, shouldBeAbleToEncodeTestMessage2Correctly)
 
     std::uint64_t offset = 0;
     EXPECT_EQ(*(std::uint32_t *)(bp + offset), TAG_1);
-    EXPECT_EQ(GWD(testMessage2_sbe_block_length)(), 16);
+    EXPECT_EQ(GWD(TestMessage2_sbe_block_length)(), 16);
     offset += 16;  // root blockLength of 16
 
     // entries
@@ -382,46 +382,46 @@ TEST_F(GroupWithDataTest, shouldBeAbleToEncodeAndDecodeTestMessage2Correctly)
 
     EXPECT_EQ(sz, expectedTestMessage2Size);
 
-    GWD(testMessage2) msg2Decoder;
-    if (!GWD(testMessage2_reset)(&msg2Decoder, buffer, 0, sizeof(buffer), GWD(testMessage2_sbe_block_length)(), GWD(testMessage2_sbe_schema_version)()))
+    GWD(TestMessage2) msg2Decoder;
+    if (!GWD(TestMessage2_reset)(&msg2Decoder, buffer, 0, sizeof(buffer), GWD(TestMessage2_sbe_block_length)(), GWD(TestMessage2_sbe_schema_version)()))
     {
         throw std::runtime_error(sbe_strerror(errno));
     }
 
-    EXPECT_EQ(GWD(testMessage2_tag1)(&msg2Decoder), TAG_1);
+    EXPECT_EQ(GWD(TestMessage2_Tag1)(&msg2Decoder), TAG_1);
 
-    GWD(testMessage2_entries) entries;
-    if (!GWD(testMessage2_get_entries)(&msg2Decoder, &entries))
+    GWD(TestMessage2_Entries) entries;
+    if (!GWD(TestMessage2_get_Entries)(&msg2Decoder, &entries))
     {
         throw std::runtime_error(sbe_strerror(errno));
     }
-    EXPECT_EQ(GWD(testMessage2_entries_count)(&entries), ENTRIES_COUNT);
+    EXPECT_EQ(GWD(TestMessage2_Entries_count)(&entries), ENTRIES_COUNT);
 
-    ASSERT_TRUE(GWD(testMessage2_entries_has_next)(&entries));
-    GWD(testMessage2_entries_next)(&entries);
+    ASSERT_TRUE(GWD(TestMessage2_Entries_has_next)(&entries));
+    GWD(TestMessage2_Entries_next)(&entries);
 
-    EXPECT_EQ(GWD(testMessage2_entries_tagGroup1_length)(), TAG_GROUP_1_IDX_0_LENGTH);
-    EXPECT_EQ(std::string(GWD(testMessage2_entries_tagGroup1_buffer)(&entries), GWD(testMessage2_entries_tagGroup1_length)()), std::string(TAG_GROUP_1_IDX_0, TAG_GROUP_1_IDX_0_LENGTH));
-    EXPECT_EQ(GWD(testMessage2_entries_tagGroup2)(&entries), TAG_GROUP_2_IDX_0);
-    EXPECT_EQ(GWD(testMessage2_entries_varDataField1_length)(&entries), VAR_DATA_FIELD_1_IDX_0_LENGTH);
-    EXPECT_EQ(std::string(GWD(testMessage2_entries_varDataField1)(&entries), VAR_DATA_FIELD_1_IDX_0_LENGTH), VAR_DATA_FIELD_1_IDX_0);
-    EXPECT_EQ(GWD(testMessage2_entries_varDataField2_length)(&entries), VAR_DATA_FIELD_2_IDX_0_LENGTH);
-    EXPECT_EQ(std::string(GWD(testMessage2_entries_varDataField2)(&entries), VAR_DATA_FIELD_2_IDX_0_LENGTH), VAR_DATA_FIELD_2_IDX_0);
+    EXPECT_EQ(GWD(TestMessage2_Entries_TagGroup1_length)(), TAG_GROUP_1_IDX_0_LENGTH);
+    EXPECT_EQ(std::string(GWD(TestMessage2_Entries_TagGroup1_buffer)(&entries), GWD(TestMessage2_Entries_TagGroup1_length)()), std::string(TAG_GROUP_1_IDX_0, TAG_GROUP_1_IDX_0_LENGTH));
+    EXPECT_EQ(GWD(TestMessage2_Entries_TagGroup2)(&entries), TAG_GROUP_2_IDX_0);
+    EXPECT_EQ(GWD(TestMessage2_Entries_varDataField1_length)(&entries), VAR_DATA_FIELD_1_IDX_0_LENGTH);
+    EXPECT_EQ(std::string(GWD(TestMessage2_Entries_varDataField1)(&entries), VAR_DATA_FIELD_1_IDX_0_LENGTH), VAR_DATA_FIELD_1_IDX_0);
+    EXPECT_EQ(GWD(TestMessage2_Entries_varDataField2_length)(&entries), VAR_DATA_FIELD_2_IDX_0_LENGTH);
+    EXPECT_EQ(std::string(GWD(TestMessage2_Entries_varDataField2)(&entries), VAR_DATA_FIELD_2_IDX_0_LENGTH), VAR_DATA_FIELD_2_IDX_0);
 
-    ASSERT_TRUE(GWD(testMessage2_entries_has_next)(&entries));
-    GWD(testMessage2_entries_next)(&entries);
+    ASSERT_TRUE(GWD(TestMessage2_Entries_has_next)(&entries));
+    GWD(TestMessage2_Entries_next)(&entries);
 
-    EXPECT_EQ(GWD(testMessage2_entries_tagGroup1_length)(), TAG_GROUP_1_IDX_1_LENGTH);
-    EXPECT_EQ(std::string(GWD(testMessage2_entries_tagGroup1_buffer)(&entries), GWD(testMessage2_entries_tagGroup1_length)()), std::string(TAG_GROUP_1_IDX_1, TAG_GROUP_1_IDX_1_LENGTH));
+    EXPECT_EQ(GWD(TestMessage2_Entries_TagGroup1_length)(), TAG_GROUP_1_IDX_1_LENGTH);
+    EXPECT_EQ(std::string(GWD(TestMessage2_Entries_TagGroup1_buffer)(&entries), GWD(TestMessage2_Entries_TagGroup1_length)()), std::string(TAG_GROUP_1_IDX_1, TAG_GROUP_1_IDX_1_LENGTH));
 
 
-    EXPECT_EQ(GWD(testMessage2_entries_tagGroup2)(&entries), TAG_GROUP_2_IDX_1);
-    EXPECT_EQ(GWD(testMessage2_entries_varDataField1_length)(&entries), VAR_DATA_FIELD_1_IDX_1_LENGTH);
-    EXPECT_EQ(std::string(GWD(testMessage2_entries_varDataField1)(&entries), VAR_DATA_FIELD_1_IDX_1_LENGTH), VAR_DATA_FIELD_1_IDX_1);
-    EXPECT_EQ(GWD(testMessage2_entries_varDataField2_length)(&entries), VAR_DATA_FIELD_2_IDX_1_LENGTH);
-    EXPECT_EQ(std::string(GWD(testMessage2_entries_varDataField2)(&entries), VAR_DATA_FIELD_2_IDX_1_LENGTH), VAR_DATA_FIELD_2_IDX_1);
+    EXPECT_EQ(GWD(TestMessage2_Entries_TagGroup2)(&entries), TAG_GROUP_2_IDX_1);
+    EXPECT_EQ(GWD(TestMessage2_Entries_varDataField1_length)(&entries), VAR_DATA_FIELD_1_IDX_1_LENGTH);
+    EXPECT_EQ(std::string(GWD(TestMessage2_Entries_varDataField1)(&entries), VAR_DATA_FIELD_1_IDX_1_LENGTH), VAR_DATA_FIELD_1_IDX_1);
+    EXPECT_EQ(GWD(TestMessage2_Entries_varDataField2_length)(&entries), VAR_DATA_FIELD_2_IDX_1_LENGTH);
+    EXPECT_EQ(std::string(GWD(TestMessage2_Entries_varDataField2)(&entries), VAR_DATA_FIELD_2_IDX_1_LENGTH), VAR_DATA_FIELD_2_IDX_1);
 
-    EXPECT_EQ(GWD(testMessage2_encoded_length)(&msg2Decoder), expectedTestMessage2Size);
+    EXPECT_EQ(GWD(TestMessage2_encoded_length)(&msg2Decoder), expectedTestMessage2Size);
 }
 
 TEST_F(GroupWithDataTest, shouldBeAbleToEncodeTestMessage3Correctly)
@@ -432,7 +432,7 @@ TEST_F(GroupWithDataTest, shouldBeAbleToEncodeTestMessage3Correctly)
 
     std::uint64_t offset = 0;
     EXPECT_EQ(*(std::uint32_t *)(bp + offset), TAG_1);
-    EXPECT_EQ(GWD(testMessage1_sbe_block_length)(), 16);
+    EXPECT_EQ(GWD(TestMessage1_sbe_block_length)(), 16);
     offset += 16;  // root blockLength of 16
 
     // entries
@@ -521,93 +521,93 @@ TEST_F(GroupWithDataTest, shouldBeAbleToEncodeAndDecodeTestMessage3Correctly)
 
     EXPECT_EQ(sz, expectedTestMessage3Size);
 
-    GWD(testMessage3) msg3Decoder;
-    if (!GWD(testMessage3_reset)(&msg3Decoder, buffer, 0, sizeof(buffer), GWD(testMessage3_sbe_block_length)(), GWD(testMessage3_sbe_schema_version)()))
+    GWD(TestMessage3) msg3Decoder;
+    if (!GWD(TestMessage3_reset)(&msg3Decoder, buffer, 0, sizeof(buffer), GWD(TestMessage3_sbe_block_length)(), GWD(TestMessage3_sbe_schema_version)()))
     {
         throw std::runtime_error(sbe_strerror(errno));
     }
 
-    EXPECT_EQ(GWD(testMessage3_tag1)(&msg3Decoder), TAG_1);
+    EXPECT_EQ(GWD(TestMessage3_Tag1)(&msg3Decoder), TAG_1);
 
-    GWD(testMessage3_entries) entries;
-    if (!GWD(testMessage3_get_entries)(&msg3Decoder, &entries))
+    GWD(TestMessage3_Entries) entries;
+    if (!GWD(TestMessage3_get_Entries)(&msg3Decoder, &entries))
     {
         throw std::runtime_error(sbe_strerror(errno));
     }
-    EXPECT_EQ(GWD(testMessage3_entries_count)(&entries), ENTRIES_COUNT);
+    EXPECT_EQ(GWD(TestMessage3_Entries_count)(&entries), ENTRIES_COUNT);
 
-    ASSERT_TRUE(GWD(testMessage3_entries_has_next)(&entries));
-    GWD(testMessage3_entries_next)(&entries);
+    ASSERT_TRUE(GWD(TestMessage3_Entries_has_next)(&entries));
+    GWD(TestMessage3_Entries_next)(&entries);
 
-    EXPECT_EQ(GWD(testMessage3_entries_tagGroup1_length)(), TAG_GROUP_1_IDX_0_LENGTH);
-    EXPECT_EQ(std::string(GWD(testMessage3_entries_tagGroup1_buffer)(&entries), GWD(testMessage3_entries_tagGroup1_length)()), std::string(TAG_GROUP_1_IDX_0, TAG_GROUP_1_IDX_0_LENGTH));
+    EXPECT_EQ(GWD(TestMessage3_Entries_TagGroup1_length)(), TAG_GROUP_1_IDX_0_LENGTH);
+    EXPECT_EQ(std::string(GWD(TestMessage3_Entries_TagGroup1_buffer)(&entries), GWD(TestMessage3_Entries_TagGroup1_length)()), std::string(TAG_GROUP_1_IDX_0, TAG_GROUP_1_IDX_0_LENGTH));
 
-    GWD(testMessage3_entries_nestedEntries) nestedEntries0;
-    if (!GWD(testMessage3_entries_get_nestedEntries)(&entries, &nestedEntries0))
+    GWD(TestMessage3_Entries_NestedEntries) nestedEntries0;
+    if (!GWD(TestMessage3_Entries_get_NestedEntries)(&entries, &nestedEntries0))
     {
         throw std::runtime_error(sbe_strerror(errno));
     }
-    EXPECT_EQ(GWD(testMessage3_entries_nestedEntries_count)(&nestedEntries0), NESTED_ENTRIES_COUNT);
+    EXPECT_EQ(GWD(TestMessage3_Entries_NestedEntries_count)(&nestedEntries0), NESTED_ENTRIES_COUNT);
 
-    ASSERT_TRUE(GWD(testMessage3_entries_nestedEntries_has_next)(&nestedEntries0));
-    GWD(testMessage3_entries_nestedEntries_next)(&nestedEntries0);
+    ASSERT_TRUE(GWD(TestMessage3_Entries_NestedEntries_has_next)(&nestedEntries0));
+    GWD(TestMessage3_Entries_NestedEntries_next)(&nestedEntries0);
 
-    EXPECT_EQ(GWD(testMessage3_entries_nestedEntries_tagGroup2)(&nestedEntries0), TAG_GROUP_2_IDX_0);
-    EXPECT_EQ(GWD(testMessage3_entries_nestedEntries_varDataFieldNested_length)(&nestedEntries0), VAR_DATA_FIELD_NESTED_IDX_0_LENGTH);
-    EXPECT_EQ(std::string(GWD(testMessage3_entries_nestedEntries_varDataFieldNested)(&nestedEntries0), VAR_DATA_FIELD_NESTED_IDX_0_LENGTH), VAR_DATA_FIELD_NESTED_IDX_0);
+    EXPECT_EQ(GWD(TestMessage3_Entries_NestedEntries_TagGroup2)(&nestedEntries0), TAG_GROUP_2_IDX_0);
+    EXPECT_EQ(GWD(TestMessage3_Entries_NestedEntries_varDataFieldNested_length)(&nestedEntries0), VAR_DATA_FIELD_NESTED_IDX_0_LENGTH);
+    EXPECT_EQ(std::string(GWD(TestMessage3_Entries_NestedEntries_varDataFieldNested)(&nestedEntries0), VAR_DATA_FIELD_NESTED_IDX_0_LENGTH), VAR_DATA_FIELD_NESTED_IDX_0);
 
-    ASSERT_TRUE(GWD(testMessage3_entries_nestedEntries_has_next)(&nestedEntries0));
-    GWD(testMessage3_entries_nestedEntries_next)(&nestedEntries0);
+    ASSERT_TRUE(GWD(TestMessage3_Entries_NestedEntries_has_next)(&nestedEntries0));
+    GWD(TestMessage3_Entries_NestedEntries_next)(&nestedEntries0);
 
-    EXPECT_EQ(GWD(testMessage3_entries_nestedEntries_tagGroup2)(&nestedEntries0), TAG_GROUP_2_IDX_1);
-    EXPECT_EQ(GWD(testMessage3_entries_nestedEntries_varDataFieldNested_length)(&nestedEntries0), VAR_DATA_FIELD_NESTED_IDX_1_LENGTH);
-    EXPECT_EQ(std::string(GWD(testMessage3_entries_nestedEntries_varDataFieldNested)(&nestedEntries0), VAR_DATA_FIELD_NESTED_IDX_1_LENGTH), VAR_DATA_FIELD_NESTED_IDX_1);
+    EXPECT_EQ(GWD(TestMessage3_Entries_NestedEntries_TagGroup2)(&nestedEntries0), TAG_GROUP_2_IDX_1);
+    EXPECT_EQ(GWD(TestMessage3_Entries_NestedEntries_varDataFieldNested_length)(&nestedEntries0), VAR_DATA_FIELD_NESTED_IDX_1_LENGTH);
+    EXPECT_EQ(std::string(GWD(TestMessage3_Entries_NestedEntries_varDataFieldNested)(&nestedEntries0), VAR_DATA_FIELD_NESTED_IDX_1_LENGTH), VAR_DATA_FIELD_NESTED_IDX_1);
 
-    ASSERT_TRUE(GWD(testMessage3_entries_nestedEntries_has_next)(&nestedEntries0));
-    GWD(testMessage3_entries_nestedEntries_next)(&nestedEntries0);
+    ASSERT_TRUE(GWD(TestMessage3_Entries_NestedEntries_has_next)(&nestedEntries0));
+    GWD(TestMessage3_Entries_NestedEntries_next)(&nestedEntries0);
 
-    EXPECT_EQ(GWD(testMessage3_entries_nestedEntries_tagGroup2)(&nestedEntries0), TAG_GROUP_2_IDX_2);
-    EXPECT_EQ(GWD(testMessage3_entries_nestedEntries_varDataFieldNested_length)(&nestedEntries0), VAR_DATA_FIELD_NESTED_IDX_2_LENGTH);
-    EXPECT_EQ(std::string(GWD(testMessage3_entries_nestedEntries_varDataFieldNested)(&nestedEntries0), VAR_DATA_FIELD_NESTED_IDX_2_LENGTH), VAR_DATA_FIELD_NESTED_IDX_2);
+    EXPECT_EQ(GWD(TestMessage3_Entries_NestedEntries_TagGroup2)(&nestedEntries0), TAG_GROUP_2_IDX_2);
+    EXPECT_EQ(GWD(TestMessage3_Entries_NestedEntries_varDataFieldNested_length)(&nestedEntries0), VAR_DATA_FIELD_NESTED_IDX_2_LENGTH);
+    EXPECT_EQ(std::string(GWD(TestMessage3_Entries_NestedEntries_varDataFieldNested)(&nestedEntries0), VAR_DATA_FIELD_NESTED_IDX_2_LENGTH), VAR_DATA_FIELD_NESTED_IDX_2);
 
-    EXPECT_EQ(GWD(testMessage3_entries_varDataField_length)(&entries), VAR_DATA_FIELD_IDX_0_LENGTH);
-    EXPECT_EQ(std::string(GWD(testMessage3_entries_varDataField)(&entries), VAR_DATA_FIELD_IDX_0_LENGTH), VAR_DATA_FIELD_IDX_0);
+    EXPECT_EQ(GWD(TestMessage3_Entries_varDataField_length)(&entries), VAR_DATA_FIELD_IDX_0_LENGTH);
+    EXPECT_EQ(std::string(GWD(TestMessage3_Entries_varDataField)(&entries), VAR_DATA_FIELD_IDX_0_LENGTH), VAR_DATA_FIELD_IDX_0);
 
-    ASSERT_TRUE(GWD(testMessage3_entries_has_next)(&entries));
-    GWD(testMessage3_entries_next)(&entries);
+    ASSERT_TRUE(GWD(TestMessage3_Entries_has_next)(&entries));
+    GWD(TestMessage3_Entries_next)(&entries);
 
-    GWD(testMessage3_entries_nestedEntries) nestedEntries1;
-    if (!GWD(testMessage3_entries_get_nestedEntries)(&entries, &nestedEntries1))
+    GWD(TestMessage3_Entries_NestedEntries) nestedEntries1;
+    if (!GWD(TestMessage3_Entries_get_NestedEntries)(&entries, &nestedEntries1))
     {
         throw std::runtime_error(sbe_strerror(errno));
     }
-    EXPECT_EQ(GWD(testMessage3_entries_nestedEntries_count)(&nestedEntries1), NESTED_ENTRIES_COUNT);
+    EXPECT_EQ(GWD(TestMessage3_Entries_NestedEntries_count)(&nestedEntries1), NESTED_ENTRIES_COUNT);
 
-    ASSERT_TRUE(GWD(testMessage3_entries_nestedEntries_has_next)(&nestedEntries1));
-    GWD(testMessage3_entries_nestedEntries_next)(&nestedEntries1);
+    ASSERT_TRUE(GWD(TestMessage3_Entries_NestedEntries_has_next)(&nestedEntries1));
+    GWD(TestMessage3_Entries_NestedEntries_next)(&nestedEntries1);
 
-    EXPECT_EQ(GWD(testMessage3_entries_nestedEntries_tagGroup2)(&nestedEntries1), TAG_GROUP_2_IDX_3);
-    EXPECT_EQ(GWD(testMessage3_entries_nestedEntries_varDataFieldNested_length)(&nestedEntries1), VAR_DATA_FIELD_NESTED_IDX_3_LENGTH);
-    EXPECT_EQ(std::string(GWD(testMessage3_entries_nestedEntries_varDataFieldNested)(&nestedEntries1), VAR_DATA_FIELD_NESTED_IDX_3_LENGTH), VAR_DATA_FIELD_NESTED_IDX_3);
+    EXPECT_EQ(GWD(TestMessage3_Entries_NestedEntries_TagGroup2)(&nestedEntries1), TAG_GROUP_2_IDX_3);
+    EXPECT_EQ(GWD(TestMessage3_Entries_NestedEntries_varDataFieldNested_length)(&nestedEntries1), VAR_DATA_FIELD_NESTED_IDX_3_LENGTH);
+    EXPECT_EQ(std::string(GWD(TestMessage3_Entries_NestedEntries_varDataFieldNested)(&nestedEntries1), VAR_DATA_FIELD_NESTED_IDX_3_LENGTH), VAR_DATA_FIELD_NESTED_IDX_3);
 
-    ASSERT_TRUE(GWD(testMessage3_entries_nestedEntries_has_next)(&nestedEntries1));
-    GWD(testMessage3_entries_nestedEntries_next)(&nestedEntries1);
+    ASSERT_TRUE(GWD(TestMessage3_Entries_NestedEntries_has_next)(&nestedEntries1));
+    GWD(TestMessage3_Entries_NestedEntries_next)(&nestedEntries1);
 
-    EXPECT_EQ(GWD(testMessage3_entries_nestedEntries_tagGroup2)(&nestedEntries1), TAG_GROUP_2_IDX_4);
-    EXPECT_EQ(GWD(testMessage3_entries_nestedEntries_varDataFieldNested_length)(&nestedEntries1), VAR_DATA_FIELD_NESTED_IDX_4_LENGTH);
-    EXPECT_EQ(std::string(GWD(testMessage3_entries_nestedEntries_varDataFieldNested)(&nestedEntries1), VAR_DATA_FIELD_NESTED_IDX_4_LENGTH), VAR_DATA_FIELD_NESTED_IDX_4);
+    EXPECT_EQ(GWD(TestMessage3_Entries_NestedEntries_TagGroup2)(&nestedEntries1), TAG_GROUP_2_IDX_4);
+    EXPECT_EQ(GWD(TestMessage3_Entries_NestedEntries_varDataFieldNested_length)(&nestedEntries1), VAR_DATA_FIELD_NESTED_IDX_4_LENGTH);
+    EXPECT_EQ(std::string(GWD(TestMessage3_Entries_NestedEntries_varDataFieldNested)(&nestedEntries1), VAR_DATA_FIELD_NESTED_IDX_4_LENGTH), VAR_DATA_FIELD_NESTED_IDX_4);
 
-    ASSERT_TRUE(GWD(testMessage3_entries_nestedEntries_has_next)(&nestedEntries1));
-    GWD(testMessage3_entries_nestedEntries_next)(&nestedEntries1);
+    ASSERT_TRUE(GWD(TestMessage3_Entries_NestedEntries_has_next)(&nestedEntries1));
+    GWD(TestMessage3_Entries_NestedEntries_next)(&nestedEntries1);
 
-    EXPECT_EQ(GWD(testMessage3_entries_nestedEntries_tagGroup2)(&nestedEntries1), TAG_GROUP_2_IDX_5);
-    EXPECT_EQ(GWD(testMessage3_entries_nestedEntries_varDataFieldNested_length)(&nestedEntries1), VAR_DATA_FIELD_NESTED_IDX_5_LENGTH);
-    EXPECT_EQ(std::string(GWD(testMessage3_entries_nestedEntries_varDataFieldNested)(&nestedEntries1), VAR_DATA_FIELD_NESTED_IDX_5_LENGTH), VAR_DATA_FIELD_NESTED_IDX_5);
+    EXPECT_EQ(GWD(TestMessage3_Entries_NestedEntries_TagGroup2)(&nestedEntries1), TAG_GROUP_2_IDX_5);
+    EXPECT_EQ(GWD(TestMessage3_Entries_NestedEntries_varDataFieldNested_length)(&nestedEntries1), VAR_DATA_FIELD_NESTED_IDX_5_LENGTH);
+    EXPECT_EQ(std::string(GWD(TestMessage3_Entries_NestedEntries_varDataFieldNested)(&nestedEntries1), VAR_DATA_FIELD_NESTED_IDX_5_LENGTH), VAR_DATA_FIELD_NESTED_IDX_5);
 
-    EXPECT_EQ(GWD(testMessage3_entries_varDataField_length)(&entries), VAR_DATA_FIELD_IDX_1_LENGTH);
-    EXPECT_EQ(std::string(GWD(testMessage3_entries_varDataField)(&entries), VAR_DATA_FIELD_IDX_1_LENGTH), VAR_DATA_FIELD_IDX_1);
+    EXPECT_EQ(GWD(TestMessage3_Entries_varDataField_length)(&entries), VAR_DATA_FIELD_IDX_1_LENGTH);
+    EXPECT_EQ(std::string(GWD(TestMessage3_Entries_varDataField)(&entries), VAR_DATA_FIELD_IDX_1_LENGTH), VAR_DATA_FIELD_IDX_1);
 
-    EXPECT_EQ(GWD(testMessage3_encoded_length)(&msg3Decoder), expectedTestMessage3Size);
+    EXPECT_EQ(GWD(TestMessage3_encoded_length)(&msg3Decoder), expectedTestMessage3Size);
 }
 
 TEST_F(GroupWithDataTest, shouldBeAbleToEncodeTestMessage4Correctly)
@@ -618,7 +618,7 @@ TEST_F(GroupWithDataTest, shouldBeAbleToEncodeTestMessage4Correctly)
 
     std::uint64_t offset = 0;
     EXPECT_EQ(*(std::uint32_t *)(bp + offset), TAG_1);
-    EXPECT_EQ(GWD(testMessage4_sbe_block_length)(), 16);
+    EXPECT_EQ(GWD(TestMessage4_sbe_block_length)(), 16);
     offset += 16;  // root blockLength of 16
 
     // entries
@@ -655,36 +655,36 @@ TEST_F(GroupWithDataTest, shouldBeAbleToEncodeAndDecodeTestMessage4Correctly)
 
     EXPECT_EQ(sz, expectedTestMessage4Size);
 
-    GWD(testMessage4) msg4Decoder;
-    if (!GWD(testMessage4_reset)(&msg4Decoder, buffer, 0, sizeof(buffer), GWD(testMessage4_sbe_block_length)(), GWD(testMessage4_sbe_schema_version)()))
+    GWD(TestMessage4) msg4Decoder;
+    if (!GWD(TestMessage4_reset)(&msg4Decoder, buffer, 0, sizeof(buffer), GWD(TestMessage4_sbe_block_length)(), GWD(TestMessage4_sbe_schema_version)()))
     {
         throw std::runtime_error(sbe_strerror(errno));
     }
 
-    EXPECT_EQ(GWD(testMessage4_tag1)(&msg4Decoder), TAG_1);
+    EXPECT_EQ(GWD(TestMessage4_Tag1)(&msg4Decoder), TAG_1);
 
-    GWD(testMessage4_entries) entries;
-    if (!GWD(testMessage4_get_entries)(&msg4Decoder, &entries))
+    GWD(TestMessage4_Entries) entries;
+    if (!GWD(TestMessage4_get_Entries)(&msg4Decoder, &entries))
     {
         throw std::runtime_error(sbe_strerror(errno));
     }
-    EXPECT_EQ(GWD(testMessage4_entries_count)(&entries), ENTRIES_COUNT);
+    EXPECT_EQ(GWD(TestMessage4_Entries_count)(&entries), ENTRIES_COUNT);
 
-    ASSERT_TRUE(GWD(testMessage4_entries_has_next)(&entries));
-    GWD(testMessage4_entries_next)(&entries);
+    ASSERT_TRUE(GWD(TestMessage4_Entries_has_next)(&entries));
+    GWD(TestMessage4_Entries_next)(&entries);
 
-    EXPECT_EQ(GWD(testMessage4_entries_varDataField1_length)(&entries), VAR_DATA_FIELD_1_IDX_0_LENGTH);
-    EXPECT_EQ(std::string(GWD(testMessage4_entries_varDataField1)(&entries), VAR_DATA_FIELD_1_IDX_0_LENGTH), VAR_DATA_FIELD_1_IDX_0);
-    EXPECT_EQ(GWD(testMessage4_entries_varDataField2_length)(&entries), VAR_DATA_FIELD_2_IDX_0_LENGTH);
-    EXPECT_EQ(std::string(GWD(testMessage4_entries_varDataField2)(&entries), VAR_DATA_FIELD_2_IDX_0_LENGTH), VAR_DATA_FIELD_2_IDX_0);
+    EXPECT_EQ(GWD(TestMessage4_Entries_varDataField1_length)(&entries), VAR_DATA_FIELD_1_IDX_0_LENGTH);
+    EXPECT_EQ(std::string(GWD(TestMessage4_Entries_varDataField1)(&entries), VAR_DATA_FIELD_1_IDX_0_LENGTH), VAR_DATA_FIELD_1_IDX_0);
+    EXPECT_EQ(GWD(TestMessage4_Entries_varDataField2_length)(&entries), VAR_DATA_FIELD_2_IDX_0_LENGTH);
+    EXPECT_EQ(std::string(GWD(TestMessage4_Entries_varDataField2)(&entries), VAR_DATA_FIELD_2_IDX_0_LENGTH), VAR_DATA_FIELD_2_IDX_0);
 
-    ASSERT_TRUE(GWD(testMessage4_entries_has_next)(&entries));
-    GWD(testMessage4_entries_next)(&entries);
+    ASSERT_TRUE(GWD(TestMessage4_Entries_has_next)(&entries));
+    GWD(TestMessage4_Entries_next)(&entries);
 
-    EXPECT_EQ(GWD(testMessage4_entries_varDataField1_length)(&entries), VAR_DATA_FIELD_1_IDX_1_LENGTH);
-    EXPECT_EQ(std::string(GWD(testMessage4_entries_varDataField1)(&entries), VAR_DATA_FIELD_1_IDX_1_LENGTH), VAR_DATA_FIELD_1_IDX_1);
-    EXPECT_EQ(GWD(testMessage4_entries_varDataField2_length)(&entries), VAR_DATA_FIELD_2_IDX_1_LENGTH);
-    EXPECT_EQ(std::string(GWD(testMessage4_entries_varDataField2)(&entries), VAR_DATA_FIELD_2_IDX_1_LENGTH), VAR_DATA_FIELD_2_IDX_1);
+    EXPECT_EQ(GWD(TestMessage4_Entries_varDataField1_length)(&entries), VAR_DATA_FIELD_1_IDX_1_LENGTH);
+    EXPECT_EQ(std::string(GWD(TestMessage4_Entries_varDataField1)(&entries), VAR_DATA_FIELD_1_IDX_1_LENGTH), VAR_DATA_FIELD_1_IDX_1);
+    EXPECT_EQ(GWD(TestMessage4_Entries_varDataField2_length)(&entries), VAR_DATA_FIELD_2_IDX_1_LENGTH);
+    EXPECT_EQ(std::string(GWD(TestMessage4_Entries_varDataField2)(&entries), VAR_DATA_FIELD_2_IDX_1_LENGTH), VAR_DATA_FIELD_2_IDX_1);
 
-    EXPECT_EQ(GWD(testMessage4_encoded_length)(&msg4Decoder), expectedTestMessage4Size);
+    EXPECT_EQ(GWD(TestMessage4_encoded_length)(&msg4Decoder), expectedTestMessage4Size);
 }

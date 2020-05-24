@@ -1,10 +1,10 @@
-#include <code_generation_test/car.h>
+#include <code_generation_test/Car.h>
 #include <code_generation_test/messageHeader.h>
 
-#include <group_with_data/testMessage1.h>
-#include <group_with_data/testMessage2.h>
-#include <group_with_data/testMessage3.h>
-#include <group_with_data/testMessage4.h>
+#include <group_with_data/TestMessage1.h>
+#include <group_with_data/TestMessage2.h>
+#include <group_with_data/TestMessage3.h>
+#include <group_with_data/TestMessage4.h>
 
 int main()
 {

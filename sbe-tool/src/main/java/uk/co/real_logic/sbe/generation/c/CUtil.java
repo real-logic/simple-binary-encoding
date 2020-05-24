@@ -23,8 +23,6 @@ import java.nio.ByteOrder;
 import java.util.EnumMap;
 import java.util.Map;
 
-import static uk.co.real_logic.sbe.generation.Generators.toLowerFirstChar;
-
 /**
  * Utilities for mapping between IR and the C language.
  */
@@ -66,7 +64,7 @@ public class CUtil
      */
     public static String formatPropertyName(final String value)
     {
-        String formattedValue = toLowerFirstChar(value);
+        String formattedValue = value;
 
         if (ValidationUtil.isCKeyword(formattedValue))
         {
@@ -92,7 +90,7 @@ public class CUtil
      */
     public static String formatName(final String value)
     {
-        return toLowerFirstChar(value);
+        return value;
     }
 
     /**

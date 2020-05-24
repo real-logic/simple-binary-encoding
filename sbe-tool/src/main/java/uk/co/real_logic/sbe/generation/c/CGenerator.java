@@ -31,8 +31,6 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
-import static uk.co.real_logic.sbe.generation.Generators.toLowerFirstChar;
-import static uk.co.real_logic.sbe.generation.Generators.toUpperFirstChar;
 import static uk.co.real_logic.sbe.generation.c.CUtil.*;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.*;
 
@@ -1064,7 +1062,7 @@ public class CGenerator implements CodeGenerator
             sb.append("\n");
             for (final String incName : typesToInclude)
             {
-                sb.append(String.format("#include \"%1$s.h\"\n", toLowerFirstChar(incName)));
+                sb.append(String.format("#include \"%1$s.h\"\n", incName));
             }
         }
 
@@ -1737,7 +1735,7 @@ public class CGenerator implements CodeGenerator
             "    memcpy(dst, %2$s_values, bytes_to_copy);\n\n" +
             "    return bytes_to_copy;\n" +
             "}\n",
-            toUpperFirstChar(propertyName),
+            propertyName,
             propertyName,
             values,
             containingStructName));
