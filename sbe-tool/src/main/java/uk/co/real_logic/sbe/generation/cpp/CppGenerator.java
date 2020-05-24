@@ -1073,6 +1073,8 @@ public class CppGenerator implements CodeGenerator
             "#include <sstream>\n" +
             "#include <string>\n" +
             "#include <vector>\n" +
+            "#include <tuple>\n" +
+            "#include <initializer_list>\n" +
             "\n" +
 
             "#if defined(WIN32) || defined(_WIN32)\n" +
@@ -2805,7 +2807,7 @@ public class CppGenerator implements CodeGenerator
             }
             else
             {
-                sb.append("const std::vector<std::tuple<");
+                sb.append("const std::initializer_list<std::tuple<");
                 sb.append(generateMessageLengthArgs(thisGroup, indent + INDENT, false)[0]);
                 sb.append(">>&");
 
@@ -2957,11 +2959,7 @@ public class CppGenerator implements CodeGenerator
                     indent + "    }\n" +
                     indent + "    for (const auto& e: %1$sItemLengths)\n" +
                     indent + "    {\n" +
-                    indent + "        #if __cpluplus >= 201703L\n" +
-                    indent + "        length += std::apply(%2$s::computeLength, e);\n" +
-                    indent + "        #else\n" +
                     indent + "        length += %2$s::computeLength(%6$s);\n" +
-                    indent + "        #endif\n" +
                     indent + "    }\n",
                     groupToken.name(),
                     formatClassName(groupToken.name()),
