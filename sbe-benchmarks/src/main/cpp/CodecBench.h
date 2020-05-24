@@ -23,12 +23,12 @@ class CodecBench
 public:
     int encode_buffer(char *buffer, const int bufferLength)
     {
-        return static_cast<Derived *>(this)->encode(buffer, bufferLength);
+        return (int)static_cast<Derived *>(this)->encode(buffer, bufferLength);
     };
 
     int decode_buffer(const char *buffer, const int bufferLength)
     {
-        return static_cast<Derived *>(this)->decode(buffer, bufferLength);
+        return (int)static_cast<Derived *>(this)->decode(buffer, bufferLength);
     };
 
     /*

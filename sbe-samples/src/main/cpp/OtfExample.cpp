@@ -449,7 +449,7 @@ int main(int argc, char **argv)
     std::uint64_t actingVersion = headerDecoder.getSchemaVersion(buffer);
     std::uint64_t blockLength = headerDecoder.getBlockLength(buffer);
 
-    std::shared_ptr<std::vector<Token>> messageTokens = irDecoder.message(templateId, actingVersion);
+    std::shared_ptr<std::vector<Token>> messageTokens = irDecoder.message((int)templateId, (int)actingVersion);
 
     const std::size_t result =
         OtfMessageDecoder::decode(messageBuffer, length, actingVersion, blockLength, messageTokens, tokenListener);

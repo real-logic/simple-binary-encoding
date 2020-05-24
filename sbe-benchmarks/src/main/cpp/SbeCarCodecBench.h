@@ -25,9 +25,9 @@ char VEHICLE_CODE[] = {'a', 'b', 'c', 'd', 'e', 'f'};
 uint32_t SOMENUMBERS[] = { 1, 2, 3, 4, 5 };
 char MANUFACTURER_CODE[] = {'1', '2', '3'};
 const char *MANUFACTURER = "Honda";
-int MANUFACTURERLEN = strlen(MANUFACTURER);
+int MANUFACTURERLEN = (int)strlen(MANUFACTURER);
 const char *MODEL = "Civic VTi";
-int MODELLEN = strlen(MODEL);
+int MODELLEN = (int)strlen(MODEL);
 
 class SbeCarCodecBench : public CodecBench<SbeCarCodecBench>
 {

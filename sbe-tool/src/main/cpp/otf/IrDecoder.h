@@ -69,7 +69,7 @@ public:
 
     int decode(const char *filename)
     {
-        long fileSize = getFileSize(filename);
+        long long fileSize = getFileSize(filename);
 
         if (fileSize < 0)
         {
@@ -140,7 +140,7 @@ public:
 
 protected:
     // OS specifics
-    static long getFileSize(const char *filename)
+    static long long getFileSize(const char *filename)
     {
         struct stat fileStat;
 
@@ -165,7 +165,7 @@ protected:
         int fd = fileno(fptr);
         while (remaining > 0)
         {
-            long sz = ::read(fd, buffer + (length - remaining), 4098 < remaining ? 4098 : remaining);
+            long long sz = ::read(fd, buffer + (length - remaining), (unsigned int)(4098 < remaining ? 4098 : remaining));
             remaining -= sz;
             if (sz < 0)
             {
