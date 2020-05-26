@@ -168,17 +168,3 @@ jobs:
           sudo xcode-select -switch /Applications/Xcode_${{ matrix.version }}.app
       - name: Build
         run: ./cppbuild/cppbuild
-
-  cpp-msvc-build:
-    name: C++ MSVC (Windows)
-    runs-on: windows-latest
-    strategy:
-      fail-fast: false
-    env:
-      CC: cl
-      CXX: cl
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Build
-        run: cppbuild/cppbuild.cmd
