@@ -20,3 +20,22 @@ int main(int argc, char **argv)
     BenchmarkRunner::run();
     return 0;
 }
+
+#ifdef _WIN32
+#include <Windows.h>
+uint64_t BenchmarkRunner::currentTimestamp(void)
+{
+    static LARGE_INTEGER freq;
+    static int first = 1;
+    LARGE_INTEGER counter;
+
+    ::QueryPerformanceCounter(&counter);
+    if (1 == first)
+    {
+        ::QueryPerformanceFrequency(&freq);
+        first = 0;
+    }
+    return (1000000000 * counter.QuadPart)/freq.QuadPart;
+}
+
+#endif
