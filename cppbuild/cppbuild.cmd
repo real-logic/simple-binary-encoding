@@ -12,7 +12,7 @@ if EXIST %BUILD_DIR% rd /S /Q %BUILD_DIR%
 md %BUILD_DIR%
 pushd %BUILD_DIR%
 
-cmake --build . --config Release
+cmake --build . --clean-first --config Release
 if %ERRORLEVEL% neq 0 exit /b %ERRORLEVEL%
 
 ctest -C Release
