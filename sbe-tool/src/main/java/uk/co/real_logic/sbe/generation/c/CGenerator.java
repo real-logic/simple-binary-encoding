@@ -2412,7 +2412,14 @@ public class CGenerator implements CodeGenerator
             case INT32:
             {
                 final long intValue = Long.parseLong(value);
-                literal = "INT32_C(" + Integer.toString((int)intValue) + ")";
+                if (intValue == Integer.MIN_VALUE)
+                {
+                    literal = "INT32_MIN";
+                }
+                else
+                {
+                    literal = "INT32_C(" + Long.toString(intValue) + ")";
+                }
                 break;
             }
 
@@ -2423,7 +2430,7 @@ public class CGenerator implements CodeGenerator
             case INT64:
             {
                 final long longValue = Long.parseLong(value);
-                if (longValue == -9223372036854775808L)
+                if (longValue == Long.MIN_VALUE)
                 {
                     literal = "INT64_MIN";
                 }
