@@ -22,12 +22,12 @@
 using namespace uk::co::real_logic::sbe::benchmarks;
 
 char VEHICLE_CODE[] = {'a', 'b', 'c', 'd', 'e', 'f'};
-uint32_t SOMENUMBERS[] = { 1, 2, 3, 4, 5 };
+uint32_t SOME_NUMBERS[] = { 1, 2, 3, 4, 5 };
 char MANUFACTURER_CODE[] = {'1', '2', '3'};
 const char *MANUFACTURER = "Honda";
-int MANUFACTURERLEN = strlen(MANUFACTURER);
+size_t MANUFACTURER_LEN = strlen(MANUFACTURER);
 const char *MODEL = "Civic VTi";
-int MODELLEN = strlen(MODEL);
+size_t MODEL_LEN = strlen(MODEL);
 
 class SbeCarCodecBench : public CodecBench<SbeCarCodecBench>
 {
@@ -40,7 +40,7 @@ public:
            .available(BooleanType::T)
            .code(Model::A)
            .putVehicleCode(VEHICLE_CODE)
-           .putSomeNumbers((char *)SOMENUMBERS);
+           .putSomeNumbers((char *)SOME_NUMBERS);
 
         car.extras().clear()
            .cruiseControl(true)
@@ -73,8 +73,8 @@ public:
                 .next().mph(60).seconds(7.1f)
                 .next().mph(100).seconds(11.8f);
 
-        car.putManufacturer(MANUFACTURER, MANUFACTURERLEN);
-        car.putModel(MODEL, MODELLEN);
+        car.putManufacturer(MANUFACTURER, MANUFACTURER_LEN);
+        car.putModel(MODEL, MODEL_LEN);
 
         return car.encodedLength();
     }

@@ -28,6 +28,7 @@
 #include <sys/uio.h>
 #include <unistd.h>
 #include <sys/stat.h>
+#include <stdint.h>
 #endif /* WIN32 */
 
 #include <memory>
