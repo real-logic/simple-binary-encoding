@@ -21,9 +21,9 @@
 
 using namespace uk::co::real_logic::sbe::benchmarks;
 
-char VEHICLE_CODE[] = {'a', 'b', 'c', 'd', 'e', 'f'};
+char VEHICLE_CODE[] = { 'a', 'b', 'c', 'd', 'e', 'f' };
 uint32_t SOME_NUMBERS[] = { 1, 2, 3, 4, 5 };
-char MANUFACTURER_CODE[] = {'1', '2', '3'};
+char MANUFACTURER_CODE[] = { '1', '2', '3' };
 const char *MANUFACTURER = "Honda";
 size_t MANUFACTURER_LEN = strlen(MANUFACTURER);
 const char *MODEL = "Civic VTi";
