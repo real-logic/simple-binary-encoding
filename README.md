@@ -34,7 +34,7 @@ Example for Maven:
 <dependency>
     <groupId>uk.co.real-logic</groupId>
     <artifactId>sbe-all</artifactId>
-    <version>1.18.1</version>
+    <version>1.18.2</version>
 </dependency>
 ```
 
