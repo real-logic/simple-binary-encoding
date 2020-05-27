@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 #include <iostream>
+#include <cstring>
 
 #include "gtest/gtest.h"
 #include "code_generation_test/MessageHeader.h"
@@ -43,15 +44,15 @@ static const char *MODEL = "Civic VTi";
 static const char *ACTIVATION_CODE = "deadbeef";
 static const char *COLOR = "racing green";
 
-static const std::uint64_t VEHICLE_CODE_LENGTH = sizeof(VEHICLE_CODE);
-static const std::uint64_t MANUFACTURER_CODE_LENGTH = sizeof(MANUFACTURER_CODE);
-static const std::uint64_t FUEL_FIGURES_1_USAGE_DESCRIPTION_LENGTH = 11;
-static const std::uint64_t FUEL_FIGURES_2_USAGE_DESCRIPTION_LENGTH = 14;
-static const std::uint64_t FUEL_FIGURES_3_USAGE_DESCRIPTION_LENGTH = 13;
-static const std::uint64_t MANUFACTURER_LENGTH = 5;
-static const std::uint64_t MODEL_LENGTH = 9;
-static const std::uint64_t ACTIVATION_CODE_LENGTH = 8;
-static const std::uint64_t COLOR_LENGTH = 12;
+static const std::size_t VEHICLE_CODE_LENGTH = sizeof(VEHICLE_CODE);
+static const std::size_t MANUFACTURER_CODE_LENGTH = sizeof(MANUFACTURER_CODE);
+static const std::size_t FUEL_FIGURES_1_USAGE_DESCRIPTION_LENGTH = strlen(FUEL_FIGURES_1_USAGE_DESCRIPTION);
+static const std::size_t FUEL_FIGURES_2_USAGE_DESCRIPTION_LENGTH = strlen(FUEL_FIGURES_2_USAGE_DESCRIPTION);
+static const std::size_t FUEL_FIGURES_3_USAGE_DESCRIPTION_LENGTH = strlen(FUEL_FIGURES_3_USAGE_DESCRIPTION);
+static const std::size_t MANUFACTURER_LENGTH = strlen(MANUFACTURER);
+static const std::size_t MODEL_LENGTH = strlen(MODEL);
+static const std::size_t ACTIVATION_CODE_LENGTH = strlen(ACTIVATION_CODE);
+static const std::size_t COLOR_LENGTH = strlen(COLOR);
 static const std::uint8_t PERFORMANCE_FIGURES_COUNT = 2;
 static const std::uint8_t FUEL_FIGURES_COUNT = 3;
 static const std::uint8_t ACCELERATION_COUNT = 3;
@@ -657,13 +658,14 @@ TEST_F(CodeGenTest, shouldBeAbleUseOnStackCodecsAndGroupForEach)
     EXPECT_EQ(fuelFigures.count(), FUEL_FIGURES_COUNT);
 
 #if __cplusplus >= 201103L
-    fuelFigures.forEach([&](Car::FuelFigures &figures)
-    {
-        cbs.countOfFuelFigures++;
+    fuelFigures.forEach(
+        [&](Car::FuelFigures &figures)
+        {
+            cbs.countOfFuelFigures++;
 
-        char tmp[256];
-        figures.getUsageDescription(tmp, sizeof(tmp));
-    });
+            char tmp[256];
+            figures.getUsageDescription(tmp, sizeof(tmp));
+        });
 #else
     fuelFigures.forEach(cbs);
 #endif
@@ -677,10 +679,11 @@ TEST_F(CodeGenTest, shouldBeAbleUseOnStackCodecsAndGroupForEach)
         Car::PerformanceFigures::Acceleration acceleration = figures.acceleration();
 
         cbs.countOfPerformanceFigures++;
-        acceleration.forEach([&](Car::PerformanceFigures::Acceleration&)
-        {
-            cbs.countOfAccelerations++;
-        });
+        acceleration.forEach(
+            [&](Car::PerformanceFigures::Acceleration&)
+            {
+                cbs.countOfAccelerations++;
+            });
     });
 #else
     performanceFigures.forEach(cbs);
