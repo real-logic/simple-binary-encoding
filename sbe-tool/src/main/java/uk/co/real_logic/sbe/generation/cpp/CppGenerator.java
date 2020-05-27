@@ -1073,6 +1073,7 @@ public class CppGenerator implements CodeGenerator
             "#include <sstream>\n" +
             "#include <string>\n" +
             "#include <vector>\n" +
+            "#include <tuple>\n" +
             "\n" +
 
             "#if defined(WIN32) || defined(_WIN32)\n" +
