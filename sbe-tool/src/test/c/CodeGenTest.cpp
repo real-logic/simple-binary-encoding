@@ -841,13 +841,13 @@ TEST_F(CodeGenTest, shouldBeAbleToUseStdStringMethodsForEncode)
     }
     CGT(car_fuelFigures_next)(&fuelFig);
     const char *desc1 = usageDesc1.c_str();
-    CGT(car_fuelFigures_put_usageDescription)(&fuelFig, desc1, strlen(desc1));
+    CGT(car_fuelFigures_put_usageDescription)(&fuelFig, desc1, static_cast<std::uint16_t>(strlen(desc1)));
     CGT(car_fuelFigures_next)(&fuelFig);
     const char *desc2 = usageDesc2.c_str();
-    CGT(car_fuelFigures_put_usageDescription)(&fuelFig, desc2, strlen(desc2));
+    CGT(car_fuelFigures_put_usageDescription)(&fuelFig, desc2, static_cast<std::uint16_t>(strlen(desc2)));
     CGT(car_fuelFigures_next)(&fuelFig);
     const char *desc3 = usageDesc3.c_str();
-    CGT(car_fuelFigures_put_usageDescription)(&fuelFig, desc3, strlen(desc3));
+    CGT(car_fuelFigures_put_usageDescription)(&fuelFig, desc3, static_cast<std::uint16_t>(strlen(desc3)));
 
     CGT(car_performanceFigures) perfFigs;
     if (!CGT(car_performanceFigures_set_count)(&car, &perfFigs, PERFORMANCE_FIGURES_COUNT))
@@ -868,11 +868,11 @@ TEST_F(CodeGenTest, shouldBeAbleToUseStdStringMethodsForEncode)
     CGT(car_performanceFigures_acceleration_next)(&acc);
 
     const char *manu = manufacturer.c_str();
-    CGT(car_put_manufacturer)(&car, manu, strlen(manu));
+    CGT(car_put_manufacturer)(&car, manu, static_cast<std::uint16_t>(strlen(manu)));
     const char *model_c = model.c_str();
-    CGT(car_put_model)(&car, model_c, strlen(model_c));
+    CGT(car_put_model)(&car, model_c, static_cast<std::uint16_t>(strlen(model_c)));
     const char *acti = activationCode.c_str();
-    CGT(car_put_activationCode)(&car, acti, strlen(acti));
+    CGT(car_put_activationCode)(&car, acti, static_cast<std::uint16_t>(strlen(acti)));
 
     EXPECT_EQ(CGT(car_encoded_length)(&car), expectedCarEncodedLength);
 
