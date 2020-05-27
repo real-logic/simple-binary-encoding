@@ -73,8 +73,8 @@ public:
                 .next().mph(60).seconds(7.1f)
                 .next().mph(100).seconds(11.8f);
 
-        car.putManufacturer(MANUFACTURER, MANUFACTURER_LEN);
-        car.putModel(MODEL, MODEL_LEN);
+        car.putManufacturer(MANUFACTURER, static_cast<std::uint32_t>(MANUFACTURER_LEN));
+        car.putModel(MODEL, static_cast<std::uint32_t>(MODEL_LEN));
 
         return car.encodedLength();
     }
