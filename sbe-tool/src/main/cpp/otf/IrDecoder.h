@@ -28,7 +28,6 @@
 #include <sys/uio.h>
 #include <unistd.h>
 #include <sys/stat.h>
-#include <stdint.h>
 #endif /* WIN32 */
 
 #include <memory>
@@ -166,7 +165,8 @@ protected:
         int fd = fileno(fptr);
         while (remaining > 0)
         {
-            ssize_t sz = ::read(fd, buffer + (length - remaining), 4098 < remaining ? 4098 : remaining);
+            unsigned int bytes = static_cast<unsigned int>(4098 < remaining ? 4098 : remaining);
+            long long sz = ::read(fd, buffer + (length - remaining), bytes);
             remaining -= sz;
             if (sz < 0)
             {
