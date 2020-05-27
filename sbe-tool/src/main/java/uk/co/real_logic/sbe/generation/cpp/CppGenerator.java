@@ -1947,7 +1947,7 @@ public class CppGenerator implements CodeGenerator
             "        return %2$s;\n" +
             "    }\n\n" +
 
-            "    SBE_NODISCARD static SBE_CONSTEXPR %1$s sbeBlockAndHeaderLength() SBE_NOEXCEPT\n" +
+            "    SBE_NODISCARD static SBE_CONSTEXPR std::uint64_t sbeBlockAndHeaderLength() SBE_NOEXCEPT\n" +
             "    {\n" +
             "        return messageHeader::encodedLength() + sbeBlockLength();\n" +
             "    }\n\n" +
