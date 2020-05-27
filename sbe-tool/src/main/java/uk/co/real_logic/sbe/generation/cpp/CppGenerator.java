@@ -2407,8 +2407,21 @@ public class CppGenerator implements CodeGenerator
                 break;
 
             case UINT32:
+            {
+                final long intValue = Long.parseLong(value);
+                literal = "UINT32_C(0x" + Integer.toHexString((int)intValue) + ")";
+                break;
+            }
             case INT32:
-                literal = value;
+                final long intValue = Long.parseLong(value);
+                if (intValue == Integer.MIN_VALUE)
+                {
+                    literal = "INT32_MIN";
+                }
+                else
+                {
+                    literal = "INT32_C(" + Long.toString(intValue) + ")";
+                }
                 break;
 
             case FLOAT:
@@ -2416,15 +2429,19 @@ public class CppGenerator implements CodeGenerator
                 break;
 
             case INT64:
-                literal = value + "L";
-                if (value.equals("-9223372036854775808"))
+                final long longValue = Long.parseLong(value);
+                if (longValue == Long.MIN_VALUE)
                 {
                     literal = "INT64_MIN";
+                }
+                else
+                {
+                    literal = "INT64_C(" + String.valueOf(longValue) + ")";
                 }
                 break;
 
             case UINT64:
-                literal = "0x" + Long.toHexString(Long.parseLong(value)) + "L";
+                literal = "UINT64_C(0x" + Long.toHexString(Long.parseLong(value)) + ")";
                 break;
 
             case DOUBLE:
