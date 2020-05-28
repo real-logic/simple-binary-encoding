@@ -25,86 +25,86 @@
 
 using namespace code::generation::test;
 
-constexpr const char *SCHEMA_FILENAME = "code-generation-schema.sbeir";
+SBE_CONSTEXPR const char *SCHEMA_FILENAME = "code-generation-schema.sbeir";
 
-constexpr std::uint8_t fieldIdSerialNumber = 1;
-constexpr std::uint8_t fieldIdModelYear = 2;
-constexpr std::uint8_t fieldIdAvailable = 3;
-constexpr std::uint8_t fieldIdCode = 4;
-constexpr std::uint8_t fieldIdSomeNumbers = 5;
-constexpr std::uint8_t fieldIdVehicleCode = 6;
-constexpr std::uint8_t fieldIdExtras = 7;
-constexpr std::uint8_t fieldIdDiscountedModel = 8;
-constexpr std::uint8_t fieldIdEngine = 9;
-constexpr std::uint8_t fieldIdFuelFigures = 10;
-constexpr std::uint8_t fieldIdFuelSpeed = 11;
-constexpr std::uint8_t fieldIdFuelMpg = 12;
-constexpr std::uint8_t fieldIdFuelUsageDescription = 200;
-constexpr std::uint8_t fieldIdPerformanceFigures = 13;
-constexpr std::uint8_t fieldIdPerfOctaneRating = 14;
-constexpr std::uint8_t fieldIdPerfAcceleration = 15;
-constexpr std::uint8_t fieldIdPerfAccMph = 16;
-constexpr std::uint8_t fieldIdPerfAccSeconds = 17;
-constexpr std::uint8_t fieldIdManufacturer = 18;
-constexpr std::uint8_t fieldIdModel = 19;
-constexpr std::uint8_t fieldIdActivationCode = 20;
-constexpr std::uint8_t fieldIdColor = 21;
+SBE_CONSTEXPR std::uint8_t fieldIdSerialNumber = 1;
+SBE_CONSTEXPR std::uint8_t fieldIdModelYear = 2;
+SBE_CONSTEXPR std::uint8_t fieldIdAvailable = 3;
+SBE_CONSTEXPR std::uint8_t fieldIdCode = 4;
+SBE_CONSTEXPR std::uint8_t fieldIdSomeNumbers = 5;
+SBE_CONSTEXPR std::uint8_t fieldIdVehicleCode = 6;
+SBE_CONSTEXPR std::uint8_t fieldIdExtras = 7;
+SBE_CONSTEXPR std::uint8_t fieldIdDiscountedModel = 8;
+SBE_CONSTEXPR std::uint8_t fieldIdEngine = 9;
+SBE_CONSTEXPR std::uint8_t fieldIdFuelFigures = 10;
+SBE_CONSTEXPR std::uint8_t fieldIdFuelSpeed = 11;
+SBE_CONSTEXPR std::uint8_t fieldIdFuelMpg = 12;
+SBE_CONSTEXPR std::uint8_t fieldIdFuelUsageDescription = 200;
+SBE_CONSTEXPR std::uint8_t fieldIdPerformanceFigures = 13;
+SBE_CONSTEXPR std::uint8_t fieldIdPerfOctaneRating = 14;
+SBE_CONSTEXPR std::uint8_t fieldIdPerfAcceleration = 15;
+SBE_CONSTEXPR std::uint8_t fieldIdPerfAccMph = 16;
+SBE_CONSTEXPR std::uint8_t fieldIdPerfAccSeconds = 17;
+SBE_CONSTEXPR std::uint8_t fieldIdManufacturer = 18;
+SBE_CONSTEXPR std::uint8_t fieldIdModel = 19;
+SBE_CONSTEXPR std::uint8_t fieldIdActivationCode = 20;
+SBE_CONSTEXPR std::uint8_t fieldIdColor = 21;
 
-constexpr std::uint32_t SERIAL_NUMBER = 1234;
-constexpr std::uint16_t MODEL_YEAR = 2013;
-constexpr BooleanType::Value AVAILABLE = BooleanType::T;
-constexpr Model::Value CODE = Model::A;
-constexpr bool CRUISE_CONTROL = true;
-constexpr bool SPORTS_PACK = true;
-constexpr bool SUNROOF = false;
+SBE_CONSTEXPR std::uint32_t SERIAL_NUMBER = 1234;
+SBE_CONSTEXPR std::uint16_t MODEL_YEAR = 2013;
+SBE_CONSTEXPR BooleanType::Value AVAILABLE = BooleanType::T;
+SBE_CONSTEXPR Model::Value CODE = Model::A;
+SBE_CONSTEXPR bool CRUISE_CONTROL = true;
+SBE_CONSTEXPR bool SPORTS_PACK = true;
+SBE_CONSTEXPR bool SUNROOF = false;
 
 static char VEHICLE_CODE[] = { 'a', 'b', 'c', 'd', 'e', 'f' };
 static char MANUFACTURER_CODE[] = { '1', '2', '3' };
-constexpr const char *FUEL_FIGURES_1_USAGE_DESCRIPTION = "Urban Cycle";
-constexpr const char *FUEL_FIGURES_2_USAGE_DESCRIPTION = "Combined Cycle";
-constexpr const char *FUEL_FIGURES_3_USAGE_DESCRIPTION = "Highway Cycle";
-constexpr const char *MANUFACTURER = "Honda";
-constexpr const char *MODEL = "Civic VTi";
-constexpr const char *ACTIVATION_CODE = "deadbeef";
-constexpr const char *COLOR = "red";
+SBE_CONSTEXPR const char *FUEL_FIGURES_1_USAGE_DESCRIPTION = "Urban Cycle";
+SBE_CONSTEXPR const char *FUEL_FIGURES_2_USAGE_DESCRIPTION = "Combined Cycle";
+SBE_CONSTEXPR const char *FUEL_FIGURES_3_USAGE_DESCRIPTION = "Highway Cycle";
+SBE_CONSTEXPR const char *MANUFACTURER = "Honda";
+SBE_CONSTEXPR const char *MODEL = "Civic VTi";
+SBE_CONSTEXPR const char *ACTIVATION_CODE = "deadbeef";
+SBE_CONSTEXPR const char *COLOR = "red";
 
 static const int VEHICLE_CODE_LENGTH = sizeof(VEHICLE_CODE);
 static const int MANUFACTURER_CODE_LENGTH = sizeof(MANUFACTURER_CODE);
-constexpr std::size_t MANUFACTURER_LENGTH = 5;
-constexpr std::size_t MODEL_LENGTH = 9;
-constexpr std::size_t ACTIVATION_CODE_LENGTH = 8;
-constexpr std::size_t COLOR_LENGTH = 3;
-constexpr std::size_t PERFORMANCE_FIGURES_COUNT = 2;
-constexpr std::size_t FUEL_FIGURES_COUNT = 3;
-constexpr std::size_t ACCELERATION_COUNT = 3;
+SBE_CONSTEXPR std::size_t MANUFACTURER_LENGTH = 5;
+SBE_CONSTEXPR std::size_t MODEL_LENGTH = 9;
+SBE_CONSTEXPR std::size_t ACTIVATION_CODE_LENGTH = 8;
+SBE_CONSTEXPR std::size_t COLOR_LENGTH = 3;
+SBE_CONSTEXPR std::uint16_t PERFORMANCE_FIGURES_COUNT = 2;
+SBE_CONSTEXPR std::uint16_t FUEL_FIGURES_COUNT = 3;
+SBE_CONSTEXPR std::uint16_t ACCELERATION_COUNT = 3;
 
-constexpr std::uint16_t fuel1Speed = 30;
-constexpr float fuel1Mpg = 35.9f;
-constexpr std::uint16_t fuel2Speed = 55;
-constexpr float fuel2Mpg = 49.0f;
-constexpr std::uint16_t fuel3Speed = 75;
-constexpr float fuel3Mpg = 40.0f;
+SBE_CONSTEXPR std::uint16_t fuel1Speed = 30;
+SBE_CONSTEXPR float fuel1Mpg = 35.9f;
+SBE_CONSTEXPR std::uint16_t fuel2Speed = 55;
+SBE_CONSTEXPR float fuel2Mpg = 49.0f;
+SBE_CONSTEXPR std::uint16_t fuel3Speed = 75;
+SBE_CONSTEXPR float fuel3Mpg = 40.0f;
 
-constexpr std::uint8_t perf1Octane = 95;
-constexpr std::uint16_t perf1aMph = 30;
-constexpr float perf1aSeconds = 4.0f;
-constexpr std::uint16_t perf1bMph = 60;
-constexpr float perf1bSeconds = 7.5f;
-constexpr std::uint16_t perf1cMph = 100;
-constexpr float perf1cSeconds = 12.2f;
+SBE_CONSTEXPR std::uint8_t perf1Octane = 95;
+SBE_CONSTEXPR std::uint16_t perf1aMph = 30;
+SBE_CONSTEXPR float perf1aSeconds = 4.0f;
+SBE_CONSTEXPR std::uint16_t perf1bMph = 60;
+SBE_CONSTEXPR float perf1bSeconds = 7.5f;
+SBE_CONSTEXPR std::uint16_t perf1cMph = 100;
+SBE_CONSTEXPR float perf1cSeconds = 12.2f;
 
-constexpr std::uint8_t perf2Octane = 99;
-constexpr std::uint16_t perf2aMph = 30;
-constexpr float perf2aSeconds = 3.8f;
-constexpr std::uint16_t perf2bMph = 60;
-constexpr float perf2bSeconds = 7.1f;
-constexpr std::uint16_t perf2cMph = 100;
-constexpr float perf2cSeconds = 11.8f;
+SBE_CONSTEXPR std::uint8_t perf2Octane = 99;
+SBE_CONSTEXPR std::uint16_t perf2aMph = 30;
+SBE_CONSTEXPR float perf2aSeconds = 3.8f;
+SBE_CONSTEXPR std::uint16_t perf2bMph = 60;
+SBE_CONSTEXPR float perf2bSeconds = 7.1f;
+SBE_CONSTEXPR std::uint16_t perf2cMph = 100;
+SBE_CONSTEXPR float perf2cSeconds = 11.8f;
 
-constexpr std::uint16_t engineCapacity = 2000;
-constexpr std::uint8_t engineNumCylinders = 4;
+SBE_CONSTEXPR std::uint16_t engineCapacity = 2000;
+SBE_CONSTEXPR std::uint8_t engineNumCylinders = 4;
 
-constexpr std::uint64_t encodedCarAndHdrLength = 198 + 8;
+SBE_CONSTEXPR std::uint64_t encodedCarAndHdrLength = 198 + 8;
 
 // This enum represents the expected events that
 // will be received during the decoding process.
