@@ -58,9 +58,9 @@ namespace Org.SbeTool.Sbe.Tests
             const int value = 5;
             const int index = 0;
             
-            using (var directBufferFromUnmanagedbuffer = new DirectBuffer(unmanagedBuffer, managedBuffer.Length))
+            using (var directBufferFromUnmanagedBuffer = new DirectBuffer(unmanagedBuffer, managedBuffer.Length))
             {
-                directBufferFromUnmanagedbuffer.Int64PutLittleEndian(index, value);
+                directBufferFromUnmanagedBuffer.Int64PutLittleEndian(index, value);
                 Assert.AreEqual(value, *(long*) (unmanagedBuffer + index));
             }
         }

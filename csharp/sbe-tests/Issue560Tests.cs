@@ -36,7 +36,7 @@ namespace Org.SbeTool.Sbe.Tests
             _issue560 = new Issue560.Issue560();
             _messageHeader = new Issue560.MessageHeader();
 
-            _messageHeader.Wrap(_directBuffer, 0, Issue560.Issue560.SchemaVersion);
+            _messageHeader.Wrap(_directBuffer, 0, Issue560.MessageHeader.SbeSchemaVersion);
             _messageHeader.BlockLength = Issue560.Issue560.BlockLength;
             _messageHeader.SchemaId = Issue560.Issue560.SchemaId;
             _messageHeader.TemplateId = Issue560.Issue560.TemplateId;
@@ -48,7 +48,6 @@ namespace Org.SbeTool.Sbe.Tests
         public void Issue560Test()
         {
             Assert.AreEqual(_issue560.DiscountedModel, Issue560.Model.C, "Incorrect const enum valueref");
-
         }
 
     }

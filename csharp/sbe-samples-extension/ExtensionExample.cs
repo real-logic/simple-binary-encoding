@@ -40,7 +40,7 @@ class Example
         baselineMessageHeader.BlockLength = Baseline.Car.BlockLength; // size that a car takes on the wire
         baselineMessageHeader.SchemaId = Baseline.Car.SchemaId;
         baselineMessageHeader.TemplateId = Baseline.Car.TemplateId;   // identifier for the car object (SBE template ID)
-        baselineMessageHeader.Version = Baseline.Car.SchemaVersion; // this can be overriden if we want to support different versions of the car object (advanced functionality)
+        baselineMessageHeader.Version = Baseline.Car.SchemaVersion; // this can be overridden if we want to support different versions of the car object (advanced functionality)
 
         // Now that we have encoded the header in the byte array we can encode the car object itself
         bufferOffset += Baseline.MessageHeader.Size;
@@ -137,7 +137,7 @@ namespace Baseline
 
             // we have written all the constant length fields, now we can write the repeatable groups
 
-            var fuelFigures = car.FuelFiguresCount(3); // we specify that we are going to write 3 FueldFigures (the API is not very .NET friendly yet, we will address that)
+            var fuelFigures = car.FuelFiguresCount(3); // we specify that we are going to write 3 FuelFigures (the API is not very .NET friendly yet, we will address that)
             fuelFigures.Next(); // move to the first element
             fuelFigures.Speed = 30;
             fuelFigures.Mpg = 35.9f;
@@ -314,7 +314,7 @@ namespace Extension
             }
             catch (Exception ex)
             {
-                throw new Exception("An error occured while reading encodings", ex);
+                throw new Exception("An error occurred while reading encodings", ex);
             }
         }
 
@@ -333,7 +333,7 @@ namespace Extension
             MessageHeader.BlockLength = Car.BlockLength; // size that a car takes on the wire
             MessageHeader.SchemaId = Car.SchemaId;
             MessageHeader.TemplateId = Car.TemplateId;   // identifier for the car object (SBE template ID)
-            MessageHeader.Version = Car.SchemaVersion; // this can be overriden if we want to support different versions of the car object (advanced functionality)
+            MessageHeader.Version = Car.SchemaVersion; // this can be overridden if we want to support different versions of the car object (advanced functionality)
 
             // Now that we have encoded the header in the byte array we can encode the car object itself
             bufferOffset += MessageHeader.Size;
