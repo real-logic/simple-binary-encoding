@@ -16,7 +16,7 @@
 package uk.co.real_logic.sbe.xml;
 
 import org.junit.jupiter.api.Test;
-import uk.co.real_logic.sbe.TestUtil;
+import uk.co.real_logic.sbe.Tests;
 
 import java.util.List;
 
@@ -28,10 +28,9 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 public class GroupWithDataTest
 {
     @Test
-    public void shouldParseSchemaSuccessfully()
-        throws Exception
+    public void shouldParseSchemaSuccessfully() throws Exception
     {
-        final MessageSchema schema = parse(TestUtil.getLocalResource(
+        final MessageSchema schema = parse(Tests.getLocalResource(
             "group-with-data-schema.xml"), ParserOptions.DEFAULT);
         final List<Field> fields = schema.getMessage(1).fields();
         final Field entriesGroup = fields.get(1);

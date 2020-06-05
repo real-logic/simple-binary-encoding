@@ -4,7 +4,7 @@ import org.agrona.generation.StringWriterOutputManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import uk.co.real_logic.sbe.TestUtil;
+import uk.co.real_logic.sbe.Tests;
 import uk.co.real_logic.sbe.ir.Ir;
 import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
@@ -44,14 +44,14 @@ public class Issue567GroupSizeTest
     {
         final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
         assertThrows(IllegalArgumentException.class,
-            () -> parse(TestUtil.getLocalResource("issue567-invalid.xml"), options));
+            () -> parse(Tests.getLocalResource("issue567-invalid.xml"), options));
     }
 
     @Test
     public void shouldGenerateWhenUsingATypeThatIsConstrainedToFitInAnIntAsTheGroupSize() throws Exception
     {
         final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
-        final MessageSchema schema = parse(TestUtil.getLocalResource("issue567-valid.xml"), options);
+        final MessageSchema schema = parse(Tests.getLocalResource("issue567-valid.xml"), options);
         final IrGenerator irg = new IrGenerator();
         final Ir ir = irg.generate(schema);
 

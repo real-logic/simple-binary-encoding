@@ -19,7 +19,7 @@ import org.agrona.DirectBuffer;
 import org.agrona.MutableDirectBuffer;
 import org.agrona.generation.StringWriterOutputManager;
 import org.junit.jupiter.api.Test;
-import uk.co.real_logic.sbe.TestUtil;
+import uk.co.real_logic.sbe.Tests;
 import uk.co.real_logic.sbe.ir.Ir;
 import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
@@ -40,7 +40,7 @@ public class ConstantCharArrayTest
     public void shouldGenerateConstCharArrayMethods() throws Exception
     {
         final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
-        final MessageSchema schema = parse(TestUtil.getLocalResource("issue505.xml"), options);
+        final MessageSchema schema = parse(Tests.getLocalResource("issue505.xml"), options);
         final IrGenerator irg = new IrGenerator();
         final Ir ir = irg.generate(schema);
 

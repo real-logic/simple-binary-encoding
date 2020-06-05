@@ -21,14 +21,13 @@ import uk.co.real_logic.sbe.xml.MessageSchema;
 import uk.co.real_logic.sbe.xml.ParserOptions;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static uk.co.real_logic.sbe.TestUtil.getLocalResource;
+import static uk.co.real_logic.sbe.Tests.getLocalResource;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 public class CompositeRefsTest
 {
     @Test
-    public void shouldGenerateCorrectIrForCompositeRefs()
-        throws Exception
+    public void shouldGenerateIrForCompositeRefs() throws Exception
     {
         final MessageSchema schema = parse(getLocalResource("issue496.xml"), ParserOptions.DEFAULT);
         final IrGenerator irg = new IrGenerator();

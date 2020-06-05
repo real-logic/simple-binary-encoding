@@ -28,7 +28,7 @@ public class ToStringTest extends EncodedCarTestBase
     private static final int MSG_BUFFER_CAPACITY = 4 * 1024;
 
     @Test
-    public void exampleMessagePrinted()
+    public void shouldToStringMessage()
     {
         final ByteBuffer encodedMsgBuffer = ByteBuffer.allocate(MSG_BUFFER_CAPACITY);
         encodeTestMessage(encodedMsgBuffer);
@@ -54,7 +54,7 @@ public class ToStringTest extends EncodedCarTestBase
     }
 
     @Test
-    public void emptyMessagePrinted()
+    public void shouldToStringBlankMessage()
     {
         final ByteBuffer encodedMsgBuffer = ByteBuffer.allocate(MSG_BUFFER_CAPACITY);
         CAR.wrap(new UnsafeBuffer(encodedMsgBuffer), 0);

@@ -16,7 +16,7 @@
 package uk.co.real_logic.sbe.xml;
 
 import org.junit.jupiter.api.Test;
-import uk.co.real_logic.sbe.TestUtil;
+import uk.co.real_logic.sbe.Tests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -25,14 +25,13 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 public class CyclicReferencesTest
 {
     @Test
-    public void shouldTestForCyclicRefs()
-        throws Exception
+    public void shouldTestForCyclicRefs() throws Exception
     {
         try
         {
             final ParserOptions options = ParserOptions.builder().suppressOutput(true).warningsFatal(true).build();
 
-            parse(TestUtil.getLocalResource("cyclic-refs-schema.xml"), options);
+            parse(Tests.getLocalResource("cyclic-refs-schema.xml"), options);
         }
         catch (final IllegalStateException ex)
         {

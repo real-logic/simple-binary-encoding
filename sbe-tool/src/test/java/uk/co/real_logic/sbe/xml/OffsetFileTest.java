@@ -16,7 +16,7 @@
 package uk.co.real_logic.sbe.xml;
 
 import org.junit.jupiter.api.Test;
-import uk.co.real_logic.sbe.TestUtil;
+import uk.co.real_logic.sbe.Tests;
 
 import java.util.List;
 
@@ -31,10 +31,9 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 public class OffsetFileTest
 {
     @Test
-    public void shouldHandleAllTypeOffsets()
-        throws Exception
+    public void shouldHandleAllTypeOffsets() throws Exception
     {
-        final MessageSchema schema = parse(TestUtil.getLocalResource(
+        final MessageSchema schema = parse(Tests.getLocalResource(
             "basic-types-schema.xml"), ParserOptions.DEFAULT);
         final List<Field> fields = schema.getMessage(1).fields();
 
@@ -51,10 +50,9 @@ public class OffsetFileTest
     }
 
     @Test
-    public void shouldHandleAllTypeOffsetsSetByXML()
-        throws Exception
+    public void shouldHandleAllTypeOffsetsSetByXml() throws Exception
     {
-        final MessageSchema schema = parse(TestUtil.getLocalResource(
+        final MessageSchema schema = parse(Tests.getLocalResource(
             "basic-types-schema.xml"), ParserOptions.DEFAULT);
         final List<Field> fields = schema.getMessage(2).fields();
 
@@ -71,10 +69,9 @@ public class OffsetFileTest
     }
 
     @Test
-    public void shouldCalculateGroupOffsetWithNoPaddingFromBlockLength()
-        throws Exception
+    public void shouldCalculateGroupOffsetWithNoPaddingFromBlockLength() throws Exception
     {
-        final MessageSchema schema = parse(TestUtil.getLocalResource(
+        final MessageSchema schema = parse(Tests.getLocalResource(
             "block-length-schema.xml"), ParserOptions.DEFAULT);
         final Message msg = schema.getMessage(1);
 
@@ -95,10 +92,9 @@ public class OffsetFileTest
     }
 
     @Test
-    public void shouldCalculateGroupOffsetWithPaddingFromBlockLength()
-        throws Exception
+    public void shouldCalculateGroupOffsetWithPaddingFromBlockLength() throws Exception
     {
-        final MessageSchema schema = parse(TestUtil.getLocalResource(
+        final MessageSchema schema = parse(Tests.getLocalResource(
             "block-length-schema.xml"), ParserOptions.DEFAULT);
         final List<Field> fields = schema.getMessage(2).fields();
 
@@ -118,10 +114,9 @@ public class OffsetFileTest
     }
 
     @Test
-    public void shouldCalculateGroupOffsetWithPaddingFromBlockLengthAndGroupBlockLength()
-        throws Exception
+    public void shouldCalculateGroupOffsetWithPaddingFromBlockLengthAndGroupBlockLength() throws Exception
     {
-        final MessageSchema schema = parse(TestUtil.getLocalResource(
+        final MessageSchema schema = parse(Tests.getLocalResource(
             "block-length-schema.xml"), ParserOptions.DEFAULT);
         final List<Field> fields = schema.getMessage(3).fields();
 
@@ -141,10 +136,9 @@ public class OffsetFileTest
     }
 
     @Test
-    public void shouldCalculateDataOffsetWithPaddingFromBlockLength()
-        throws Exception
+    public void shouldCalculateDataOffsetWithPaddingFromBlockLength() throws Exception
     {
-        final MessageSchema schema = parse(TestUtil.getLocalResource(
+        final MessageSchema schema = parse(Tests.getLocalResource(
             "block-length-schema.xml"), ParserOptions.DEFAULT);
         final List<Field> fields = schema.getMessage(4).fields();
 
@@ -155,10 +149,9 @@ public class OffsetFileTest
     }
 
     @Test
-    public void shouldCalculateCompositeSizeWithOffsetsSpecified()
-        throws Exception
+    public void shouldCalculateCompositeSizeWithOffsetsSpecified() throws Exception
     {
-        final MessageSchema schema = parse(TestUtil.getLocalResource(
+        final MessageSchema schema = parse(Tests.getLocalResource(
             "composite-offsets-schema.xml"), ParserOptions.DEFAULT);
         final CompositeType header = schema.messageHeader();
 
@@ -166,10 +159,9 @@ public class OffsetFileTest
     }
 
     @Test
-    public void shouldCalculateDimensionSizeWithOffsetsSpecified()
-        throws Exception
+    public void shouldCalculateDimensionSizeWithOffsetsSpecified() throws Exception
     {
-        final MessageSchema schema = parse(TestUtil.getLocalResource(
+        final MessageSchema schema = parse(Tests.getLocalResource(
             "composite-offsets-schema.xml"), ParserOptions.DEFAULT);
         final CompositeType dimensions = schema.getMessage(1).fields().get(0).dimensionType();
 

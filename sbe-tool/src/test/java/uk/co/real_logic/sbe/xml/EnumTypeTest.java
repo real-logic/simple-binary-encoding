@@ -21,7 +21,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.PrimitiveValue;
-import uk.co.real_logic.sbe.TestUtil;
+import uk.co.real_logic.sbe.Tests;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -44,8 +44,7 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 public class EnumTypeTest
 {
     @Test
-    public void shouldHandleBinaryEnumType()
-        throws Exception
+    public void shouldHandleBinaryEnumType() throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -66,8 +65,7 @@ public class EnumTypeTest
     }
 
     @Test
-    public void shouldHandleBooleanEnumType()
-        throws Exception
+    public void shouldHandleBooleanEnumType() throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -88,8 +86,7 @@ public class EnumTypeTest
     }
 
     @Test
-    public void shouldHandleOptionalBooleanEnumType()
-        throws Exception
+    public void shouldHandleOptionalBooleanEnumType() throws Exception
     {
         final String nullValueStr = "255";
         final String testXmlString =
@@ -113,8 +110,7 @@ public class EnumTypeTest
     }
 
     @Test
-    public void shouldHandleEnumTypeList()
-        throws Exception
+    public void shouldHandleEnumTypeList() throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -158,8 +154,7 @@ public class EnumTypeTest
     }
 
     @Test
-    public void shouldHandleCharEnumEncodingType()
-        throws Exception
+    public void shouldHandleCharEnumEncodingType() throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -229,10 +224,9 @@ public class EnumTypeTest
     }
 
     @Test
-    public void shouldHandleEncodingTypesWithNamedTypes()
-        throws Exception
+    public void shouldHandleEncodingTypesWithNamedTypes() throws Exception
     {
-        final MessageSchema schema = parse(TestUtil.getLocalResource(
+        final MessageSchema schema = parse(Tests.getLocalResource(
             "encoding-types-schema.xml"), ParserOptions.DEFAULT);
         final List<Field> fields = schema.getMessage(1).fields();
 

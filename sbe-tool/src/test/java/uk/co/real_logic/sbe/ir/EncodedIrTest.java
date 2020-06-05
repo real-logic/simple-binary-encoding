@@ -16,7 +16,7 @@
 package uk.co.real_logic.sbe.ir;
 
 import org.junit.jupiter.api.Test;
-import uk.co.real_logic.sbe.TestUtil;
+import uk.co.real_logic.sbe.Tests;
 import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
 import uk.co.real_logic.sbe.xml.ParserOptions;
@@ -33,10 +33,9 @@ public class EncodedIrTest
     private static final int CAPACITY = 1024 * 16;
 
     @Test
-    public void shouldEncodeIr()
-        throws Exception
+    public void shouldEncodeIr() throws Exception
     {
-        final MessageSchema schema = parse(TestUtil.getLocalResource("basic-schema.xml"), ParserOptions.DEFAULT);
+        final MessageSchema schema = parse(Tests.getLocalResource("basic-schema.xml"), ParserOptions.DEFAULT);
         final IrGenerator irg = new IrGenerator();
         final Ir ir = irg.generate(schema);
         final ByteBuffer buffer = ByteBuffer.allocateDirect(CAPACITY);
@@ -46,10 +45,9 @@ public class EncodedIrTest
     }
 
     @Test
-    public void shouldEncodeThenDecodeIr()
-        throws Exception
+    public void shouldEncodeThenDecodeIr() throws Exception
     {
-        final MessageSchema schema = parse(TestUtil.getLocalResource("basic-schema.xml"), ParserOptions.DEFAULT);
+        final MessageSchema schema = parse(Tests.getLocalResource("basic-schema.xml"), ParserOptions.DEFAULT);
         final IrGenerator irg = new IrGenerator();
         final Ir ir = irg.generate(schema);
         final ByteBuffer buffer = ByteBuffer.allocateDirect(CAPACITY);
@@ -63,10 +61,9 @@ public class EncodedIrTest
     }
 
     @Test
-    public void shouldHandleRightSizedBuffer()
-        throws Exception
+    public void shouldHandleRightSizedBuffer() throws Exception
     {
-        final MessageSchema schema = parse(TestUtil.getLocalResource("basic-schema.xml"), ParserOptions.DEFAULT);
+        final MessageSchema schema = parse(Tests.getLocalResource("basic-schema.xml"), ParserOptions.DEFAULT);
         final IrGenerator irg = new IrGenerator();
         final Ir ir = irg.generate(schema);
         final ByteBuffer buffer = ByteBuffer.allocateDirect(CAPACITY);
@@ -84,10 +81,9 @@ public class EncodedIrTest
     }
 
     @Test
-    public void shouldDecodeCorrectFrame()
-        throws Exception
+    public void shouldDecodeFrame() throws Exception
     {
-        final MessageSchema schema = parse(TestUtil.getLocalResource(
+        final MessageSchema schema = parse(Tests.getLocalResource(
             "code-generation-schema.xml"), ParserOptions.DEFAULT);
         final IrGenerator irg = new IrGenerator();
         final Ir ir = irg.generate(schema);
@@ -107,33 +103,10 @@ public class EncodedIrTest
         assertThat(decodedIr.namespaceName(), is(ir.namespaceName()));
     }
 
-    private void assertEqual(final Token lhs, final Token rhs)
-    {
-        assertThat(lhs.name(), is(rhs.name()));
-        assertThat(lhs.version(), is(rhs.version()));
-        assertThat(lhs.offset(), is(rhs.offset()));
-        assertThat((long)lhs.id(), is((long)rhs.id()));
-        assertThat(lhs.signal(), is(rhs.signal()));
-        assertThat(lhs.encodedLength(), is(rhs.encodedLength()));
-
-        assertThat(lhs.encoding().byteOrder(), is(rhs.encoding().byteOrder()));
-        assertThat(lhs.encoding().primitiveType(), is(rhs.encoding().primitiveType()));
-        assertThat(lhs.encoding().presence(), is(rhs.encoding().presence()));
-        assertThat(lhs.encoding().constValue(), is(rhs.encoding().constValue()));
-        assertThat(lhs.encoding().minValue(), is(rhs.encoding().minValue()));
-        assertThat(lhs.encoding().maxValue(), is(rhs.encoding().maxValue()));
-        assertThat(lhs.encoding().nullValue(), is(rhs.encoding().nullValue()));
-        assertThat(lhs.encoding().characterEncoding(), is(rhs.encoding().characterEncoding()));
-        assertThat(lhs.encoding().epoch(), is(rhs.encoding().epoch()));
-        assertThat(lhs.encoding().timeUnit(), is(rhs.encoding().timeUnit()));
-        assertThat(lhs.encoding().semanticType(), is(rhs.encoding().semanticType()));
-    }
-
     @Test
-    public void shouldDecodeCorrectHeader()
-        throws Exception
+    public void shouldDecodeHeader() throws Exception
     {
-        final MessageSchema schema = parse(TestUtil.getLocalResource(
+        final MessageSchema schema = parse(Tests.getLocalResource(
             "code-generation-schema.xml"), ParserOptions.DEFAULT);
         final IrGenerator irg = new IrGenerator();
         final Ir ir = irg.generate(schema);
@@ -155,10 +128,9 @@ public class EncodedIrTest
     }
 
     @Test
-    public void shouldDecodeCorrectMessagesAndTypes()
-        throws Exception
+    public void shouldDecodeMessagesAndTypes() throws Exception
     {
-        final MessageSchema schema = parse(TestUtil.getLocalResource(
+        final MessageSchema schema = parse(Tests.getLocalResource(
             "code-generation-schema.xml"), ParserOptions.DEFAULT);
         final IrGenerator irg = new IrGenerator();
         final Ir ir = irg.generate(schema);
@@ -196,5 +168,27 @@ public class EncodedIrTest
                 assertEqual(decodedTokenList.get(i), tokens.get(i));
             }
         }
+    }
+
+    private void assertEqual(final Token lhs, final Token rhs)
+    {
+        assertThat(lhs.name(), is(rhs.name()));
+        assertThat(lhs.version(), is(rhs.version()));
+        assertThat(lhs.offset(), is(rhs.offset()));
+        assertThat((long)lhs.id(), is((long)rhs.id()));
+        assertThat(lhs.signal(), is(rhs.signal()));
+        assertThat(lhs.encodedLength(), is(rhs.encodedLength()));
+
+        assertThat(lhs.encoding().byteOrder(), is(rhs.encoding().byteOrder()));
+        assertThat(lhs.encoding().primitiveType(), is(rhs.encoding().primitiveType()));
+        assertThat(lhs.encoding().presence(), is(rhs.encoding().presence()));
+        assertThat(lhs.encoding().constValue(), is(rhs.encoding().constValue()));
+        assertThat(lhs.encoding().minValue(), is(rhs.encoding().minValue()));
+        assertThat(lhs.encoding().maxValue(), is(rhs.encoding().maxValue()));
+        assertThat(lhs.encoding().nullValue(), is(rhs.encoding().nullValue()));
+        assertThat(lhs.encoding().characterEncoding(), is(rhs.encoding().characterEncoding()));
+        assertThat(lhs.encoding().epoch(), is(rhs.encoding().epoch()));
+        assertThat(lhs.encoding().timeUnit(), is(rhs.encoding().timeUnit()));
+        assertThat(lhs.encoding().semanticType(), is(rhs.encoding().semanticType()));
     }
 }

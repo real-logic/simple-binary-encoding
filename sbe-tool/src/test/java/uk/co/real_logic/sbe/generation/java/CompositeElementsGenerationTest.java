@@ -57,7 +57,7 @@ public class CompositeElementsGenerationTest
     private static final int SCHEMA_BUFFER_CAPACITY = 16 * 1024;
 
     @Test
-    public void shouldEncodeCorrectly()
+    public void shouldEncode()
     {
         final ByteBuffer encodedMsgBuffer = ByteBuffer.allocate(MSG_BUFFER_CAPACITY);
         encodeTestMessage(encodedMsgBuffer);
@@ -93,7 +93,7 @@ public class CompositeElementsGenerationTest
     }
 
     @Test
-    public void shouldDecodeCorrectly()
+    public void shouldDecode()
     {
         final ByteBuffer encodedMsgBuffer = ByteBuffer.allocate(MSG_BUFFER_CAPACITY);
         encodeTestMessage(encodedMsgBuffer);
@@ -124,7 +124,7 @@ public class CompositeElementsGenerationTest
     }
 
     @Test
-    public void shouldDisplayCorrectly()
+    public void shouldDisplay()
     {
         final ByteBuffer encodedMsgBuffer = ByteBuffer.allocate(MSG_BUFFER_CAPACITY);
         encodeTestMessage(encodedMsgBuffer);
@@ -137,7 +137,7 @@ public class CompositeElementsGenerationTest
     }
 
     @Test
-    public void shouldOtfDecodeCorrectly() throws Exception
+    public void shouldOtfDecode() throws Exception
     {
         final ByteBuffer encodedSchemaBuffer = ByteBuffer.allocate(SCHEMA_BUFFER_CAPACITY);
         encodeSchema(encodedSchemaBuffer);

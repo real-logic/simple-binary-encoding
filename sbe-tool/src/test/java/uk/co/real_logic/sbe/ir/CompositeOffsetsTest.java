@@ -24,14 +24,13 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static uk.co.real_logic.sbe.TestUtil.getLocalResource;
+import static uk.co.real_logic.sbe.Tests.getLocalResource;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 public class CompositeOffsetsTest
 {
     @Test
-    public void shouldGenerateCorrectOffsetsForFieldsWithEmbeddedComposite()
-        throws Exception
+    public void shouldGenerateOffsetsForFieldsWithEmbeddedComposite() throws Exception
     {
         final MessageSchema schema = parse(getLocalResource("composite-offsets-schema.xml"), ParserOptions.DEFAULT);
         final IrGenerator irg = new IrGenerator();

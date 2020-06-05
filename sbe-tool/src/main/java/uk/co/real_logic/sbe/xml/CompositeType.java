@@ -45,7 +45,7 @@ public class CompositeType extends Type
      * SBE schema composite type.
      */
     public static final String COMPOSITE_TYPE = "composite";
-    public static final String SUB_TYPES_EXP = "type|enum|set|composite|ref";
+    public static final String SUB_TYPES_EXP = "type|enum|set|composite|ref|data|group";
 
     private final List<String> compositesPath = new ArrayList<>();
     private final Map<String, Type> containedTypeByNameMap = new LinkedHashMap<>();
@@ -135,7 +135,6 @@ public class CompositeType extends Type
      */
     public List<Type> getTypeList()
     {
-
         return new ArrayList<>(containedTypeByNameMap.values());
     }
 
@@ -461,6 +460,11 @@ public class CompositeType extends Type
 
                 break;
             }
+
+            case "data":
+            case "group":
+                XmlSchemaParser.handleError(subTypeNode, nodeName + " not valid within composite");
+                break;
 
             default:
                 throw new IllegalStateException("Unknown node type: name=" + nodeName);

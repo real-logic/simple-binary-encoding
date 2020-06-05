@@ -16,7 +16,7 @@
 package uk.co.real_logic.sbe.xml;
 
 import org.junit.jupiter.api.Test;
-import uk.co.real_logic.sbe.TestUtil;
+import uk.co.real_logic.sbe.Tests;
 
 import java.util.List;
 
@@ -28,11 +28,10 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 public class EmbeddedLengthAndCountFileTest
 {
     @Test
-    public void shouldHandleEmbeddedCountForGroup()
-        throws Exception
+    public void shouldHandleEmbeddedCountForGroup() throws Exception
     {
         final MessageSchema schema = parse(
-            TestUtil.getLocalResource("embedded-length-and-count-schema.xml"), ParserOptions.DEFAULT);
+            Tests.getLocalResource("embedded-length-and-count-schema.xml"), ParserOptions.DEFAULT);
         final List<Field> fields = schema.getMessage(1).fields();
 
         assertThat(fields.get(1).name(), is("ListOrdGrp"));
@@ -44,9 +43,8 @@ public class EmbeddedLengthAndCountFileTest
     }
 
     @Test
-    public void shouldHandleEmbeddedLengthForData()
-        throws Exception
+    public void shouldHandleEmbeddedLengthForData() throws Exception
     {
-        parse(TestUtil.getLocalResource("embedded-length-and-count-schema.xml"), ParserOptions.DEFAULT);
+        parse(Tests.getLocalResource("embedded-length-and-count-schema.xml"), ParserOptions.DEFAULT);
     }
 }

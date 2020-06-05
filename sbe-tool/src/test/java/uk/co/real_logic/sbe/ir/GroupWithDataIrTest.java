@@ -25,14 +25,13 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static uk.co.real_logic.sbe.TestUtil.getLocalResource;
+import static uk.co.real_logic.sbe.Tests.getLocalResource;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 public class GroupWithDataIrTest
 {
     @Test
-    public void shouldGenerateCorrectIrForSingleVarDataInRepeatingGroup()
-        throws Exception
+    public void shouldGenerateIrForSingleVarDataInRepeatingGroup() throws Exception
     {
         final MessageSchema schema = parse(getLocalResource("group-with-data-schema.xml"), ParserOptions.DEFAULT);
         final IrGenerator irg = new IrGenerator();
@@ -73,8 +72,7 @@ public class GroupWithDataIrTest
     }
 
     @Test
-    public void shouldGenerateCorrectIrForMultipleVarDataInRepeatingGroup()
-        throws Exception
+    public void shouldGenerateIrForMultipleVarDataInRepeatingGroup() throws Exception
     {
         final MessageSchema schema = parse(getLocalResource("group-with-data-schema.xml"), ParserOptions.DEFAULT);
         final IrGenerator irg = new IrGenerator();
@@ -102,8 +100,7 @@ public class GroupWithDataIrTest
     }
 
     @Test
-    public void shouldGenerateCorrectIrForVarDataInNestedRepeatingGroup()
-        throws Exception
+    public void shouldGenerateIrForVarDataInNestedRepeatingGroup() throws Exception
     {
         final MessageSchema schema = parse(getLocalResource("group-with-data-schema.xml"), ParserOptions.DEFAULT);
         final IrGenerator irg = new IrGenerator();
@@ -135,8 +132,7 @@ public class GroupWithDataIrTest
     }
 
     @Test
-    public void shouldGenerateCorrectIrForOnlyMultipleVarDataInRepeatingGroup()
-        throws Exception
+    public void shouldGenerateIrForOnlyMultipleVarDataInRepeatingGroup() throws Exception
     {
         final MessageSchema schema = parse(getLocalResource("group-with-data-schema.xml"), ParserOptions.DEFAULT);
         final IrGenerator irg = new IrGenerator();

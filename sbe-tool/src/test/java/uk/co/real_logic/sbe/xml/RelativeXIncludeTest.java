@@ -27,8 +27,7 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 public class RelativeXIncludeTest
 {
     @Test
-    public void shouldParseFileInSubDir()
-        throws Exception
+    public void shouldParseFileInSubDir() throws Exception
     {
         final URL testResource = getClass().getClassLoader().getResource("sub/basic-schema.xml");
         assertNotNull(testResource);

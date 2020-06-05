@@ -40,8 +40,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CompositeTypeTest
 {
     @Test
-    public void shouldHandleDecimalCompositeType()
-        throws Exception
+    public void shouldHandleDecimalCompositeType() throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -65,8 +64,7 @@ public class CompositeTypeTest
     }
 
     @Test
-    public void shouldHandleDecimal32CompositeType()
-        throws Exception
+    public void shouldHandleDecimal32CompositeType() throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -92,8 +90,7 @@ public class CompositeTypeTest
     }
 
     @Test
-    public void shouldHandleDecimal64CompositeType()
-        throws Exception
+    public void shouldHandleDecimal64CompositeType() throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -118,8 +115,7 @@ public class CompositeTypeTest
     }
 
     @Test
-    public void shouldHandleCompositeTypeList()
-        throws Exception
+    public void shouldHandleCompositeTypeList() throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -138,8 +134,7 @@ public class CompositeTypeTest
     }
 
     @Test
-    public void shouldHandleCompositeHasNullableType()
-        throws Exception
+    public void shouldHandleCompositeHasNullableType() throws Exception
     {
         final String nullValStr = "9223372036854775807";
         final String testXmlString =

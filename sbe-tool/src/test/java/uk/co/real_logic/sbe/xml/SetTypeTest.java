@@ -21,7 +21,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.PrimitiveValue;
-import uk.co.real_logic.sbe.TestUtil;
+import uk.co.real_logic.sbe.Tests;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -44,8 +44,7 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 public class SetTypeTest
 {
     @Test
-    public void shouldHandleBinarySetType()
-        throws Exception
+    public void shouldHandleBinarySetType() throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -66,8 +65,7 @@ public class SetTypeTest
     }
 
     @Test
-    public void shouldHandleSetTypeList()
-        throws Exception
+    public void shouldHandleSetTypeList() throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -177,10 +175,9 @@ public class SetTypeTest
     }
 
     @Test
-    public void shouldHandleEncodingTypesWithNamedTypes()
-        throws Exception
+    public void shouldHandleEncodingTypesWithNamedTypes() throws Exception
     {
-        final MessageSchema schema = parse(TestUtil.getLocalResource(
+        final MessageSchema schema = parse(Tests.getLocalResource(
             "encoding-types-schema.xml"), ParserOptions.DEFAULT);
         final List<Field> fields = schema.getMessage(1).fields();
 

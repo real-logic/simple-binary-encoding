@@ -21,7 +21,7 @@ import org.agrona.MutableDirectBuffer;
 import org.agrona.generation.CompilerUtil;
 import org.agrona.generation.StringWriterOutputManager;
 import uk.co.real_logic.sbe.SbeTool;
-import uk.co.real_logic.sbe.TestUtil;
+import uk.co.real_logic.sbe.Tests;
 import uk.co.real_logic.sbe.ir.Ir;
 import uk.co.real_logic.sbe.ir.IrDecoder;
 import uk.co.real_logic.sbe.ir.IrEncoder;
@@ -51,7 +51,7 @@ public class GenerateFixBinaryTest
         System.setProperty(SbeTool.KEYWORD_APPEND_TOKEN, "_");
 
         final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
-        final MessageSchema schema = parse(TestUtil.getLocalResource("FixBinary.xml"), options);
+        final MessageSchema schema = parse(Tests.getLocalResource("FixBinary.xml"), options);
         final IrGenerator irg = new IrGenerator();
         final Ir ir = irg.generate(schema);
         final JavaGenerator generator = new JavaGenerator(
@@ -77,7 +77,7 @@ public class GenerateFixBinaryTest
         System.setProperty(SbeTool.KEYWORD_APPEND_TOKEN, "_");
 
         final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
-        final MessageSchema schema = parse(TestUtil.getLocalResource("FixBinary.xml"), options);
+        final MessageSchema schema = parse(Tests.getLocalResource("FixBinary.xml"), options);
         final IrGenerator irg = new IrGenerator();
         final Ir ir = irg.generate(schema);
         final ByteBuffer buffer = ByteBuffer.allocate(1024 * 1024);

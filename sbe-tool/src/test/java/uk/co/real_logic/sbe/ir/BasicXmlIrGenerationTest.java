@@ -26,14 +26,13 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static uk.co.real_logic.sbe.TestUtil.getLocalResource;
+import static uk.co.real_logic.sbe.Tests.getLocalResource;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 public class BasicXmlIrGenerationTest
 {
     @Test
-    public void shouldGenerateCorrectIrForMessageHeader()
-        throws Exception
+    public void shouldGenerateIrForMessageHeader() throws Exception
     {
         final MessageSchema schema = parse(getLocalResource("basic-schema.xml"), ParserOptions.DEFAULT);
         final IrGenerator irg = new IrGenerator();
@@ -95,8 +94,7 @@ public class BasicXmlIrGenerationTest
     }
 
     @Test
-    public void shouldGenerateCorrectIrForBasicMessage()
-        throws Exception
+    public void shouldGenerateIrForBasicMessage() throws Exception
     {
         final MessageSchema schema = parse(getLocalResource("basic-schema.xml"), ParserOptions.DEFAULT);
         final IrGenerator irg = new IrGenerator();
@@ -145,8 +143,7 @@ public class BasicXmlIrGenerationTest
     }
 
     @Test
-    public void shouldGenerateCorrectIrForMessageWithVariableLengthField()
-        throws Exception
+    public void shouldGenerateIrForMessageWithVariableLengthField() throws Exception
     {
         final MessageSchema schema = parse(getLocalResource(
             "basic-variable-length-schema.xml"), ParserOptions.DEFAULT);
@@ -209,8 +206,7 @@ public class BasicXmlIrGenerationTest
     }
 
     @Test
-    public void shouldGenerateCorrectIrForMessageWithRepeatingGroupWithEmbeddedDimensions()
-        throws Exception
+    public void shouldGenerateIrForMessageWithRepeatingGroupWithEmbeddedDimensions() throws Exception
     {
         final MessageSchema schema = parse(getLocalResource(
             "basic-group-schema.xml"), ParserOptions.DEFAULT);
@@ -244,7 +240,7 @@ public class BasicXmlIrGenerationTest
     }
 
     @Test
-    public void shouldGenerateCorrectIrForMessageWithRepeatingGroupWithEmbeddedDimensionsDefaultDimensionType()
+    public void shouldGenerateIrForMessageWithRepeatingGroupWithEmbeddedDimensionsDefaultDimensionType()
         throws Exception
     {
         final MessageSchema schema = parse(getLocalResource(
@@ -271,8 +267,7 @@ public class BasicXmlIrGenerationTest
     }
 
     @Test
-    public void shouldGenerateCorrectIrForMessageWithVariableLengthFieldWithEmbeddedLength()
-        throws Exception
+    public void shouldGenerateIrForMessageWithVariableLengthFieldWithEmbeddedLength() throws Exception
     {
         final MessageSchema schema = parse(getLocalResource(
             "embedded-length-and-count-schema.xml"), ParserOptions.DEFAULT);
