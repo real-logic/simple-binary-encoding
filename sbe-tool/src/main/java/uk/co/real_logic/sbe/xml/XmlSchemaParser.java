@@ -46,30 +46,30 @@ import static uk.co.real_logic.sbe.xml.Presence.REQUIRED;
 public class XmlSchemaParser
 {
     /**
-     * Key for storing {@link ErrorHandler} as user data in XML document
+     * Key for storing {@link ErrorHandler} as user data in XML document.
      */
     public static final String ERROR_HANDLER_KEY = "SbeErrorHandler";
 
-    public static final String TYPE_XPATH_EXPR =
+    static final String TYPE_XPATH_EXPR =
         "/*[local-name() = 'messageSchema']/types/" + EncodedDataType.ENCODED_DATA_TYPE;
 
-    public static final String COMPOSITE_XPATH_EXPR =
+    static final String COMPOSITE_XPATH_EXPR =
         "/*[local-name() = 'messageSchema']/types/" + CompositeType.COMPOSITE_TYPE;
 
-    public static final String ENUM_XPATH_EXPR =
+    static final String ENUM_XPATH_EXPR =
         "/*[local-name() = 'messageSchema']/types/" + EnumType.ENUM_TYPE;
 
-    public static final String SET_XPATH_EXPR =
+    static final String SET_XPATH_EXPR =
         "/*[local-name() = 'messageSchema']/types/" + SetType.SET_TYPE;
 
-    public static final String MESSAGE_SCHEMA_XPATH_EXPR =
+    static final String MESSAGE_SCHEMA_XPATH_EXPR =
         "/*[local-name() = 'messageSchema']";
 
-    public static final String MESSAGE_XPATH_EXPR =
+    static final String MESSAGE_XPATH_EXPR =
         "//*[local-name() = 'message']";
 
     /**
-     * Validate the document against a given schema. Error will be written to {@link java.lang.System#err}.
+     * Validate the document against a given schema. Errors will be written to {@link java.lang.System#err}.
      *
      * @param xsdFilename schema to validate against.
      * @param is          source from which schema is read. Ideally it will have the systemId property set to resolve
@@ -284,7 +284,7 @@ public class XmlSchemaParser
         if (attrNode == null || "".equals(attrNode.getNodeValue()))
         {
             throw new IllegalStateException(
-                "Element '" + elementNode.getNodeName() + "' has empty or missing attribute: " + attrName);
+                "element '" + elementNode.getNodeName() + "' has empty or missing attribute: " + attrName);
         }
 
         return attrNode.getNodeValue();
