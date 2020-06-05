@@ -17,7 +17,7 @@ package uk.co.real_logic.sbe.generation.cpp;
 
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.SbeTool;
-import uk.co.real_logic.sbe.util.ValidationUtil;
+import uk.co.real_logic.sbe.ValidationUtil;
 
 import java.nio.ByteOrder;
 import java.util.EnumMap;

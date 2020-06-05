@@ -45,7 +45,7 @@ public class CompositeType extends Type
      * SBE schema composite type.
      */
     public static final String COMPOSITE_TYPE = "composite";
-    public static final String SUB_TYPES_EXP = "type|enum|set|composite|ref|data|group";
+    private static final String SUB_TYPES_EXP = "type|enum|set|composite|ref|data|group";
 
     private final List<String> compositesPath = new ArrayList<>();
     private final Map<String, Type> containedTypeByNameMap = new LinkedHashMap<>();

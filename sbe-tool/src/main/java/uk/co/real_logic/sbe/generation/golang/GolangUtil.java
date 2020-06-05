@@ -17,7 +17,7 @@ package uk.co.real_logic.sbe.generation.golang;
 
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.SbeTool;
-import uk.co.real_logic.sbe.util.ValidationUtil;
+import uk.co.real_logic.sbe.ValidationUtil;
 
 import java.util.EnumMap;
 import java.util.Map;
