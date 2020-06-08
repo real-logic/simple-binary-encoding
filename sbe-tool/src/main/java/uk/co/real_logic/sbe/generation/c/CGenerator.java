@@ -2418,7 +2418,7 @@ public class CGenerator implements CodeGenerator
                 }
                 else
                 {
-                    literal = "INT32_C(" + Long.toString(intValue) + ")";
+                    literal = "INT32_C(" + intValue + ")";
                 }
                 break;
             }
@@ -2436,7 +2436,7 @@ public class CGenerator implements CodeGenerator
                 }
                 else
                 {
-                    literal = "INT64_C(" + String.valueOf(longValue) + ")";
+                    literal = "INT64_C(" + longValue + ")";
                 }
                 break;
             }
