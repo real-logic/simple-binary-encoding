@@ -24,7 +24,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 /**
- * Intermediate representation of SBE messages to be used for the generation of encoders and decoders
+ * Intermediate Representation (IR) of SBE messages to be used for the generation of encoders and decoders
  * as stubs in various languages.
  */
 public class Ir

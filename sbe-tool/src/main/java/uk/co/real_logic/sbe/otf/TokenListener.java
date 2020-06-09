@@ -23,8 +23,7 @@ import java.util.List;
 /**
  * Callback interface to be implemented by code wanting to decode messages on-the-fly.
  * <p>
- * If all methods are not required then consider extending {@link AbstractTokenListener}
- * for potential performance benefits and simpler code.
+ * If all methods are not required then consider extending {@link AbstractTokenListener} for simpler code.
  */
 public interface TokenListener
 {

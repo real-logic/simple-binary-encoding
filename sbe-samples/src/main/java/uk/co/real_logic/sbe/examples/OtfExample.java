@@ -36,6 +36,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+/**
+ * Example of On-The-Fly decoding of a message based on encoded IR.
+ */
 public class OtfExample
 {
     private static final MessageHeaderEncoder HEADER_ENCODER = new MessageHeaderEncoder();

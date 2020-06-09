@@ -25,7 +25,7 @@ import java.nio.file.Files;
 import static java.io.File.separatorChar;
 
 /**
- * {@link OutputManager} for managing the creation of C++98 source files as the target of code generation.
+ * {@link OutputManager} for managing the creation of C++11 source files as the target of code generation.
  * The character encoding for the {@link java.io.Writer} is UTF-8.
  */
 public class NamespaceOutputManager implements OutputManager

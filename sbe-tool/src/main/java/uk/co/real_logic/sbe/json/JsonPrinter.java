@@ -25,7 +25,7 @@ import java.nio.ByteBuffer;
 import java.util.List;
 
 /**
- * Pretty Print Json based upon the given Ir.
+ * Pretty Print JSON based upon the given Ir.
  */
 public class JsonPrinter
 {

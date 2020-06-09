@@ -32,6 +32,9 @@ import static java.nio.file.StandardOpenOption.CREATE;
 import static java.nio.file.StandardOpenOption.READ;
 import static java.nio.file.StandardOpenOption.WRITE;
 
+/**
+ * Example encode and decode of a complex message using generated stub codecs which has been extended.
+ */
 public class ExampleUsingGeneratedStubExtension
 {
     private static final String ENCODING_FILENAME = "sbe.encoding.filename";

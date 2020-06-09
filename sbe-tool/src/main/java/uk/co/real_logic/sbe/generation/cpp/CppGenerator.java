@@ -39,7 +39,8 @@ import static uk.co.real_logic.sbe.generation.cpp.CppUtil.*;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.*;
 
 /**
- * Codec generator for the C++11 programming language with conditional complication for C++14 and C++17 features.
+ * Codec generator for the C++11 programming language with conditional complication for additional C++14 and C++17
+ * features.
  */
 @SuppressWarnings("MethodLength")
 public class CppGenerator implements CodeGenerator

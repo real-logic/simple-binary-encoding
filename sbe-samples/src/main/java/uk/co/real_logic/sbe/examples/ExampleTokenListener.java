@@ -29,6 +29,9 @@ import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * Example of a {@link TokenListener} implementation which prints a decoded message to a {@link PrintWriter}.
+ */
 public class ExampleTokenListener implements TokenListener
 {
     private int compositeLevel = 0;

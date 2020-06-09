@@ -25,7 +25,7 @@ import java.util.Map;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
 
 /**
- * Message schema composite for schema attributes, messageHeader, and reference for multiple {@link Message} objects.
+ * Message schema aggregate for schema attributes, messageHeader, and reference for multiple {@link Message} objects.
  */
 public class MessageSchema
 {

@@ -35,6 +35,8 @@ public enum Presence
      */
     OPTIONAL("optional");
 
+    private static final Presence[] VALUES = values();
+
     private final String value;
 
     Presence(final String value)
@@ -61,7 +63,7 @@ public enum Presence
      */
     public static Presence get(final String name)
     {
-        for (final Presence p : values())
+        for (final Presence p : VALUES)
         {
             if (p.value.equals(name))
             {
