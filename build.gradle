@@ -22,7 +22,6 @@ buildscript {
 plugins {
     id 'java-library'
     id 'idea'
-    id 'io.freefair.javadoc-links' version '5.1.0' apply false
     id 'com.github.johnrengelman.shadow' version '6.0.0' apply false
     id "com.github.ben-manes.versions" version "0.28.0"
 }
@@ -132,7 +131,6 @@ subprojects {
     apply plugin: 'java-library'
     apply plugin: 'checkstyle'
     apply plugin: 'eclipse'
-    apply plugin: 'io.freefair.javadoc-links'
 
     group = sbeGroup
     version = sbeVersion
@@ -165,6 +163,12 @@ subprojects {
         options.encoding = 'UTF-8'
         options.docEncoding = 'UTF-8'
         options.charSet = 'UTF-8'
+        options.links("https://www.javadoc.io/doc/org.agrona/agrona/${agronaVersion}/")
+        if (JavaVersion.current().isJava11Compatible()) {
+            options.links("https://docs.oracle.com/en/java/javase/${JavaVersion.current().majorVersion}/docs/api/")
+        } else {
+            options.links("https://docs.oracle.com/javase/${JavaVersion.current().majorVersion}/docs/api/")
+        }
         if (JavaVersion.current().isJava10Compatible()) {
             options.addBooleanOption 'html5', true
         }
@@ -427,6 +431,7 @@ project(':sbe-samples') {
 
     javadoc {
         source += sourceSets.generated.allJava
+        source += project(':sbe-tool').sourceSets.main.allJava
     }
 
     java {
@@ -501,6 +506,8 @@ project(':sbe-benchmarks') {
     }
 
     jar.finalizedBy shadowJar
+
+    javadoc.enabled = false
 }
 
 /*
