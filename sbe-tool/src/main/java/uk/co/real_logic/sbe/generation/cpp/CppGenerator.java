@@ -2800,6 +2800,7 @@ public class CppGenerator implements CodeGenerator
             }
 
             final int endSignal = findEndSignal(groups, i, Signal.END_GROUP, groupToken.name());
+            final String groupName = formatPropertyName(groupToken.name());
 
             if (count > 0)
             {
@@ -2813,18 +2814,18 @@ public class CppGenerator implements CodeGenerator
                 sb.append("std::size_t");
                 if (withName)
                 {
-                    sb.append(" ").append(groupToken.name()).append("Length = 0");
+                    sb.append(" ").append(groupName).append("Length = 0");
                 }
             }
             else
             {
                 sb.append("const std::vector<std::tuple<");
                 sb.append(generateMessageLengthArgs(thisGroup, indent + INDENT, false)[0]);
-                sb.append(">>&");
+                sb.append(">> &");
 
                 if (withName)
                 {
-                    sb.append(" ").append(groupToken.name()).append("ItemLengths = {}");
+                    sb.append(groupName).append("ItemLengths = {}");
                 }
             }
 
@@ -2849,7 +2850,7 @@ public class CppGenerator implements CodeGenerator
             sb.append("std::size_t");
             if (withName)
             {
-                sb.append(" ").append(varDataToken.name()).append("Length = 0");
+                sb.append(" ").append(formatPropertyName(varDataToken.name())).append("Length = 0");
             }
 
             count += 1;
@@ -2937,11 +2938,11 @@ public class CppGenerator implements CodeGenerator
             final long minCount = numInGroupToken.encoding().applicableMinValue().longValue();
             final long maxCount = numInGroupToken.encoding().applicableMaxValue().longValue();
 
-            final String countName = groupToken.name() +
+            final String countName = formatPropertyName(groupToken.name()) +
                 (isMessageConstLength(thisGroup) ? "Length" : "ItemLengths.size()");
 
-            final String minCheck = minCount > 0 ? countName + " < " + minCount + " || " : "";
-            final String maxCheck = countName + " > " + maxCount;
+            final String minCheck = minCount > 0 ? countName + " < " + minCount + "LL || " : "";
+            final String maxCheck = countName + " > " + maxCount + "LL";
 
             new Formatter(sbEncode).format("\n" +
                 indent + "    length += %1$s::sbeHeaderSize();\n",
@@ -2955,7 +2956,7 @@ public class CppGenerator implements CodeGenerator
                     indent + "        throw std::runtime_error(\"%5$s outside of allowed range [E110]\");\n" +
                     indent + "    }\n" +
                     indent + "    length += %1$sLength * %2$s::sbeBlockLength();\n",
-                    groupToken.name(),
+                    formatPropertyName(groupToken.name()),
                     formatClassName(groupToken.name()),
                     minCheck,
                     maxCheck,
@@ -2967,8 +2968,8 @@ public class CppGenerator implements CodeGenerator
                     indent + "    if (%3$s%4$s)\n" +
                     indent + "    {\n" +
                     indent + "        throw std::runtime_error(\"%5$s outside of allowed range [E110]\");\n" +
-                    indent + "    }\n" +
-                    indent + "    for (const auto& e: %1$sItemLengths)\n" +
+                    indent + "    }\n\n" +
+                    indent + "    for (const auto &e: %1$sItemLengths)\n" +
                     indent + "    {\n" +
                     indent + "        #if __cpluplus >= 201703L\n" +
                     indent + "        length += std::apply(%2$s::computeLength, e);\n" +
@@ -2976,7 +2977,7 @@ public class CppGenerator implements CodeGenerator
                     indent + "        length += %2$s::computeLength(%6$s);\n" +
                     indent + "        #endif\n" +
                     indent + "    }\n",
-                    groupToken.name(),
+                    formatPropertyName(groupToken.name()),
                     formatClassName(groupToken.name()),
                     minCheck,
                     maxCheck,
@@ -2990,8 +2991,7 @@ public class CppGenerator implements CodeGenerator
                 indent + "        e.skip();\n" +
                 indent + "    });\n",
                 formatClassName(groupToken.name()),
-                formatPropertyName(groupToken.name()),
-                groupToken.name());
+                formatPropertyName(groupToken.name()));
 
             i = endSignal;
         }
@@ -3005,22 +3005,21 @@ public class CppGenerator implements CodeGenerator
                 throw new IllegalStateException("tokens must begin with BEGIN_VAR_DATA: token=" + varDataToken);
             }
 
-            final String propertyName = toUpperFirstChar(varDataToken.name());
             final Token lengthToken = Generators.findFirst("length", varData, i);
 
             new Formatter(sbEncode).format("\n" +
                 indent + "    length += %1$sHeaderLength();\n" +
-                indent + "    if (%1$sLength > %2$d)\n" +
+                indent + "    if (%1$sLength > %2$dLL)\n" +
                 indent + "    {\n" +
                 indent + "        throw std::runtime_error(\"%1$sLength too long for length type [E109]\");\n" +
                 indent + "    }\n" +
                 indent + "    length += %1$sLength;\n",
-                varDataToken.name(),
+                formatPropertyName(varDataToken.name()),
                 lengthToken.encoding().applicableMaxValue().longValue());
 
             new Formatter(sbSkip).format(
                 indent + "    skip%1$s();\n",
-                propertyName);
+                toUpperFirstChar(varDataToken.name()));
 
             i += varDataToken.componentTokenCount();
         }
@@ -3030,30 +3029,28 @@ public class CppGenerator implements CodeGenerator
         new Formatter(sb).format("\n" +
             indent + "void skip()\n" +
             indent + "{\n" +
-            "%3$s" +
+            sbSkip +
             indent + "}\n\n" +
 
             indent + "SBE_NODISCARD static SBE_CONSTEXPR bool isConstLength() SBE_NOEXCEPT\n" +
             indent + "{\n" +
-            indent + "    return " + ((groups.isEmpty() && varData.isEmpty()) ? "true" : "false") + ";\n" +
+            indent + "    return " + (groups.isEmpty() && varData.isEmpty()) + ";\n" +
             indent + "}\n\n" +
 
-            indent + "SBE_NODISCARD static size_t computeLength(%1$s)\n" +
+            indent + "SBE_NODISCARD static std::size_t computeLength(%1$s)\n" +
             indent + "{\n" +
             "#if defined(__GNUG__) && !defined(__clang__)\n" +
             "#pragma GCC diagnostic push\n" +
             "#pragma GCC diagnostic ignored \"-Wtype-limits\"\n" +
             "#endif\n" +
-            indent + "    size_t length = sbeBlockLength();\n\n" +
-            "%2$s" +
+            indent + "    std::size_t length = sbeBlockLength();\n" +
+            sbEncode + "\n" +
             indent + "    return length;\n" +
             "#if defined(__GNUG__) && !defined(__clang__)\n" +
             "#pragma GCC diagnostic pop\n" +
             "#endif\n" +
             indent + "}\n",
-            generateMessageLengthArgs(groups, varData, indent + INDENT, true)[0],
-            sbEncode,
-            sbSkip);
+            generateMessageLengthArgs(groups, varData, indent + INDENT, true)[0]);
 
         return sb;
     }
