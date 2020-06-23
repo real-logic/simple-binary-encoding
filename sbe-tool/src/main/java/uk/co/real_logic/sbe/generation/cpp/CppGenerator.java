@@ -2911,7 +2911,8 @@ public class CppGenerator implements CodeGenerator
             {
                 sb.append(", ");
             }
-            new Formatter(sb).format("std::get<%1$d>(e)", i);
+
+            sb.append("std::get<").append(i).append(">(e)");
         }
 
         return sb;
