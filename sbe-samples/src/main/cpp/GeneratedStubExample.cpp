@@ -23,20 +23,24 @@
 #include "baseline/MessageHeader.h"
 #include "baseline/Car.h"
 
-using namespace std;
 using namespace baseline;
 
 #if defined(WIN32) || defined(_WIN32)
 #    define snprintf _snprintf
 #endif /* WIN32 */
 
-char VEHICLE_CODE[] = {'a', 'b', 'c', 'd', 'e', 'f'};
-char MANUFACTURER_CODE[] = {'1', '2', '3'};
+char VEHICLE_CODE[] = { 'a', 'b', 'c', 'd', 'e', 'f' };
+char MANUFACTURER_CODE[] = { '1', '2', '3' };
 const char *MANUFACTURER = "Honda";
 const char *MODEL = "Civic VTi";
 const int messageHeaderVersion = 0;
 
-std::size_t encodeHdr(MessageHeader &hdr, Car &car, char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
+std::size_t encodeHdr(
+    MessageHeader &hdr,
+    Car &car,
+    char *buffer,
+    std::uint64_t offset,
+    std::uint64_t bufferLength)
 {
     // encode the header
     hdr.wrap(buffer, offset, messageHeaderVersion, bufferLength)
@@ -48,16 +52,20 @@ std::size_t encodeHdr(MessageHeader &hdr, Car &car, char *buffer, std::uint64_t 
     return hdr.encodedLength();
 }
 
-std::size_t decodeHdr(MessageHeader &hdr, char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
+std::size_t decodeHdr(
+    MessageHeader &hdr,
+    char *buffer,
+    std::uint64_t offset,
+    std::uint64_t bufferLength)
 {
     hdr.wrap(buffer, offset, messageHeaderVersion, bufferLength);
 
     // decode the header
-    cout << "messageHeader.blockLength=" << hdr.blockLength() << endl;
-    cout << "messageHeader.templateId=" << hdr.templateId() << endl;
-    cout << "messageHeader.schemaId=" << hdr.schemaId() << endl;
-    cout << "messageHeader.schemaVersion=" << hdr.version() << endl;
-    cout << "messageHeader.encodedLength=" << hdr.encodedLength() << endl;
+    std::cout << "messageHeader.blockLength=" << hdr.blockLength() << std::endl;
+    std::cout << "messageHeader.templateId=" << hdr.templateId() << std::endl;
+    std::cout << "messageHeader.schemaId=" << hdr.schemaId() << std::endl;
+    std::cout << "messageHeader.schemaVersion=" << hdr.version() << std::endl;
+    std::cout << "messageHeader.encodedLength=" << hdr.encodedLength() << std::endl;
 
     return hdr.encodedLength();
 }
@@ -280,7 +288,7 @@ std::size_t decodeCar(
         performanceFigures.next();
         std::cout << "\ncar.performanceFigures.octaneRating=" << (std::uint64_t)performanceFigures.octaneRating();
 
-        Car::PerformanceFigures::Acceleration &acceleration = performanceFigures.acceleration();
+        baseline::Car::PerformanceFigures::Acceleration &acceleration = performanceFigures.acceleration();
         while (acceleration.hasNext())
         {
             acceleration.next();
@@ -301,12 +309,12 @@ std::size_t decodeCar(
     std::cout << "\ncar.activationCodeLength=" << bytesCopied;
     std::cout << "\ncar.activationCode=" << std::string(tmp, bytesCopied);
 
-    std::cout << "\ncar.encodedLength=" << (int)car.encodedLength() << "\n";
+    std::cout << "\ncar.encodedLength=" << (int)car.encodedLength() << std::endl;
 
     return car.encodedLength();
 }
 
-int main(int argc, const char* argv[])
+int main(int argc, const char **argv)
 {
     char buffer[2048];
     MessageHeader hdr;
@@ -314,29 +322,31 @@ int main(int argc, const char* argv[])
 
     std::size_t encodeHdrLength = encodeHdr(hdr, car, buffer, 0, sizeof(buffer));
     std::size_t encodeMsgLength = encodeCar(car, buffer, hdr.encodedLength(), sizeof(buffer));
-    std::size_t predictedLength = Car::computeLength({11, 14, 13}, {3, 3}, 5, 9, 8);
+    std::size_t predictedLength = Car::computeLength({ 11, 14, 13 }, { 3, 3 }, 5, 9, 8);
 
-    cout << "Encoded Lengths are " << encodeHdrLength << " + " << encodeMsgLength << " (" << predictedLength << ")" << endl;
+    std::cout << "Encoded Lengths are " << encodeHdrLength << " + " << encodeMsgLength << " (" << predictedLength << ")"
+        << std::endl;
 
     std::size_t decodeHdrLength = decodeHdr(hdr, buffer, 0, sizeof(buffer));
-    std::size_t decodeMsgLength = decodeCar(car, buffer, hdr.encodedLength(), hdr.blockLength(), hdr.version(), sizeof(buffer));
+    std::size_t decodeMsgLength = decodeCar(
+        car, buffer, hdr.encodedLength(), hdr.blockLength(), hdr.version(), sizeof(buffer));
 
-    cout << "Decoded Lengths are " << decodeHdrLength << " + " << decodeMsgLength << endl;
+    std::cout << "Decoded Lengths are " << decodeHdrLength << " + " << decodeMsgLength << std::endl;
 
     if (encodeHdrLength != decodeHdrLength)
     {
-        cerr << "Encode/Decode header lengths do not match\n";
+        std::cerr << "Encode/Decode header lengths do not match" << std::endl;
         return EXIT_FAILURE;
     }
 
     if (encodeMsgLength != decodeMsgLength)
     {
-        cerr << "Encode/Decode message lengths do not match\n";
+        std::cerr << "Encode/Decode message lengths do not match" << std::endl;
         return EXIT_FAILURE;
     }
 
     car.wrapForDecode(buffer, hdr.encodedLength(), hdr.blockLength(), hdr.version(), sizeof(buffer));
-    cout << "Encoded json: '" << car << "'" << endl;
+    std::cout << "Encoded json: '" << car << "'" << std::endl;
 
     return EXIT_SUCCESS;
 }
