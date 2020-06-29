@@ -338,8 +338,7 @@ public:
         std::string characterEncoding,
         std::string epoch,
         std::string timeUnit,
-        std::string semanticType)
-        :
+        std::string semanticType) :
         m_presence(presence),
         m_primitiveType(type),
         m_byteOrder(byteOrder),
@@ -532,42 +531,42 @@ public:
         return getDouble(m_primitiveType, m_byteOrder, buffer);
     }
 
-    inline const PrimitiveValue& minValue() const
+    inline const PrimitiveValue &minValue() const
     {
         return m_minValue;
     }
 
-    inline const PrimitiveValue& maxValue() const
+    inline const PrimitiveValue &maxValue() const
     {
         return m_maxValue;
     }
 
-    inline const PrimitiveValue& nullValue() const
+    inline const PrimitiveValue &nullValue() const
     {
         return m_nullValue;
     }
 
-    inline const PrimitiveValue& constValue() const
+    inline const PrimitiveValue &constValue() const
     {
         return m_constValue;
     }
 
-    inline const std::string& characterEncoding() const
+    inline const std::string &characterEncoding() const
     {
         return m_characterEncoding;
     }
 
-    inline const std::string& epoch() const
+    inline const std::string &epoch() const
     {
         return m_epoch;
     }
 
-    inline const std::string& timeUnit() const
+    inline const std::string &timeUnit() const
     {
         return m_timeUnit;
     }
 
-    inline const std::string& semanticType() const
+    inline const std::string &semanticType() const
     {
         return m_semanticType;
     }

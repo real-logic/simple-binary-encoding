@@ -95,12 +95,12 @@ public:
         return m_signal;
     }
 
-    inline const std::string& name() const
+    inline const std::string &name() const
     {
         return m_name;
     }
 
-    inline const std::string& description() const
+    inline const std::string &description() const
     {
         return m_description;
     }
@@ -115,7 +115,7 @@ public:
         return m_version;
     }
 
-    inline const Encoding& encoding() const
+    inline const Encoding &encoding() const
     {
         return m_encoding;
     }

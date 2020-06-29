@@ -109,7 +109,7 @@ public:
         std::for_each(m_messages.begin(), m_messages.end(),
             [&](std::shared_ptr<std::vector<Token>> tokens)
             {
-                Token& token = tokens->at(0);
+                Token &token = tokens->at(0);
 
                 if (token.signal() == Signal::BEGIN_MESSAGE && token.fieldId() == id && token.tokenVersion() == version)
                 {
@@ -127,7 +127,7 @@ public:
         std::for_each(m_messages.begin(), m_messages.end(),
             [&](std::shared_ptr<std::vector<Token>> tokens)
             {
-                Token& token = tokens->at(0);
+                Token &token = tokens->at(0);
 
                 if (token.signal() == Signal::BEGIN_MESSAGE && token.fieldId() == id)
                 {
@@ -224,12 +224,13 @@ private:
         return 0;
     }
 
-    std::uint64_t decodeAndAddToken(std::shared_ptr<std::vector<Token>>& tokens, std::uint64_t offset)
+    std::uint64_t decodeAndAddToken(std::shared_ptr<std::vector<Token>> &tokens, std::uint64_t offset)
     {
         using namespace uk::co::real_logic::sbe::ir::generated;
 
         TokenCodec tokenCodec;
-        tokenCodec.wrapForDecode(m_buffer.get(), offset, tokenCodec.sbeBlockLength(), tokenCodec.sbeSchemaVersion(), m_length);
+        tokenCodec.wrapForDecode(
+            m_buffer.get(), offset, tokenCodec.sbeBlockLength(), tokenCodec.sbeSchemaVersion(), m_length);
 
         Signal signal = static_cast<Signal>(tokenCodec.signal());
         PrimitiveType type = static_cast<PrimitiveType>(tokenCodec.primitiveType());
@@ -277,8 +278,17 @@ private:
         std::string referencedName(tmpBuffer, tmpLen);
 
         Encoding encoding(
-            type, presence, byteOrder, minValue, maxValue, nullValue, constValue,
-            characterEncoding, epoch, timeUnit, semanticType);
+            type,
+            presence,
+            byteOrder,
+            minValue,
+            maxValue,
+            nullValue,
+            constValue,
+            characterEncoding,
+            epoch,
+            timeUnit,
+            semanticType);
 
         Token token(tokenOffset, id, version, tokenSize, componentTokenCount, signal, name, description, encoding);
 
@@ -295,7 +305,7 @@ private:
         {
             size += decodeAndAddToken(m_headerTokens, offset + size);
 
-            Token& token = m_headerTokens->back();
+            Token &token = m_headerTokens->back();
 
             if (token.signal() == Signal::END_COMPOSITE)
             {
@@ -316,7 +326,7 @@ private:
         {
             size += decodeAndAddToken(tokensForMessage, offset + size);
 
-            Token& token = tokensForMessage->back();
+            Token &token = tokensForMessage->back();
 
             if (token.signal() == Signal::END_MESSAGE)
             {
