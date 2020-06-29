@@ -39,7 +39,7 @@ import static uk.co.real_logic.sbe.generation.cpp.CppUtil.*;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.*;
 
 /**
- * Codec generator for the C++11 programming language with conditional complication for additional C++14 and C++17
+ * Codec generator for the C++11 programming language with conditional compilation for additional C++14 and C++17
  * features.
  */
 @SuppressWarnings("MethodLength")
@@ -1823,12 +1823,12 @@ public class CppGenerator implements CodeGenerator
             "        return m_offset;\n" +
             "    }\n\n" +
 
-            "    SBE_NODISCARD const char * buffer() const SBE_NOEXCEPT\n" +
+            "    SBE_NODISCARD const char *buffer() const SBE_NOEXCEPT\n" +
             "    {\n" +
             "        return m_buffer;\n" +
             "    }\n\n" +
 
-            "    SBE_NODISCARD char * buffer() SBE_NOEXCEPT\n" +
+            "    SBE_NODISCARD char *buffer() SBE_NOEXCEPT\n" +
             "    {\n" +
             "        return m_buffer;\n" +
             "    }\n\n" +
@@ -1963,7 +1963,7 @@ public class CppGenerator implements CodeGenerator
             "        return %8$s;\n" +
             "    }\n\n" +
 
-            "    SBE_NODISCARD static SBE_CONSTEXPR const char * sbeSemanticType() SBE_NOEXCEPT\n" +
+            "    SBE_NODISCARD static SBE_CONSTEXPR const char *sbeSemanticType() SBE_NOEXCEPT\n" +
             "    {\n" +
             "        return \"%9$s\";\n" +
             "    }\n\n" +
@@ -2040,12 +2040,12 @@ public class CppGenerator implements CodeGenerator
             "        return skipper.encodedLength();\n" +
             "    }\n\n" +
 
-            "    SBE_NODISCARD const char * buffer() const SBE_NOEXCEPT\n" +
+            "    SBE_NODISCARD const char *buffer() const SBE_NOEXCEPT\n" +
             "    {\n" +
             "        return m_buffer;\n" +
             "    }\n\n" +
 
-            "    SBE_NODISCARD char * buffer() SBE_NOEXCEPT\n" +
+            "    SBE_NODISCARD char *buffer() SBE_NOEXCEPT\n" +
             "    {\n" +
             "        return m_buffer;\n" +
             "    }\n\n" +
@@ -2166,7 +2166,7 @@ public class CppGenerator implements CodeGenerator
         final String semanticType = encoding.semanticType() == null ? "" : encoding.semanticType();
 
         sb.append("\n")
-            .append(indent).append("    SBE_NODISCARD static const char * ")
+            .append(indent).append("    SBE_NODISCARD static const char *")
             .append(token.name()).append("MetaAttribute(const MetaAttribute metaAttribute) SBE_NOEXCEPT\n")
             .append(indent).append("    {\n")
             .append(indent).append("        switch (metaAttribute)\n")
@@ -2752,7 +2752,7 @@ public class CppGenerator implements CodeGenerator
         final StringBuilder sb = new StringBuilder();
 
         new Formatter(sb).format("\n" +
-            "    static const char* c_str(const %1$s::Value value)\n" +
+            "    static const char *c_str(const %1$s::Value value)\n" +
             "    {\n" +
             "        switch (value)\n" +
             "        {\n",
@@ -2956,7 +2956,7 @@ public class CppGenerator implements CodeGenerator
                     indent + "    {\n" +
                     indent + "        throw std::runtime_error(\"%5$s outside of allowed range [E110]\");\n" +
                     indent + "    }\n" +
-                    indent + "    length += %1$sLength * %2$s::sbeBlockLength();\n",
+                    indent + "    length += %1$sLength *%2$s::sbeBlockLength();\n",
                     formatPropertyName(groupToken.name()),
                     formatClassName(groupToken.name()),
                     minCheck,
