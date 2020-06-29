@@ -606,7 +606,7 @@ public class CppGenerator implements CodeGenerator
                 indent + "        {\n" +
                 indent + "            throw std::runtime_error(\"std::string too long for length type [E109]\");\n" +
                 indent + "        }\n" +
-                indent + "        return put%2$s(str.data(), static_cast<%3$s>(str.length()));" +
+                indent + "        return put%2$s(str.data(), static_cast<%3$s>(str.length()));\n" +
                 indent + "    }\n",
                 className,
                 propertyName,
@@ -621,7 +621,7 @@ public class CppGenerator implements CodeGenerator
                 indent + "        {\n" +
                 indent + "            throw std::runtime_error(\"std::string too long for length type [E109]\");\n" +
                 indent + "        }\n" +
-                indent + "        return put%2$s(str.data(), static_cast<%3$s>(str.length()));" +
+                indent + "        return put%2$s(str.data(), static_cast<%3$s>(str.length()));\n" +
                 indent + "    }\n" +
                 indent + "    #endif\n",
                 className,
@@ -2034,8 +2034,7 @@ public class CppGenerator implements CodeGenerator
 
             "    SBE_NODISCARD std::uint64_t decodeLength() const\n" +
             "    {\n" +
-            "        %10$s skipper(m_buffer, m_offset,\n" +
-            "            m_bufferLength, sbeBlockLength(), m_actingVersion);\n" +
+            "        %10$s skipper(m_buffer, m_offset, m_bufferLength, sbeBlockLength(), m_actingVersion);\n" +
             "        skipper.skip();\n" +
             "        return skipper.encodedLength();\n" +
             "    }\n\n" +
