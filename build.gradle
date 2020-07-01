@@ -28,7 +28,7 @@ plugins {
 
 defaultTasks 'clean', 'build'
 
-def checkstyleVersion = '8.28'
+def checkstyleVersion = '8.34'
 def hamcrestVersion = '2.2'
 def mockitoVersion = '3.3.3'
 def junitVersion = '5.6.2'
