@@ -131,7 +131,6 @@ public class JsonTokenListener implements TokenListener
             }
         }
         output.append(" }");
-
         next();
     }
 
@@ -139,7 +138,6 @@ public class JsonTokenListener implements TokenListener
         final Token fieldToken, final List<Token> tokens, final int fromIndex, final int toIndex)
     {
         ++compositeLevel;
-
         property(determineName(1, fieldToken, tokens, fromIndex));
         output.append('\n');
         startObject();
@@ -270,11 +268,13 @@ public class JsonTokenListener implements TokenListener
 
                     for (int i = 0; i < arrayLength; i++)
                     {
+                        if (i > 0)
+                        {
+                            output.append(", ");
+                        }
                         Types.appendAsJsonString(output, constOrNotPresentValue, encoding);
-                        output.append(", ");
                     }
 
-                    backup();
                     output.append(']');
                 }
             }
@@ -307,11 +307,13 @@ public class JsonTokenListener implements TokenListener
 
                     for (int i = 0; i < size; i++)
                     {
+                        if (i > 0)
+                        {
+                            output.append(", ");
+                        }
                         Types.appendAsJsonString(output, buffer, index + (i * elementSize), encoding);
-                        output.append(", ");
                     }
 
-                    backup();
                     output.append(']');
                 }
             }
@@ -320,7 +322,11 @@ public class JsonTokenListener implements TokenListener
 
     private void backup()
     {
-        output.setLength(output.length() - 2);
+        final int newLength = output.length() - 2;
+        if (output.charAt(newLength) == ',')
+        {
+            output.setLength(newLength);
+        }
     }
 
     private void indent()
