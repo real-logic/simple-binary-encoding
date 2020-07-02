@@ -36,12 +36,14 @@ public class ToStringTest extends EncodedCarTestBase
         final String result = CAR.toString();
         assertEquals(
             "[Car]" +
-            "(sbeTemplateId=1|sbeSchemaId=1|sbeSchemaVersion=0|sbeBlockLength=45):" +
+            "(sbeTemplateId=1|sbeSchemaId=1|sbeSchemaVersion=2|sbeBlockLength=62):" +
             "serialNumber=1234|modelYear=2013|available=T|code=A|" +
             "someNumbers=[0,1,2,3,4]|" +
             "vehicleCode=ab\"def|" +
             "extras={sportsPack,cruiseControl}|" +
             "engine=(capacity=2000|numCylinders=4|manufacturerCode=123|)|" +
+            "uuid=[7,3]|" +
+            "cupHolderCount=5|" +
             "fuelFigures=[" +
             "(speed=30|mpg=35.9)," +
             "(speed=55|mpg=49.0)," +
@@ -62,9 +64,10 @@ public class ToStringTest extends EncodedCarTestBase
         final String result = CAR.toString();
         assertEquals(
             "[Car]" +
-            "(sbeTemplateId=1|sbeSchemaId=1|sbeSchemaVersion=0|sbeBlockLength=45):" +
+            "(sbeTemplateId=1|sbeSchemaId=1|sbeSchemaVersion=2|sbeBlockLength=62):" +
             "serialNumber=0|modelYear=0|available=F|code=NULL_VAL|someNumbers=[0,0,0,0,0]|vehicleCode=|extras={}|" +
             "engine=(capacity=0|numCylinders=0|manufacturerCode=|)|" +
+            "uuid=[0,0]|cupHolderCount=0|" +
             "fuelFigures=[]|performanceFigures=[]|manufacturer=''|model=''|activationCode=''",
             result);
     }

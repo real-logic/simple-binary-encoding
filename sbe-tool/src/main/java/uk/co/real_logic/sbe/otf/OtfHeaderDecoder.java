@@ -97,6 +97,18 @@ public class OtfHeaderDecoder
     }
 
     /**
+     * Get the block length of the root block in the message.
+     *
+     * @param buffer       from which to read the value.
+     * @param bufferOffset in the buffer at which the message header begins.
+     * @return the length of the root block in the coming message.
+     */
+    public int getBlockLength(final DirectBuffer buffer, final int bufferOffset)
+    {
+        return Types.getInt(buffer, bufferOffset + blockLengthOffset, blockLengthType, blockLengthByteOrder);
+    }
+
+    /**
      * Get the template id from the message header.
      *
      * @param buffer       from which to read the value.
@@ -130,17 +142,5 @@ public class OtfHeaderDecoder
     public int getSchemaVersion(final DirectBuffer buffer, final int bufferOffset)
     {
         return Types.getInt(buffer, bufferOffset + schemaVersionOffset, schemaVersionType, schemaVersionByteOrder);
-    }
-
-    /**
-     * Get the block length of the root block in the message.
-     *
-     * @param buffer       from which to read the value.
-     * @param bufferOffset in the buffer at which the message header begins.
-     * @return the length of the root block in the coming message.
-     */
-    public int getBlockLength(final DirectBuffer buffer, final int bufferOffset)
-    {
-        return Types.getInt(buffer, bufferOffset + blockLengthOffset, blockLengthType, blockLengthByteOrder);
     }
 }

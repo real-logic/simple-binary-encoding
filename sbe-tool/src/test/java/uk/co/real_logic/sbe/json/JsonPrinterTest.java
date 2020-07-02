@@ -70,6 +70,8 @@ public class JsonPrinterTest extends EncodedCarTestBase
             "        \"manufacturerCode\": \"123\",\n" +
             "        \"fuel\": \"Petrol\"\n" +
             "    },\n" +
+            "    \"uuid\": [7, 3],\n" +
+            "    \"cupHolderCount\": 5,\n" +
             "    \"fuelFigures\": [\n" +
             "    {\n" +
             "        \"speed\": 30,\n" +

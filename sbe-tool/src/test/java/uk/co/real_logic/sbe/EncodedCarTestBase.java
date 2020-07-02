@@ -87,6 +87,9 @@ public class EncodedCarTestBase
             .numCylinders((short)4)
             .putManufacturerCode(manufacturerCode, srcOffset);
 
+        CAR.putUuid(7L, 3L)
+            .cupHolderCount((byte)5);
+
         CAR.fuelFiguresCount(3)
             .next().speed(30).mpg(35.9f)
             .next().speed(55).mpg(49.0f)

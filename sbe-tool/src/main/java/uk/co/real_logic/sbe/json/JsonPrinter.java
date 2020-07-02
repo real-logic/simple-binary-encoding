@@ -46,13 +46,12 @@ public class JsonPrinter
 
     public void print(final StringBuilder output, final UnsafeBuffer buffer, final int bufferOffset)
     {
+        final int blockLength = headerDecoder.getBlockLength(buffer, bufferOffset);
         final int templateId = headerDecoder.getTemplateId(buffer, bufferOffset);
         final int schemaId = headerDecoder.getSchemaId(buffer, bufferOffset);
         final int actingVersion = headerDecoder.getSchemaVersion(buffer, bufferOffset);
-        final int blockLength = headerDecoder.getBlockLength(buffer, bufferOffset);
 
         validateId(schemaId);
-        validateVersion(schemaId, actingVersion);
 
         final int messageOffset = bufferOffset + headerDecoder.encodedLength();
         final List<Token> msgTokens = ir.getMessage(templateId);
@@ -71,15 +70,6 @@ public class JsonPrinter
         if (schemaId != ir.id())
         {
             throw new IllegalArgumentException("Required schema id " + ir.id() + " but was " + schemaId);
-        }
-    }
-
-    private void validateVersion(final int schemaId, final int actingVersion)
-    {
-        if (actingVersion > ir.version())
-        {
-            throw new IllegalArgumentException(
-                "Required schema version " + actingVersion + " but was " + ir.version() + " for schema id " + schemaId);
         }
     }
 

@@ -379,33 +379,35 @@ public class PrimitiveValue
     }
 
     /**
-     * Return String representation of this object
+     * Return String value representation of this object.
      *
-     * @return String representing object value
+     * @return String representing object value.
      */
     public String toString()
     {
-        switch (representation)
+        if (Representation.LONG == representation)
         {
-            case LONG:
-                return Long.toString(longValue);
-
-            case DOUBLE:
-                return Double.toString(doubleValue);
-
-            case BYTE_ARRAY:
-                try
-                {
-                    return null == characterEncoding ?
-                        new String(byteArrayValue) : new String(byteArrayValue, characterEncoding);
-                }
-                catch (final UnsupportedEncodingException ex)
-                {
-                    throw new IllegalStateException(ex);
-                }
-
-            default:
-                throw new IllegalStateException("Unsupported Representation: " + representation);
+            return Long.toString(longValue);
+        }
+        else if (Representation.DOUBLE == representation)
+        {
+            return Double.toString(doubleValue);
+        }
+        else if (Representation.BYTE_ARRAY == representation)
+        {
+            try
+            {
+                return null == characterEncoding ?
+                    new String(byteArrayValue) : new String(byteArrayValue, characterEncoding);
+            }
+            catch (final UnsupportedEncodingException ex)
+            {
+                throw new IllegalStateException(ex);
+            }
+        }
+        else
+        {
+            throw new IllegalStateException("Unsupported Representation: " + representation);
         }
     }
 
