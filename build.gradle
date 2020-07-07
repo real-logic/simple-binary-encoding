@@ -33,7 +33,7 @@ def hamcrestVersion = '2.2'
 def mockitoVersion = '3.3.3'
 def junitVersion = '5.6.2'
 def jmhVersion = '1.23'
-def agronaVersion = '1.5.1'
+def agronaVersion = '1.6.0'
 
 def sbeGroup = 'uk.co.real-logic'
 def sbeVersion = file('version.txt').text.trim()
