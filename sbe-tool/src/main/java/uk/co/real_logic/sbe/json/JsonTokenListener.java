@@ -153,7 +153,14 @@ public class JsonTokenListener implements TokenListener
     public void onGroupHeader(final Token token, final int numInGroup)
     {
         property(token.name());
-        output.append("[\n");
+        if (numInGroup > 0)
+        {
+            output.append("[\n");
+        }
+        else
+        {
+            output.append("[],\n");
+        }
     }
 
     public void onBeginGroup(final Token token, final int groupIndex, final int numInGroup)
