@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net45;netcoreapp2.2</TargetFrameworks>
+    <TargetFrameworks>net45;netcoreapp3.1</TargetFrameworks>
     <RootNamespace>Org.SbeTool.Sbe.Tests</RootNamespace>
     <AssemblyName>Org.SbeTool.Sbe.UnitTests</AssemblyName>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
