@@ -34,7 +34,7 @@ Example for Maven:
 <dependency>
     <groupId>uk.co.real-logic</groupId>
     <artifactId>sbe-all</artifactId>
-    <version>1.18.2</version>
+    <version>1.19.0</version>
 </dependency>
 ```
 
@@ -74,7 +74,7 @@ For convenience, a script is provided that does a full clean, build, and test of
 
     $ ./cppbuild/cppbuild
 
-If you are comfortable with using CMake, then a full clean, build, and test looks like:
+If you are comfortable using CMake, then a full clean, build, and test looks like:
 
     $ mkdir -p cppbuild/Debug
     $ cd cppbuild/Debug
@@ -82,7 +82,7 @@ If you are comfortable with using CMake, then a full clean, build, and test look
     $ cmake --build . --clean-first
     $ ctest
 
-__Note__: A C generator is included with the C++ build. And is built with the C++ build. Currently, the C generator is
+__Note__: A C generator is included with the C++ build, and is built with the C++ build. Currently, the C generator is
  a work in progress.
 
 Golang Build
