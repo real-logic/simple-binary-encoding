@@ -24,10 +24,13 @@ import static java.nio.charset.Charset.forName;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 
 /**
- * Class used to encapsulate values for primitives. Used for nullValue, minValue, maxValue, and constants
+ * Class used to encapsulate values for primitives. Used for nullValue, minValue, maxValue, and constants.
  */
 public class PrimitiveValue
 {
+    /**
+     * Representation type used for the stored value.
+     */
     public enum Representation
     {
         /**

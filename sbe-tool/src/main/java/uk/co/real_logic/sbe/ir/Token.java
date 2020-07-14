@@ -352,7 +352,7 @@ public class Token
     }
 
     /**
-     * Builder for Tokens which can simplify construction.
+     * Builder for {@link Token} which can simplify construction.
      */
     public static class Builder
     {

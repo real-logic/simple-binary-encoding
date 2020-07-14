@@ -36,7 +36,10 @@ import static java.lang.reflect.Modifier.STATIC;
  */
 public class JavaUtil
 {
-    public enum Separators
+    /**
+     * Separator symbols for {@link Object#toString()} implementations on codecs.
+     */
+    public enum Separator
     {
         BEGIN_GROUP('['),
         END_GROUP(']'),
@@ -52,7 +55,7 @@ public class JavaUtil
 
         public final char symbol;
 
-        Separators(final char symbol)
+        Separator(final char symbol)
         {
             this.symbol = symbol;
         }

@@ -296,6 +296,9 @@ public class Field
         }
     }
 
+    /**
+     * Builder to make creation of {@link Field} easier.
+     */
     public static class Builder
     {
         private String name;

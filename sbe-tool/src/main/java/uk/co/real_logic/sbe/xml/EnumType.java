@@ -237,7 +237,7 @@ public class EnumType extends Type
     }
 
     /**
-     * Class to hold valid values for EnumType
+     * Holder for valid values for and {@link EnumType}.
      */
     public static class ValidValue
     {

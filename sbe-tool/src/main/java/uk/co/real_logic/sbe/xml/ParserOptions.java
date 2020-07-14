@@ -112,6 +112,9 @@ public final class ParserOptions
         return new Builder();
     }
 
+    /**
+     * Builder to make {@link ParserOptions} easier to create.
+     */
     public static class Builder
     {
         private boolean stopOnError;
