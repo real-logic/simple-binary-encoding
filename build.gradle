@@ -363,17 +363,14 @@ project(':sbe-samples') {
 
     def generatedDir = 'build/generated-src'
     sourceSets {
-        generated.java.srcDir generatedDir
+        generated {
+            java.srcDir generatedDir
+            compileClasspath += project(':sbe-all').sourceSets.main.runtimeClasspath
+        }
     }
 
-    compileJava {
-        dependsOn 'compileGeneratedJava'
-    }
-
-    compileGeneratedJava {
-        dependsOn 'generateCodecs'
-        classpath += project(':sbe-all').sourceSets.main.runtimeClasspath
-    }
+    compileJava.dependsOn 'compileGeneratedJava'
+    compileGeneratedJava.dependsOn 'generateCodecs'
 
     task generateCodecs(type: JavaExec) {
         main = 'uk.co.real_logic.sbe.SbeTool'
@@ -475,17 +472,14 @@ project(':sbe-benchmarks') {
     }
 
     sourceSets {
-        generated.java.srcDir 'build/generated-src'
+        generated {
+            java.srcDir 'build/generated-src'
+            compileClasspath += project(':sbe-all').sourceSets.main.runtimeClasspath
+        }
     }
 
-    compileGeneratedJava {
-        dependsOn 'generateCodecs'
-        classpath += project(':sbe-all').sourceSets.main.runtimeClasspath
-    }
-
-    compileJava {
-        dependsOn 'compileGeneratedJava'
-    }
+    compileGeneratedJava.dependsOn 'generateCodecs'
+    compileJava.dependsOn 'compileGeneratedJava'
 
     task generateCodecs(type: JavaExec) {
         main = 'uk.co.real_logic.sbe.SbeTool'
