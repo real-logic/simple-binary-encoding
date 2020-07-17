@@ -23,14 +23,14 @@ plugins {
     id 'java-library'
     id 'idea'
     id 'com.github.johnrengelman.shadow' version '6.0.0' apply false
-    id "com.github.ben-manes.versions" version "0.28.0"
+    id "com.github.ben-manes.versions" version "0.29.0"
 }
 
 defaultTasks 'clean', 'build'
 
 def checkstyleVersion = '8.34'
 def hamcrestVersion = '2.2'
-def mockitoVersion = '3.4.0'
+def mockitoVersion = '3.4.3'
 def junitVersion = '5.6.2'
 def jmhVersion = '1.23'
 def agronaVersion = '1.6.0'
