@@ -2264,7 +2264,7 @@ public class CppGenerator implements CodeGenerator
         else
         {
             new Formatter(sb).format("\n" +
-                indent + "    SBE_NODISCARD %1$s::Value %2$s() const SBE_NOEXCEPT\n" +
+                indent + "    SBE_NODISCARD %1$s::Value %2$s() const\n" +
                 indent + "    {\n" +
                 "%3$s" +
                 indent + "        %5$s val;\n" +
