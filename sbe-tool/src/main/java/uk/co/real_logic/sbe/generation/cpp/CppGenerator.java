@@ -2251,7 +2251,7 @@ public class CppGenerator implements CodeGenerator
                 constValue.substring(constValue.indexOf(".") + 1));
 
             new Formatter(sb).format("\n" +
-                indent + "    SBE_NODISCARD %1$s::Value %2$s() const SBE_NOEXCEPT\n" +
+                indent + "    SBE_NODISCARD %1$s::Value %2$s() const\n" +
                 indent + "    {\n" +
                 "%3$s" +
                 indent + "        return %1$s::Value::%4$s;\n" +
