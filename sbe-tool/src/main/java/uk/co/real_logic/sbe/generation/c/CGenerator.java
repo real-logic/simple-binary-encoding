@@ -951,14 +951,20 @@ public class CGenerator implements CodeGenerator
 
         for (final Token token : tokens)
         {
+            final CharSequence constVal = generateLiteral(
+                token.encoding().primitiveType(), token.encoding().constValue().toString());
+
             sb.append(String.format(
                 "        case %s:\n" +
                 "             *out = %s_%s;\n" +
                 "             return true;\n",
-                token.encoding().constValue().toString(),
+                constVal,
                 enumName,
                 token.name()));
         }
+
+        final CharSequence constVal = generateLiteral(
+            encodingToken.encoding().primitiveType(), encodingToken.encoding().applicableNullValue().toString());
 
         sb.append(String.format(
             "        case %s:\n" +
@@ -969,7 +975,7 @@ public class CGenerator implements CodeGenerator
             "    errno = E103;\n" +
             "    return false;\n" +
             "}\n",
-            encodingToken.encoding().applicableNullValue().toString(),
+            constVal,
             enumName));
 
         return sb;
@@ -2387,7 +2393,7 @@ public class CGenerator implements CodeGenerator
         return generateLiteral(primitiveType, encoding.applicableNullValue().toString());
     }
 
-    private CharSequence generateLiteral(final PrimitiveType type, final String value)
+    private static CharSequence generateLiteral(final PrimitiveType type, final String value)
     {
         String literal = "";
 
@@ -2418,7 +2424,7 @@ public class CGenerator implements CodeGenerator
                 }
                 else
                 {
-                    literal = "INT32_C(" + intValue + ")";
+                    literal = "INT32_C(" + value + ")";
                 }
                 break;
             }
@@ -2436,7 +2442,7 @@ public class CGenerator implements CodeGenerator
                 }
                 else
                 {
-                    literal = "INT64_C(" + longValue + ")";
+                    literal = "INT64_C(" + value + ")";
                 }
                 break;
             }

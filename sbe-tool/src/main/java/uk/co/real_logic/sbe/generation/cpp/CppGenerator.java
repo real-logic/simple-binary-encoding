@@ -920,11 +920,14 @@ public class CppGenerator implements CodeGenerator
 
         for (final Token token : tokens)
         {
-            new Formatter(sb).format(
-                "            case %1$s: return %2$s;\n",
-                token.encoding().constValue().toString(),
-                token.name());
+            final CharSequence constVal = generateLiteral(
+                token.encoding().primitiveType(), token.encoding().constValue().toString());
+
+            sb.append("            case ").append(constVal).append(": return ").append(token.name()).append(";\n");
         }
+
+        final CharSequence constVal = generateLiteral(
+            encodingToken.encoding().primitiveType(), encodingToken.encoding().applicableNullValue().toString());
 
         new Formatter(sb).format(
             "            case %1$s: return NULL_VALUE;\n" +
@@ -932,7 +935,7 @@ public class CppGenerator implements CodeGenerator
 
             "        throw std::runtime_error(\"unknown value for enum %2$s [E103]\");\n" +
             "    }\n",
-            encodingToken.encoding().applicableNullValue().toString(),
+            constVal,
             enumName);
 
         return sb;
@@ -2386,7 +2389,7 @@ public class CppGenerator implements CodeGenerator
         return generateLiteral(primitiveType, encoding.applicableNullValue().toString());
     }
 
-    private CharSequence generateLiteral(final PrimitiveType type, final String value)
+    private static CharSequence generateLiteral(final PrimitiveType type, final String value)
     {
         String literal = "";
 
@@ -2398,7 +2401,7 @@ public class CppGenerator implements CodeGenerator
             case UINT16:
             case INT8:
             case INT16:
-                literal = "(" + castType + ")" + value;
+                literal = "static_cast<" + castType + ">(" + value + ")";
                 break;
 
             case UINT32:
@@ -2415,7 +2418,7 @@ public class CppGenerator implements CodeGenerator
                 }
                 else
                 {
-                    literal = "INT32_C(" + intValue + ")";
+                    literal = "INT32_C(" + value + ")";
                 }
                 break;
 
@@ -2431,7 +2434,7 @@ public class CppGenerator implements CodeGenerator
                 }
                 else
                 {
-                    literal = "INT64_C(" + longValue + ")";
+                    literal = "INT64_C(" + value + ")";
                 }
                 break;
 
