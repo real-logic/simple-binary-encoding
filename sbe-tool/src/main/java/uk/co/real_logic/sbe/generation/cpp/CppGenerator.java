@@ -270,8 +270,8 @@ public class CppGenerator implements CodeGenerator
             indent + "        m_buffer = buffer;\n" +
             indent + "        m_bufferLength = bufferLength;\n" +
             indent + "        %7$s dimensions(buffer, *pos, bufferLength, actingVersion);\n" +
-            indent + "        dimensions.blockLength((%1$s)%2$d);\n" +
-            indent + "        dimensions.numInGroup((%3$s)count);\n" +
+            indent + "        dimensions.blockLength(static_cast<%1$s>(%2$d));\n" +
+            indent + "        dimensions.numInGroup(static_cast<%3$s>(count));\n" +
             indent + "        m_index = 0;\n" +
             indent + "        m_count = count;\n" +
             indent + "        m_blockLength = %2$d;\n" +
@@ -355,7 +355,8 @@ public class CppGenerator implements CodeGenerator
             .append(indent).append("        m_count = m_index;\n")
             .append(indent).append("        ").append(dimensionsClassName)
             .append(" dimensions(m_buffer, m_initialPosition, m_bufferLength, m_actingVersion);\n")
-            .append(indent).append("        dimensions.numInGroup((").append(cppTypeNumInGroup).append(")m_count);\n")
+            .append(indent)
+            .append("        dimensions.numInGroup(static_cast<").append(cppTypeNumInGroup).append(">(m_count));\n")
             .append(indent).append("        return m_count;\n")
             .append(indent).append("    }\n");
 
