@@ -2411,6 +2411,7 @@ public class CppGenerator implements CodeGenerator
                 literal = "UINT32_C(0x" + Integer.toHexString((int)intValue) + ")";
                 break;
             }
+
             case INT32:
                 final long intValue = Long.parseLong(value);
                 if (intValue == Integer.MIN_VALUE)
