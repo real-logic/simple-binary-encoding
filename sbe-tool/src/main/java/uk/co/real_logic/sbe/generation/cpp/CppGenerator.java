@@ -2394,7 +2394,6 @@ public class CppGenerator implements CodeGenerator
     {
         String literal = "";
 
-        final String castType = cppTypeName(type);
         switch (type)
         {
             case CHAR:
@@ -2402,15 +2401,12 @@ public class CppGenerator implements CodeGenerator
             case UINT16:
             case INT8:
             case INT16:
-                literal = "static_cast<" + castType + ">(" + value + ")";
+                literal = "static_cast<" + cppTypeName(type) + ">(" + value + ")";
                 break;
 
             case UINT32:
-            {
-                final long intValue = Long.parseLong(value);
-                literal = "UINT32_C(0x" + Integer.toHexString((int)intValue) + ")";
+                literal = "UINT32_C(0x" + Integer.toHexString((int)Long.parseLong(value)) + ")";
                 break;
-            }
 
             case INT32:
                 final long intValue = Long.parseLong(value);

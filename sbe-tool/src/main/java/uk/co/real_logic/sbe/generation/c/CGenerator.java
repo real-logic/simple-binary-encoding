@@ -2397,7 +2397,6 @@ public class CGenerator implements CodeGenerator
     {
         String literal = "";
 
-        final String castType = cTypeName(type);
         switch (type)
         {
             case CHAR:
@@ -2405,15 +2404,12 @@ public class CGenerator implements CodeGenerator
             case UINT16:
             case INT8:
             case INT16:
-                literal = "(" + castType + ")" + value;
+                literal = "(" + cTypeName(type) + ")" + value;
                 break;
 
             case UINT32:
-            {
-                final long intValue = Long.parseLong(value);
-                literal = "UINT32_C(0x" + Integer.toHexString((int)intValue) + ")";
+                literal = "UINT32_C(0x" + Integer.toHexString((int)Long.parseLong(value)) + ")";
                 break;
-            }
 
             case INT32:
             {
