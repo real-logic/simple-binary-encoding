@@ -1922,6 +1922,11 @@ public class CppGenerator implements CodeGenerator
             "    }\n\n" +
 
             "public:\n" +
+            "    static const %1$s SBE_BLOCK_LENGTH = %2$s;\n" +
+            "    static const %3$s SBE_TEMPLATE_ID = %4$s;\n" +
+            "    static const %5$s SBE_SCHEMA_ID = %6$s;\n" +
+            "    static const %7$s SBE_SCHEMA_VERSION = %8$s;\n\n" +
+
             "    enum MetaAttribute\n" +
             "    {\n" +
             "        EPOCH, TIME_UNIT, SEMANTIC_TYPE, PRESENCE\n" +
