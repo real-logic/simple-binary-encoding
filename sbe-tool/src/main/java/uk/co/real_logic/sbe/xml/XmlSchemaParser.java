@@ -17,24 +17,19 @@
 package uk.co.real_logic.sbe.xml;
 
 import org.agrona.collections.ObjectHashSet;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import org.w3c.dom.*;
+import org.xml.sax.InputSource;
 import uk.co.real_logic.sbe.ValidationUtil;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.validation.SchemaFactory;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
+import javax.xml.xpath.*;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.ByteOrder;
 import java.util.HashMap;
 import java.util.Map;
-import org.xml.sax.InputSource;
 
 import static uk.co.real_logic.sbe.PrimitiveType.*;
 import static uk.co.real_logic.sbe.xml.Presence.REQUIRED;
@@ -279,8 +274,14 @@ public class XmlSchemaParser
      */
     public static String getAttributeValue(final Node elementNode, final String attrName)
     {
-        final Node attrNode = elementNode.getAttributes().getNamedItemNS(null, attrName);
+        final NamedNodeMap attributes = elementNode.getAttributes();
+        if (null == attributes)
+        {
+            throw new IllegalStateException(
+                "element '" + elementNode.getNodeName() + "' has empty or missing attribute: " + attrName);
+        }
 
+        final Node attrNode = attributes.getNamedItemNS(null, attrName);
         if (attrNode == null || "".equals(attrNode.getNodeValue()))
         {
             throw new IllegalStateException(
@@ -300,7 +301,13 @@ public class XmlSchemaParser
      */
     public static String getAttributeValue(final Node elementNode, final String attrName, final String defValue)
     {
-        final Node attrNode = elementNode.getAttributes().getNamedItemNS(null, attrName);
+        final NamedNodeMap attributes = elementNode.getAttributes();
+        if (attributes == null)
+        {
+            return defValue;
+        }
+
+        final Node attrNode = attributes.getNamedItemNS(null, attrName);
 
         if (attrNode == null)
         {
