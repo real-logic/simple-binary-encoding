@@ -246,7 +246,7 @@ project(':sbe-tool') {
             'Specification-Title': 'Simple Binary Encoding',
             'Specification-Version': '1.0',
             'Implementation-Title': 'SBE',
-            'Implementation-Version': "${sbeVersion}",
+            'Implementation-Version': sbeVersion,
             'Implementation-Vendor': 'Real Logic Limited',
             'Automatic-Module-Name': 'uk.co.real_logic.sbe.tool'
         )
@@ -305,7 +305,7 @@ project(':sbe-all') {
             'Specification-Title': 'Simple Binary Encoding',
             'Specification-Version': '1.0',
             'Implementation-Title': 'SBE',
-            'Implementation-Version': "${sbeVersion}",
+            'Implementation-Version': sbeVersion,
             'Implementation-Vendor': 'Real Logic Limited',
             'Automatic-Module-Name': 'uk.co.real_logic.sbe.all'
         )
@@ -418,7 +418,7 @@ project(':sbe-samples') {
             'Specification-Title': 'Simple Binary Encoding',
             'Specification-Version': '1.0',
             'Implementation-Title': 'SBE',
-            'Implementation-Version': "${sbeVersion}",
+            'Implementation-Version': sbeVersion,
             'Implementation-Vendor': 'Real Logic Limited',
             'Automatic-Module-Name': 'uk.co.real_logic.sbe.samples'
         )
