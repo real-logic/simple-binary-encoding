@@ -32,7 +32,7 @@ def checkstyleVersion = '8.35'
 def hamcrestVersion = '2.2'
 def mockitoVersion = '3.4.6'
 def junitVersion = '5.6.2'
-def jmhVersion = '1.24'
+def jmhVersion = '1.25'
 def agronaVersion = '1.6.0'
 
 def sbeGroup = 'uk.co.real-logic'
