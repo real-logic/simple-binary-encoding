@@ -1191,7 +1191,7 @@ public class CSharpGenerator implements CodeGenerator
 
                 generateFieldIdMethod(sb, signalToken, indent + INDENT);
                 generateSinceActingDeprecated(
-                    sb, indent, CSharpUtil.formatPropertyName(signalToken.name()), signalToken);
+                    sb, indent + INDENT, CSharpUtil.formatPropertyName(signalToken.name()), signalToken);
                 generateOffsetMethod(sb, signalToken, indent + INDENT);
                 generateFieldMetaAttributeMethod(sb, signalToken, indent + INDENT);
 
