@@ -34,14 +34,14 @@ Example for Maven:
 <dependency>
     <groupId>uk.co.real-logic</groupId>
     <artifactId>sbe-all</artifactId>
-    <version>1.19.0</version>
+    <version>1.20.0</version>
 </dependency>
 ```
 
 Build
 -----
 
-The project is built with [Gradle](http://gradle.org/) using this [build.gradle](https://github.com/real-logic/simple-binary-encoding/blob/master/build.gradle) file.
+Build the project with [Gradle](http://gradle.org/) using this [build.gradle](https://github.com/real-logic/simple-binary-encoding/blob/master/build.gradle) file.
 
 Full clean build:
 
@@ -70,7 +70,7 @@ NOTE: Linux, Mac OS, and Windows only for the moment. See
 [FAQ](https://github.com/real-logic/simple-binary-encoding/wiki/Frequently-Asked-Questions).
 Windows builds have been tested with Visual Studio Express 12.
 
-For convenience, a script is provided that does a full clean, build, and test of all targets as a Release build.
+For convenience, the `cppbuild` script does a full clean, build, and test of all targets as a Release build.
 
     $ ./cppbuild/cppbuild
 
@@ -82,20 +82,17 @@ If you are comfortable using CMake, then a full clean, build, and test looks lik
     $ cmake --build . --clean-first
     $ ctest
 
-__Note__: A C generator is included with the C++ build, and is built with the C++ build. Currently, the C generator is
- a work in progress.
+__Note__: The C++ build includes the C generator. Currently, the C generator is a work in progress.
 
 Golang Build
 ------------
 
-First build using Gradle to generate the SBE jar and then use it to
-generate the golang code for testing
+First build using Gradle to generate the SBE jar and then use it to generate the golang code for testing.
 
     $ ./gradlew
     $ ./gradlew generateGolangCodecs
 
-For convenience on Linux, a gnu Makefile is provided that runs some
-tests and contains some examples
+For convenience on Linux, a gnu Makefile is provided that runs some tests and contains some examples.
 
     $ cd gocode
     # make # test, examples, bench
