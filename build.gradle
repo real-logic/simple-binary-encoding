@@ -34,6 +34,7 @@ def mockitoVersion = '3.5.7'
 def junitVersion = '5.6.2'
 def jmhVersion = '1.25.1'
 def agronaVersion = '1.7.0'
+def agronaVersionRange = '[1.7,1.8[' // allow any patch release of 1.7.x
 
 def sbeGroup = 'uk.co.real-logic'
 def sbeVersion = file('version.txt').text.trim()
@@ -201,7 +202,8 @@ project(':sbe-tool') {
     dependencies {
         api("org.agrona:agrona") {
             version {
-                strictly(agronaVersion)
+                strictly(agronaVersionRange)
+                prefer(agronaVersion)
             }
         }
         testImplementation files('build/classes/java/generated')
