@@ -23,7 +23,7 @@ plugins {
     id 'java-library'
     id 'idea'
     id 'com.github.johnrengelman.shadow' version '6.0.0' apply false
-    id "com.github.ben-manes.versions" version "0.30.0"
+    id "com.github.ben-manes.versions" version "0.31.0"
 }
 
 defaultTasks 'clean', 'build'
