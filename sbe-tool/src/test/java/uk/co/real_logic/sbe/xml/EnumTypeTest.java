@@ -16,6 +16,8 @@
 package uk.co.real_logic.sbe.xml;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -31,14 +33,14 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 public class EnumTypeTest
@@ -221,6 +223,61 @@ public class EnumTypeTest
 
         assertThrows(IllegalArgumentException.class, () ->
             parseTestXmlWithMap("/types/enum", testXmlString));
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenImplicitNullValueIsUsed()
+    {
+        final String testXmlString =
+            "<types>" +
+            "<enum name=\"test\" encodingType=\"uint8\">" +
+            "    <validValue name=\"one\">1</validValue>" +
+            "    <validValue name=\"invalidNullValue\">255</validValue>" +
+            "</enum>" +
+            "</types>";
+
+        assertThrows(IllegalArgumentException.class, () ->
+            parseTestXmlWithMap("/types/enum", testXmlString));
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenExplicitNullValueIsUsed()
+    {
+        final String testXmlString =
+            "<types>" +
+            "<enum name=\"test\" encodingType=\"uint8\" presence=\"optional\" nullValue=\"5\">" +
+            "    <validValue name=\"one\">1</validValue>" +
+            "    <validValue name=\"invalidNullValue\">5</validValue>" +
+            "</enum>" +
+            "</types>";
+
+        assertThrows(IllegalArgumentException.class, () ->
+            parseTestXmlWithMap("/types/enum", testXmlString));
+    }
+
+    @ParameterizedTest
+    @ValueSource(longs = { (long)Integer.MIN_VALUE - 1, (long)Integer.MAX_VALUE + 1 })
+    public void shouldThrowExceptionWhenIntValueIsOutOfRange(final long value)
+    {
+        final String testXmlString =
+            "<types>" +
+            "<enum name=\"test\" encodingType=\"int32\">" +
+            "    <validValue name=\"X\">" + value + "</validValue>" +
+            "</enum>" +
+            "</types>";
+
+        final NumberFormatException exception = assertThrows(NumberFormatException.class, () ->
+            parseTestXmlWithMap("/types/enum", testXmlString));
+        assertEquals("For input string: \"" + value + "\"", exception.getMessage());
+    }
+
+    @Test
+    public void shouldThrowExceptionIfEnumValueIsOutOfCustomValueRange() throws IOException
+    {
+        final InputStream file = Tests.getLocalResource("error-handler-enum-violates-min-max-value-range.xml");
+        final IllegalStateException exception = assertThrows(IllegalStateException.class,
+            () -> parse(file, ParserOptions.builder().suppressOutput(true).build()));
+        assertEquals("had 4 errors", exception.getMessage());
     }
 
     @Test
