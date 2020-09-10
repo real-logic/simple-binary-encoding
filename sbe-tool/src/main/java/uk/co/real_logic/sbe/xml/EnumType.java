@@ -152,9 +152,17 @@ public class EnumType extends Type
                     encodedDataType.minValue().longValue() : encodingType.minValue().longValue();
                 final long maxValue = null != encodedDataType && null != encodedDataType.maxValue() ?
                     encodedDataType.maxValue().longValue() : encodingType.maxValue().longValue();
+                final long nullLongValue = null != nullValue ? nullValue.longValue() :
+                    encodingType.nullValue().longValue();
 
-                if ((value < minValue || value > maxValue) &&
-                    (presence() != OPTIONAL || null == nullValue || value != nullValue.longValue()))
+                if (nullLongValue == value)
+                {
+                    handleError(
+                        node,
+                        "validValue " + v.name() + " uses nullValue: " +
+                        (null != nullValue ? nullValue : encodingType.nullValue()));
+                }
+                else if (value < minValue || value > maxValue)
                 {
                     handleError(
                         node,

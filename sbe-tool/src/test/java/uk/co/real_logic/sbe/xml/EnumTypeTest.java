@@ -67,32 +67,6 @@ public class EnumTypeTest
     }
 
     @Test
-    public void shouldHandleOptionalEnumType() throws Exception
-    {
-        final String testXmlString =
-            "<types>" +
-            "<enum name=\"testOptional\" encodingType=\"uint8\" presence=\"optional\" nullValue=\"0\">" +
-            "    <validValue name=\"zero\">0</validValue>" +
-            "    <validValue name=\"one\">1</validValue>" +
-            "    <validValue name=\"two\">2</validValue>" +
-            "    <validValue name=\"three\">3</validValue>" +
-            "</enum>" +
-            "</types>";
-
-        final Map<String, Type> map = parseTestXmlWithMap("/types/enum", testXmlString);
-        final EnumType e = (EnumType)map.get("testOptional");
-
-        assertThat(e.name(), is("testOptional"));
-        assertThat(e.encodingType(), is(PrimitiveType.UINT8));
-        assertThat(e.validValues().size(), is(4));
-        assertThat(e.getValidValue("zero").primitiveValue(), is(PrimitiveValue.parse("0", PrimitiveType.UINT8)));
-        assertThat(e.getValidValue("one").primitiveValue(), is(PrimitiveValue.parse("1", PrimitiveType.UINT8)));
-        assertThat(e.getValidValue("two").primitiveValue(), is(PrimitiveValue.parse("2", PrimitiveType.UINT8)));
-        assertThat(e.getValidValue("three").primitiveValue(), is(PrimitiveValue.parse("3", PrimitiveType.UINT8)));
-        assertThat(e.nullValue(), is(PrimitiveValue.parse("0", PrimitiveType.UINT8)));
-    }
-
-    @Test
     public void shouldHandleBooleanEnumType() throws Exception
     {
         final String testXmlString =
@@ -251,6 +225,36 @@ public class EnumTypeTest
             parseTestXmlWithMap("/types/enum", testXmlString));
     }
 
+    @Test
+    public void shouldThrowExceptionWhenImplicitNullValueIsUsed()
+    {
+        final String testXmlString =
+            "<types>" +
+            "<enum name=\"test\" encodingType=\"uint8\">" +
+            "    <validValue name=\"one\">1</validValue>" +
+            "    <validValue name=\"invalidNullValue\">255</validValue>" +
+            "</enum>" +
+            "</types>";
+
+        assertThrows(IllegalArgumentException.class, () ->
+            parseTestXmlWithMap("/types/enum", testXmlString));
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenExplicitNullValueIsUsed()
+    {
+        final String testXmlString =
+            "<types>" +
+            "<enum name=\"test\" encodingType=\"uint8\" presence=\"optional\" nullValue=\"5\">" +
+            "    <validValue name=\"one\">1</validValue>" +
+            "    <validValue name=\"invalidNullValue\">5</validValue>" +
+            "</enum>" +
+            "</types>";
+
+        assertThrows(IllegalArgumentException.class, () ->
+            parseTestXmlWithMap("/types/enum", testXmlString));
+    }
+
     @ParameterizedTest
     @ValueSource(longs = { (long)Integer.MIN_VALUE - 1, (long)Integer.MAX_VALUE + 1 })
     public void shouldThrowExceptionWhenIntValueIsOutOfRange(final long value)
@@ -273,7 +277,7 @@ public class EnumTypeTest
         final InputStream file = Tests.getLocalResource("error-handler-enum-violates-min-max-value-range.xml");
         final IllegalStateException exception = assertThrows(IllegalStateException.class,
             () -> parse(file, ParserOptions.builder().suppressOutput(true).build()));
-        assertEquals("had 2 errors", exception.getMessage());
+        assertEquals("had 4 errors", exception.getMessage());
     }
 
     @Test
