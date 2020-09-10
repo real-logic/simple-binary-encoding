@@ -26,7 +26,7 @@ import static java.nio.charset.StandardCharsets.US_ASCII;
 /**
  * Class used to encapsulate values for primitives. Used for nullValue, minValue, maxValue, and constants.
  */
-public class PrimitiveValue
+public final class PrimitiveValue implements Comparable<PrimitiveValue>
 {
     /**
      * Representation type used for the stored value.
@@ -471,5 +471,64 @@ public class PrimitiveValue
         }
 
         return (int)(bits ^ (bits >>> 32));
+    }
+
+    /**
+     * Compare this value against given <tt>value</tt> to determine total ordering.
+     * First the {@link #representation()} of two values is compared and only if they are the same then size of both
+     * values values are compared to each other and if these are the same then the actual values are compared.
+     *
+     * @param value to compare against.
+     * @return negative value if this value is less than given <tt>value</tt>, zero if the values are equal or positive
+     * value if this value is greater than given <tt>value</tt>.
+     */
+    public int compareTo(final PrimitiveValue value)
+    {
+        int result = representation.compareTo(value.representation);
+        if (0 != result)
+        {
+            return result;
+        }
+
+        result = Integer.compare(size, value.size);
+        if (0 != result)
+        {
+            return result;
+        }
+
+        switch (representation)
+        {
+            case LONG:
+                return Long.compare(longValue, value.longValue);
+
+            case DOUBLE:
+                return Double.compare(doubleValue, value.doubleValue);
+
+            case BYTE_ARRAY:
+            {
+                final byte[] val = this.byteArrayValue;
+                final byte[] val2 = value.byteArrayValue;
+                result = Integer.compare(val.length, val2.length);
+                if (0 != result)
+                {
+                    return result;
+                }
+
+                for (int i = 0; i < val.length; i++)
+                {
+                    if (val[i] < val2[i])
+                    {
+                        return -1;
+                    }
+                    else if (val[i] > val2[i])
+                    {
+                        return 1;
+                    }
+                }
+                return 0;
+            }
+            default:
+                throw new IllegalStateException("Unrecognised representation: " + representation);
+        }
     }
 }
