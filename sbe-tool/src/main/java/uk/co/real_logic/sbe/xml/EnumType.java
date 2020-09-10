@@ -29,11 +29,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static uk.co.real_logic.sbe.xml.Presence.OPTIONAL;
-import static uk.co.real_logic.sbe.xml.XmlSchemaParser.handleError;
-import static uk.co.real_logic.sbe.xml.XmlSchemaParser.handleWarning;
-import static uk.co.real_logic.sbe.xml.XmlSchemaParser.checkForValidName;
-import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValue;
-import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValueOrNull;
+import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
 
 /**
  * SBE enum type for representing an enumeration of values.
@@ -157,7 +153,8 @@ public class EnumType extends Type
                 final long maxValue = null != encodedDataType && null != encodedDataType.maxValue() ?
                     encodedDataType.maxValue().longValue() : encodingType.maxValue().longValue();
 
-                if (value < minValue || value > maxValue)
+                if ((value < minValue || value > maxValue) &&
+                    (presence() != OPTIONAL || null == nullValue || value != nullValue.longValue()))
                 {
                     handleError(
                         node,
