@@ -149,6 +149,22 @@ public class EnumType extends Type
                 handleWarning(node, "validValue already exists for name: " + v.name());
             }
 
+            if (PrimitiveType.CHAR != encodingType)
+            {
+                final long value = v.primitiveValue().longValue();
+                final long minValue = null != encodedDataType && null != encodedDataType.minValue() ?
+                    encodedDataType.minValue().longValue() : encodingType.minValue().longValue();
+                final long maxValue = null != encodedDataType && null != encodedDataType.maxValue() ?
+                    encodedDataType.maxValue().longValue() : encodingType.maxValue().longValue();
+
+                if (value < minValue || value > maxValue)
+                {
+                    handleError(
+                        node,
+                        "validValue " + v.name() + " outside of range " + minValue + " - " + maxValue + ": " + value);
+                }
+            }
+
             validValueByPrimitiveValueMap.put(v.primitiveValue(), v);
             validValueByNameMap.put(v.name(), v);
         }
