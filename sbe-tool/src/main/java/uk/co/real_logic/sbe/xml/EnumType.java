@@ -29,11 +29,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static uk.co.real_logic.sbe.xml.Presence.OPTIONAL;
-import static uk.co.real_logic.sbe.xml.XmlSchemaParser.handleError;
-import static uk.co.real_logic.sbe.xml.XmlSchemaParser.handleWarning;
-import static uk.co.real_logic.sbe.xml.XmlSchemaParser.checkForValidName;
-import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValue;
-import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValueOrNull;
+import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
 
 /**
  * SBE enum type for representing an enumeration of values.
@@ -135,13 +131,19 @@ public class EnumType extends Type
 
         final NodeList list = (NodeList)xPath.compile("validValue").evaluate(node, XPathConstants.NODESET);
 
+        final PrimitiveValue minValue = null != encodedDataType && null != encodedDataType.minValue() ?
+            encodedDataType.minValue() : encodingType.minValue();
+        final PrimitiveValue maxValue = null != encodedDataType && null != encodedDataType.maxValue() ?
+            encodedDataType.maxValue() : encodingType.maxValue();
+
         for (int i = 0, size = list.getLength(); i < size; i++)
         {
             final ValidValue v = new ValidValue(list.item(i), encodingType);
+            final PrimitiveValue primitiveValue = v.primitiveValue();
 
-            if (validValueByPrimitiveValueMap.get(v.primitiveValue()) != null)
+            if (validValueByPrimitiveValueMap.get(primitiveValue) != null)
             {
-                handleWarning(node, "validValue already exists for value: " + v.primitiveValue());
+                handleWarning(node, "validValue already exists for value: " + primitiveValue);
             }
 
             if (validValueByNameMap.get(v.name()) != null)
@@ -149,23 +151,15 @@ public class EnumType extends Type
                 handleWarning(node, "validValue already exists for name: " + v.name());
             }
 
-            if (PrimitiveType.CHAR != encodingType)
+            if ((primitiveValue.compareTo(minValue) < 0 || primitiveValue.compareTo(maxValue) > 0) &&
+                (presence() != OPTIONAL || !primitiveValue.equals(nullValue)))
             {
-                final long value = v.primitiveValue().longValue();
-                final long minValue = null != encodedDataType && null != encodedDataType.minValue() ?
-                    encodedDataType.minValue().longValue() : encodingType.minValue().longValue();
-                final long maxValue = null != encodedDataType && null != encodedDataType.maxValue() ?
-                    encodedDataType.maxValue().longValue() : encodingType.maxValue().longValue();
-
-                if (value < minValue || value > maxValue)
-                {
-                    handleError(
-                        node,
-                        "validValue " + v.name() + " outside of range " + minValue + " - " + maxValue + ": " + value);
-                }
+                handleError(node,
+                    "validValue " + v.name() + " outside of range " + minValue + " - " + maxValue + ": " +
+                    primitiveValue);
             }
 
-            validValueByPrimitiveValueMap.put(v.primitiveValue(), v);
+            validValueByPrimitiveValueMap.put(primitiveValue, v);
             validValueByNameMap.put(v.name(), v);
         }
     }
