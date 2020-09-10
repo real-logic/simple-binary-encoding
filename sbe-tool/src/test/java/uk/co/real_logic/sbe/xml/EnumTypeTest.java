@@ -16,6 +16,8 @@
 package uk.co.real_logic.sbe.xml;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -31,14 +33,14 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 public class EnumTypeTest
@@ -62,6 +64,32 @@ public class EnumTypeTest
         assertThat(e.validValues().size(), is(2));
         assertThat(e.getValidValue("on").primitiveValue(), is(PrimitiveValue.parse("1", PrimitiveType.UINT8)));
         assertThat(e.getValidValue("off").primitiveValue(), is(PrimitiveValue.parse("0", PrimitiveType.UINT8)));
+    }
+
+    @Test
+    public void shouldHandleOptionalEnumType() throws Exception
+    {
+        final String testXmlString =
+            "<types>" +
+            "<enum name=\"testOptional\" encodingType=\"uint8\" presence=\"optional\" nullValue=\"0\">" +
+            "    <validValue name=\"zero\">0</validValue>" +
+            "    <validValue name=\"one\">1</validValue>" +
+            "    <validValue name=\"two\">2</validValue>" +
+            "    <validValue name=\"three\">3</validValue>" +
+            "</enum>" +
+            "</types>";
+
+        final Map<String, Type> map = parseTestXmlWithMap("/types/enum", testXmlString);
+        final EnumType e = (EnumType)map.get("testOptional");
+
+        assertThat(e.name(), is("testOptional"));
+        assertThat(e.encodingType(), is(PrimitiveType.UINT8));
+        assertThat(e.validValues().size(), is(4));
+        assertThat(e.getValidValue("zero").primitiveValue(), is(PrimitiveValue.parse("0", PrimitiveType.UINT8)));
+        assertThat(e.getValidValue("one").primitiveValue(), is(PrimitiveValue.parse("1", PrimitiveType.UINT8)));
+        assertThat(e.getValidValue("two").primitiveValue(), is(PrimitiveValue.parse("2", PrimitiveType.UINT8)));
+        assertThat(e.getValidValue("three").primitiveValue(), is(PrimitiveValue.parse("3", PrimitiveType.UINT8)));
+        assertThat(e.nullValue(), is(PrimitiveValue.parse("0", PrimitiveType.UINT8)));
     }
 
     @Test
@@ -221,6 +249,31 @@ public class EnumTypeTest
 
         assertThrows(IllegalArgumentException.class, () ->
             parseTestXmlWithMap("/types/enum", testXmlString));
+    }
+
+    @ParameterizedTest
+    @ValueSource(longs = { (long)Integer.MIN_VALUE - 1, (long)Integer.MAX_VALUE + 1 })
+    public void shouldThrowExceptionWhenIntValueIsOutOfRange(final long value)
+    {
+        final String testXmlString =
+            "<types>" +
+            "<enum name=\"test\" encodingType=\"int32\">" +
+            "    <validValue name=\"X\">" + value + "</validValue>" +
+            "</enum>" +
+            "</types>";
+
+        final NumberFormatException exception = assertThrows(NumberFormatException.class, () ->
+            parseTestXmlWithMap("/types/enum", testXmlString));
+        assertEquals("For input string: \"" + value + "\"", exception.getMessage());
+    }
+
+    @Test
+    public void shouldThrowExceptionIfEnumValueIsOutOfCustomValueRange() throws IOException
+    {
+        final InputStream file = Tests.getLocalResource("error-handler-enum-violates-min-max-value-range.xml");
+        final IllegalStateException exception = assertThrows(IllegalStateException.class,
+            () -> parse(file, ParserOptions.builder().suppressOutput(true).build()));
+        assertEquals("had 2 errors", exception.getMessage());
     }
 
     @Test
