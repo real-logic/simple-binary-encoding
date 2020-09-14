@@ -10,6 +10,7 @@ on:
 
 env:
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+  CMAKE_VERSION: "3.6.1"
 
 jobs:
   java-build:
@@ -112,8 +113,12 @@ jobs:
       - name: Install compiler
         run: |
           sudo apt-get install -y g++-${{ matrix.version }} libsparsehash-dev
+
+          curl -O -L https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.tar.gz
+          tar xf cmake-${CMAKE_VERSION}-Linux-x86_64.tar.gz
+          echo "::add-path::cmake-${CMAKE_VERSION}-Linux-x86_64/bin"
       - name: Build
-        run: ./cppbuild/cppbuild
+        run: cmake --version && ./cppbuild/cppbuild
 
   cpp-clang-build:
     name: C++ Clang ${{ matrix.version }}
@@ -147,27 +152,31 @@ jobs:
           sudo apt-get update
 
           sudo apt-get install -y clang-${{ matrix.version }} libsparsehash-dev
+
+          curl -O -L https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.tar.gz
+          tar xf cmake-${CMAKE_VERSION}-Linux-x86_64.tar.gz
+          echo "::add-path::cmake-${CMAKE_VERSION}-Linux-x86_64/bin"
       - name: Build
-        run: ./cppbuild/cppbuild
+        run: cmake --version && ./cppbuild/cppbuild
 
   cpp-clang-macos-build:
     name: C++ Xcode ${{ matrix.version }} (macOS)
     runs-on: macOS-latest
     strategy:
       fail-fast: false
-      matrix:
-        version: [ '11.2.1' ]
     env:
       CC: clang
       CXX: clang++
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Install compiler
+      - name: Install CMake
         run: |
-          sudo xcode-select -switch /Applications/Xcode_${{ matrix.version }}.app
+          curl -O -L https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Darwin-x86_64.tar.gz
+          tar xf cmake-${CMAKE_VERSION}-Darwin-x86_64.tar.gz
+          echo "::add-path::cmake-${CMAKE_VERSION}-Darwin-x86_64/bin"
       - name: Build
-        run: ./cppbuild/cppbuild
+        run: cmake --version && ./cppbuild/cppbuild
 
   cpp-msvc-build:
     name: C++ MSVC (Windows)
@@ -180,5 +189,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+      - name: Install CMake
+        run: |
+          $client = new-object System.Net.WebClient
+          $client.DownloadFile("https://github.com/Kitware/CMake/releases/download/v$Env:CMAKE_VERSION/cmake-$Env:CMAKE_VERSION-win64-x64.zip","cmake-$Env:CMAKE_VERSION-win64-x64.zip")
+          7z x cmake-$Env:CMAKE_VERSION-win64-x64.zip
+          echo "::add-path::cmake-$Env:CMAKE_VERSION-win64-x64/bin"
       - name: Build
         run: cppbuild/cppbuild.cmd
