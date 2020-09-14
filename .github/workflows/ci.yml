@@ -174,7 +174,7 @@ jobs:
         run: |
           curl -O -L https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Darwin-x86_64.tar.gz
           tar xf cmake-${CMAKE_VERSION}-Darwin-x86_64.tar.gz
-          echo "::add-path::cmake-${CMAKE_VERSION}-Darwin-x86_64/bin"
+          echo "::add-path::cmake-${CMAKE_VERSION}-Darwin-x86_64/CMake.app/Contents/bin"
       - name: Build
         run: cmake --version && ./cppbuild/cppbuild
 
