@@ -71,7 +71,7 @@ public class CSharpNamespaceOutputManager implements OutputManager
      */
     public Writer createOutput(final String name) throws IOException
     {
-        final File targetFile = new File(outputDir, name + ".cs");
+        final File targetFile = new File(outputDir, name + ".g.cs");
         return Files.newBufferedWriter(targetFile.toPath(), StandardCharsets.UTF_8);
     }
 }
