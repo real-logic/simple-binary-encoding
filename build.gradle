@@ -33,7 +33,7 @@ def hamcrestVersion = '2.2'
 def mockitoVersion = '3.5.10'
 def junitVersion = '5.7.0'
 def jmhVersion = '1.25.2'
-def agronaVersion = '1.7.1'
+def agronaVersion = '1.7.2'
 def agronaVersionRange = '[1.7,1.8[' // allow any patch release of 1.7.x
 
 def sbeGroup = 'uk.co.real-logic'
