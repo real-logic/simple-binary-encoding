@@ -124,6 +124,17 @@ allprojects {
         mavenLocal()
         mavenCentral()
     }
+
+    configurations.all {
+        resolutionStrategy {
+            failOnVersionConflict()
+
+            // Enforce dependency versions used by SBE
+            force "org.junit.jupiter:junit-jupiter-api:${junitVersion}",
+                  "org.junit.jupiter:junit-jupiter-params:${junitVersion}",
+                  "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
+        }
+    }
 }
 
 jar.enabled = false
