@@ -30,7 +30,7 @@ defaultTasks 'clean', 'build'
 
 def checkstyleVersion = '8.36'
 def hamcrestVersion = '2.2'
-def mockitoVersion = '3.5.10'
+def mockitoVersion = '3.5.11'
 def junitVersion = '5.7.0'
 def jmhVersion = '1.25.2'
 def agronaVersion = '1.7.2'
