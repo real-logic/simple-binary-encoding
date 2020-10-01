@@ -239,6 +239,8 @@ project(':sbe-tool') {
         classpath += sourceSets.main.runtimeClasspath
     }
 
+    compileTestJava.dependsOn compileGeneratedJava
+
     task generateTestCodecs(dependsOn: 'compileJava', type: JavaExec) {
         main = 'uk.co.real_logic.sbe.SbeTool'
         classpath = sourceSets.main.runtimeClasspath
