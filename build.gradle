@@ -128,11 +128,6 @@ allprojects {
     configurations.all {
         resolutionStrategy {
             failOnVersionConflict()
-
-            // Enforce dependency versions used by SBE
-            force "org.junit.jupiter:junit-jupiter-api:${junitVersion}",
-                  "org.junit.jupiter:junit-jupiter-params:${junitVersion}",
-                  "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
         }
     }
 }
@@ -219,7 +214,9 @@ project(':sbe-tool') {
         }
         testImplementation files('build/classes/java/generated')
         testImplementation "org.hamcrest:hamcrest:${hamcrestVersion}"
-        testImplementation "org.mockito:mockito-junit-jupiter:${mockitoVersion}"
+        testImplementation ("org.mockito:mockito-junit-jupiter:${mockitoVersion}") {
+            exclude group: 'org.junit.jupiter'
+        }
         testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
         testImplementation "org.junit.jupiter:junit-jupiter-params:${junitVersion}"
         testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
