@@ -122,7 +122,7 @@ jobs:
 
   cpp-clang-build:
     name: C++ Clang ${{ matrix.version }}
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
       matrix:
@@ -148,6 +148,7 @@ jobs:
       - name: Install compiler
         run: |
           curl -L https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+          sudo add-apt-repository "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-${{ matrix.version }} main"
           sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-${{ matrix.version }} main"
           sudo apt-get update
           sudo apt-get install -y clang-${{ matrix.version }} libsparsehash-dev
