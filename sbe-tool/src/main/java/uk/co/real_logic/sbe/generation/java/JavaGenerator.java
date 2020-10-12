@@ -2466,8 +2466,8 @@ public class JavaGenerator implements CodeGenerator
         final String semanticType = token.encoding().semanticType() == null ? "" : token.encoding().semanticType();
         final String actingFields = codecType == CodecType.ENCODER ?
             "" :
-            "    protected int actingBlockLength;\n" +
-            "    protected int actingVersion;\n";
+            "    int actingBlockLength;\n" +
+            "    int actingVersion;\n";
 
         return String.format(
             "    public static final %1$s BLOCK_LENGTH = %2$s;\n" +
@@ -2477,9 +2477,9 @@ public class JavaGenerator implements CodeGenerator
             "    public static final java.nio.ByteOrder BYTE_ORDER = java.nio.ByteOrder.%14$s;\n\n" +
             "    private final %9$s parentMessage = this;\n" +
             "    private %11$s buffer;\n" +
-            "    protected int initialOffset;\n" +
-            "    protected int offset;\n" +
-            "    protected int limit;\n" +
+            "    private int initialOffset;\n" +
+            "    private int offset;\n" +
+            "    private int limit;\n" +
             "%13$s" +
             "\n" +
             "    public %15$s sbeBlockLength()\n" +
