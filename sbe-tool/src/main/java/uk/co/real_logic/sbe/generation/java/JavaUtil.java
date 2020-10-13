@@ -15,6 +15,7 @@
  */
 package uk.co.real_logic.sbe.generation.java;
 
+import org.agrona.Strings;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.SbeTool;
 import uk.co.real_logic.sbe.generation.Generators;
@@ -275,12 +276,13 @@ public class JavaUtil
         final StringBuilder sb, final String indent, final Token typeToken)
     {
         final String description = typeToken.description();
-        if (null == description || description.isEmpty())
+        if (Strings.isEmpty(description))
         {
             return;
         }
 
-        sb.append(indent).append("/**\n")
+        sb.append('\n')
+            .append(indent).append("/**\n")
             .append(indent).append(" * ").append(description).append('\n')
             .append(indent).append(" */\n");
     }
@@ -298,7 +300,7 @@ public class JavaUtil
         throws IOException
     {
         final String description = optionToken.description();
-        if (null == description || description.isEmpty())
+        if (Strings.isEmpty(description))
         {
             return;
         }
@@ -306,7 +308,7 @@ public class JavaUtil
         out.append(indent).append("/**\n")
             .append(indent).append(" * ").append(description).append('\n')
             .append(indent).append(" *\n")
-            .append(indent).append(" * @return true if ").append(optionToken.name()).append(" is set or false if not\n")
+            .append(indent).append(" * @return true if ").append(optionToken.name()).append(" set or false if not.\n")
             .append(indent).append(" */\n");
     }
 
@@ -323,7 +325,7 @@ public class JavaUtil
         throws IOException
     {
         final String description = optionToken.description();
-        if (null == description || description.isEmpty())
+        if (Strings.isEmpty(description))
         {
             return;
         }
@@ -348,16 +350,17 @@ public class JavaUtil
         final StringBuilder sb, final String indent, final Token propertyToken, final String typeName)
     {
         final String description = propertyToken.description();
-        if (null == description || description.isEmpty())
+        if (Strings.isEmpty(description))
         {
             return;
         }
 
-        sb.append(indent).append("/**\n")
+        sb.append('\n')
+            .append(indent).append("/**\n")
             .append(indent).append(" * ").append(description).append('\n')
             .append(indent).append(" *\n")
             .append(indent).append(" * @return ").append(typeName).append(" : ").append(description).append("\n")
-            .append(indent).append(" */\n");
+            .append(indent).append(" */");
     }
 
     /**
@@ -372,16 +375,17 @@ public class JavaUtil
         final StringBuilder sb, final String indent, final Token propertyToken, final String typeName)
     {
         final String description = propertyToken.description();
-        if (null == description || description.isEmpty())
+        if (Strings.isEmpty(description))
         {
             return;
         }
 
-        sb.append(indent).append("/**\n")
+        sb.append('\n')
+            .append(indent).append("/**\n")
             .append(indent).append(" * ").append(description).append("\n")
             .append(indent).append(" *\n")
-            .append(indent).append(" * @param count of times the group will be encoded\n")
-            .append(indent).append(" * @return ").append(typeName).append(" : encoder for the group\n")
-            .append(indent).append(" */\n");
+            .append(indent).append(" * @param count of times the group will be encoded.\n")
+            .append(indent).append(" * @return ").append(typeName).append(" : encoder for the group.\n")
+            .append(indent).append(" */");
     }
 }

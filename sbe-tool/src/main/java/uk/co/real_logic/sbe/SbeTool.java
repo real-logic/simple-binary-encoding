@@ -17,24 +17,13 @@ package uk.co.real_logic.sbe;
 
 import org.agrona.DirectBuffer;
 import org.agrona.MutableDirectBuffer;
-import uk.co.real_logic.sbe.generation.CodeGenerator;
-import uk.co.real_logic.sbe.generation.TargetCodeGenerator;
-import uk.co.real_logic.sbe.generation.TargetCodeGeneratorLoader;
-import uk.co.real_logic.sbe.ir.Ir;
-import uk.co.real_logic.sbe.ir.IrDecoder;
-import uk.co.real_logic.sbe.ir.IrEncoder;
-import uk.co.real_logic.sbe.xml.IrGenerator;
-import uk.co.real_logic.sbe.xml.MessageSchema;
-import uk.co.real_logic.sbe.xml.ParserOptions;
-import uk.co.real_logic.sbe.xml.XmlSchemaParser;
-
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import org.xml.sax.InputSource;
+import uk.co.real_logic.sbe.generation.*;
+import uk.co.real_logic.sbe.ir.*;
+import uk.co.real_logic.sbe.xml.*;
+
+import java.io.*;
+import java.nio.file.*;
 
 /**
  * A tool for running the SBE parser, validator, and code generator.
@@ -52,7 +41,7 @@ import org.xml.sax.InputSource;
  * <li><b>sbe.validation.stop.on.error</b>: Should the parser stop on first error encountered? Defaults to false.</li>
  * <li><b>sbe.validation.warnings.fatal</b>: Are warnings in parsing considered fatal? Defaults to false.</li>
  * <li>
- * <b>sbe.validation.suppress.output</b>: Should the parser suppress output during validation? Defaults to false.
+ *     <b>sbe.validation.suppress.output</b>: Should the parser suppress output during validation? Defaults to false.
  * </li>
  * <li><b>sbe.generate.stubs</b>: Generate stubs or not. Defaults to true.</li>
  * <li><b>sbe.target.language</b>: Target language for code generation, defaults to Java.</li>
@@ -64,7 +53,7 @@ import org.xml.sax.InputSource;
  * <li><b>sbe.target.namespace</b>: Namespace for the generated code to override schema package.</li>
  * <li><b>sbe.cpp.namespaces.collapse</b>: Namespace for the generated code to override schema package.</li>
  * <li>
- * <b>sbe.java.generate.group-order.annotation</b>: Should the GroupOrder annotation be added to generated stubs.
+ *     <b>sbe.java.generate.group-order.annotation</b>: Should the GroupOrder annotation be added to generated stubs.
  * </li>
  * <li><b>sbe.csharp.generate.namespace.dir</b>: Should a directory be created for the namespace under
  * the output directory? Defaults to true</li>
