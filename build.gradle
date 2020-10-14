@@ -194,8 +194,6 @@ subprojects {
             showStandardStreams = true
             exceptionFormat = 'full'
         }
-
-        reports.html.enabled = false // Disable individual test reports
     }
 }
 
