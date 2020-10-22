@@ -31,6 +31,7 @@ import uk.co.real_logic.sbe.xml.ParserOptions;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -440,6 +441,93 @@ public class JavaGeneratorTest
 
         set(encoder, "vehicleCode", CharSequence.class, "R11R12");
         assertThat(get(decoder, "vehicleCode"), is("R11R12"));
+    }
+
+    @Test
+    public void shouldGeneratePutAndGetByteArrayForFixedLengthBlob() throws Exception
+    {
+        final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
+        generator().generate();
+
+        final Object encoder = wrap(buffer, compileCarEncoder().getConstructor().newInstance());
+        final Object decoder = getCarDecoder(buffer, encoder);
+
+        final byte[] encodedData = "  **DATA**  ".getBytes(StandardCharsets.US_ASCII);
+        byte[] decodedData;
+        int decodedDataLength;
+
+        // Every byte written, every byte read
+        putByteArray(encoder, "putSomeFixedLengthBlob", encodedData, 2, 8);
+        decodedData = "            ".getBytes(StandardCharsets.US_ASCII);
+        decodedDataLength = getByteArray(decoder, "getSomeFixedLengthBlob", decodedData, 1, 8);
+        assertThat(decodedDataLength, is(8));
+        assertThat(new String(decodedData, StandardCharsets.US_ASCII), is(" **DATA**   "));
+
+        // Every byte written, less bytes read
+        putByteArray(encoder, "putSomeFixedLengthBlob", encodedData, 2, 8);
+        decodedData = "            ".getBytes(StandardCharsets.US_ASCII);
+        decodedDataLength = getByteArray(decoder, "getSomeFixedLengthBlob", decodedData, 1, 6);
+        assertThat(decodedDataLength, is(6));
+        assertThat(new String(decodedData, StandardCharsets.US_ASCII), is(" **DATA     "));
+
+        // Less bytes written (padding), every byte read
+        putByteArray(encoder, "putSomeFixedLengthBlob", encodedData, 2, 6);
+        decodedData = "            ".getBytes(StandardCharsets.US_ASCII);
+        decodedDataLength = getByteArray(decoder, "getSomeFixedLengthBlob", decodedData, 1, 8);
+        assertThat(decodedDataLength, is(8));
+        assertThat(new String(decodedData, StandardCharsets.US_ASCII), is(" **DATA\u0000\u0000   "));
+    }
+
+    @Test
+    public void shouldGeneratePutAndGetDirectBufferForFixedLengthBlob() throws Exception
+    {
+        final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
+        generator().generate();
+
+        final Object encoder = wrap(buffer, compileCarEncoder().getConstructor().newInstance());
+        final Object decoder = getCarDecoder(buffer, encoder);
+
+        final UnsafeBuffer encodedData = new UnsafeBuffer("  **DATA**  ".getBytes(StandardCharsets.US_ASCII));
+        UnsafeBuffer decodedData;
+        int decodedDataLength;
+
+        // Every byte written, every byte read
+        putDirectBuffer(encoder, "putSomeFixedLengthBlob", encodedData, 2, 8);
+        decodedData = new UnsafeBuffer("            ".getBytes(StandardCharsets.US_ASCII));
+        decodedDataLength = getDirectBuffer(decoder, "getSomeFixedLengthBlob", decodedData, 1, 8);
+        assertThat(decodedDataLength, is(8));
+        assertThat(decodedData.getStringWithoutLengthAscii(0, 12), is(" **DATA**   "));
+
+        // Every byte written, less bytes read
+        putDirectBuffer(encoder, "putSomeFixedLengthBlob", encodedData, 2, 8);
+        decodedData = new UnsafeBuffer("            ".getBytes(StandardCharsets.US_ASCII));
+        decodedDataLength = getDirectBuffer(decoder, "getSomeFixedLengthBlob", decodedData, 1, 6);
+        assertThat(decodedDataLength, is(6));
+        assertThat(decodedData.getStringWithoutLengthAscii(0, 12), is(" **DATA     "));
+
+        // Less bytes written (padding), every byte read
+        putDirectBuffer(encoder, "putSomeFixedLengthBlob", encodedData, 2, 6);
+        decodedData = new UnsafeBuffer("            ".getBytes(StandardCharsets.US_ASCII));
+        decodedDataLength = getDirectBuffer(decoder, "getSomeFixedLengthBlob", decodedData, 1, 8);
+        assertThat(decodedDataLength, is(8));
+        assertThat(decodedData.getStringWithoutLengthAscii(0, 12), is(" **DATA\u0000\u0000   "));
+    }
+
+    @Test
+    public void shouldGenerateWrapForFixedLengthBlob() throws Exception
+    {
+        final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
+        generator().generate();
+
+        final Object encoder = wrap(buffer, compileCarEncoder().getConstructor().newInstance());
+        final Object decoder = getCarDecoder(buffer, encoder);
+
+        final UnsafeBuffer encodedData = new UnsafeBuffer("  **DATA**  ".getBytes(StandardCharsets.US_ASCII));
+        putDirectBuffer(encoder, "putSomeFixedLengthBlob", encodedData, 2, 8);
+
+        final UnsafeBuffer decodedData = new UnsafeBuffer();
+        wrapDirectBuffer(decoder, "wrapSomeFixedLengthBlob", decodedData);
+        assertThat(decodedData.getStringWithoutLengthAscii(0, decodedData.capacity()), is("**DATA**"));
     }
 
     private Class<?> getModelClass(final Object encoder) throws ClassNotFoundException

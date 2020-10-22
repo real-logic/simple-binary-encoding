@@ -28,13 +28,14 @@ import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
 import uk.co.real_logic.sbe.xml.ParserOptions;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.*;
-import static uk.co.real_logic.sbe.generation.java.ReflectionUtil.get;
-import static uk.co.real_logic.sbe.generation.java.ReflectionUtil.set;
+import static uk.co.real_logic.sbe.generation.java.ReflectionUtil.*;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 public class SchemaExtensionTest
@@ -184,6 +185,7 @@ public class SchemaExtensionTest
         }
     }
 
+    @SuppressWarnings("MethodLength")
     @Test
     public void testMessage2() throws Exception
     {
@@ -204,24 +206,44 @@ public class SchemaExtensionTest
             final Object setEncoder = encoder.getClass().getMethod("tag5").invoke(encoder);
             set(setEncoder, "firstChoice", boolean.class, false);
             set(setEncoder, "secondChoice", boolean.class, true);
+
+            final byte[] data = "  **DATA**  ".getBytes(StandardCharsets.US_ASCII);
+            putByteArray(encoder, "putTag6", data, 2, 8);
         }
 
         { // Decode version 0
+            final byte[] data = new byte[12];
+            Arrays.fill(data, (byte)' ');
+            final UnsafeBuffer dataBuffer = new UnsafeBuffer(new byte[12]);
+            dataBuffer.setMemory(0, 12, (byte)' ');
+
             final Object decoderVersion0 = getMessage2Decoder(buffer, 4, 0);
             assertEquals(100, get(decoderVersion0, "tag1"));
             assertEquals(Integer.MIN_VALUE, get(decoderVersion0, "tag2"));
             assertNull(get(decoderVersion0, "tag3"));
             assertThat(get(decoderVersion0, "tag4").toString(), is("NULL_VAL"));
             assertNull(get(decoderVersion0, "tag5"));
+            assertEquals(0, getByteArray(decoderVersion0, "getTag6", data, 1, 8));
+            assertEquals("            ", new String(data, StandardCharsets.US_ASCII));
+            assertEquals(0, getDirectBuffer(decoderVersion0, "getTag6", dataBuffer, 3, 8));
+            assertEquals("            ", dataBuffer.getStringWithoutLengthAscii(0, 12));
+            wrapDirectBuffer(decoderVersion0, "wrapTag6", dataBuffer);
+            assertEquals("", dataBuffer.getStringWithoutLengthAscii(0, dataBuffer.capacity()));
 
             assertEquals(0, decoderVersion0.getClass().getMethod("tag1SinceVersion").invoke(null));
             assertEquals(2, decoderVersion0.getClass().getMethod("tag2SinceVersion").invoke(null));
             assertEquals(1, decoderVersion0.getClass().getMethod("tag3SinceVersion").invoke(null));
             assertEquals(4, decoderVersion0.getClass().getMethod("tag4SinceVersion").invoke(null));
             assertEquals(3, decoderVersion0.getClass().getMethod("tag5SinceVersion").invoke(null));
+            assertEquals(6, decoderVersion0.getClass().getMethod("tag6SinceVersion").invoke(null));
         }
 
         { // Decode version 1
+            final byte[] data = new byte[12];
+            Arrays.fill(data, (byte)' ');
+            final UnsafeBuffer dataBuffer = new UnsafeBuffer(new byte[12]);
+            dataBuffer.setMemory(0, 12, (byte)' ');
+
             final Object decoderVersion1 = getMessage2Decoder(buffer, 8, 1);
             assertEquals(100, get(decoderVersion1, "tag1"));
             assertEquals(Integer.MIN_VALUE, get(decoderVersion1, "tag2"));
@@ -230,9 +252,20 @@ public class SchemaExtensionTest
             assertEquals(300, get(compositeDecoder2, "value"));
             assertThat(get(decoderVersion1, "tag4").toString(), is("NULL_VAL"));
             assertNull(get(decoderVersion1, "tag5"));
+            assertEquals(0, getByteArray(decoderVersion1, "getTag6", data, 1, 8));
+            assertEquals("            ", new String(data, StandardCharsets.US_ASCII));
+            assertEquals(0, getDirectBuffer(decoderVersion1, "getTag6", dataBuffer, 3, 8));
+            assertEquals("            ", dataBuffer.getStringWithoutLengthAscii(0, 12));
+            wrapDirectBuffer(decoderVersion1, "wrapTag6", dataBuffer);
+            assertEquals("", dataBuffer.getStringWithoutLengthAscii(0, dataBuffer.capacity()));
         }
 
         { // Decode version 2
+            final byte[] data = new byte[12];
+            Arrays.fill(data, (byte)' ');
+            final UnsafeBuffer dataBuffer = new UnsafeBuffer(new byte[12]);
+            dataBuffer.setMemory(0, 12, (byte)' ');
+
             final Object decoderVersion2 = getMessage2Decoder(buffer, 8, 2);
             assertEquals(100, get(decoderVersion2, "tag1"));
             assertEquals(200, get(decoderVersion2, "tag2"));
@@ -241,9 +274,20 @@ public class SchemaExtensionTest
             assertEquals(300, get(compositeDecoder2, "value"));
             assertThat(get(decoderVersion2, "tag4").toString(), is("NULL_VAL"));
             assertNull(get(decoderVersion2, "tag5"));
+            assertEquals(0, getByteArray(decoderVersion2, "getTag6", data, 1, 8));
+            assertEquals("            ", new String(data, StandardCharsets.US_ASCII));
+            assertEquals(0, getDirectBuffer(decoderVersion2, "getTag6", dataBuffer, 3, 8));
+            assertEquals("            ", dataBuffer.getStringWithoutLengthAscii(0, 12));
+            wrapDirectBuffer(decoderVersion2, "wrapTag6", dataBuffer);
+            assertEquals("", dataBuffer.getStringWithoutLengthAscii(0, dataBuffer.capacity()));
         }
 
         { // Decode version 3
+            final byte[] data = new byte[12];
+            Arrays.fill(data, (byte)' ');
+            final UnsafeBuffer dataBuffer = new UnsafeBuffer(new byte[12]);
+            dataBuffer.setMemory(0, 12, (byte)' ');
+
             final Object decoderVersion3 = getMessage2Decoder(buffer, 12, 3);
             assertEquals(100, get(decoderVersion3, "tag1"));
             assertEquals(200, get(decoderVersion3, "tag2"));
@@ -255,9 +299,20 @@ public class SchemaExtensionTest
             assertNotNull(setDecoder);
             assertEquals(false, get(setDecoder, "firstChoice"));
             assertEquals(true, get(setDecoder, "secondChoice"));
+            assertEquals(0, getByteArray(decoderVersion3, "getTag6", data, 1, 8));
+            assertEquals("            ", new String(data, StandardCharsets.US_ASCII));
+            assertEquals(0, getDirectBuffer(decoderVersion3, "getTag6", dataBuffer, 3, 8));
+            assertEquals("            ", dataBuffer.getStringWithoutLengthAscii(0, 12));
+            wrapDirectBuffer(decoderVersion3, "wrapTag6", dataBuffer);
+            assertEquals("", dataBuffer.getStringWithoutLengthAscii(0, dataBuffer.capacity()));
         }
 
         { // Decode version 4
+            final byte[] data = new byte[12];
+            Arrays.fill(data, (byte)' ');
+            final UnsafeBuffer dataBuffer = new UnsafeBuffer(new byte[12]);
+            dataBuffer.setMemory(0, 12, (byte)' ');
+
             final Object decoderVersion4 = getMessage2Decoder(buffer, 12, 4);
             assertEquals(100, get(decoderVersion4, "tag1"));
             assertEquals(200, get(decoderVersion4, "tag2"));
@@ -270,6 +325,64 @@ public class SchemaExtensionTest
             assertNotNull(setDecoder);
             assertEquals(false, get(setDecoder, "firstChoice"));
             assertEquals(true, get(setDecoder, "secondChoice"));
+            assertEquals(0, getByteArray(decoderVersion4, "getTag6", data, 1, 8));
+            assertEquals("            ", new String(data, StandardCharsets.US_ASCII));
+            assertEquals(0, getDirectBuffer(decoderVersion4, "getTag6", dataBuffer, 3, 8));
+            assertEquals("            ", dataBuffer.getStringWithoutLengthAscii(0, 12));
+            wrapDirectBuffer(decoderVersion4, "wrapTag6", dataBuffer);
+            assertEquals("", dataBuffer.getStringWithoutLengthAscii(0, dataBuffer.capacity()));
+        }
+
+        { // Decode version 5
+            final byte[] data = new byte[12];
+            Arrays.fill(data, (byte)' ');
+            final UnsafeBuffer dataBuffer = new UnsafeBuffer(new byte[12]);
+            dataBuffer.setMemory(0, 12, (byte)' ');
+
+            final Object decoderVersion5 = getMessage2Decoder(buffer, 12, 5);
+            assertEquals(100, get(decoderVersion5, "tag1"));
+            assertEquals(200, get(decoderVersion5, "tag2"));
+            final Object compositeDecoder4 = get(decoderVersion5, "tag3");
+            assertNotNull(compositeDecoder4);
+            assertEquals(300, get(compositeDecoder4, "value"));
+            final Object enumConstant = getAEnumConstant(decoderVersion5, "AEnum", 1);
+            assertEquals(enumConstant, get(decoderVersion5, "tag4"));
+            final Object setDecoder = get(decoderVersion5, "tag5");
+            assertNotNull(setDecoder);
+            assertEquals(false, get(setDecoder, "firstChoice"));
+            assertEquals(true, get(setDecoder, "secondChoice"));
+            assertEquals(0, getByteArray(decoderVersion5, "getTag6", data, 1, 8));
+            assertEquals("            ", new String(data, StandardCharsets.US_ASCII));
+            assertEquals(0, getDirectBuffer(decoderVersion5, "getTag6", dataBuffer, 3, 8));
+            assertEquals("            ", dataBuffer.getStringWithoutLengthAscii(0, 12));
+            wrapDirectBuffer(decoderVersion5, "wrapTag6", dataBuffer);
+            assertEquals("", dataBuffer.getStringWithoutLengthAscii(0, dataBuffer.capacity()));
+        }
+
+        { // Decode version 6
+            final byte[] data = new byte[12];
+            Arrays.fill(data, (byte)' ');
+            final UnsafeBuffer dataBuffer = new UnsafeBuffer(new byte[12]);
+            dataBuffer.setMemory(0, 12, (byte)' ');
+
+            final Object decoderVersion6 = getMessage2Decoder(buffer, 12, 6);
+            assertEquals(100, get(decoderVersion6, "tag1"));
+            assertEquals(200, get(decoderVersion6, "tag2"));
+            final Object compositeDecoder4 = get(decoderVersion6, "tag3");
+            assertNotNull(compositeDecoder4);
+            assertEquals(300, get(compositeDecoder4, "value"));
+            final Object enumConstant = getAEnumConstant(decoderVersion6, "AEnum", 1);
+            assertEquals(enumConstant, get(decoderVersion6, "tag4"));
+            final Object setDecoder = get(decoderVersion6, "tag5");
+            assertNotNull(setDecoder);
+            assertEquals(false, get(setDecoder, "firstChoice"));
+            assertEquals(true, get(setDecoder, "secondChoice"));
+            assertEquals(8, getByteArray(decoderVersion6, "getTag6", data, 1, 8));
+            assertEquals(" **DATA**   ", new String(data, StandardCharsets.US_ASCII));
+            assertEquals(8, getDirectBuffer(decoderVersion6, "getTag6", dataBuffer, 3, 8));
+            assertEquals("   **DATA** ", dataBuffer.getStringWithoutLengthAscii(0, 12));
+            wrapDirectBuffer(decoderVersion6, "wrapTag6", dataBuffer);
+            assertEquals("**DATA**", dataBuffer.getStringWithoutLengthAscii(0, dataBuffer.capacity()));
         }
     }
 
