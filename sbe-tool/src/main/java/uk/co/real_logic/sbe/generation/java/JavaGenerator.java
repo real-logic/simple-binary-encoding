@@ -981,7 +981,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "    }\n",
             propertyName,
             readOnlyBuffer,
-            generateVarWrapFieldNotPresentCondition(token.version(), indent),
+            generateWrapFieldNotPresentCondition(token.version(), indent),
             sizeOfLengthField,
             PrimitiveType.UINT32 == lengthType ? "(int)" : "",
             generateGet(lengthType, "limit", byteOrderStr));
@@ -1860,7 +1860,7 @@ public class JavaGenerator implements CodeGenerator
             generatePut(encoding.primitiveType(), "offset + " + offset, "value", byteOrderStr));
     }
 
-    private CharSequence generateVarWrapFieldNotPresentCondition(final int sinceVersion, final String indent)
+    private CharSequence generateWrapFieldNotPresentCondition(final int sinceVersion, final String indent)
     {
         if (0 == sinceVersion)
         {
@@ -1871,6 +1871,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "        if (parentMessage.actingVersion < " + sinceVersion + ")\n" +
             indent + "        {\n" +
             indent + "            wrapBuffer.wrap(buffer, offset, 0);\n" +
+            indent + "            return;\n" +
             indent + "        }\n\n";
     }
 
@@ -2060,6 +2061,51 @@ public class JavaGenerator implements CodeGenerator
                     offset);
             }
         }
+        else if (encoding.primitiveType() == PrimitiveType.UINT8)
+        {
+            new Formatter(sb).format("\n" +
+                indent + "    public int get%s(final byte[] dst, final int dstOffset, final int length)\n" +
+                indent + "    {\n" +
+                "%s" +
+                indent + "        final int bytesCopied = Math.min(length, %d);\n" +
+                indent + "        buffer.getBytes(offset + %d, dst, dstOffset, bytesCopied);\n" +
+                indent + "        return bytesCopied;\n" +
+                indent + "    }\n",
+                Generators.toUpperFirstChar(propertyName),
+                generateArrayFieldNotPresentCondition(propertyToken.version(), indent),
+                fieldLength,
+                offset
+            );
+
+            new Formatter(sb).format("\n" +
+                indent + "    public int get%s(final %s dst, final int dstOffset, final int length)\n" +
+                indent + "    {\n" +
+                "%s" +
+                indent + "        final int bytesCopied = Math.min(length, %d);\n" +
+                indent + "        buffer.getBytes(offset + %d, dst, dstOffset, bytesCopied);\n" +
+                indent + "        return bytesCopied;\n" +
+                indent + "    }\n",
+                Generators.toUpperFirstChar(propertyName),
+                fqMutableBuffer,
+                generateArrayFieldNotPresentCondition(propertyToken.version(), indent),
+                fieldLength,
+                offset
+            );
+
+            new Formatter(sb).format("\n" +
+                indent + "    public void wrap%s(final %s wrapBuffer)\n" +
+                indent + "    {\n" +
+                indent + "        final int length = %d;\n" +
+                "%s" +
+                indent + "        wrapBuffer.wrap(buffer, offset + %d, length);\n" +
+                indent + "    }\n",
+                Generators.toUpperFirstChar(propertyName),
+                readOnlyBuffer,
+                fieldLength,
+                generateWrapFieldNotPresentCondition(propertyToken.version(), indent),
+                offset
+            );
+        }
 
         return sb;
     }
@@ -2149,6 +2195,11 @@ public class JavaGenerator implements CodeGenerator
         {
             generateCharArrayEncodeMethods(
                 containingClassName, propertyName, indent, encoding, offset, arrayLength, sb);
+        }
+        else if (primitiveType == PrimitiveType.UINT8)
+        {
+            generateByteArrayEncodeMethods(
+                containingClassName, propertyName, indent, offset, arrayLength, sb);
         }
 
         return sb;
@@ -2259,6 +2310,60 @@ public class JavaGenerator implements CodeGenerator
                 offset,
                 offset);
         }
+    }
+
+    private void generateByteArrayEncodeMethods(
+        final String containingClassName,
+        final String propertyName,
+        final String indent,
+        final int offset,
+        final int fieldLength,
+        final StringBuilder sb)
+    {
+        new Formatter(sb).format("\n" +
+            indent + "    public %s put%s(final byte[] src, final int srcOffset, final int length)\n" +
+            indent + "    {\n" +
+            indent + "        if (length > %d)\n" +
+            indent + "        {\n" +
+            indent + "            throw new IllegalStateException(" +
+            "\"length > maxValue for type: \" + length);" +
+            indent + "        }\n\n" +
+            indent + "        buffer.putBytes(offset + %d, src, srcOffset, length);\n" +
+            indent + "        for (int i = length; i < %d; i++)\n" +
+            indent + "        {\n" +
+            indent + "            buffer.putByte(offset + %d + i, (byte)0);\n" +
+            indent + "        }\n" +
+            indent + "        return this;\n" +
+            indent + "    }\n",
+            formatClassName(containingClassName),
+            Generators.toUpperFirstChar(propertyName),
+            fieldLength,
+            offset,
+            fieldLength,
+            offset);
+
+        new Formatter(sb).format("\n" +
+            indent + "    public %s put%s(final %s src, final int srcOffset, final int length)\n" +
+            indent + "    {\n" +
+            indent + "        if (length > %d)\n" +
+            indent + "        {\n" +
+            indent + "            throw new IllegalStateException(" +
+            "\"length > maxValue for type: \" + length);" +
+            indent + "        }\n\n" +
+            indent + "        buffer.putBytes(offset + %d, src, srcOffset, length);\n" +
+            indent + "        for (int i = length; i < %d; i++)\n" +
+            indent + "        {\n" +
+            indent + "            buffer.putByte(offset + %d + i, (byte)0);\n" +
+            indent + "        }\n" +
+            indent + "        return this;\n" +
+            indent + "    }\n",
+            formatClassName(containingClassName),
+            Generators.toUpperFirstChar(propertyName),
+            fqReadOnlyBuffer,
+            fieldLength,
+            offset,
+            fieldLength,
+            offset);
     }
 
     private static int sizeOfPrimitive(final Encoding encoding)

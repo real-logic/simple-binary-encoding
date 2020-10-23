@@ -442,6 +442,7 @@ public class JavaGeneratorTest
         assertThat(get(decoder, "vehicleCode"), is("R11R12"));
     }
 
+
     private Class<?> getModelClass(final Object encoder) throws ClassNotFoundException
     {
         final String className = "Model";
