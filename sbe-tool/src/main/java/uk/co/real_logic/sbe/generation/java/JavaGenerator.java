@@ -2074,8 +2074,7 @@ public class JavaGenerator implements CodeGenerator
                 Generators.toUpperFirstChar(propertyName),
                 generateArrayFieldNotPresentCondition(propertyToken.version(), indent),
                 fieldLength,
-                offset
-            );
+                offset);
 
             new Formatter(sb).format("\n" +
                 indent + "    public int get%s(final %s dst, final int dstOffset, final int length)\n" +
@@ -2089,8 +2088,7 @@ public class JavaGenerator implements CodeGenerator
                 fqMutableBuffer,
                 generateArrayFieldNotPresentCondition(propertyToken.version(), indent),
                 fieldLength,
-                offset
-            );
+                offset);
 
             new Formatter(sb).format("\n" +
                 indent + "    public void wrap%s(final %s wrapBuffer)\n" +
@@ -2103,8 +2101,7 @@ public class JavaGenerator implements CodeGenerator
                 readOnlyBuffer,
                 fieldLength,
                 generateWrapFieldNotPresentCondition(propertyToken.version(), indent),
-                offset
-            );
+                offset);
         }
 
         return sb;

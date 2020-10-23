@@ -38,6 +38,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static uk.co.real_logic.sbe.generation.java.ReflectionUtil.*;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
+@SuppressWarnings("MethodLength")
 public class SchemaExtensionTest
 {
     private static final Class<?> BUFFER_CLASS = MutableDirectBuffer.class;
@@ -63,7 +64,6 @@ public class SchemaExtensionTest
         generator().generate();
     }
 
-    @SuppressWarnings("MethodLength")
     @Test
     public void testMessage1() throws Exception
     {
@@ -185,7 +185,6 @@ public class SchemaExtensionTest
         }
     }
 
-    @SuppressWarnings("MethodLength")
     @Test
     public void testMessage2() throws Exception
     {
@@ -454,19 +453,18 @@ public class SchemaExtensionTest
         return decoder;
     }
 
-    private static void wrap(
-        final int bufferOffset, final Object flyweight, final MutableDirectBuffer buffer, final Class<?> bufferClass)
+    private static void wrap(final Object flyweight, final UnsafeBuffer buffer, final Class<?> bufferClass)
         throws Exception
     {
         flyweight
             .getClass()
             .getDeclaredMethod("wrap", bufferClass, int.class)
-            .invoke(flyweight, buffer, bufferOffset);
+            .invoke(flyweight, buffer, 0);
     }
 
     private static Object wrap(final UnsafeBuffer buffer, final Object encoder) throws Exception
     {
-        wrap(0, encoder, buffer, BUFFER_CLASS);
+        wrap(encoder, buffer, BUFFER_CLASS);
 
         return encoder;
     }

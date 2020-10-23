@@ -19,7 +19,7 @@ import org.agrona.DirectBuffer;
 import org.agrona.MutableDirectBuffer;
 import uk.co.real_logic.sbe.generation.Generators;
 
-public final class ReflectionUtil
+final class ReflectionUtil
 {
     static int getSbeSchemaVersion(final Object encoder) throws Exception
     {
@@ -90,12 +90,12 @@ public final class ReflectionUtil
         return (boolean)extras.getClass().getMethod("cruiseControl").invoke(extras);
     }
 
-    public static int getCapacity(final Object flyweight) throws Exception
+    static int getCapacity(final Object flyweight) throws Exception
     {
         return getInt(flyweight, "capacity");
     }
 
-    public static void setCapacity(final Object flyweight, final int value) throws Exception
+    static void setCapacity(final Object flyweight, final int value) throws Exception
     {
         flyweight
             .getClass()
@@ -156,10 +156,7 @@ public final class ReflectionUtil
             .invoke(decoder, dst, dstOffset, length);
     }
 
-    static void wrapDirectBuffer(
-        final Object decoder,
-        final String name,
-        final DirectBuffer dst) throws Exception
+    static void wrapDirectBuffer(final Object decoder, final String name, final DirectBuffer dst) throws Exception
     {
         decoder
             .getClass()

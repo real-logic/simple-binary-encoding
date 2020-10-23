@@ -166,7 +166,7 @@ public class FixedSizeDataGeneratorTest
     private Object getTestMessage2Encoder(final UnsafeBuffer buffer) throws Exception
     {
         final Object encoder = compile("TestMessage2Encoder").getConstructor().newInstance();
-        return wrap(0, encoder, buffer, BUFFER_CLASS);
+        return wrap(encoder, buffer);
     }
 
     private Object getTestMessage2Decoder(final UnsafeBuffer buffer, final Object encoder) throws Exception
@@ -186,15 +186,13 @@ public class FixedSizeDataGeneratorTest
         return decoder;
     }
 
-    private static Object wrap(
-        final int bufferOffset, final Object flyweight, final MutableDirectBuffer buffer, final Class<?> bufferClass)
-        throws Exception
+    private static Object wrap(final Object flyweight, final UnsafeBuffer buffer) throws Exception
     {
         flyweight
             .getClass()
-            .getDeclaredMethod("wrap", bufferClass, int.class)
-            .invoke(flyweight, buffer, bufferOffset);
+            .getDeclaredMethod("wrap", BUFFER_CLASS, int.class)
+            .invoke(flyweight, buffer, 0);
+
         return flyweight;
     }
-
 }
