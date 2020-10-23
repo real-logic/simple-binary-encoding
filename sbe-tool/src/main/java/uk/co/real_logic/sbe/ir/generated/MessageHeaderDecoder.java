@@ -3,6 +3,7 @@ package uk.co.real_logic.sbe.ir.generated;
 
 import org.agrona.DirectBuffer;
 
+
 /**
  * Message identifiers and length of message root
  */

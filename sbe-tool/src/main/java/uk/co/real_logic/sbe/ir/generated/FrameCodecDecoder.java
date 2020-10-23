@@ -4,6 +4,7 @@ package uk.co.real_logic.sbe.ir.generated;
 import org.agrona.MutableDirectBuffer;
 import org.agrona.DirectBuffer;
 
+
 /**
  * Frame Header for start of encoding IR
  */

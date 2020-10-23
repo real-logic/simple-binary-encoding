@@ -1,6 +1,7 @@
 /* Generated SBE (Simple Binary Encoding) message codec. */
 package uk.co.real_logic.sbe.ir.generated;
 
+
 /**
  * Field presence declaration
  */

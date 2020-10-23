@@ -212,7 +212,7 @@ public class JavaGenerator implements CodeGenerator
 
             final StringBuilder sb = new StringBuilder();
             generateEncoderFields(sb, className, fields, BASE_INDENT);
-            generateEncoderGroups(sb, className, null, groups, BASE_INDENT, false);
+            generateEncoderGroups(sb, className, groups, BASE_INDENT, false);
             generateEncoderVarData(sb, className, varData, BASE_INDENT);
 
             generateEncoderDisplay(sb, decoderName(msgToken.name()));
@@ -246,7 +246,7 @@ public class JavaGenerator implements CodeGenerator
 
             final StringBuilder sb = new StringBuilder();
             generateDecoderFields(sb, fields, BASE_INDENT);
-            generateDecoderGroups(sb, className, null, groups, BASE_INDENT, false);
+            generateDecoderGroups(sb, className, groups, BASE_INDENT, false);
             generateDecoderVarData(sb, varData, BASE_INDENT);
 
             generateDecoderDisplay(sb, msgToken.name(), fields, groups, varData);
@@ -259,7 +259,6 @@ public class JavaGenerator implements CodeGenerator
     private void generateDecoderGroups(
         final StringBuilder sb,
         final String outerClassName,
-        final String outerGroupName,
         final List<Token> tokens,
         final String indent,
         final boolean isSubGroup) throws IOException
@@ -298,7 +297,7 @@ public class JavaGenerator implements CodeGenerator
             generateGroupDecoderClassHeader(sb, groupName, outerClassName, tokens, groups, index, indent + INDENT);
 
             generateDecoderFields(sb, fields, indent + INDENT);
-            generateDecoderGroups(sb, outerClassName, groupName, groups, indent + INDENT, true);
+            generateDecoderGroups(sb, outerClassName, groups, indent + INDENT, true);
             generateDecoderVarData(sb, varData, indent + INDENT);
 
             appendGroupInstanceDecoderDisplay(sb, fields, groups, varData, indent + INDENT);
@@ -310,7 +309,6 @@ public class JavaGenerator implements CodeGenerator
     private void generateEncoderGroups(
         final StringBuilder sb,
         final String outerClassName,
-        final String outerGroupName,
         final List<Token> tokens,
         final String indent,
         final boolean isSubGroup) throws IOException
@@ -350,7 +348,7 @@ public class JavaGenerator implements CodeGenerator
             generateGroupEncoderClassHeader(sb, groupName, outerClassName, tokens, groups, index, indent + INDENT);
 
             generateEncoderFields(sb, groupClassName, fields, indent + INDENT);
-            generateEncoderGroups(sb, outerClassName, groupClassName, groups, indent + INDENT, true);
+            generateEncoderGroups(sb, outerClassName, groups, indent + INDENT, true);
             generateEncoderVarData(sb, groupClassName, varData, indent + INDENT);
 
             sb.append(indent).append("    }\n");
@@ -3213,41 +3211,41 @@ public class JavaGenerator implements CodeGenerator
 
     private void generateEncoderDisplay(final StringBuilder sb, final String decoderName)
     {
-        final String indent = INDENT;
-        appendToString(sb, indent);
+        appendToString(sb, INDENT);
+
         sb.append('\n');
-        append(sb, indent, "public StringBuilder appendTo(final StringBuilder builder)");
-        append(sb, indent, "{");
-        append(sb, indent, "    if (null == buffer)");
-        append(sb, indent, "    {");
-        append(sb, indent, "        return builder;");
-        append(sb, indent, "    }");
+        append(sb, INDENT, "public StringBuilder appendTo(final StringBuilder builder)");
+        append(sb, INDENT, "{");
+        append(sb, INDENT, "    if (null == buffer)");
+        append(sb, INDENT, "    {");
+        append(sb, INDENT, "        return builder;");
+        append(sb, INDENT, "    }");
         sb.append('\n');
-        append(sb, indent, "    final " + decoderName + " decoder = new " + decoderName + "();");
-        append(sb, indent, "    decoder.wrap(buffer, initialOffset, BLOCK_LENGTH, SCHEMA_VERSION);");
+        append(sb, INDENT, "    final " + decoderName + " decoder = new " + decoderName + "();");
+        append(sb, INDENT, "    decoder.wrap(buffer, initialOffset, BLOCK_LENGTH, SCHEMA_VERSION);");
         sb.append('\n');
-        append(sb, indent, "    return decoder.appendTo(builder);");
-        append(sb, indent, "}");
+        append(sb, INDENT, "    return decoder.appendTo(builder);");
+        append(sb, INDENT, "}");
     }
 
     private CharSequence generateCompositeEncoderDisplay(final String decoderName)
     {
-        final String indent = INDENT;
         final StringBuilder sb = new StringBuilder();
-        appendToString(sb, indent);
+
+        appendToString(sb, INDENT);
         sb.append('\n');
-        append(sb, indent, "public StringBuilder appendTo(final StringBuilder builder)");
-        append(sb, indent, "{");
-        append(sb, indent, "    if (null == buffer)");
-        append(sb, indent, "    {");
-        append(sb, indent, "        return builder;");
-        append(sb, indent, "    }");
+        append(sb, INDENT, "public StringBuilder appendTo(final StringBuilder builder)");
+        append(sb, INDENT, "{");
+        append(sb, INDENT, "    if (null == buffer)");
+        append(sb, INDENT, "    {");
+        append(sb, INDENT, "        return builder;");
+        append(sb, INDENT, "    }");
         sb.append('\n');
-        append(sb, indent, "    final " + decoderName + " decoder = new " + decoderName + "();");
-        append(sb, indent, "    decoder.wrap(buffer, offset);");
+        append(sb, INDENT, "    final " + decoderName + " decoder = new " + decoderName + "();");
+        append(sb, INDENT, "    decoder.wrap(buffer, offset);");
         sb.append('\n');
-        append(sb, indent, "    return decoder.appendTo(builder);");
-        append(sb, indent, "}");
+        append(sb, INDENT, "    return decoder.appendTo(builder);");
+        append(sb, INDENT, "}");
 
         return sb;
     }
@@ -3292,37 +3290,36 @@ public class JavaGenerator implements CodeGenerator
 
     private CharSequence generateChoiceDisplay(final List<Token> tokens)
     {
-        final String indent = INDENT;
         final StringBuilder sb = new StringBuilder();
 
-        appendToString(sb, indent);
+        appendToString(sb, INDENT);
         sb.append('\n');
-        append(sb, indent, "public StringBuilder appendTo(final StringBuilder builder)");
-        append(sb, indent, "{");
-        Separator.BEGIN_SET.appendToGeneratedBuilder(sb, indent + INDENT, "builder");
-        append(sb, indent, "    boolean atLeastOne = false;");
+        append(sb, INDENT, "public StringBuilder appendTo(final StringBuilder builder)");
+        append(sb, INDENT, "{");
+        Separator.BEGIN_SET.appendToGeneratedBuilder(sb, INDENT + INDENT, "builder");
+        append(sb, INDENT, "    boolean atLeastOne = false;");
 
         for (final Token token : tokens)
         {
             if (token.signal() == Signal.CHOICE)
             {
                 final String choiceName = formatPropertyName(token.name());
-                append(sb, indent, "    if (" + choiceName + "())");
-                append(sb, indent, "    {");
-                append(sb, indent, "        if (atLeastOne)");
-                append(sb, indent, "        {");
-                Separator.ENTRY.appendToGeneratedBuilder(sb, indent + INDENT + INDENT + INDENT, "builder");
-                append(sb, indent, "        }");
-                append(sb, indent, "        builder.append(\"" + choiceName + "\");");
-                append(sb, indent, "        atLeastOne = true;");
-                append(sb, indent, "    }");
+                append(sb, INDENT, "    if (" + choiceName + "())");
+                append(sb, INDENT, "    {");
+                append(sb, INDENT, "        if (atLeastOne)");
+                append(sb, INDENT, "        {");
+                Separator.ENTRY.appendToGeneratedBuilder(sb, INDENT + INDENT + INDENT + INDENT, "builder");
+                append(sb, INDENT, "        }");
+                append(sb, INDENT, "        builder.append(\"" + choiceName + "\");");
+                append(sb, INDENT, "        atLeastOne = true;");
+                append(sb, INDENT, "    }");
             }
         }
 
-        Separator.END_SET.appendToGeneratedBuilder(sb, indent + INDENT, "builder");
+        Separator.END_SET.appendToGeneratedBuilder(sb, INDENT + INDENT, "builder");
         sb.append('\n');
-        append(sb, indent, "    return builder;");
-        append(sb, indent, "}");
+        append(sb, INDENT, "    return builder;");
+        append(sb, INDENT, "}");
 
         return sb;
     }
@@ -3334,9 +3331,7 @@ public class JavaGenerator implements CodeGenerator
         final List<Token> groups,
         final List<Token> varData)
     {
-        final String decoderName = decoderName(name);
-
-        appendMessageToString(sb, INDENT, decoderName);
+        appendMessageToString(sb, decoderName(name));
         sb.append('\n');
         append(sb, INDENT, "public StringBuilder appendTo(final StringBuilder builder)");
         append(sb, INDENT, "{");
@@ -3587,20 +3582,20 @@ public class JavaGenerator implements CodeGenerator
         append(sb, indent, "}");
     }
 
-    private void appendMessageToString(final StringBuilder sb, final String indent, final String decoderName)
+    private void appendMessageToString(final StringBuilder sb, final String decoderName)
     {
         sb.append('\n');
-        append(sb, indent, "public String toString()");
-        append(sb, indent, "{");
-        append(sb, indent, "    if (null == buffer)");
-        append(sb, indent, "    {");
-        append(sb, indent, "        return \"\";");
-        append(sb, indent, "    }");
+        append(sb, INDENT, "public String toString()");
+        append(sb, INDENT, "{");
+        append(sb, INDENT, "    if (null == buffer)");
+        append(sb, INDENT, "    {");
+        append(sb, INDENT, "        return \"\";");
+        append(sb, INDENT, "    }");
         sb.append('\n');
-        append(sb, indent, "    final " + decoderName + " decoder = new " + decoderName + "();");
-        append(sb, indent, "    decoder.wrap(buffer, initialOffset, actingBlockLength, actingVersion);");
+        append(sb, INDENT, "    final " + decoderName + " decoder = new " + decoderName + "();");
+        append(sb, INDENT, "    decoder.wrap(buffer, initialOffset, actingBlockLength, actingVersion);");
         sb.append('\n');
-        append(sb, indent, "    return decoder.appendTo(new StringBuilder()).toString();");
-        append(sb, indent, "}");
+        append(sb, INDENT, "    return decoder.appendTo(new StringBuilder()).toString();");
+        append(sb, INDENT, "}");
     }
 }

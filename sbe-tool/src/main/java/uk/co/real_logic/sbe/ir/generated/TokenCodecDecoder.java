@@ -4,6 +4,7 @@ package uk.co.real_logic.sbe.ir.generated;
 import org.agrona.MutableDirectBuffer;
 import org.agrona.DirectBuffer;
 
+
 /**
  * Codec for an IR Token
  */
