@@ -223,6 +223,7 @@ public class SchemaExtensionTest
             assertNull(get(decoderVersion0, "tag3"));
             assertThat(get(decoderVersion0, "tag4").toString(), is("NULL_VAL"));
             assertNull(get(decoderVersion0, "tag5"));
+            // tag6 (fixed-size data)
             assertEquals(0, getByteArray(decoderVersion0, "getTag6", data, 1, 8));
             assertEquals("            ", new String(data, StandardCharsets.US_ASCII));
             assertEquals(0, getDirectBuffer(decoderVersion0, "getTag6", dataBuffer, 3, 8));
@@ -252,6 +253,7 @@ public class SchemaExtensionTest
             assertEquals(300, get(compositeDecoder2, "value"));
             assertThat(get(decoderVersion1, "tag4").toString(), is("NULL_VAL"));
             assertNull(get(decoderVersion1, "tag5"));
+            // tag6 (fixed-size data)
             assertEquals(0, getByteArray(decoderVersion1, "getTag6", data, 1, 8));
             assertEquals("            ", new String(data, StandardCharsets.US_ASCII));
             assertEquals(0, getDirectBuffer(decoderVersion1, "getTag6", dataBuffer, 3, 8));
@@ -266,7 +268,7 @@ public class SchemaExtensionTest
             final UnsafeBuffer dataBuffer = new UnsafeBuffer(new byte[12]);
             dataBuffer.setMemory(0, 12, (byte)' ');
 
-            final Object decoderVersion2 = getMessage2Decoder(buffer, 8, 2);
+            final Object decoderVersion2 = getMessage2Decoder(buffer, 12, 2);
             assertEquals(100, get(decoderVersion2, "tag1"));
             assertEquals(200, get(decoderVersion2, "tag2"));
             final Object compositeDecoder2 = get(decoderVersion2, "tag3");
@@ -274,6 +276,7 @@ public class SchemaExtensionTest
             assertEquals(300, get(compositeDecoder2, "value"));
             assertThat(get(decoderVersion2, "tag4").toString(), is("NULL_VAL"));
             assertNull(get(decoderVersion2, "tag5"));
+            // tag6 (fixed-size data)
             assertEquals(0, getByteArray(decoderVersion2, "getTag6", data, 1, 8));
             assertEquals("            ", new String(data, StandardCharsets.US_ASCII));
             assertEquals(0, getDirectBuffer(decoderVersion2, "getTag6", dataBuffer, 3, 8));
@@ -288,7 +291,7 @@ public class SchemaExtensionTest
             final UnsafeBuffer dataBuffer = new UnsafeBuffer(new byte[12]);
             dataBuffer.setMemory(0, 12, (byte)' ');
 
-            final Object decoderVersion3 = getMessage2Decoder(buffer, 12, 3);
+            final Object decoderVersion3 = getMessage2Decoder(buffer, 13, 3);
             assertEquals(100, get(decoderVersion3, "tag1"));
             assertEquals(200, get(decoderVersion3, "tag2"));
             final Object compositeDecoder3 = get(decoderVersion3, "tag3");
@@ -299,6 +302,7 @@ public class SchemaExtensionTest
             assertNotNull(setDecoder);
             assertEquals(false, get(setDecoder, "firstChoice"));
             assertEquals(true, get(setDecoder, "secondChoice"));
+            // tag6 (fixed-size data)
             assertEquals(0, getByteArray(decoderVersion3, "getTag6", data, 1, 8));
             assertEquals("            ", new String(data, StandardCharsets.US_ASCII));
             assertEquals(0, getDirectBuffer(decoderVersion3, "getTag6", dataBuffer, 3, 8));
@@ -313,7 +317,7 @@ public class SchemaExtensionTest
             final UnsafeBuffer dataBuffer = new UnsafeBuffer(new byte[12]);
             dataBuffer.setMemory(0, 12, (byte)' ');
 
-            final Object decoderVersion4 = getMessage2Decoder(buffer, 12, 4);
+            final Object decoderVersion4 = getMessage2Decoder(buffer, 14, 4);
             assertEquals(100, get(decoderVersion4, "tag1"));
             assertEquals(200, get(decoderVersion4, "tag2"));
             final Object compositeDecoder4 = get(decoderVersion4, "tag3");
@@ -325,6 +329,7 @@ public class SchemaExtensionTest
             assertNotNull(setDecoder);
             assertEquals(false, get(setDecoder, "firstChoice"));
             assertEquals(true, get(setDecoder, "secondChoice"));
+            // tag6 (fixed-size data)
             assertEquals(0, getByteArray(decoderVersion4, "getTag6", data, 1, 8));
             assertEquals("            ", new String(data, StandardCharsets.US_ASCII));
             assertEquals(0, getDirectBuffer(decoderVersion4, "getTag6", dataBuffer, 3, 8));
@@ -339,7 +344,7 @@ public class SchemaExtensionTest
             final UnsafeBuffer dataBuffer = new UnsafeBuffer(new byte[12]);
             dataBuffer.setMemory(0, 12, (byte)' ');
 
-            final Object decoderVersion5 = getMessage2Decoder(buffer, 12, 5);
+            final Object decoderVersion5 = getMessage2Decoder(buffer, 14, 5);
             assertEquals(100, get(decoderVersion5, "tag1"));
             assertEquals(200, get(decoderVersion5, "tag2"));
             final Object compositeDecoder4 = get(decoderVersion5, "tag3");
@@ -351,6 +356,7 @@ public class SchemaExtensionTest
             assertNotNull(setDecoder);
             assertEquals(false, get(setDecoder, "firstChoice"));
             assertEquals(true, get(setDecoder, "secondChoice"));
+            // tag6 (fixed-size data)
             assertEquals(0, getByteArray(decoderVersion5, "getTag6", data, 1, 8));
             assertEquals("            ", new String(data, StandardCharsets.US_ASCII));
             assertEquals(0, getDirectBuffer(decoderVersion5, "getTag6", dataBuffer, 3, 8));
@@ -365,7 +371,7 @@ public class SchemaExtensionTest
             final UnsafeBuffer dataBuffer = new UnsafeBuffer(new byte[12]);
             dataBuffer.setMemory(0, 12, (byte)' ');
 
-            final Object decoderVersion6 = getMessage2Decoder(buffer, 12, 6);
+            final Object decoderVersion6 = getMessage2Decoder(buffer, 22, 6);
             assertEquals(100, get(decoderVersion6, "tag1"));
             assertEquals(200, get(decoderVersion6, "tag2"));
             final Object compositeDecoder4 = get(decoderVersion6, "tag3");
@@ -377,6 +383,7 @@ public class SchemaExtensionTest
             assertNotNull(setDecoder);
             assertEquals(false, get(setDecoder, "firstChoice"));
             assertEquals(true, get(setDecoder, "secondChoice"));
+            // tag6 (fixed-size data)
             assertEquals(8, getByteArray(decoderVersion6, "getTag6", data, 1, 8));
             assertEquals(" **DATA**   ", new String(data, StandardCharsets.US_ASCII));
             assertEquals(8, getDirectBuffer(decoderVersion6, "getTag6", dataBuffer, 3, 8));

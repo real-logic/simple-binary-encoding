@@ -39,7 +39,6 @@
         <type name="ModelYear" primitiveType="uint16"/>
         <type name="VehicleCode" primitiveType="char" length="6" characterEncoding="ASCII"/>
         <type name="someNumbers" primitiveType="int32" length="5"/>
-        <type name="someFixedLengthBlob" primitiveType="uint8" length="8"/>
         <type name="Ron" primitiveType="uint8" minValue="90" maxValue="110"/>
         <composite name="Engine">
             <type name="capacity" primitiveType="uint16"/>
@@ -74,7 +73,6 @@
         <field name="extras" id="7" type="OptionalExtras"/>
         <field name="discountedModel" id="8" type="Model" presence="constant" valueRef="Model.C"/>
         <field name="engine" id="9" type="Engine"/>
-        <field name="someFixedLengthBlob" id="300" type="someFixedLengthBlob"/>
         <group name="fuelFigures" id="10" dimensionType="groupSizeEncoding">
             <field name="speed" id="11" type="uint16"/>
             <field name="mpg" id="12" type="float"/>
