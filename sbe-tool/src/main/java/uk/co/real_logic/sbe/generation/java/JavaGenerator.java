@@ -2066,7 +2066,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "    {\n" +
                 "%s" +
                 indent + "        final int bytesCopied = Math.min(length, %d);\n" +
-                indent + "        buffer.getBytes(offset + %d, dst, dstOffset, bytesCopied);\n" +
+                indent + "        buffer.getBytes(offset + %d, dst, dstOffset, bytesCopied);\n\n" +
                 indent + "        return bytesCopied;\n" +
                 indent + "    }\n",
                 Generators.toUpperFirstChar(propertyName),
@@ -2079,7 +2079,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "    {\n" +
                 "%s" +
                 indent + "        final int bytesCopied = Math.min(length, %d);\n" +
-                indent + "        buffer.getBytes(offset + %d, dst, dstOffset, bytesCopied);\n" +
+                indent + "        buffer.getBytes(offset + %d, dst, dstOffset, bytesCopied);\n\n" +
                 indent + "        return bytesCopied;\n" +
                 indent + "    }\n",
                 Generators.toUpperFirstChar(propertyName),
@@ -2091,15 +2091,14 @@ public class JavaGenerator implements CodeGenerator
             new Formatter(sb).format("\n" +
                 indent + "    public void wrap%s(final %s wrapBuffer)\n" +
                 indent + "    {\n" +
-                indent + "        final int length = %d;\n" +
                 "%s" +
-                indent + "        wrapBuffer.wrap(buffer, offset + %d, length);\n" +
+                indent + "        wrapBuffer.wrap(buffer, offset + %d, %d);\n" +
                 indent + "    }\n",
                 Generators.toUpperFirstChar(propertyName),
                 readOnlyBuffer,
-                fieldLength,
                 generateWrapFieldNotPresentCondition(propertyToken.version(), indent),
-                offset);
+                offset,
+                fieldLength);
         }
 
         return sb;
@@ -2321,13 +2320,13 @@ public class JavaGenerator implements CodeGenerator
             indent + "        if (length > %d)\n" +
             indent + "        {\n" +
             indent + "            throw new IllegalStateException(" +
-            "\"length > maxValue for type: \" + length);" +
+            "\"length > maxValue for type: \" + length);\n" +
             indent + "        }\n\n" +
             indent + "        buffer.putBytes(offset + %d, src, srcOffset, length);\n" +
             indent + "        for (int i = length; i < %d; i++)\n" +
             indent + "        {\n" +
             indent + "            buffer.putByte(offset + %d + i, (byte)0);\n" +
-            indent + "        }\n" +
+            indent + "        }\n\n" +
             indent + "        return this;\n" +
             indent + "    }\n",
             formatClassName(containingClassName),
@@ -2343,13 +2342,13 @@ public class JavaGenerator implements CodeGenerator
             indent + "        if (length > %d)\n" +
             indent + "        {\n" +
             indent + "            throw new IllegalStateException(" +
-            "\"length > maxValue for type: \" + length);" +
+            "\"length > maxValue for type: \" + length);\n" +
             indent + "        }\n\n" +
             indent + "        buffer.putBytes(offset + %d, src, srcOffset, length);\n" +
             indent + "        for (int i = length; i < %d; i++)\n" +
             indent + "        {\n" +
             indent + "            buffer.putByte(offset + %d + i, (byte)0);\n" +
-            indent + "        }\n" +
+            indent + "        }\n\n" +
             indent + "        return this;\n" +
             indent + "    }\n",
             formatClassName(containingClassName),
