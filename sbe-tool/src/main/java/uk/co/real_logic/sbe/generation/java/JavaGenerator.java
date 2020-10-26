@@ -3234,6 +3234,8 @@ public class JavaGenerator implements CodeGenerator
 
         appendToString(sb, INDENT);
         sb.append('\n');
+        append(sb, INDENT, "private final " + decoderName + " decoderForDisplay = new " + decoderName + "();");
+        sb.append('\n');
         append(sb, INDENT, "public StringBuilder appendTo(final StringBuilder builder)");
         append(sb, INDENT, "{");
         append(sb, INDENT, "    if (null == buffer)");
@@ -3241,10 +3243,9 @@ public class JavaGenerator implements CodeGenerator
         append(sb, INDENT, "        return builder;");
         append(sb, INDENT, "    }");
         sb.append('\n');
-        append(sb, INDENT, "    final " + decoderName + " decoder = new " + decoderName + "();");
-        append(sb, INDENT, "    decoder.wrap(buffer, offset);");
+        append(sb, INDENT, "    decoderForDisplay.wrap(buffer, offset);");
         sb.append('\n');
-        append(sb, INDENT, "    return decoder.appendTo(builder);");
+        append(sb, INDENT, "    return decoderForDisplay.appendTo(builder);");
         append(sb, INDENT, "}");
 
         return sb;
