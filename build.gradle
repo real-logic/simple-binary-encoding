@@ -28,7 +28,7 @@ plugins {
 
 defaultTasks 'clean', 'build'
 
-def checkstyleVersion = '8.36.2'
+def checkstyleVersion = '8.37'
 def hamcrestVersion = '2.2'
 def mockitoVersion = '3.6.0'
 def junitVersion = '5.7.0'
@@ -696,6 +696,6 @@ task testReport(type: TestReport) {
 }
 
 wrapper {
-    gradleVersion = '6.6.1'
+    gradleVersion = '6.7'
     distributionType = 'ALL'
 }
