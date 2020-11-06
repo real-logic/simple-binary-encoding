@@ -1965,7 +1965,7 @@ public class CGenerator implements CodeGenerator
             "    struct %11$s *const hdr)\n" +
             "{\n" +
             "    %11$s_wrap(\n" +
-            "        hdr, buffer + offset, 0, buffer_length, %11$s_sbe_schema_version());\n\n" +
+            "        hdr, buffer + offset, 0, %11$s_sbe_schema_version(), buffer_length);\n\n" +
 
             "    %11$s_set_blockLength(hdr, %10$s_sbe_block_length());\n" +
             "    %11$s_set_templateId(hdr, %10$s_sbe_template_id());\n" +
