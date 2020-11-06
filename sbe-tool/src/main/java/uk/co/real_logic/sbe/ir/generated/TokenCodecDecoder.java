@@ -384,6 +384,11 @@ public class TokenCodecDecoder
         return "";
     }
 
+    public short signalRaw()
+    {
+        return ((short)(buffer.getByte(offset + 20) & 0xFF));
+    }
+
     public SignalCodec signal()
     {
         return SignalCodec.get(((short)(buffer.getByte(offset + 20) & 0xFF)));
@@ -418,6 +423,11 @@ public class TokenCodecDecoder
         }
 
         return "";
+    }
+
+    public short primitiveTypeRaw()
+    {
+        return ((short)(buffer.getByte(offset + 21) & 0xFF));
     }
 
     public PrimitiveTypeCodec primitiveType()
@@ -456,6 +466,11 @@ public class TokenCodecDecoder
         return "";
     }
 
+    public short byteOrderRaw()
+    {
+        return ((short)(buffer.getByte(offset + 22) & 0xFF));
+    }
+
     public ByteOrderCodec byteOrder()
     {
         return ByteOrderCodec.get(((short)(buffer.getByte(offset + 22) & 0xFF)));
@@ -490,6 +505,11 @@ public class TokenCodecDecoder
         }
 
         return "";
+    }
+
+    public short presenceRaw()
+    {
+        return ((short)(buffer.getByte(offset + 23) & 0xFF));
     }
 
     public PresenceCodec presence()
