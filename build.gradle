@@ -28,6 +28,25 @@ plugins {
 
 defaultTasks 'clean', 'build'
 
+static def getBuildJavaVersion()
+{
+    def buildJavaVersion = System.getenv('BUILD_JAVA_VERSION') ?: JavaVersion.current().getMajorVersion()
+    if (buildJavaVersion.indexOf('.') > 0)
+    {
+        buildJavaVersion = buildJavaVersion.substring(0, buildJavaVersion.indexOf('.'))
+    }
+    if (buildJavaVersion.indexOf('-') > 0)
+    {
+        buildJavaVersion = buildJavaVersion.substring(0, buildJavaVersion.indexOf('-'))
+    }
+    Integer.parseInt(buildJavaVersion)
+}
+int buildJavaVersion = getBuildJavaVersion()
+
+def javaLauncher = javaToolchains.launcherFor {
+    languageVersion = JavaLanguageVersion.of(buildJavaVersion)
+}
+
 def checkstyleVersion = '8.37'
 def hamcrestVersion = '2.2'
 def mockitoVersion = '3.6.0'
@@ -130,6 +149,10 @@ allprojects {
             failOnVersionConflict()
         }
     }
+
+    tasks.withType(JavaExec).configureEach {
+        executable = javaLauncher.get().executablePath
+    }
 }
 
 jar.enabled = false
@@ -141,6 +164,12 @@ subprojects {
 
     group = sbeGroup
     version = sbeVersion
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(buildJavaVersion)
+        }
+    }
 
     checkstyle.toolVersion = "${checkstyleVersion}"
 
@@ -156,7 +185,7 @@ subprojects {
     }
 
     tasks.withType(JavaCompile) {
-        if (JavaVersion.current().isJava9Compatible()) {
+        if (buildJavaVersion >= 9) {
             options.compilerArgs.addAll(['--add-exports', 'java.base/java.lang.reflect=ALL-UNNAMED'])
             options.compilerArgs.addAll(['--add-exports', 'jdk.unsupported/sun.misc=ALL-UNNAMED'])
         }
@@ -172,18 +201,20 @@ subprojects {
         options.docEncoding = 'UTF-8'
         options.charSet = 'UTF-8'
         options.links("https://www.javadoc.io/doc/org.agrona/agrona/${agronaVersion}/")
-        if (JavaVersion.current().isJava11Compatible()) {
-            options.links("https://docs.oracle.com/en/java/javase/${JavaVersion.current().majorVersion}/docs/api/")
+        if (buildJavaVersion >= 16) { // Work around for early access versions for which no JavaDoc is published
+            options.links("https://docs.oracle.com/en/java/javase/15/docs/api/")
+        } else if (buildJavaVersion >= 11) {
+            options.links("https://docs.oracle.com/en/java/javase/${buildJavaVersion}/docs/api/")
         } else {
-            options.links("https://docs.oracle.com/javase/${JavaVersion.current().majorVersion}/docs/api/")
+            options.links("https://docs.oracle.com/javase/${buildJavaVersion}/docs/api/")
         }
-        if (JavaVersion.current().isJava10Compatible()) {
+        if (buildJavaVersion >= 10) {
             options.addBooleanOption 'html5', true
         }
     }
 
     test {
-        if (JavaVersion.current().isJava9Compatible()) {
+        if (buildJavaVersion >= 9) {
             jvmArgs('--add-opens', 'java.base/java.lang.reflect=ALL-UNNAMED')
             jvmArgs('--add-exports', 'jdk.unsupported/sun.misc=ALL-UNNAMED')
         }

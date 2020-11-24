@@ -19,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: [ '8', '11', '15' ]
+        java: [ '8', '11', '15', '16-ea' ]
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -39,8 +39,17 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: ${{ matrix.java }}
+      - name: Setup BUILD_JAVA_HOME
+        if: runner.os == 'Linux'
+        run: echo "BUILD_JAVA_HOME=${JAVA_HOME}" >> $GITHUB_ENV
+      - name: Setup java 8 to run the Gradle script
+        uses: actions/setup-java@v1
+        with:
+          java-version: 8
       - name: Build with Gradle
         run: ./gradlew
+        env:
+          BUILD_JAVA_VERSION: ${{ matrix.java }}
 
   csharp-build:
     name: C# ${{ matrix.dotnet }}
