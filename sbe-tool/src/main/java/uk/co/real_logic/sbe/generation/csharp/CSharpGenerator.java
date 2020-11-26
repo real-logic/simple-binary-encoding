@@ -207,11 +207,11 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + INDENT + "_parentMessage = parentMessage;\n" +
             indent + INDENT + INDENT + "_buffer = buffer;\n" +
             indent + INDENT + INDENT + "_dimensions.Wrap(buffer, parentMessage.Limit, actingVersion);\n" +
+            indent + INDENT + INDENT + "_parentMessage.Limit = parentMessage.Limit + SbeHeaderSize;\n" +
             indent + INDENT + INDENT + "_blockLength = _dimensions.BlockLength;\n" +
             indent + INDENT + INDENT + "_count = (int) _dimensions.NumInGroup;\n" + // cast safety checked above
             indent + INDENT + INDENT + "_actingVersion = actingVersion;\n" +
             indent + INDENT + INDENT + "_index = 0;\n" +
-            indent + INDENT + INDENT + "_parentMessage.Limit = parentMessage.Limit + SbeHeaderSize;\n" +
             indent + INDENT + "}\n",
             parentMessageClassName));
 
@@ -232,14 +232,14 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + INDENT + "}\n\n" +
             indent + INDENT + INDENT + "_parentMessage = parentMessage;\n" +
             indent + INDENT + INDENT + "_buffer = buffer;\n" +
-            indent + INDENT + INDENT + "_dimensions.Wrap(buffer, parentMessage.Limit, _actingVersion);\n" +
+            indent + INDENT + INDENT + "_dimensions.Wrap(buffer, parentMessage.Limit, SchemaVersion);\n" +
+            indent + INDENT + INDENT + "parentMessage.Limit = parentMessage.Limit + SbeHeaderSize;\n" +
             indent + INDENT + INDENT + "_dimensions.BlockLength = SbeBlockLength;\n" +
             indent + INDENT + INDENT + "_dimensions.NumInGroup = (%5$s) count;\n" +
             indent + INDENT + INDENT + "_index = 0;\n" +
             indent + INDENT + INDENT + "_count = count;\n" +
             indent + INDENT + INDENT + "_blockLength = SbeBlockLength;\n" +
             indent + INDENT + INDENT + "_actingVersion = SchemaVersion;\n" +
-            indent + INDENT + INDENT + "parentMessage.Limit = parentMessage.Limit + SbeHeaderSize;\n" +
             indent + INDENT + "}\n",
             parentMessageClassName,
             numInGroupToken.encoding().applicableMinValue().longValue(),
