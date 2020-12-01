@@ -2977,7 +2977,7 @@ public class CppGenerator implements CodeGenerator
                     indent + "    }\n\n" +
                     indent + "    for (const auto &e: %1$sItemLengths)\n" +
                     indent + "    {\n" +
-                    indent + "        #if __cpluplus >= 201703L\n" +
+                    indent + "        #if __cplusplus >= 201703L\n" +
                     indent + "        length += std::apply(%2$s::computeLength, e);\n" +
                     indent + "        #else\n" +
                     indent + "        length += %2$s::computeLength(%6$s);\n" +
