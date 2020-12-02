@@ -28,15 +28,12 @@ plugins {
 
 defaultTasks 'clean', 'build'
 
-static def getBuildJavaVersion()
-{
+static def getBuildJavaVersion() {
     def buildJavaVersion = System.getenv('BUILD_JAVA_VERSION') ?: JavaVersion.current().getMajorVersion()
-    if (buildJavaVersion.indexOf('.') > 0)
-    {
+    if (buildJavaVersion.indexOf('.') > 0) {
         buildJavaVersion = buildJavaVersion.substring(0, buildJavaVersion.indexOf('.'))
     }
-    if (buildJavaVersion.indexOf('-') > 0)
-    {
+    if (buildJavaVersion.indexOf('-') > 0) {
         buildJavaVersion = buildJavaVersion.substring(0, buildJavaVersion.indexOf('-'))
     }
     Integer.parseInt(buildJavaVersion)
@@ -47,7 +44,7 @@ def javaLauncher = javaToolchains.launcherFor {
     languageVersion = JavaLanguageVersion.of(buildJavaVersion)
 }
 
-def checkstyleVersion = '8.37'
+def checkstyleVersion = '8.38'
 def hamcrestVersion = '2.2'
 def mockitoVersion = '3.6.28'
 def junitVersion = '5.7.0'
