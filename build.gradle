@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 buildscript {
     repositories {
         mavenCentral()
@@ -200,9 +201,11 @@ subprojects {
         options.links("https://www.javadoc.io/doc/org.agrona/agrona/${agronaVersion}/")
         if (buildJavaVersion >= 16) { // Work around for early access versions for which no JavaDoc is published
             options.links("https://docs.oracle.com/en/java/javase/15/docs/api/")
-        } else if (buildJavaVersion >= 11) {
+        }
+        else if (buildJavaVersion >= 11) {
             options.links("https://docs.oracle.com/en/java/javase/${buildJavaVersion}/docs/api/")
-        } else {
+        }
+        else {
             options.links("https://docs.oracle.com/javase/${buildJavaVersion}/docs/api/")
         }
         if (buildJavaVersion >= 10) {
@@ -313,7 +316,7 @@ project(':sbe-tool') {
 
         repositories {
             maven {
-                url = !isReleaseVersion ? snapshotsRepoUrl : releasesRepoUrl
+                url(!isReleaseVersion ? snapshotsRepoUrl : releasesRepoUrl)
                 credentials {
                     username = ossrhUsername
                     password = ossrhPassword
@@ -379,7 +382,7 @@ project(':sbe-all') {
         }
         repositories {
             maven {
-                url = !isReleaseVersion ? snapshotsRepoUrl : releasesRepoUrl
+                url(!isReleaseVersion ? snapshotsRepoUrl : releasesRepoUrl)
                 credentials {
                     username = ossrhUsername
                     password = ossrhPassword
@@ -488,7 +491,7 @@ project(':sbe-samples') {
 
         repositories {
             maven {
-                url = !isReleaseVersion ? snapshotsRepoUrl : releasesRepoUrl
+                url(!isReleaseVersion ? snapshotsRepoUrl : releasesRepoUrl)
                 credentials {
                     username = ossrhUsername
                     password = ossrhPassword
@@ -542,7 +545,6 @@ project(':sbe-benchmarks') {
     }
 
     jar.finalizedBy shadowJar
-
     javadoc.enabled = false
 }
 
