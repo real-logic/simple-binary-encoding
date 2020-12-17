@@ -283,7 +283,11 @@ public class JavaUtil
 
         sb.append('\n')
             .append(indent).append("/**\n")
-            .append(indent).append(" * ").append(description).append('\n')
+            .append(indent).append(" * ");
+
+        escapeJavadoc(sb, description);
+
+        sb.append('\n')
             .append(indent).append(" */\n");
     }
 
@@ -306,7 +310,11 @@ public class JavaUtil
         }
 
         out.append(indent).append("/**\n")
-            .append(indent).append(" * ").append(description).append('\n')
+            .append(indent).append(" * ");
+
+        escapeJavadoc(out, description);
+
+        out.append('\n')
             .append(indent).append(" *\n")
             .append(indent).append(" * @return true if ").append(optionToken.name()).append(" set or false if not.\n")
             .append(indent).append(" */\n");
@@ -330,9 +338,13 @@ public class JavaUtil
             return;
         }
 
-        final String name = optionToken.name();
         out.append(indent).append("/**\n")
-            .append(indent).append(" * ").append(description).append('\n')
+            .append(indent).append(" * ");
+
+        escapeJavadoc(out, description);
+
+        final String name = optionToken.name();
+        out.append('\n')
             .append(indent).append(" *\n")
             .append(indent).append(" * @param value true if ").append(name).append(" is set or false if not.\n")
             .append(indent).append(" */\n");
@@ -357,9 +369,17 @@ public class JavaUtil
 
         sb.append('\n')
             .append(indent).append("/**\n")
-            .append(indent).append(" * ").append(description).append('\n')
+            .append(indent).append(" * ");
+
+        escapeJavadoc(sb, description);
+
+        sb.append('\n')
             .append(indent).append(" *\n")
-            .append(indent).append(" * @return ").append(typeName).append(" : ").append(description).append("\n")
+            .append(indent).append(" * @return ").append(typeName).append(" : ");
+
+        escapeJavadoc(sb, description);
+
+        sb.append("\n")
             .append(indent).append(" */");
     }
 
@@ -382,10 +402,62 @@ public class JavaUtil
 
         sb.append('\n')
             .append(indent).append("/**\n")
-            .append(indent).append(" * ").append(description).append("\n")
+            .append(indent).append(" * ");
+
+        escapeJavadoc(sb, description);
+
+        sb.append("\n")
             .append(indent).append(" *\n")
             .append(indent).append(" * @param count of times the group will be encoded.\n")
             .append(indent).append(" * @return ").append(typeName).append(" : encoder for the group.\n")
             .append(indent).append(" */");
+    }
+
+    private static void escapeJavadoc(final Appendable out, final String doc) throws IOException
+    {
+        for (int i = 0, length = doc.length(); i < length; i++)
+        {
+            final char c = doc.charAt(i);
+            switch (c)
+            {
+                case '<':
+                    out.append("&lt;");
+                    break;
+
+                case '>':
+                    out.append("&gt;");
+                    break;
+
+                default:
+                    out.append(c);
+                    break;
+            }
+        }
+    }
+
+    private static void escapeJavadoc(final StringBuilder sb, final String doc)
+    {
+        for (int i = 0, length = doc.length(); i < length; i++)
+        {
+            final char c = doc.charAt(i);
+            switch (c)
+            {
+                case '<':
+                    sb.append("&lt;");
+                    break;
+
+                case '>':
+                    sb.append("&gt;");
+                    break;
+
+                case '&':
+                    sb.append("&amp;");
+                    break;
+
+                default:
+                    sb.append(c);
+                    break;
+            }
+        }
     }
 }
