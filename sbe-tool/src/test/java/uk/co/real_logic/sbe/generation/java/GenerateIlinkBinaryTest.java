@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
-public class GenerateFixBinaryTest
+public class GenerateIlinkBinaryTest
 {
     private static final Class<?> BUFFER_CLASS = MutableDirectBuffer.class;
     private static final String BUFFER_NAME = BUFFER_CLASS.getName();
@@ -47,7 +47,7 @@ public class GenerateFixBinaryTest
         System.setProperty(SbeTool.KEYWORD_APPEND_TOKEN, "_");
 
         final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
-        final MessageSchema schema = parse(Tests.getLocalResource("FixBinary.xml"), options);
+        final MessageSchema schema = parse(Tests.getLocalResource("ilinkbinary.xml"), options);
         final IrGenerator irg = new IrGenerator();
         final Ir ir = irg.generate(schema);
         final JavaGenerator generator = new JavaGenerator(
@@ -61,14 +61,14 @@ public class GenerateFixBinaryTest
         final Map<String, CharSequence> sources = outputManager.getSources();
 
         {
-            final String className = "MDIncrementalRefreshTradeSummary42Encoder";
+            final String className = "NewOrderSingle514Encoder";
             final String fqClassName = ir.applicableNamespace() + "." + className;
             final Class<?> aClass = CompilerUtil.compileInMemory(fqClassName, sources);
             assertNotNull(aClass);
         }
 
         {
-            final String className = "MDIncrementalRefreshTradeSummary42Decoder";
+            final String className = "NewOrderSingle514Decoder";
             final String fqClassName = ir.applicableNamespace() + "." + className;
             final Class<?> aClass = CompilerUtil.compileInMemory(fqClassName, sources);
             assertNotNull(aClass);
@@ -81,7 +81,7 @@ public class GenerateFixBinaryTest
         System.setProperty(SbeTool.KEYWORD_APPEND_TOKEN, "_");
 
         final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
-        final MessageSchema schema = parse(Tests.getLocalResource("FixBinary.xml"), options);
+        final MessageSchema schema = parse(Tests.getLocalResource("ilinkbinary.xml"), options);
         final IrGenerator irg = new IrGenerator();
         final Ir ir = irg.generate(schema);
         final ByteBuffer buffer = ByteBuffer.allocate(1024 * 1024);
