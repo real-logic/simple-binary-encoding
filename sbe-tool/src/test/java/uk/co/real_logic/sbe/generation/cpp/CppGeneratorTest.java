@@ -16,7 +16,6 @@
 package uk.co.real_logic.sbe.generation.cpp;
 
 import org.agrona.generation.StringWriterOutputManager;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.co.real_logic.sbe.Tests;
 import uk.co.real_logic.sbe.ir.Ir;
@@ -30,29 +29,22 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 public class CppGeneratorTest
 {
-    private final StringWriterOutputManager outputManager = new StringWriterOutputManager();
-    private Ir ir;
-
-    @BeforeEach
-    public void setUp() throws Exception
-    {
-        final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
-        final MessageSchema schema = parse(Tests.getLocalResource("code-generation-schema.xml"), options);
-        final IrGenerator irg = new IrGenerator();
-        ir = irg.generate(schema);
-
-        outputManager.clear();
-        outputManager.setPackageName(ir.applicableNamespace());
-    }
-
     @Test
     public void shouldUseGeneratedLiteralForConstantOneWhenGeneratingBitsetCode() throws Exception
     {
+        final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
+        final MessageSchema schema = parse(Tests.getLocalResource("issue827.xml"), options);
+        final IrGenerator irg = new IrGenerator();
+        final Ir ir = irg.generate(schema);
+        final StringWriterOutputManager outputManager = new StringWriterOutputManager();
+        outputManager.clear();
+        outputManager.setPackageName(ir.applicableNamespace());
+
         final CppGenerator generator = new CppGenerator(ir, outputManager);
         generator.generate();
 
-        final String source = outputManager.getSource("code.generation.test.OptionalExtras").toString();
+        final String source = outputManager.getSource("issue827.FlagsSet").toString();
         assertFalse(source.contains("1u << "));
-        assertTrue(source.contains("static_cast<std::uint8_t>(1) << "));
+        assertTrue(source.contains("UINT64_C(0x1) << "));
     }
 }
