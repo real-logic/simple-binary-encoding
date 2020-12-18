@@ -347,6 +347,7 @@ public class JavaUtil
         out.append('\n')
             .append(indent).append(" *\n")
             .append(indent).append(" * @param value true if ").append(name).append(" is set or false if not.\n")
+            .append(indent).append(" * @return this for a fluent API.\n")
             .append(indent).append(" */\n");
     }
 
