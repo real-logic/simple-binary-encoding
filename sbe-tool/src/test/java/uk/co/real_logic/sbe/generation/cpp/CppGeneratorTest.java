@@ -37,7 +37,6 @@ public class CppGeneratorTest
         final IrGenerator irg = new IrGenerator();
         final Ir ir = irg.generate(schema);
         final StringWriterOutputManager outputManager = new StringWriterOutputManager();
-        outputManager.clear();
         outputManager.setPackageName(ir.applicableNamespace());
 
         final CppGenerator generator = new CppGenerator(ir, outputManager);
