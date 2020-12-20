@@ -822,29 +822,32 @@ public class CppGenerator implements CodeGenerator
             .forEach((token) ->
             {
                 final String choiceName = formatPropertyName(token.name());
-                final String typeName = cppTypeName(token.encoding().primitiveType());
+                final PrimitiveType type = token.encoding().primitiveType();
+                final String typeName = cppTypeName(type);
                 final String choiceBitPosition = token.encoding().constValue().toString();
-                final String byteOrderStr = formatByteOrderEncoding(
-                    token.encoding().byteOrder(), token.encoding().primitiveType());
+                final String byteOrderStr = formatByteOrderEncoding(token.encoding().byteOrder(), type);
+                final CharSequence constantOne = generateLiteral(type, "1");
 
                 new Formatter(sb).format("\n" +
                     "    static bool %1$s(const %2$s bits)\n" +
                     "    {\n" +
-                    "        return (bits & (1u << %3$su)) != 0;\n" +
+                    "        return (bits & (%4$s << %3$su)) != 0;\n" +
                     "    }\n",
                     choiceName,
                     typeName,
-                    choiceBitPosition);
+                    choiceBitPosition,
+                    constantOne);
 
                 new Formatter(sb).format("\n" +
                     "    static %2$s %1$s(const %2$s bits, const bool value)\n" +
                     "    {\n" +
                     "        return value ?" +
-                    " static_cast<%2$s>(bits | (1u << %3$su)) : static_cast<%2$s>(bits & ~(1u << %3$su));\n" +
+                    " static_cast<%2$s>(bits | (%4$s << %3$su)) : static_cast<%2$s>(bits & ~(%4$s << %3$su));\n" +
                     "    }\n",
                     choiceName,
                     typeName,
-                    choiceBitPosition);
+                    choiceBitPosition,
+                    constantOne);
 
                 new Formatter(sb).format("\n" +
                     "    SBE_NODISCARD bool %1$s() const\n" +
@@ -852,13 +855,14 @@ public class CppGenerator implements CodeGenerator
                     "%2$s" +
                     "        %4$s val;\n" +
                     "        std::memcpy(&val, m_buffer + m_offset, sizeof(%4$s));\n" +
-                    "        return (%3$s(val) & (1u << %5$su)) != 0;\n" +
+                    "        return (%3$s(val) & (%6$s << %5$su)) != 0;\n" +
                     "    }\n",
                     choiceName,
                     generateChoiceNotPresentCondition(token.version()),
                     byteOrderStr,
                     typeName,
-                    choiceBitPosition);
+                    choiceBitPosition,
+                    constantOne);
 
                 new Formatter(sb).format("\n" +
                     "    %1$s &%2$s(const bool value)\n" +
@@ -866,8 +870,8 @@ public class CppGenerator implements CodeGenerator
                     "        %3$s bits;\n" +
                     "        std::memcpy(&bits, m_buffer + m_offset, sizeof(%3$s));\n" +
                     "        bits = %4$s(value ?" +
-                    " static_cast<%3$s>(%4$s(bits) | (1u << %5$su)) " +
-                    ": static_cast<%3$s>(%4$s(bits) & ~(1u << %5$su)));\n" +
+                    " static_cast<%3$s>(%4$s(bits) | (%6$s << %5$su)) " +
+                    ": static_cast<%3$s>(%4$s(bits) & ~(%6$s << %5$su)));\n" +
                     "        std::memcpy(m_buffer + m_offset, &bits, sizeof(%3$s));\n" +
                     "        return *this;\n" +
                     "    }\n",
@@ -875,7 +879,8 @@ public class CppGenerator implements CodeGenerator
                     choiceName,
                     typeName,
                     byteOrderStr,
-                    choiceBitPosition);
+                    choiceBitPosition,
+                    constantOne);
             });
 
         return sb;
