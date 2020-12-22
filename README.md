@@ -35,7 +35,7 @@ Example for Maven:
 <dependency>
     <groupId>uk.co.real-logic</groupId>
     <artifactId>sbe-all</artifactId>
-    <version>1.20.3</version>
+    <version>${sbe.tool.version}</version>
 </dependency>
 ```
 
@@ -63,7 +63,7 @@ Jars for the executable, source, and javadoc for the various modules can be foun
 
 An example to execute a Jar from command line using the 'all' jar which includes the Agrona dependency:
 
-    java -Dsbe.generate.ir=true -Dsbe.target.language=Cpp -Dsbe.target.namespace=sbe -Dsbe.output.dir=include/gen -Dsbe.errorLog=yes -jar sbe-all/build/libs/sbe-all-${SBE_LIB_VERSION}.jar my-sbe-messages.xml
+    java -Dsbe.generate.ir=true -Dsbe.target.language=Cpp -Dsbe.target.namespace=sbe -Dsbe.output.dir=include/gen -Dsbe.errorLog=yes -jar sbe-all/build/libs/sbe-all-${SBE_TOOL_VERSION}.jar my-sbe-messages.xml
 
 C++ Build using CMake
 ---------------------
