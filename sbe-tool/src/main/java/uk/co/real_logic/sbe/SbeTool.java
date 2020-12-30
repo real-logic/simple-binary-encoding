@@ -58,7 +58,7 @@ import java.nio.file.*;
  * <li><b>sbe.csharp.generate.namespace.dir</b>: Should a directory be created for the namespace under
  * the output directory? Defaults to true</li>
  * <li><b>sbe.keyword.append.token</b>: Token to be appended to keywords.</li>
- * <li><b>sbe.decode.unknown.enum.values</b>: Support unknown decoded enum values.</li>
+ * <li><b>sbe.decode.unknown.enum.values</b>: Support unknown decoded enum values. Defaults to false.</li>
  * <li><b>sbe.xinclude.aware</b>: Is XInclude supported for the schema. Defaults to false.</li>
  * </ul>
  */

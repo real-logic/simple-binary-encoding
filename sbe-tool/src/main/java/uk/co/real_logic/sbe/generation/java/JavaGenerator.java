@@ -1488,7 +1488,7 @@ public class JavaGenerator implements CodeGenerator
         if (shouldDecodeUnknownEnumValues)
         {
             sb.append(INDENT).append("/**\n");
-            sb.append(INDENT).append(" * To be used to represent a not known value from a later version.\n");
+            sb.append(INDENT).append(" * To be used to represent a unknown value from a later version.\n");
             sb.append(INDENT).append(" */\n");
             sb.append(INDENT).append("SBE_UNKNOWN").append('(').append(nullVal).append("),\n\n");
         }
@@ -1511,6 +1511,11 @@ public class JavaGenerator implements CodeGenerator
             "    {\n" +
             "        this.value = value;\n" +
             "    }\n\n" +
+            "    /**\n" +
+            "     * The raw encoded value in the Java type representation.\n" +
+            "     *\n" +
+            "     * @return the raw value encoded.\n" +
+            "     */\n" +
             "    public " + javaEncodingType + " value()\n" +
             "    {\n" +
             "        return value;\n" +
@@ -1520,9 +1525,16 @@ public class JavaGenerator implements CodeGenerator
     private CharSequence generateEnumLookupMethod(final List<Token> tokens, final String enumName)
     {
         final StringBuilder sb = new StringBuilder();
-
         final PrimitiveType primitiveType = tokens.get(0).encoding().primitiveType();
-        sb.append("\n").append("    public static ").append(enumName)
+
+        sb.append("\n")
+            .append("    /**\n")
+            .append("     * Lookup the enum value representing the value.\n")
+            .append("     *\n")
+            .append("     * @param value encoded to be looked up.\n")
+            .append("     * @return the enum value representing the value.\n")
+            .append("     */\n")
+            .append("    public static ").append(enumName)
             .append(" get(final ").append(javaTypeName(primitiveType)).append(" value)\n").append("    {\n")
             .append("        switch (value)\n").append("        {\n");
 
