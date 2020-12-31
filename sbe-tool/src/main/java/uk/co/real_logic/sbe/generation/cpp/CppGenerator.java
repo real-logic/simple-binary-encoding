@@ -1717,7 +1717,7 @@ public class CppGenerator implements CodeGenerator
         new Formatter(sb).format("\n" +
             indent + "    SBE_NODISCARD const char *%1$s() const\n" +
             indent + "    {\n" +
-            indent + "        static const std::uint8_t %1$sValues[] = { %2$s };\n\n" +
+            indent + "        static const std::uint8_t %1$sValues[] = { %2$s, 0 };\n\n" +
 
             indent + "        return (const char *)%1$sValues;\n" +
             indent + "    }\n",
@@ -1727,7 +1727,7 @@ public class CppGenerator implements CodeGenerator
         sb.append(String.format("\n" +
             indent + "    SBE_NODISCARD %1$s %2$s(const std::uint64_t index) const\n" +
             indent + "    {\n" +
-            indent + "        static const std::uint8_t %2$sValues[] = { %3$s };\n\n" +
+            indent + "        static const std::uint8_t %2$sValues[] = { %3$s, 0 };\n\n" +
 
             indent + "        return (char)%2$sValues[index];\n" +
             indent + "    }\n",
