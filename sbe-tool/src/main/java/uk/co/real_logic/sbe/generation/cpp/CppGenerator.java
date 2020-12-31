@@ -50,13 +50,15 @@ public class CppGenerator implements CodeGenerator
 
     private final Ir ir;
     private final OutputManager outputManager;
+    private final boolean shouldDecodeUnknownEnumValues;
 
-    public CppGenerator(final Ir ir, final OutputManager outputManager)
+    public CppGenerator(final Ir ir, final boolean shouldDecodeUnknownEnumValues, final OutputManager outputManager)
     {
         Verify.notNull(ir, "ir");
         Verify.notNull(outputManager, "outputManager");
 
         this.ir = ir;
+        this.shouldDecodeUnknownEnumValues = shouldDecodeUnknownEnumValues;
         this.outputManager = outputManager;
     }
 
@@ -902,16 +904,20 @@ public class CppGenerator implements CodeGenerator
             sb.append("        ").append(token.name()).append(" = ").append(constVal).append(",\n");
         }
 
-        sb.append(String.format(
-            "        NULL_VALUE = %1$s",
-            generateLiteral(encoding.primitiveType(), encoding.applicableNullValue().toString())));
+        final CharSequence nullLiteral = generateLiteral(
+            encoding.primitiveType(), encoding.applicableNullValue().toString());
+        if (shouldDecodeUnknownEnumValues)
+        {
+            sb.append("        SBE_UNKNOWN = ").append(nullLiteral).append(",\n");
+        }
 
+        sb.append("        NULL_VALUE = ").append(nullLiteral);
         sb.append("\n    };\n\n");
 
         return sb;
     }
 
-    private static CharSequence generateEnumLookupMethod(final List<Token> tokens, final Token encodingToken)
+    private CharSequence generateEnumLookupMethod(final List<Token> tokens, final Token encodingToken)
     {
         final String enumName = formatClassName(encodingToken.applicableTypeName());
         final StringBuilder sb = new StringBuilder();
@@ -932,17 +938,23 @@ public class CppGenerator implements CodeGenerator
             sb.append("            case ").append(constVal).append(": return ").append(token.name()).append(";\n");
         }
 
-        final CharSequence constVal = generateLiteral(
+        final CharSequence nullVal = generateLiteral(
             encodingToken.encoding().primitiveType(), encodingToken.encoding().applicableNullValue().toString());
 
-        new Formatter(sb).format(
-            "            case %1$s: return NULL_VALUE;\n" +
-            "        }\n\n" +
+        sb.append("            case ").append(nullVal).append(": return NULL_VALUE;\n")
+            .append("        }\n\n");
 
-            "        throw std::runtime_error(\"unknown value for enum %2$s [E103]\");\n" +
-            "    }\n",
-            constVal,
-            enumName);
+        if (shouldDecodeUnknownEnumValues)
+        {
+            sb.append("        return SBE_UNKNOWN;\n").append("    }\n");
+        }
+        else
+        {
+            new Formatter(sb).format(
+                "        throw std::runtime_error(\"unknown value for enum %s [E103]\");\n" +
+                "    }\n",
+                enumName);
+        }
 
         return sb;
     }
@@ -2775,12 +2787,21 @@ public class CppGenerator implements CodeGenerator
                 token.name());
         }
 
-        new Formatter(sb).format(
-            "            case NULL_VALUE: return \"NULL_VALUE\";\n" +
-            "        }\n\n" +
-            "        throw std::runtime_error(\"unknown value for enum %1$s [E103]:\");\n" +
-            "    }\n\n" +
+        sb.append("            case NULL_VALUE: return \"NULL_VALUE\";\n").append("        }\n\n");
 
+        if (shouldDecodeUnknownEnumValues)
+        {
+            sb.append("        return \"SBE_UNKNOWN\";\n").append("    }\n\n");
+        }
+        else
+        {
+            new Formatter(sb).format(
+                "        throw std::runtime_error(\"unknown value for enum %1$s [E103]:\");\n" +
+                "    }\n\n",
+                enumName);
+        }
+
+        new Formatter(sb).format(
             "    template<typename CharT, typename Traits>\n" +
             "    friend std::basic_ostream<CharT, Traits>& operator << (\n" +
             "        std::basic_ostream<CharT, Traits>& os, %1$s::Value m)\n" +

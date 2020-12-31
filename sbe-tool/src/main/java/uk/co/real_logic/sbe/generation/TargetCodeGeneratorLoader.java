@@ -69,7 +69,10 @@ public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
     {
         public CodeGenerator newInstance(final Ir ir, final String outputDir)
         {
-            return new CppGenerator(ir, new NamespaceOutputManager(outputDir, ir.applicableNamespace()));
+            return new CppGenerator(
+                ir,
+                Boolean.getBoolean(DECODE_UNKNOWN_ENUM_VALUES),
+                new NamespaceOutputManager(outputDir, ir.applicableNamespace()));
         }
     },
 

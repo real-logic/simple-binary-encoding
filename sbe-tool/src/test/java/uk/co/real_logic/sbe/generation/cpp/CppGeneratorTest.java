@@ -39,7 +39,7 @@ public class CppGeneratorTest
         final StringWriterOutputManager outputManager = new StringWriterOutputManager();
         outputManager.setPackageName(ir.applicableNamespace());
 
-        final CppGenerator generator = new CppGenerator(ir, outputManager);
+        final CppGenerator generator = new CppGenerator(ir, false, outputManager);
         generator.generate();
 
         final String source = outputManager.getSource("issue827.FlagsSet").toString();
