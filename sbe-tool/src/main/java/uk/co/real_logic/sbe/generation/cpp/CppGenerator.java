@@ -525,7 +525,7 @@ public class CppGenerator implements CodeGenerator
                 indent + "        std::uint64_t bytesToCopy = length < dataLength ? length : dataLength;\n" +
                 indent + "        std::uint64_t pos = sbePosition();\n" +
                 indent + "        sbePosition(pos + dataLength);\n" +
-                indent + "        std::memcpy(dst, m_buffer + pos, static_cast<size_t>(bytesToCopy));\n" +
+                indent + "        std::memcpy(dst, m_buffer + pos, static_cast<std::size_t>(bytesToCopy));\n" +
                 indent + "        return bytesToCopy;\n" +
                 indent + "    }\n",
                 propertyName,
@@ -1502,7 +1502,7 @@ public class CppGenerator implements CodeGenerator
 
             "%3$s" +
             indent + "        std::memcpy(dst, m_buffer + m_offset + %4$d, " +
-            "sizeof(%5$s) * static_cast<size_t>(length));\n" +
+            "sizeof(%5$s) * static_cast<std::size_t>(length));\n" +
             indent + "        return length;\n" +
             indent + "    }\n",
             toUpperFirstChar(propertyName),
@@ -1564,7 +1564,7 @@ public class CppGenerator implements CodeGenerator
                 indent + "    SBE_NODISCARD std::string get%1$sAsString() const\n" +
                 indent + "    {\n" +
                 indent + "        const char *buffer = m_buffer + m_offset + %2$d;\n" +
-                indent + "        size_t length = 0;\n\n" +
+                indent + "        std::size_t length = 0;\n\n" +
 
                 indent + "        for (; length < %3$d && *(buffer + length) != '\\0'; ++length);\n" +
                 indent + "        std::string result(buffer, length);\n\n" +
@@ -1582,7 +1582,7 @@ public class CppGenerator implements CodeGenerator
                 indent + "    SBE_NODISCARD std::string_view get%1$sAsStringView() const SBE_NOEXCEPT\n" +
                 indent + "    {\n" +
                 indent + "        const char *buffer = m_buffer + m_offset + %2$d;\n" +
-                indent + "        size_t length = 0;\n\n" +
+                indent + "        std::size_t length = 0;\n\n" +
 
                 indent + "        for (; length < %3$d && *(buffer + length) != '\\0'; ++length);\n" +
                 indent + "        std::string_view result(buffer, length);\n\n" +
@@ -1598,14 +1598,14 @@ public class CppGenerator implements CodeGenerator
                 indent + "    #if __cplusplus >= 201703L\n" +
                 indent + "    %1$s &put%2$s(const std::string_view str)\n" +
                 indent + "    {\n" +
-                indent + "        const size_t srcLength = str.length();\n" +
+                indent + "        const std::size_t srcLength = str.length();\n" +
                 indent + "        if (srcLength > %4$d)\n" +
                 indent + "        {\n" +
                 indent + "            throw std::runtime_error(\"string too large for put%2$s [E106]\");\n" +
                 indent + "        }\n\n" +
 
                 indent + "        std::memcpy(m_buffer + m_offset + %3$d, str.data(), srcLength);\n" +
-                indent + "        for (size_t start = srcLength; start < %4$d; ++start)\n" +
+                indent + "        for (std::size_t start = srcLength; start < %4$d; ++start)\n" +
                 indent + "        {\n" +
                 indent + "            m_buffer[m_offset + %3$d + start] = 0;\n" +
                 indent + "        }\n\n" +
@@ -1615,14 +1615,14 @@ public class CppGenerator implements CodeGenerator
                 indent + "    #else\n" +
                 indent + "    %1$s &put%2$s(const std::string& str)\n" +
                 indent + "    {\n" +
-                indent + "        const size_t srcLength = str.length();\n" +
+                indent + "        const std::size_t srcLength = str.length();\n" +
                 indent + "        if (srcLength > %4$d)\n" +
                 indent + "        {\n" +
                 indent + "            throw std::runtime_error(\"string too large for put%2$s [E106]\");\n" +
                 indent + "        }\n\n" +
 
                 indent + "        std::memcpy(m_buffer + m_offset + %3$d, str.c_str(), srcLength);\n" +
-                indent + "        for (size_t start = srcLength; start < %4$d; ++start)\n" +
+                indent + "        for (std::size_t start = srcLength; start < %4$d; ++start)\n" +
                 indent + "        {\n" +
                 indent + "            m_buffer[m_offset + %3$d + start] = 0;\n" +
                 indent + "        }\n\n" +
@@ -1742,7 +1742,7 @@ public class CppGenerator implements CodeGenerator
             indent + "        std::uint64_t bytesToCopy = " +
             "length < sizeof(%2$sValues) ? length : sizeof(%2$sValues);\n\n" +
 
-            indent + "        std::memcpy(dst, %2$sValues, static_cast<size_t>(bytesToCopy));\n" +
+            indent + "        std::memcpy(dst, %2$sValues, static_cast<std::size_t>(bytesToCopy));\n" +
             indent + "        return bytesToCopy;\n" +
             indent + "    }\n",
             toUpperFirstChar(propertyName),
@@ -2667,7 +2667,8 @@ public class CppGenerator implements CodeGenerator
                             indent + "builder << '[';\n" +
                             indent + "if (" + fieldName + "Length() > 0)\n" +
                             indent + "{\n" +
-                            indent + "    for (size_t i = 0, length = " + fieldName + "Length(); i < length; i++)\n" +
+                            indent + "    for (" +
+                            "std::size_t i = 0, length = " + fieldName + "Length(); i < length; i++)\n" +
                             indent + "    {\n" +
                             indent + "        if (i)\n" +
                             indent + "        {\n" +
