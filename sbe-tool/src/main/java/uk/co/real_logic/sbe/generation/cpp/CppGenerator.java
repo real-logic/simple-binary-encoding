@@ -2225,9 +2225,7 @@ public class CppGenerator implements CodeGenerator
     }
 
     private static CharSequence generateEnumFieldNotPresentCondition(
-        final int sinceVersion,
-        final String enumName,
-        final String indent)
+        final int sinceVersion, final String enumName, final String indent)
     {
         if (0 == sinceVersion)
         {
@@ -2248,12 +2246,13 @@ public class CppGenerator implements CodeGenerator
         final String containingClassName,
         final Token fieldToken,
         final String propertyName,
-        final Token token,
+        final Token encodingToken,
         final String indent)
     {
-        final String enumName = formatClassName(token.applicableTypeName());
-        final String typeName = cppTypeName(token.encoding().primitiveType());
-        final int offset = token.offset();
+        final String enumName = formatClassName(encodingToken.applicableTypeName());
+        final PrimitiveType primitiveType = encodingToken.encoding().primitiveType();
+        final String typeName = cppTypeName(primitiveType);
+        final int offset = encodingToken.offset();
 
         new Formatter(sb).format("\n" +
             indent + "    SBE_NODISCARD static SBE_CONSTEXPR std::size_t %1$sEncodingLength() SBE_NOEXCEPT\n" +
@@ -2286,9 +2285,31 @@ public class CppGenerator implements CodeGenerator
                 propertyName,
                 generateEnumFieldNotPresentCondition(fieldToken.version(), enumName, indent),
                 constValue.substring(constValue.indexOf(".") + 1));
+
+            new Formatter(sb).format("\n" +
+                    indent + "    SBE_NODISCARD %1$s %2$sRaw() const\n" +
+                    indent + "    {\n" +
+                    indent + "        return static_cast<%1$s>(%3$s::Value::%4$s);\n" +
+                    indent + "    }\n",
+                typeName,
+                propertyName,
+                enumName,
+                constValue.substring(constValue.indexOf(".") + 1));
         }
         else
         {
+            final String offsetStr = Integer.toString(offset);
+            new Formatter(sb).format("\n" +
+                indent + "    SBE_NODISCARD %1$s %2$sRaw() const SBE_NOEXCEPT\n" +
+                indent + "    {\n" +
+                "%3$s" +
+                "%4$s" +
+                indent + "    }\n",
+                typeName,
+                propertyName,
+                generateFieldNotPresentCondition(fieldToken.version(), encodingToken.encoding(), indent),
+                generateLoadValue(primitiveType, offsetStr, encodingToken.encoding().byteOrder(), indent));
+
             new Formatter(sb).format("\n" +
                 indent + "    SBE_NODISCARD %1$s::Value %2$s() const\n" +
                 indent + "    {\n" +
@@ -2300,7 +2321,7 @@ public class CppGenerator implements CodeGenerator
                 enumName,
                 propertyName,
                 generateEnumFieldNotPresentCondition(fieldToken.version(), enumName, indent),
-                formatByteOrderEncoding(token.encoding().byteOrder(), token.encoding().primitiveType()),
+                formatByteOrderEncoding(encodingToken.encoding().byteOrder(), primitiveType),
                 typeName,
                 offset);
 
@@ -2316,7 +2337,7 @@ public class CppGenerator implements CodeGenerator
                 enumName,
                 typeName,
                 offset,
-                formatByteOrderEncoding(token.encoding().byteOrder(), token.encoding().primitiveType()));
+                formatByteOrderEncoding(encodingToken.encoding().byteOrder(), primitiveType));
         }
     }
 
