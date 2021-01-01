@@ -2287,10 +2287,10 @@ public class CppGenerator implements CodeGenerator
                 constValue.substring(constValue.indexOf(".") + 1));
 
             new Formatter(sb).format("\n" +
-                    indent + "    SBE_NODISCARD %1$s %2$sRaw() const\n" +
-                    indent + "    {\n" +
-                    indent + "        return static_cast<%1$s>(%3$s::Value::%4$s);\n" +
-                    indent + "    }\n",
+                indent + "    SBE_NODISCARD %1$s %2$sRaw() const\n" +
+                indent + "    {\n" +
+                indent + "        return static_cast<%1$s>(%3$s::Value::%4$s);\n" +
+                indent + "    }\n",
                 typeName,
                 propertyName,
                 enumName,
