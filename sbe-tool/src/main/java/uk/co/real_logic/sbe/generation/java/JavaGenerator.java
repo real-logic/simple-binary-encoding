@@ -570,7 +570,7 @@ public class JavaGenerator implements CodeGenerator
         final String className = formatClassName(groupName);
 
         new Formatter(sb).format("\n" +
-            indent + "public static class %1$s\n" +
+            indent + "public static final class %1$s\n" +
             indent + "    implements Iterable<%1$s>, java.util.Iterator<%1$s>\n" +
             indent + "{\n" +
             indent + "    public static final int HEADER_SIZE = %2$d;\n" +
@@ -622,7 +622,7 @@ public class JavaGenerator implements CodeGenerator
         final String className = encoderName(groupName);
 
         new Formatter(sb).format("\n" +
-            indent + "public static class %1$s\n" +
+            indent + "public static final class %1$s\n" +
             indent + "{\n" +
             indent + "    public static final int HEADER_SIZE = %2$d;\n" +
             indent + "    private final %3$s parentMessage;\n" +
@@ -1659,7 +1659,7 @@ public class JavaGenerator implements CodeGenerator
 
         generateTypeJavadoc(sb, BASE_INDENT, typeToken);
         sb.append("@SuppressWarnings(\"all\")\n")
-            .append("public class ").append(className).append(implementsString).append('\n')
+            .append("public final class ").append(className).append(implementsString).append('\n')
             .append("{\n");
 
         return sb;

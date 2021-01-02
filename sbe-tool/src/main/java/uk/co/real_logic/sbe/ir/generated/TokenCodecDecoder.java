@@ -9,7 +9,7 @@ import org.agrona.DirectBuffer;
  * Codec for an IR Token
  */
 @SuppressWarnings("all")
-public class TokenCodecDecoder
+public final class TokenCodecDecoder
 {
     public static final int BLOCK_LENGTH = 28;
     public static final int TEMPLATE_ID = 2;

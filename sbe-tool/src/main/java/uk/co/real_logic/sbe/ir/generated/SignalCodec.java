@@ -53,11 +53,22 @@ public enum SignalCodec
         this.value = value;
     }
 
+    /**
+     * The raw encoded value in the Java type representation.
+     *
+     * @return the raw value encoded.
+     */
     public short value()
     {
         return value;
     }
 
+    /**
+     * Lookup the enum value representing the value.
+     *
+     * @param value encoded to be looked up.
+     * @return the enum value representing the value.
+     */
     public static SignalCodec get(final short value)
     {
         switch (value)

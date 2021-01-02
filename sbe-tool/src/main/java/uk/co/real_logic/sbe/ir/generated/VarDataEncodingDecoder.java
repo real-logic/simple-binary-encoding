@@ -8,7 +8,7 @@ import org.agrona.DirectBuffer;
  * Header for var data fields
  */
 @SuppressWarnings("all")
-public class VarDataEncodingDecoder
+public final class VarDataEncodingDecoder
 {
     public static final int SCHEMA_ID = 1;
     public static final int SCHEMA_VERSION = 0;

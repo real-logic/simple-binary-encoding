@@ -9,7 +9,7 @@ import org.agrona.DirectBuffer;
  * Frame Header for start of encoding IR
  */
 @SuppressWarnings("all")
-public class FrameCodecDecoder
+public final class FrameCodecDecoder
 {
     public static final int BLOCK_LENGTH = 12;
     public static final int TEMPLATE_ID = 1;
