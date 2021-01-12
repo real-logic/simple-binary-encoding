@@ -418,6 +418,14 @@ public class JavaGenerator implements CodeGenerator
             .append(indent).append("        return this;\n")
             .append(indent).append("    }\n");
 
+        final String numInGroupJavaTypeName = javaTypeName(numInGroupType);
+        final String numInGroupMinValue = generateLiteral(
+            numInGroupType, numInGroupToken.encoding().applicableMinValue().toString());
+        generatePrimitiveFieldMetaMethod(sb, indent, numInGroupJavaTypeName, "count", "Min", numInGroupMinValue);
+        final String numInGroupMaxValue = generateLiteral(
+            numInGroupType, numInGroupToken.encoding().applicableMaxValue().toString());
+        generatePrimitiveFieldMetaMethod(sb, indent, numInGroupJavaTypeName, "count", "Max", numInGroupMaxValue);
+
         sb.append("\n")
             .append(indent).append("    public static int sbeHeaderSize()\n")
             .append(indent).append("    {\n")
@@ -484,20 +492,12 @@ public class JavaGenerator implements CodeGenerator
 
         final PrimitiveType numInGroupType = numInGroupToken.encoding().primitiveType();
 
-        final String javaTypeName = javaTypeName(numInGroupType);
-        final String minValue = generateLiteral(numInGroupType,
-            numInGroupToken.encoding().applicableMinValue().toString());
-        generatePrimitiveFieldMetaMethod(sb, ind, javaTypeName, "count", "Min", minValue);
-        final String maxValue = generateLiteral(numInGroupType,
-            numInGroupToken.encoding().applicableMaxValue().toString());
-        generatePrimitiveFieldMetaMethod(sb, ind, javaTypeName, "count", "Max", maxValue);
-
-        final PrimitiveType newInGroupTypeCast = PrimitiveType.UINT32 == numInGroupType ?
+        final PrimitiveType numInGroupTypeCast = PrimitiveType.UINT32 == numInGroupType ?
             PrimitiveType.INT32 : numInGroupType;
         final String numInGroupOffset = "limit + " + numInGroupToken.offset();
         final String numInGroupValue = "count";
         final String numInGroupPut = generatePut(
-            newInGroupTypeCast, numInGroupOffset, numInGroupValue, byteOrderString(numInGroupToken.encoding()));
+            numInGroupTypeCast, numInGroupOffset, numInGroupValue, byteOrderString(numInGroupToken.encoding()));
 
         new Formatter(sb).format("\n" +
             ind + "    public void wrap(final %2$s buffer, final int count)\n" +
@@ -540,7 +540,7 @@ public class JavaGenerator implements CodeGenerator
 
         final String countOffset = "initialLimit + " + numInGroupToken.offset();
         final String resetCountPut = generatePut(
-            newInGroupTypeCast, countOffset, numInGroupValue, byteOrderString(numInGroupToken.encoding()));
+            numInGroupTypeCast, countOffset, numInGroupValue, byteOrderString(numInGroupToken.encoding()));
 
         sb.append("\n")
             .append(ind).append("    public int resetCountToIndex()\n")
@@ -549,6 +549,14 @@ public class JavaGenerator implements CodeGenerator
             .append(ind).append("        ").append(resetCountPut).append(";\n\n")
             .append(ind).append("        return count;\n")
             .append(ind).append("    }\n");
+
+        final String numInGroupJavaTypeName = javaTypeName(numInGroupType);
+        final String numInGroupMinValue = generateLiteral(
+            numInGroupType, numInGroupToken.encoding().applicableMinValue().toString());
+        generatePrimitiveFieldMetaMethod(sb, ind, numInGroupJavaTypeName, "count", "Min", numInGroupMinValue);
+        final String numInGroupMaxValue = generateLiteral(
+            numInGroupType, numInGroupToken.encoding().applicableMaxValue().toString());
+        generatePrimitiveFieldMetaMethod(sb, ind, numInGroupJavaTypeName, "count", "Max", numInGroupMaxValue);
 
         sb.append("\n")
             .append(ind).append("    public static int sbeHeaderSize()\n")
