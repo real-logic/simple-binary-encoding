@@ -442,6 +442,22 @@ public class JavaGeneratorTest
         assertThat(get(decoder, "vehicleCode"), is("R11R12"));
     }
 
+    @Test
+    public void shouldGenerateRepeatingGroupCountLimits() throws Exception
+    {
+        generator().generate();
+
+        final String className = "CarEncoder$FuelFiguresEncoder";
+        final String fqClassName = ir.applicableNamespace() + "." + className;
+
+        final Class<?> clazz = compile(fqClassName);
+        final Method minValue = clazz.getMethod("countMinValue");
+        assertNotNull(minValue);
+        assertEquals(0, minValue.invoke(null));
+        final Method maxValue = clazz.getMethod("countMaxValue");
+        assertNotNull(maxValue);
+        assertEquals(65534, maxValue.invoke(null));
+    }
 
     private Class<?> getModelClass(final Object encoder) throws ClassNotFoundException
     {

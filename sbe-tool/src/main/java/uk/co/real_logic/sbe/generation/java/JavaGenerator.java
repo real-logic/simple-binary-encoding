@@ -483,6 +483,15 @@ public class JavaGenerator implements CodeGenerator
             blockLengthType, blockLengthOffset, blockLengthValue, byteOrderString(blockLengthToken.encoding()));
 
         final PrimitiveType numInGroupType = numInGroupToken.encoding().primitiveType();
+
+        final String javaTypeName = javaTypeName(numInGroupType);
+        final String minValue = generateLiteral(numInGroupType,
+            numInGroupToken.encoding().applicableMinValue().toString());
+        generatePrimitiveFieldMetaMethod(sb, ind, javaTypeName, "count", "Min", minValue);
+        final String maxValue = generateLiteral(numInGroupType,
+            numInGroupToken.encoding().applicableMaxValue().toString());
+        generatePrimitiveFieldMetaMethod(sb, ind, javaTypeName, "count", "Max", maxValue);
+
         final PrimitiveType newInGroupTypeCast = PrimitiveType.UINT32 == numInGroupType ?
             PrimitiveType.INT32 : numInGroupType;
         final String numInGroupOffset = "limit + " + numInGroupToken.offset();
