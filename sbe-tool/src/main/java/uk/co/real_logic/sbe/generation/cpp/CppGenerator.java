@@ -2687,17 +2687,13 @@ public class CppGenerator implements CodeGenerator
                     {
                         sb.append(
                             indent + "builder << '[';\n" +
-                            indent + "if (" + fieldName + "Length() > 0)\n" +
+                            indent + "for (std::size_t i = 0, length = " + fieldName + "Length(); i < length; i++)\n" +
                             indent + "{\n" +
-                            indent + "    for (" +
-                            "std::size_t i = 0, length = " + fieldName + "Length(); i < length; i++)\n" +
+                            indent + "    if (i)\n" +
                             indent + "    {\n" +
-                            indent + "        if (i)\n" +
-                            indent + "        {\n" +
-                            indent + "            builder << ',';\n" +
-                            indent + "        }\n" +
-                            indent + "        builder << +" + fieldName + "(i);\n" +
+                            indent + "        builder << ',';\n" +
                             indent + "    }\n" +
+                            indent + "    builder << +" + fieldName + "(i);\n" +
                             indent + "}\n" +
                             indent + "builder << ']';\n");
                     }
