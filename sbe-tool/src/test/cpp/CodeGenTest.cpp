@@ -875,6 +875,8 @@ TEST_F(CodeGenTest, shouldPrintFullDecodedFlyweightRegardlessOfReadPosition)
 
     Car carDecoder(buffer, carEncodedLength, Car::sbeBlockLength(), Car::sbeSchemaVersion());
 
+    EXPECT_EQ(carDecoder.decodeLength(), expectedCarEncodedLength);
+
     std::string vehicleCode(VEHICLE_CODE, Car::vehicleCodeLength());
     std::string usageDesc1(FUEL_FIGURES_1_USAGE_DESCRIPTION, FUEL_FIGURES_1_USAGE_DESCRIPTION_LENGTH);
     std::string usageDesc2(FUEL_FIGURES_2_USAGE_DESCRIPTION, FUEL_FIGURES_2_USAGE_DESCRIPTION_LENGTH);

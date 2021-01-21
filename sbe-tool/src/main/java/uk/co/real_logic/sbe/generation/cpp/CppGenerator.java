@@ -603,7 +603,7 @@ public class CppGenerator implements CodeGenerator
                 lengthCppType);
 
             new Formatter(sb).format("\n" +
-                indent + "    %1$s &put%2$s(const std::string& str)\n" +
+                indent + "    %1$s &put%2$s(const std::string &str)\n" +
                 indent + "    {\n" +
                 indent + "        if (str.length() > %4$d)\n" +
                 indent + "        {\n" +
@@ -1613,7 +1613,7 @@ public class CppGenerator implements CodeGenerator
                 indent + "        return *this;\n" +
                 indent + "    }\n" +
                 indent + "    #else\n" +
-                indent + "    %1$s &put%2$s(const std::string& str)\n" +
+                indent + "    %1$s &put%2$s(const std::string &str)\n" +
                 indent + "    {\n" +
                 indent + "        const std::size_t srcLength = str.length();\n" +
                 indent + "        if (srcLength > %4$d)\n" +
@@ -2500,8 +2500,8 @@ public class CppGenerator implements CodeGenerator
     {
         new Formatter(sb).format("\n" +
             "template<typename CharT, typename Traits>\n" +
-            "friend std::basic_ostream<CharT, Traits>& operator << (\n" +
-            "    std::basic_ostream<CharT, Traits>& builder, %1$s _writer)\n" +
+            "friend std::basic_ostream<CharT, Traits> & operator << (\n" +
+            "    std::basic_ostream<CharT, Traits> &builder, %1$s _writer)\n" +
             "{\n" +
             "    %1$s writer(_writer.m_buffer, _writer.m_offset,\n" +
             "        _writer.m_bufferLength, _writer.sbeBlockLength(), _writer.m_actingVersion);\n" +
@@ -2527,8 +2527,8 @@ public class CppGenerator implements CodeGenerator
     {
         return String.format("\n" +
             indent + "template<typename CharT, typename Traits>\n" +
-            indent + "friend std::basic_ostream<CharT, Traits>& operator << (\n" +
-            indent + "    std::basic_ostream<CharT, Traits>& builder, %1$s writer)\n" +
+            indent + "friend std::basic_ostream<CharT, Traits> & operator << (\n" +
+            indent + "    std::basic_ostream<CharT, Traits> &builder, %1$s writer)\n" +
             indent + "{\n" +
             indent + "    builder << '{';\n" +
             "%2$s" +
@@ -2543,8 +2543,8 @@ public class CppGenerator implements CodeGenerator
     {
         return String.format("\n" +
             "template<typename CharT, typename Traits>\n" +
-            "friend std::basic_ostream<CharT, Traits>& operator << (\n" +
-            "    std::basic_ostream<CharT, Traits>& builder, %1$s writer)\n" +
+            "friend std::basic_ostream<CharT, Traits> & operator << (\n" +
+            "    std::basic_ostream<CharT, Traits> &builder, %1$s writer)\n" +
             "{\n" +
             "    builder << '{';\n" +
             "%2$s" +
@@ -2588,15 +2588,16 @@ public class CppGenerator implements CodeGenerator
                 indent + "{\n" +
                 indent + "    bool atLeastOne = false;\n" +
                 indent + "    builder << R\"(\"%3$s\": [)\";\n" +
-                indent + "    writer.%2$s().forEach([&](%1$s& %2$s)\n" +
-                indent + "    {\n" +
-                indent + "        if (atLeastOne)\n" +
+                indent + "    writer.%2$s().forEach(\n" +
+                indent + "        [&](%1$s &%2$s)\n" +
                 indent + "        {\n" +
-                indent + "            builder << \", \";\n" +
-                indent + "        }\n" +
-                indent + "        atLeastOne = true;\n" +
-                indent + "        builder << %2$s;\n" +
-                indent + "    });\n" +
+                indent + "            if (atLeastOne)\n" +
+                indent + "            {\n" +
+                indent + "                builder << \", \";\n" +
+                indent + "            }\n" +
+                indent + "            atLeastOne = true;\n" +
+                indent + "            builder << %2$s;\n" +
+                indent + "        });\n" +
                 indent + "    builder << ']';\n" +
                 indent + "}\n\n",
                 formatClassName(groupToken.name()),
@@ -2745,8 +2746,8 @@ public class CppGenerator implements CodeGenerator
 
         new Formatter(sb).format("\n" +
             indent + "template<typename CharT, typename Traits>\n" +
-            indent + "friend std::basic_ostream<CharT, Traits>& operator << (\n" +
-            indent + "    std::basic_ostream<CharT, Traits>& builder, %1$s writer)\n" +
+            indent + "friend std::basic_ostream<CharT, Traits> & operator << (\n" +
+            indent + "    std::basic_ostream<CharT, Traits> &builder, %1$s writer)\n" +
             indent + "{\n" +
             indent + "    builder << '[';\n",
             name);
@@ -2825,8 +2826,8 @@ public class CppGenerator implements CodeGenerator
 
         new Formatter(sb).format(
             "    template<typename CharT, typename Traits>\n" +
-            "    friend std::basic_ostream<CharT, Traits>& operator << (\n" +
-            "        std::basic_ostream<CharT, Traits>& os, %1$s::Value m)\n" +
+            "    friend std::basic_ostream<CharT, Traits> & operator << (\n" +
+            "        std::basic_ostream<CharT, Traits> &os, %1$s::Value m)\n" +
             "    {\n" +
             "        return os << %1$s::c_str(m);\n" +
             "    }\n",
@@ -3040,10 +3041,7 @@ public class CppGenerator implements CodeGenerator
             }
 
             new Formatter(sbSkip).format(
-                indent + "    %2$s().forEach([](%1$s e)\n" +
-                indent + "    {\n" +
-                indent + "        e.skip();\n" +
-                indent + "    });\n",
+                indent + "    %2$s().forEach([](%1$s &e){ e.skip(); });\n",
                 formatClassName(groupToken.name()),
                 formatPropertyName(groupToken.name()));
 
