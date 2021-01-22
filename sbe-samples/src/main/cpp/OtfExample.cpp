@@ -39,7 +39,7 @@ public:
     void printScope() const
     {
         std::for_each(scope.begin(), scope.end(),
-            [&](const std::string& scope)
+            [&](const std::string &scope)
             {
                 std::cout << scope;
             });
@@ -63,12 +63,12 @@ public:
         scope.pop_back();
     }
 
-    std::string asString(const Token &token, const char *buffer)
+    static std::string asString(const Token &token, const char *buffer)
     {
         const Encoding &encoding = token.encoding();
         const PrimitiveType type = encoding.primitiveType();
         const std::uint64_t length = token.isConstantEncoding() ?
-                encoding.constValue().size() : static_cast<std::uint64_t>(token.encodedLength());
+            encoding.constValue().size() : static_cast<std::uint64_t>(token.encodedLength());
         std::ostringstream result;
 
         std::uint64_t num = length / lengthOfType(type);
@@ -101,7 +101,7 @@ public:
                     for (std::size_t i = 0; i < num; i++)
                     {
                         result << separator
-                            << Encoding::getInt(type, encoding.byteOrder(), buffer + (i * lengthOfType(type)));
+                               << Encoding::getInt(type, encoding.byteOrder(), buffer + (i * lengthOfType(type)));
                         separator = ", ";
                     }
                 }
@@ -171,7 +171,7 @@ public:
     virtual void onEnum(
         Token &fieldToken,
         const char *buffer,
-        std::vector<Token>& tokens,
+        std::vector<Token> &tokens,
         std::size_t fromIndex,
         std::size_t toIndex,
         std::uint64_t actingVersion)
@@ -405,16 +405,16 @@ std::uint64_t encodeHdrAndCar(char *buffer, std::uint64_t length)
     perfFigs.next()
         .octaneRating(perf1Octane)
         .accelerationCount(ACCELERATION_COUNT)
-        .next().mph(perf1aMph).seconds(perf1aSeconds)
-        .next().mph(perf1bMph).seconds(perf1bSeconds)
-        .next().mph(perf1cMph).seconds(perf1cSeconds);
+            .next().mph(perf1aMph).seconds(perf1aSeconds)
+            .next().mph(perf1bMph).seconds(perf1bSeconds)
+            .next().mph(perf1cMph).seconds(perf1cSeconds);
 
     perfFigs.next()
         .octaneRating(perf2Octane)
         .accelerationCount(ACCELERATION_COUNT)
-        .next().mph(perf2aMph).seconds(perf2aSeconds)
-        .next().mph(perf2bMph).seconds(perf2bSeconds)
-        .next().mph(perf2cMph).seconds(perf2cSeconds);
+            .next().mph(perf2aMph).seconds(perf2aSeconds)
+            .next().mph(perf2bMph).seconds(perf2bSeconds)
+            .next().mph(perf2cMph).seconds(perf2cSeconds);
 
     car.putManufacturer(MANUFACTURER, static_cast<int>(strlen(MANUFACTURER)))
         .putModel(MODEL, static_cast<int>(strlen(MODEL)))
@@ -459,7 +459,7 @@ int main(int argc, char **argv)
     if (result != static_cast<std::size_t>(sz - headerDecoder.encodedLength()))
     {
         std::cerr << "Message not properly decoded " << result << "/(" << sz << " - " << headerDecoder.encodedLength()
-            << ")" << std::endl;
+                  << ")" << std::endl;
         return -1;
     }
 

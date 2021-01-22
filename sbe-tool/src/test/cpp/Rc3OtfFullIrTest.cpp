@@ -190,21 +190,21 @@ enum EventNumber
 class Rc3OtfFullIrTest : public testing::Test
 {
 public:
-    char m_buffer[2048];
-    IrDecoder m_irDecoder;
-    int m_eventNumber;
-    int m_compositeLevel;
+    char m_buffer[2048] = {};
+    IrDecoder m_irDecoder = {};
+    int m_eventNumber = 0;
+    int m_compositeLevel = 0;
 
-    virtual void SetUp()
+    void SetUp() override
     {
         m_eventNumber = 0;
         m_compositeLevel = 0;
     }
 
     std::string determineName(
-        Token& fieldToken,
-        std::vector<Token>& tokens,
-        std::size_t fromIndex)
+        Token &fieldToken,
+        std::vector<Token> &tokens,
+        std::size_t fromIndex) const
     {
         return (m_compositeLevel > 1) ? tokens.at(fromIndex).name() : fieldToken.name();
     }
@@ -243,7 +243,7 @@ public:
             .putManufacturerCode(MANUFACTURER_CODE)
             .booster().boostType(BoostType::NITROUS).horsePower(200);
 
-        Car::FuelFigures& fuelFigures = car.fuelFiguresCount(FUEL_FIGURES_COUNT);
+        Car::FuelFigures &fuelFigures = car.fuelFiguresCount(FUEL_FIGURES_COUNT);
 
         fuelFigures
             .next().speed(fuel1Speed).mpg(fuel1Mpg);
@@ -266,16 +266,16 @@ public:
         perfFigs.next()
             .octaneRating(perf1Octane)
             .accelerationCount(ACCELERATION_COUNT)
-            .next().mph(perf1aMph).seconds(perf1aSeconds)
-            .next().mph(perf1bMph).seconds(perf1bSeconds)
-            .next().mph(perf1cMph).seconds(perf1cSeconds);
+                .next().mph(perf1aMph).seconds(perf1aSeconds)
+                .next().mph(perf1bMph).seconds(perf1bSeconds)
+                .next().mph(perf1cMph).seconds(perf1cSeconds);
 
         perfFigs.next()
             .octaneRating(perf2Octane)
             .accelerationCount(ACCELERATION_COUNT)
-            .next().mph(perf2aMph).seconds(perf2aSeconds)
-            .next().mph(perf2bMph).seconds(perf2bSeconds)
-            .next().mph(perf2cMph).seconds(perf2cSeconds);
+                .next().mph(perf2aMph).seconds(perf2aSeconds)
+                .next().mph(perf2bMph).seconds(perf2bSeconds)
+                .next().mph(perf2cMph).seconds(perf2cSeconds);
 
         car.putManufacturer(MANUFACTURER, static_cast<int>(strlen(MANUFACTURER)));
         car.putModel(MODEL, static_cast<int>(strlen(MODEL)));
@@ -285,7 +285,7 @@ public:
         return hdr.encodedLength() + car.encodedLength();
     }
 
-    void onBeginMessage(Token& token)
+    void onBeginMessage(Token &token)
     {
         std::cout << m_eventNumber << ": Begin Message " << token.name() << " id " << token.fieldId() << "\n";
 
@@ -294,7 +294,7 @@ public:
         m_eventNumber++;
     }
 
-    void onEndMessage(Token& token)
+    void onEndMessage(Token &token)
     {
         std::cout << m_eventNumber << ": End Message " << token.name() << "\n";
 
@@ -304,15 +304,15 @@ public:
     }
 
     void onEncoding(
-        Token& fieldToken,
+        Token &fieldToken,
         const char *buffer,
-        Token& typeToken,
+        Token &typeToken,
         std::uint64_t actingVersion)
     {
         std::string name = (m_compositeLevel > 1) ? typeToken.name() : fieldToken.name();
-        std::cout << m_eventNumber << ": Encoding " <<  name << " offset " << typeToken.offset() << "\n";
+        std::cout << m_eventNumber << ": Encoding " << name << " offset " << typeToken.offset() << "\n";
 
-        const Encoding& encoding = typeToken.encoding();
+        const Encoding &encoding = typeToken.encoding();
 
         switch (EventNumber(m_eventNumber))
         {
@@ -390,7 +390,7 @@ public:
                 EXPECT_TRUE(typeToken.isConstantEncoding());
                 EXPECT_EQ(encoding.primitiveType(), PrimitiveType::CHAR);
 
-                const PrimitiveValue& value = encoding.constValue();
+                const PrimitiveValue &value = encoding.constValue();
                 EXPECT_EQ(value.size(), static_cast<std::size_t>(6));
                 EXPECT_EQ(std::string(value.getArray(), value.size()), std::string("Petrol"));
                 break;
@@ -571,17 +571,17 @@ public:
     }
 
     void onEnum(
-        Token& fieldToken,
+        Token &fieldToken,
         const char *buffer,
-        std::vector<Token>& tokens,
+        std::vector<Token> &tokens,
         std::size_t fromIndex,
         std::size_t toIndex,
         std::uint64_t actingVersion)
     {
         std::cout << m_eventNumber << ": Enum " << determineName(fieldToken, tokens, fromIndex) << "\n";
 
-        const Token& typeToken = tokens.at(fromIndex + 1);
-        const Encoding& encoding = typeToken.encoding();
+        const Token &typeToken = tokens.at(fromIndex + 1);
+        const Encoding &encoding = typeToken.encoding();
 
         switch (EventNumber(m_eventNumber))
         {
@@ -596,7 +596,7 @@ public:
                 bool found = false;
                 for (size_t i = fromIndex + 1; i < toIndex; i++)
                 {
-                    const Token& token = tokens.at(i);
+                    const Token &token = tokens.at(i);
                     const std::uint64_t constValue = token.encoding().constValue().getAsUInt();
 
                     std::cout << "    " << token.name() << " = " << constValue << "\n";
@@ -622,7 +622,7 @@ public:
                 bool found = false;
                 for (size_t i = fromIndex + 1; i < toIndex; i++)
                 {
-                    const Token& token = tokens.at(i);
+                    const Token &token = tokens.at(i);
                     const std::int64_t constValue = token.encoding().constValue().getAsUInt();
 
                     std::cout << "    " << token.name() << " = " << constValue << "\n";
@@ -657,7 +657,7 @@ public:
                 bool found = false;
                 for (size_t i = fromIndex + 1; i < toIndex; i++)
                 {
-                    const Token& token = tokens.at(i);
+                    const Token &token = tokens.at(i);
                     const std::int64_t constValue = token.encoding().constValue().getAsUInt();
 
                     std::cout << "    " << token.name() << " = " << constValue << "\n";
@@ -680,17 +680,17 @@ public:
     }
 
     void onBitSet(
-        Token& fieldToken,
+        Token &fieldToken,
         const char *buffer,
-        std::vector<Token>& tokens,
+        std::vector<Token> &tokens,
         std::size_t fromIndex,
         std::size_t toIndex,
         std::uint64_t actingVersion)
     {
         std::cout << m_eventNumber << ": Bit Set " << fieldToken.name() << "\n";
 
-        const Token& typeToken = tokens.at(fromIndex + 1);
-        const Encoding& encoding = typeToken.encoding();
+        const Token &typeToken = tokens.at(fromIndex + 1);
+        const Encoding &encoding = typeToken.encoding();
 
         switch (EventNumber(m_eventNumber))
         {
@@ -705,7 +705,7 @@ public:
                 int bitsSet = 0;
                 for (size_t i = fromIndex + 1; i < toIndex; i++)
                 {
-                    const Token& token = tokens.at(i);
+                    const Token &token = tokens.at(i);
                     const std::uint64_t constValue = token.encoding().constValue().getAsUInt();
 
                     if (constValue && value)
@@ -732,8 +732,8 @@ public:
     }
 
     void onBeginComposite(
-        Token& fieldToken,
-        std::vector<Token>& tokens,
+        Token &fieldToken,
+        std::vector<Token> &tokens,
         std::size_t fromIndex,
         std::size_t toIndex)
     {
@@ -764,8 +764,8 @@ public:
     }
 
     void onEndComposite(
-        Token& fieldToken,
-        std::vector<Token>& tokens,
+        Token &fieldToken,
+        std::vector<Token> &tokens,
         std::size_t fromIndex,
         std::size_t toIndex)
     {
@@ -795,7 +795,7 @@ public:
         m_eventNumber++;
     }
 
-    void onGroupHeader(Token& token, std::uint64_t numInGroup)
+    void onGroupHeader(Token &token, std::uint64_t numInGroup)
     {
         std::cout << m_eventNumber << ": Group Header " << token.name() << " num " << numInGroup << "\n";
 
@@ -837,7 +837,7 @@ public:
 
     }
 
-    void onBeginGroup(Token& token, std::uint64_t groupIndex, std::uint64_t numInGroup)
+    void onBeginGroup(Token &token, std::uint64_t groupIndex, std::uint64_t numInGroup)
     {
         std::cout << m_eventNumber << ": Begin Group " << token.name()
                   << " " << groupIndex + 1 << "/" << numInGroup << "\n";
@@ -939,7 +939,7 @@ public:
         m_eventNumber++;
     }
 
-    void onEndGroup(Token& token, std::uint64_t groupIndex, std::uint64_t numInGroup)
+    void onEndGroup(Token &token, std::uint64_t groupIndex, std::uint64_t numInGroup)
     {
         std::cout << m_eventNumber << ": End Group " << token.name()
                   << " " << groupIndex + 1 << "/" << numInGroup << "\n";
@@ -1042,10 +1042,10 @@ public:
     }
 
     void onVarData(
-        Token& fieldToken,
+        Token &fieldToken,
         const char *buffer,
         std::uint64_t length,
-        Token& typeToken)
+        Token &typeToken)
     {
         std::cout << m_eventNumber << ": Data " << fieldToken.name() << "\n";
 
@@ -1149,7 +1149,7 @@ TEST_F(Rc3OtfFullIrTest, shouldHandleAllEventsCorrectlyAndInOrder)
         Car::sbeTemplateId(), Car::sbeSchemaVersion());
 
     ASSERT_TRUE(headerTokens != nullptr);
-    ASSERT_TRUE(messageTokens!= nullptr);
+    ASSERT_TRUE(messageTokens != nullptr);
 
     OtfHeaderDecoder headerDecoder(headerTokens);
 
@@ -1175,24 +1175,25 @@ TEST_P(Rc3OtfFullIrLengthTest, shouldExceptionIfLengthTooShort)
         Car::sbeTemplateId(), Car::sbeSchemaVersion());
 
     ASSERT_TRUE(headerTokens != nullptr);
-    ASSERT_TRUE(messageTokens!= nullptr);
+    ASSERT_TRUE(messageTokens != nullptr);
 
     OtfHeaderDecoder headerDecoder(headerTokens);
 
     EXPECT_EQ(headerDecoder.encodedLength(), MessageHeader::encodedLength());
-    std::size_t length = static_cast<std::size_t>(GetParam());
+    auto length = static_cast<std::size_t>(GetParam());
     std::uint64_t actingVersion = headerDecoder.getSchemaVersion(m_buffer);
     std::uint64_t blockLength = headerDecoder.getBlockLength(m_buffer);
 
     // set up so that if an error occurs, we intentionally write off the end of a new buffer so that valgrind can help
     // catch errors as well.
     EXPECT_THROW(
-    {
-        std::unique_ptr<char[]> decodeBuffer(new char[length]);
+        {
+            std::unique_ptr<char[]> decodeBuffer(new char[length]);
 
-        ::memcpy(decodeBuffer.get(), m_buffer + headerDecoder.encodedLength(), length);
-        OtfMessageDecoder::decode(decodeBuffer.get(), length, actingVersion, blockLength, messageTokens, *this);
-    }, std::runtime_error);
+            ::memcpy(decodeBuffer.get(), m_buffer + headerDecoder.encodedLength(), length);
+            OtfMessageDecoder::decode(decodeBuffer.get(), length, actingVersion, blockLength, messageTokens, *this);
+        },
+        std::runtime_error);
 }
 
 INSTANTIATE_TEST_SUITE_P(
