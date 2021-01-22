@@ -594,7 +594,7 @@ public:
                 EXPECT_EQ(value, static_cast<std::uint64_t>(1));
 
                 bool found = false;
-                for (size_t i = fromIndex + 1; i < toIndex; i++)
+                for (std::size_t i = fromIndex + 1; i < toIndex; i++)
                 {
                     const Token &token = tokens.at(i);
                     const std::uint64_t constValue = token.encoding().constValue().getAsUInt();
@@ -620,7 +620,7 @@ public:
                 EXPECT_EQ(value, static_cast<std::int64_t>('A'));
 
                 bool found = false;
-                for (size_t i = fromIndex + 1; i < toIndex; i++)
+                for (std::size_t i = fromIndex + 1; i < toIndex; i++)
                 {
                     const Token &token = tokens.at(i);
                     const std::int64_t constValue = token.encoding().constValue().getAsUInt();
@@ -655,7 +655,7 @@ public:
                 EXPECT_EQ(value, static_cast<std::int64_t>('N'));
 
                 bool found = false;
-                for (size_t i = fromIndex + 1; i < toIndex; i++)
+                for (std::size_t i = fromIndex + 1; i < toIndex; i++)
                 {
                     const Token &token = tokens.at(i);
                     const std::int64_t constValue = token.encoding().constValue().getAsUInt();
@@ -703,7 +703,7 @@ public:
                 EXPECT_EQ(value, static_cast<std::uint64_t>(0x6));
 
                 int bitsSet = 0;
-                for (size_t i = fromIndex + 1; i < toIndex; i++)
+                for (std::size_t i = fromIndex + 1; i < toIndex; i++)
                 {
                     const Token &token = tokens.at(i);
                     const std::uint64_t constValue = token.encoding().constValue().getAsUInt();
