@@ -40,11 +40,11 @@ enum EventNumber
 class CompositeElementsTest : public testing::Test, public OtfMessageDecoder::BasicTokenListener
 {
 public:
-    char m_buffer[2048];
+    char m_buffer[2048] = {};
     IrDecoder m_irDecoder;
-    int m_eventNumber;
+    int m_eventNumber = 0;
 
-    virtual void SetUp()
+    void SetUp() override
     {
         m_eventNumber = 0;
     }
@@ -79,16 +79,18 @@ public:
         Token &fieldToken,
         std::vector<Token> &tokens,
         std::size_t fromIndex,
-        std::size_t toIndex)
+        std::size_t toIndex) override
     {
         switch (EventNumber(m_eventNumber++))
         {
             case EN_beginOuter:
                 EXPECT_EQ(tokens.at(fromIndex).name(), "outer");
                 break;
+
             case EN_beginInner:
                 EXPECT_EQ(tokens.at(fromIndex).name(), "inner");
                 break;
+
             default:
                 FAIL() << "unknown beginComposite event number " << m_eventNumber - 1;
         }
@@ -98,26 +100,28 @@ public:
         Token &fieldToken,
         std::vector<Token> &tokens,
         std::size_t fromIndex,
-        std::size_t toIndex)
+        std::size_t toIndex) override
     {
         switch (EventNumber(m_eventNumber++))
         {
             case EN_endInner:
                 EXPECT_EQ(tokens.at(fromIndex).name(), "inner");
                 break;
+
             case EN_endOuter:
                 EXPECT_EQ(tokens.at(fromIndex).name(), "outer");
                 break;
+
             default:
                 FAIL() << "unknown endComposite event number " << m_eventNumber - 1;
         }
     }
 
     void onEncoding(
-        Token& fieldToken,
+        Token &fieldToken,
         const char *buffer,
-        Token& typeToken,
-        std::uint64_t actingVersion)
+        Token &typeToken,
+        std::uint64_t actingVersion) override
     {
         switch (EventNumber(m_eventNumber++))
         {
@@ -127,48 +131,51 @@ public:
                 EXPECT_EQ(typeToken.encoding().getAsUInt(buffer), 42u);
                 break;
             }
+
             case EN_innerFirst:
             {
                 EXPECT_EQ(typeToken.encoding().primitiveType(), PrimitiveType::INT64);
                 EXPECT_EQ(typeToken.encoding().getAsInt(buffer), 101l);
                 break;
             }
+
             case EN_innerSecond:
             {
                 EXPECT_EQ(typeToken.encoding().primitiveType(), PrimitiveType::INT64);
                 EXPECT_EQ(typeToken.encoding().getAsInt(buffer), 202l);
                 break;
             }
+
             default:
                 FAIL() << "unknown Encoding event number " << m_eventNumber - 1;
         }
-
     }
 
     void onBitSet(
-        Token& fieldToken,
+        Token &fieldToken,
         const char *buffer,
-        std::vector<Token>& tokens,
+        std::vector<Token> &tokens,
         std::size_t fromIndex,
         std::size_t toIndex,
-        std::uint64_t actingVersion)
+        std::uint64_t actingVersion) override
     {
         switch (EventNumber(m_eventNumber++))
         {
             case EN_setOne:
             {
-                const Token& typeToken = tokens.at(fromIndex + 1);
-                const Encoding& encoding = typeToken.encoding();
+                const Token &typeToken = tokens.at(fromIndex + 1);
+                const Encoding &encoding = typeToken.encoding();
 
                 EXPECT_EQ(encoding.primitiveType(), PrimitiveType::UINT32);
                 EXPECT_EQ(encoding.getAsUInt(buffer), 0x00010000u);
 
-                EXPECT_EQ(tokens.at(fromIndex+1).name(), "Bit0");
-                EXPECT_EQ(tokens.at(fromIndex+2).name(), "Bit16");
-                EXPECT_EQ(tokens.at(fromIndex+3).name(), "Bit26");
-                EXPECT_EQ(toIndex - 1  - fromIndex, 3u);
+                EXPECT_EQ(tokens.at(fromIndex + 1).name(), "Bit0");
+                EXPECT_EQ(tokens.at(fromIndex + 2).name(), "Bit16");
+                EXPECT_EQ(tokens.at(fromIndex + 3).name(), "Bit26");
+                EXPECT_EQ(toIndex - 1 - fromIndex, 3u);
                 break;
             }
+
             default:
                 FAIL() << "unknown BitSet event number " << m_eventNumber - 1;
         }
@@ -180,23 +187,24 @@ public:
         std::vector<Token> &tokens,
         std::size_t fromIndex,
         std::size_t toIndex,
-        std::uint64_t actingVersion)
+        std::uint64_t actingVersion) override
     {
         switch (EventNumber(m_eventNumber++))
         {
             case EN_enumOne:
             {
-                const Token& typeToken = tokens.at(fromIndex + 1);
-                const Encoding& encoding = typeToken.encoding();
+                const Token &typeToken = tokens.at(fromIndex + 1);
+                const Encoding &encoding = typeToken.encoding();
 
                 EXPECT_EQ(encoding.primitiveType(), PrimitiveType::UINT8);
                 EXPECT_EQ(encoding.getAsUInt(buffer), 10u);
 
-                EXPECT_EQ(tokens.at(fromIndex+1).name(), "Value1");
-                EXPECT_EQ(tokens.at(fromIndex+2).name(), "Value10");
-                EXPECT_EQ(toIndex - 1  - fromIndex, 2u);
+                EXPECT_EQ(tokens.at(fromIndex + 1).name(), "Value1");
+                EXPECT_EQ(tokens.at(fromIndex + 2).name(), "Value10");
+                EXPECT_EQ(toIndex - 1 - fromIndex, 2u);
                 break;
             }
+
             default:
                 FAIL() << "unknown Enum event number " << m_eventNumber - 1;
         }
@@ -278,10 +286,11 @@ TEST_F(CompositeElementsTest, shouldHandleAllEventsCorrectlyInOrder)
     ASSERT_GE(m_irDecoder.decode("composite-elements-schema.sbeir"), 0);
 
     std::shared_ptr<std::vector<Token>> headerTokens = m_irDecoder.header();
-    std::shared_ptr<std::vector<Token>> messageTokens = m_irDecoder.message(Msg::sbeTemplateId(), Msg::sbeSchemaVersion());
+    std::shared_ptr<std::vector<Token>> messageTokens = m_irDecoder.message(
+        Msg::sbeTemplateId(), Msg::sbeSchemaVersion());
 
     ASSERT_TRUE(headerTokens != nullptr);
-    ASSERT_TRUE(messageTokens!= nullptr);
+    ASSERT_TRUE(messageTokens != nullptr);
 
     OtfHeaderDecoder headerDecoder(headerTokens);
 
@@ -291,8 +300,8 @@ TEST_F(CompositeElementsTest, shouldHandleAllEventsCorrectlyInOrder)
     std::uint64_t actingVersion = headerDecoder.getSchemaVersion(m_buffer);
     std::uint64_t blockLength = headerDecoder.getBlockLength(m_buffer);
 
-    const std::size_t result =
-        OtfMessageDecoder::decode(messageBuffer, length, actingVersion, blockLength, messageTokens, *this);
+    const std::size_t result = OtfMessageDecoder::decode(
+        messageBuffer, length, actingVersion, blockLength, messageTokens, *this);
     EXPECT_EQ(result, static_cast<std::size_t>(Msg::sbeBlockLength()));
 
     EXPECT_EQ(m_eventNumber, 9);
