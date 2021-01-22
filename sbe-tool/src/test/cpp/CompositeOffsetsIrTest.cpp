@@ -29,11 +29,11 @@ static const char *SCHEMA_FILENAME = "composite-offsets-schema.sbeir";
 class CompositeOffsetsIrTest : public testing::Test, public OtfMessageDecoder::BasicTokenListener
 {
 public:
-    char m_buffer[2048];
-    IrDecoder m_irDecoder;
-    int m_eventNumber;
+    char m_buffer[2048] = {};
+    IrDecoder m_irDecoder = {};
+    int m_eventNumber = 0;
 
-    virtual void SetUp()
+    void SetUp() override
     {
         m_eventNumber = 0;
     }

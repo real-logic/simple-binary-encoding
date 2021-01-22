@@ -177,7 +177,7 @@ public:
         return encodeCar(m_car);
     }
 
-    void expectDisplayString(const char *expectedDisplayString, Car &carDecoder)
+    static void expectDisplayString(const char *expectedDisplayString, Car &carDecoder)
     {
         std::stringstream displayStream;
 
@@ -186,10 +186,10 @@ public:
         displayStream.clear();
     }
 
-    MessageHeader m_hdr;
-    MessageHeader m_hdrDecoder;
-    Car m_car;
-    Car m_carDecoder;
+    MessageHeader m_hdr = {};
+    MessageHeader m_hdrDecoder = {};
+    Car m_car = {};
+    Car m_carDecoder = {};
 };
 
 TEST_F(CodeGenTest, shouldReturnCorrectValuesForMessageHeaderStaticFields)
@@ -212,7 +212,7 @@ TEST_F(CodeGenTest, shouldReturnCorrectValuesForCarStaticFields)
 
 TEST_F(CodeGenTest, shouldBeAbleToEncodeMessageHeaderCorrectly)
 {
-    char buffer[BUFFER_LEN];
+    char buffer[BUFFER_LEN] = {};
     const char *bp = buffer;
 
     std::uint64_t sz = encodeHdr(buffer, 0, sizeof(buffer));
@@ -226,7 +226,7 @@ TEST_F(CodeGenTest, shouldBeAbleToEncodeMessageHeaderCorrectly)
 
 TEST_F(CodeGenTest, shouldBeAbleToEncodeAndDecodeMessageHeaderCorrectly)
 {
-    char buffer[BUFFER_LEN];
+    char buffer[BUFFER_LEN] = {};
 
     encodeHdr(buffer, 0, sizeof(buffer));
 
@@ -290,7 +290,7 @@ TEST_F(CodeGenTest, shouldReturnCorrectValuesForCarFieldIdsAndCharacterEncoding)
 
 TEST_F(CodeGenTest, shouldBeAbleToEncodeCarCorrectly)
 {
-    char buffer[BUFFER_LEN];
+    char buffer[BUFFER_LEN] = {};
     const char *bp = buffer;
     std::uint64_t sz = encodeCar(buffer, 0, sizeof(buffer));
 
@@ -452,7 +452,7 @@ TEST_F(CodeGenTest, shouldBeAbleToEncodeCarCorrectly)
 
 TEST_F(CodeGenTest, shouldBeAbleToEncodeHeaderPlusCarCorrectly)
 {
-    char buffer[BUFFER_LEN];
+    char buffer[BUFFER_LEN] = {};
     const char *bp = buffer;
 
     std::uint64_t hdrSz = encodeHdr(buffer, 0, sizeof(buffer));
@@ -462,16 +462,16 @@ TEST_F(CodeGenTest, shouldBeAbleToEncodeHeaderPlusCarCorrectly)
     EXPECT_EQ(carEncodedLength, expectedCarEncodedLength);
 
     EXPECT_EQ(*((std::uint16_t *)bp), Car::sbeBlockLength());
-    const size_t activationCodePosition =
+    const std::size_t activationCodePosition =
         (hdrSz + carEncodedLength) - (ACTIVATION_CODE_LENGTH + sizeof(std::uint32_t) + COLOR_LENGTH);
-    const size_t activationCodeLengthPosition = activationCodePosition - sizeof(std::uint16_t);
+    const std::size_t activationCodeLengthPosition = activationCodePosition - sizeof(std::uint16_t);
     EXPECT_EQ(*(std::uint16_t *)(bp + activationCodeLengthPosition), ACTIVATION_CODE_LENGTH);
     EXPECT_EQ(std::string(bp + activationCodePosition, ACTIVATION_CODE_LENGTH), ACTIVATION_CODE);
 }
 
 TEST_F(CodeGenTest, shouldBeAbleToEncodeAndDecodeHeaderPlusCarCorrectly)
 {
-    char buffer[BUFFER_LEN];
+    char buffer[BUFFER_LEN] = {};
 
     std::uint64_t hdrSz = encodeHdr(buffer, 0, sizeof(buffer));
     std::uint64_t carEncodedLength = encodeCar(buffer, m_hdr.encodedLength(), sizeof(buffer) - m_hdr.encodedLength());
@@ -613,13 +613,9 @@ TEST_F(CodeGenTest, shouldBeAbleToEncodeAndDecodeHeaderPlusCarCorrectly)
 
 struct CallbacksForEach
 {
-    int countOfFuelFigures;
-    int countOfPerformanceFigures;
-    int countOfAccelerations;
-
-    CallbacksForEach() : countOfFuelFigures(0), countOfPerformanceFigures(0), countOfAccelerations(0)
-    {
-    }
+    int countOfFuelFigures = 0;
+    int countOfPerformanceFigures = 0;
+    int countOfAccelerations = 0;
 
     void operator()(Car::FuelFigures &fuelFigures)
     {
@@ -643,7 +639,7 @@ struct CallbacksForEach
 
 TEST_F(CodeGenTest, shouldBeAbleUseOnStackCodecsAndGroupForEach)
 {
-    char buffer[BUFFER_LEN];
+    char buffer[BUFFER_LEN] = {};
     MessageHeader hdr(buffer, sizeof(buffer), 0);
     Car car(buffer + hdr.encodedLength(), sizeof(buffer) - hdr.encodedLength());
 
@@ -674,7 +670,7 @@ TEST_F(CodeGenTest, shouldBeAbleUseOnStackCodecsAndGroupForEach)
         {
             cbs.countOfFuelFigures++;
 
-            char tmp[256];
+            char tmp[256] = {};
             figures.getUsageDescription(tmp, sizeof(tmp));
         });
 #else
@@ -704,7 +700,7 @@ TEST_F(CodeGenTest, shouldBeAbleUseOnStackCodecsAndGroupForEach)
     EXPECT_EQ(cbs.countOfPerformanceFigures, PERFORMANCE_FIGURES_COUNT);
     EXPECT_EQ(cbs.countOfAccelerations, ACCELERATION_COUNT * PERFORMANCE_FIGURES_COUNT);
 
-    char tmp[256];
+    char tmp[256] = {};
 
     EXPECT_EQ(carDecoder.getManufacturer(tmp, sizeof(tmp)), MANUFACTURER_LENGTH);
     EXPECT_EQ(std::string(tmp, MANUFACTURER_LENGTH), MANUFACTURER);
@@ -748,7 +744,7 @@ TEST_F(CodeGenTest, shouldBeAbleToUseStdStringMethodsForEncode)
     std::string activationCode(ACTIVATION_CODE, ACTIVATION_CODE_LENGTH);
     std::string color(COLOR, COLOR_LENGTH);
 
-    char buffer[BUFFER_LEN];
+    char buffer[BUFFER_LEN] = {};
     std::uint64_t baseOffset = MessageHeader::encodedLength();
     Car car;
     car.wrapForEncode(buffer, baseOffset, sizeof(buffer));
@@ -811,7 +807,7 @@ TEST_F(CodeGenTest, shouldBeAbleToUseStdStringMethodsForEncode)
 
 TEST_F(CodeGenTest, shouldBeAbleToUseStdStringMethodsForDecode)
 {
-    char buffer[2048];
+    char buffer[BUFFER_LEN] = {};
     Car carEncoder(buffer, sizeof(buffer));
 
     std::uint64_t carEncodedLength = encodeCar(carEncoder);
@@ -878,8 +874,7 @@ TEST_F(CodeGenTest, shouldPrintFullDecodedFlyweightRegardlessOfReadPosition)
         "{\"mph\": 100, \"seconds\": 11.8}]}], \"manufacturer\": \"Honda\", \"model\": \"Civic VTi\", "
         "\"activationCode\": \"deadbeef\", \"color\": \"racing green\"}";
 
-    char buffer[2048];
-    memset(buffer, 0, 2048);
+    char buffer[BUFFER_LEN] = {};
     Car carEncoder(buffer, sizeof(buffer));
 
     std::uint64_t carEncodedLength = encodeCar(carEncoder);
