@@ -716,7 +716,7 @@ task generateIrCodecs {
     dependsOn 'generateJavaIrCodecs', 'generateCppIrCodecs', 'generateGolangIrCodecs'
 }
 
-task runJavaBenchmarks(type: Exec) {
+task runJavaBenchmarks(type: Exec, dependsOn: 'sbe-benchmarks:jar') {
     commandLine toolchainLauncher.get().executablePath,
         '-jar', 'sbe-benchmarks/build/libs/sbe-benchmarks.jar',
         '-jvmArgs', '-Dagrona.disable.bounds.checks=true -XX:+UseParallelOldGC',
