@@ -39,17 +39,16 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: ${{ matrix.java }}
-      - name: Setup BUILD_JAVA_HOME
-        if: runner.os == 'Linux'
-        run: echo "BUILD_JAVA_HOME=${JAVA_HOME}" >> $GITHUB_ENV
+      - name: Setup BUILD_JAVA_HOME & BUILD_JAVA_VERSION
+        run: |
+          echo "BUILD_JAVA_HOME=${JAVA_HOME}" >> $GITHUB_ENV
+          echo "BUILD_JAVA_VERSION=${{ matrix.java }}" >> $GITHUB_ENV
       - name: Setup java 8 to run the Gradle script
         uses: actions/setup-java@v1
         with:
           java-version: 8
       - name: Build with Gradle
         run: ./gradlew
-        env:
-          BUILD_JAVA_VERSION: ${{ matrix.java }}
 
   csharp-build:
     name: C# ${{ matrix.dotnet }}
