@@ -41,7 +41,7 @@ static def getBuildJavaVersion() {
 }
 int buildJavaVersion = getBuildJavaVersion()
 
-def javaLauncher = javaToolchains.launcherFor {
+def toolChainLauncher = javaToolchains.launcherFor {
     languageVersion = JavaLanguageVersion.of(buildJavaVersion)
 }
 
@@ -149,7 +149,7 @@ allprojects {
     }
 
     tasks.withType(JavaExec).configureEach {
-        executable = javaLauncher.get().executablePath
+        javaLauncher = toolChainLauncher
     }
 }
 
@@ -717,7 +717,7 @@ task generateIrCodecs {
 }
 
 task runJavaBenchmarks(type: Exec) {
-    commandLine 'java',
+    commandLine toolChainLauncher.get().executablePath,
         '-jar', 'sbe-benchmarks/build/libs/sbe-benchmarks.jar',
         '-jvmArgs', '-Dagrona.disable.bounds.checks=true -XX:+UseParallelOldGC',
         '-w', '1s', '-r', '1s','-wi', '3', '-i', '5', '-tu', 'ns', '-f', '5'
