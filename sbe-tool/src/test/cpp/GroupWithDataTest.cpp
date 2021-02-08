@@ -21,7 +21,6 @@
 #include "group_with_data/TestMessage3.h"
 #include "group_with_data/TestMessage4.h"
 
-// using namespace std;
 using namespace group::with::data;
 
 static const std::uint32_t TAG_1 = 32;

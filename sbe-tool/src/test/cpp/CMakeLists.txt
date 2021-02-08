@@ -38,6 +38,7 @@ set(COMPOSITE_OFFSETS_SCHEMA ${CODEC_SCHEMA_DIR}/composite-offsets-schema.xml)
 set(MESSAGE_BLOCK_LENGTH_TEST ${CODEC_SCHEMA_DIR}/message-block-length-test.xml)
 set(GROUP_WITH_DATA_SCHEMA ${CODEC_SCHEMA_DIR}/group-with-data-schema.xml)
 set(COMPOSITE_ELEMENTS_SCHEMA ${CODEC_SCHEMA_DIR}/composite-elements-schema.xml)
+set(ISSUE835_SCHEMA ${CODEC_SCHEMA_DIR}/issue835.xml)
 
 set(GENERATED_CODECS
     ${CXX_CODEC_TARGET_DIR}
@@ -58,6 +59,7 @@ add_custom_command(
             ${MESSAGE_BLOCK_LENGTH_TEST}
             ${GROUP_WITH_DATA_SCHEMA}
             ${COMPOSITE_ELEMENTS_SCHEMA}
+            ${ISSUE835_SCHEMA}
 )
 
 add_custom_target(codecs DEPENDS ${GENERATED_CODECS})
@@ -71,3 +73,4 @@ sbe_test(MessageBlockLengthTest codecs)
 sbe_test(GroupWithDataTest codecs)
 sbe_test(Rc3OtfFullIrTest codecs)
 sbe_test(CompositeElementsTest codecs)
+sbe_test(Issue835Test codecs)
