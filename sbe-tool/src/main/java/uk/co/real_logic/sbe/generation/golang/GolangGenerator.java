@@ -51,6 +51,12 @@ public class GolangGenerator implements CodeGenerator
 
     private TreeSet<String> imports;
 
+    /**
+     * Create a new Go language {@link CodeGenerator}.
+     *
+     * @param ir            for the messages and types.
+     * @param outputManager for generating the codecs to.
+     */
     public GolangGenerator(final Ir ir, final OutputManager outputManager)
     {
         Verify.notNull(ir, "ir");
@@ -60,6 +66,13 @@ public class GolangGenerator implements CodeGenerator
         this.outputManager = outputManager;
     }
 
+    /**
+     * Generate a file for the Ir based on a template.
+     *
+     * @param fileName     to generate.
+     * @param templateName for the file.
+     * @throws IOException if an error is encountered when writing the output.
+     */
     public void generateFileFromTemplate(final String fileName, final String templateName) throws IOException
     {
         try (Writer out = outputManager.createOutput(fileName))
@@ -68,6 +81,11 @@ public class GolangGenerator implements CodeGenerator
         }
     }
 
+    /**
+     * Generate the stubs for the types used as message fields.
+     *
+     * @throws IOException if an error is encountered when writing the output.
+     */
     public void generateTypeStubs() throws IOException
     {
         for (final List<Token> tokens : ir.types())
@@ -95,6 +113,9 @@ public class GolangGenerator implements CodeGenerator
     // MessageHeader is special but the standard allows it to be
     // pretty arbitrary after the first four fields.
     // All we need is the imports, type declaration, and encode/decode
+    /**
+     * {@inheritDoc}
+     */
     public void generateMessageHeaderStub() throws IOException
     {
         final String messageHeader = "MessageHeader";
@@ -116,6 +137,9 @@ public class GolangGenerator implements CodeGenerator
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void generate() throws IOException
     {
         // Add the Marshalling from the big or little endian

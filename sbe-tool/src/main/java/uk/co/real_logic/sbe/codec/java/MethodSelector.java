@@ -35,17 +35,33 @@ public class MethodSelector
     private final Set<String> ignoredMethods;
     private final Map<Class<?>, Set<String>> sortedMethods = new HashMap<>();
 
+    /**
+     * The method names for method belonging to Object and Iterator.
+     *
+     * @return the method names for method belonging to Object and Iterator.
+     */
     public static Set<String> objectAndIteratorMethods()
     {
         return new HashSet<>(
             Arrays.asList("hashCode", "clone", "toString", "getClass", "next", "hasNext", "remove", "iterator"));
     }
 
+    /**
+     * Create a method selector with a set of methods to be ignored.
+     *
+     * @param ignoredMethods to be skipped over.
+     */
     public MethodSelector(final Set<String> ignoredMethods)
     {
         this.ignoredMethods = ignoredMethods;
     }
 
+    /**
+     * Select a list of methods from a given class.
+     *
+     * @param clazz to select the method for.
+     * @return the list of methods
+     */
     public List<Method> select(final Class<?> clazz)
     {
         final Method[] methods = clazz.getMethods();
@@ -69,10 +85,10 @@ public class MethodSelector
     private Set<String> getSortedMethods(final Class<?> clazz, final Method[] methods)
     {
         final Set<String> sortedMethodNames = sortedMethods.get(clazz);
-        if (sortedMethodNames == null)
+        if (null == sortedMethodNames)
         {
             final GroupOrder order = clazz.getAnnotation(GroupOrder.class);
-            if (order == null)
+            if (null == order)
             {
                 sortedMethods.put(clazz, Collections.emptySet());
 
@@ -116,7 +132,7 @@ public class MethodSelector
             return;
         }
 
-        if (sortedMethodNames == null)
+        if (null == sortedMethodNames)
         {
             unsortedMethods.add(method);
         }

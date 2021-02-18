@@ -170,6 +170,11 @@ public abstract class Type
         return semanticType;
     }
 
+    /**
+     * Is the type variable length when encoded.
+     *
+     * @return true if the type is variable length when encoded.
+     */
     public abstract boolean isVariableLength();
 
     /**

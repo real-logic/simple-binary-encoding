@@ -38,6 +38,9 @@ public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
      */
     JAVA()
     {
+        /**
+         * {@inheritDoc}
+         */
         public CodeGenerator newInstance(final Ir ir, final String outputDir)
         {
             return new JavaGenerator(
@@ -56,6 +59,9 @@ public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
      */
     C()
     {
+        /**
+         * {@inheritDoc}
+         */
         public CodeGenerator newInstance(final Ir ir, final String outputDir)
         {
             return new CGenerator(ir, new COutputManager(outputDir, ir.applicableNamespace()));
@@ -67,6 +73,9 @@ public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
      */
     CPP()
     {
+        /**
+         * {@inheritDoc}
+         */
         public CodeGenerator newInstance(final Ir ir, final String outputDir)
         {
             return new CppGenerator(
@@ -81,6 +90,9 @@ public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
      */
     GOLANG()
     {
+        /**
+         * {@inheritDoc}
+         */
         public CodeGenerator newInstance(final Ir ir, final String outputDir)
         {
             return new GolangGenerator(ir, new GolangOutputManager(outputDir, ir.applicableNamespace()));

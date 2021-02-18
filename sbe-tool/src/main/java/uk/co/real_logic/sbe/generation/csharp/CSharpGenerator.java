@@ -50,6 +50,12 @@ public class CSharpGenerator implements CodeGenerator
     private final Ir ir;
     private final OutputManager outputManager;
 
+    /**
+     * Create a new C# language {@link CodeGenerator}.
+     *
+     * @param ir            for the messages and types.
+     * @param outputManager for generating the codecs to.
+     */
     public CSharpGenerator(final Ir ir, final OutputManager outputManager)
     {
         Verify.notNull(ir, "ir");
@@ -59,11 +65,19 @@ public class CSharpGenerator implements CodeGenerator
         this.outputManager = outputManager;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void generateMessageHeaderStub() throws IOException
     {
         generateComposite(ir.headerStructure().tokens());
     }
 
+    /**
+     * Generate the stubs for the types used as message fields.
+     *
+     * @throws IOException if an error is encountered when writing the output.
+     */
     public void generateTypeStubs() throws IOException
     {
         generateMetaAttributeEnum();
@@ -87,6 +101,9 @@ public class CSharpGenerator implements CodeGenerator
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void generate() throws IOException
     {
         generateMessageHeaderStub();
@@ -633,7 +650,7 @@ public class CSharpGenerator implements CodeGenerator
             className);
     }
 
-    public static String generateDocumentation(final String indent, final Token token)
+    private static String generateDocumentation(final String indent, final Token token)
     {
         final String description = token.description();
         if (null == description || description.isEmpty())
@@ -641,11 +658,10 @@ public class CSharpGenerator implements CodeGenerator
             return "";
         }
 
-        return String.format(
+        return
             indent + "/// <summary>\n" +
-            indent + "/// %s\n" +
-            indent + "/// </summary>\n",
-            description);
+            indent + "/// " + description + "\n" +
+            indent + "/// </summary>\n";
     }
 
     private void generateMetaAttributeEnum() throws IOException

@@ -23,21 +23,54 @@ import java.util.List;
  */
 public final class GenerationUtil
 {
+    /**
+     * Collect the fields for a message.
+     *
+     * @param tokens for the message.
+     * @param index  index at which to begin.
+     * @param fields to collect the field tokens into.
+     * @return resulting index.
+     */
     public static int collectFields(final List<Token> tokens, final int index, final List<Token> fields)
     {
         return collect(Signal.BEGIN_FIELD, tokens, index, fields);
     }
 
+    /**
+     * Collect the groups for a message.
+     *
+     * @param tokens for the message.
+     * @param index  index at which to begin.
+     * @param groups to collect the group tokens into.
+     * @return resulting index.
+     */
     public static int collectGroups(final List<Token> tokens, final int index, final List<Token> groups)
     {
         return collect(Signal.BEGIN_GROUP, tokens, index, groups);
     }
 
+    /**
+     * Collect the var data for a message.
+     *
+     * @param tokens  for the message.
+     * @param index   index at which to begin.
+     * @param varData to collect the var data tokens into.
+     * @return resulting index.
+     */
     public static int collectVarData(final List<Token> tokens, final int index, final List<Token> varData)
     {
         return collect(Signal.BEGIN_VAR_DATA, tokens, index, varData);
     }
 
+    /**
+     * Collect a run of tokens matching a signal.
+     *
+     * @param signal    to match against.
+     * @param tokens    for the message.
+     * @param index     index at which to begin.
+     * @param collected to collect the tokens into.
+     * @return resulting index.
+     */
     public static int collect(
         final Signal signal, final List<Token> tokens, final int index, final List<Token> collected)
     {
@@ -60,17 +93,32 @@ public final class GenerationUtil
         return i;
     }
 
+    /**
+     * Get the tokens for the message body by subtracting the message wrapper.
+     *
+     * @param tokens for the message.
+     * @return the tokens for the message body by subtracting the message wrapper.
+     */
     public static List<Token> getMessageBody(final List<Token> tokens)
     {
         return tokens.subList(1, tokens.size() - 1);
     }
 
+    /**
+     * Find the index of the end signal for a given name.
+     *
+     * @param tokens to search.
+     * @param index  to start from.
+     * @param signal to match.
+     * @param name   to match.
+     * @return index where found.
+     */
     public static int findEndSignal(
-        final List<Token> tokens, final int startIndex, final Signal signal, final String name)
+        final List<Token> tokens, final int index, final Signal signal, final String name)
     {
         int result = tokens.size() - 1;
 
-        for (int i = startIndex, endIndex = tokens.size() - 1; i < endIndex; i++)
+        for (int i = index, endIndex = tokens.size() - 1; i < endIndex; i++)
         {
             final Token token = tokens.get(i);
 
@@ -84,6 +132,12 @@ public final class GenerationUtil
         return result;
     }
 
+    /**
+     * Find a list of sub group names.
+     *
+     * @param tokens to search.
+     * @return list of names for the sub groups.
+     */
     public static List<String> findSubGroupNames(final List<Token> tokens)
     {
         final ArrayList<String> groupNames = new ArrayList<>();
@@ -108,6 +162,13 @@ public final class GenerationUtil
         return groupNames;
     }
 
+    /**
+     * Find the first instance of a given signal.
+     *
+     * @param tokens to search.
+     * @param signal to search for.
+     * @return index the signal was found at or -1 if not found.
+     */
     public static int findSignal(final List<Token> tokens, final Signal signal)
     {
         for (int i = 0, endIndex = tokens.size() - 1; i < endIndex; i++)

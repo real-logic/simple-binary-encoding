@@ -27,5 +27,10 @@ import java.lang.annotation.Target;
 @Target({ ElementType.TYPE })
 public @interface GroupOrder
 {
+    /**
+     * Array of class values in order.
+     *
+     * @return array of class values in order.
+     */
     Class<?>[] value();
 }

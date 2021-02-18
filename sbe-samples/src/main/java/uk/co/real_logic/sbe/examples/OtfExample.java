@@ -46,15 +46,21 @@ public class OtfExample
     private static final int MSG_BUFFER_CAPACITY = 4 * 1024;
     private static final int SCHEMA_BUFFER_CAPACITY = 16 * 1024;
 
+    /**
+     * Main entry point for the example.
+     *
+     * @param args which are ignored.
+     * @throws Exception if an error occurs when parsing the XML or doing IO.
+     */
     public static void main(final String[] args) throws Exception
     {
         System.out.println("\n*** OTF Example ***\n");
 
         // Encode up message and schema as if we just got them off the wire.
-        final ByteBuffer encodedSchemaBuffer = ByteBuffer.allocate(SCHEMA_BUFFER_CAPACITY);
+        final ByteBuffer encodedSchemaBuffer = ByteBuffer.allocateDirect(SCHEMA_BUFFER_CAPACITY);
         encodeSchema(encodedSchemaBuffer);
 
-        final ByteBuffer encodedMsgBuffer = ByteBuffer.allocate(MSG_BUFFER_CAPACITY);
+        final ByteBuffer encodedMsgBuffer = ByteBuffer.allocateDirect(MSG_BUFFER_CAPACITY);
         encodeTestMessage(encodedMsgBuffer);
 
         // Now lets decode the schema IR so we have IR objects.

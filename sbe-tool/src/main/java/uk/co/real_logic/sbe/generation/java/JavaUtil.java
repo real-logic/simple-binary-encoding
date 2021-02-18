@@ -40,7 +40,7 @@ public class JavaUtil
     /**
      * Separator symbols for {@link Object#toString()} implementations on codecs.
      */
-    public enum Separator
+    enum Separator
     {
         BEGIN_GROUP('['),
         END_GROUP(']'),
@@ -54,7 +54,7 @@ public class JavaUtil
         KEY_VALUE('='),
         ENTRY(',');
 
-        public final char symbol;
+        private final char symbol;
 
         Separator(final char symbol)
         {
@@ -68,11 +68,14 @@ public class JavaUtil
          * @param indent      the current generated code indentation
          * @param builderName of the generated StringBuilder to which separator should be added
          */
-        public void appendToGeneratedBuilder(final StringBuilder builder, final String indent, final String builderName)
+        void appendToGeneratedBuilder(final StringBuilder builder, final String indent, final String builderName)
         {
             builder.append(indent).append(builderName).append(".append('").append(symbol).append("');").append('\n');
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public String toString()
         {
             return String.valueOf(symbol);

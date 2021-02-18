@@ -63,6 +63,17 @@ public class JavaGenerator implements CodeGenerator
     private final boolean shouldGenerateInterfaces;
     private final boolean shouldDecodeUnknownEnumValues;
 
+    /**
+     * Create a new Java language {@link CodeGenerator}.
+     *
+     * @param ir                                 for the messages and types.
+     * @param mutableBuffer                      implementation used for mutating underlying buffers.
+     * @param readOnlyBuffer                     implementation used for reading underlying buffers.
+     * @param shouldGenerateGroupOrderAnnotation in the codecs.
+     * @param shouldGenerateInterfaces           for common methods.
+     * @param shouldDecodeUnknownEnumValues      generate support for unknown enum values when decoding.
+     * @param outputManager                      for generating the codecs to.
+     */
     public JavaGenerator(
         final Ir ir,
         final String mutableBuffer,
@@ -89,55 +100,19 @@ public class JavaGenerator implements CodeGenerator
         this.shouldDecodeUnknownEnumValues = shouldDecodeUnknownEnumValues;
     }
 
-    private static String validateBufferImplementation(
-        final String fullyQualifiedBufferImplementation, final Class<?> bufferClass)
-    {
-        Verify.notNull(fullyQualifiedBufferImplementation, "fullyQualifiedBufferImplementation");
-
-        try
-        {
-            final Class<?> clazz = Class.forName(fullyQualifiedBufferImplementation);
-            if (!bufferClass.isAssignableFrom(clazz))
-            {
-                throw new IllegalArgumentException(
-                    fullyQualifiedBufferImplementation + " doesn't implement " + bufferClass.getName());
-            }
-
-            return clazz.getSimpleName();
-        }
-        catch (final ClassNotFoundException ex)
-        {
-            throw new IllegalArgumentException("Unable to find " + fullyQualifiedBufferImplementation, ex);
-        }
-    }
-
-    private String encoderName(final String className)
-    {
-        return formatClassName(className) + "Encoder";
-    }
-
-    private String decoderName(final String className)
-    {
-        return formatClassName(className) + "Decoder";
-    }
-
-    private String implementsInterface(final String interfaceName)
-    {
-        if (!shouldGenerateInterfaces)
-        {
-            return "";
-        }
-        else
-        {
-            return " implements " + interfaceName;
-        }
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     public void generateMessageHeaderStub() throws IOException
     {
         generateComposite(ir.headerStructure().tokens());
     }
 
+    /**
+     * Generate the stubs for the types used as message fields.
+     *
+     * @throws IOException if an error is encountered when writing the output.
+     */
     public void generateTypeStubs() throws IOException
     {
         generateMetaAttributeEnum();
@@ -161,6 +136,9 @@ public class JavaGenerator implements CodeGenerator
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void generate() throws IOException
     {
         generatePackageInfo();
@@ -3645,5 +3623,49 @@ public class JavaGenerator implements CodeGenerator
         sb.append('\n');
         append(sb, INDENT, "    return decoder.appendTo(new StringBuilder()).toString();");
         append(sb, INDENT, "}");
+    }
+
+    private static String validateBufferImplementation(
+        final String fullyQualifiedBufferImplementation, final Class<?> bufferClass)
+    {
+        Verify.notNull(fullyQualifiedBufferImplementation, "fullyQualifiedBufferImplementation");
+
+        try
+        {
+            final Class<?> clazz = Class.forName(fullyQualifiedBufferImplementation);
+            if (!bufferClass.isAssignableFrom(clazz))
+            {
+                throw new IllegalArgumentException(
+                    fullyQualifiedBufferImplementation + " doesn't implement " + bufferClass.getName());
+            }
+
+            return clazz.getSimpleName();
+        }
+        catch (final ClassNotFoundException ex)
+        {
+            throw new IllegalArgumentException("Unable to find " + fullyQualifiedBufferImplementation, ex);
+        }
+    }
+
+    private String encoderName(final String className)
+    {
+        return formatClassName(className) + "Encoder";
+    }
+
+    private String decoderName(final String className)
+    {
+        return formatClassName(className) + "Decoder";
+    }
+
+    private String implementsInterface(final String interfaceName)
+    {
+        if (!shouldGenerateInterfaces)
+        {
+            return "";
+        }
+        else
+        {
+            return " implements " + interfaceName;
+        }
     }
 }

@@ -46,7 +46,7 @@ public class EnumType extends Type
     private final Map<PrimitiveValue, ValidValue> validValueByPrimitiveValueMap = new LinkedHashMap<>();
     private final Map<String, ValidValue> validValueByNameMap = new LinkedHashMap<>();
 
-    public EnumType(final Node node) throws XPathExpressionException
+    EnumType(final Node node) throws XPathExpressionException
     {
         this(node, null, null);
     }
@@ -59,7 +59,7 @@ public class EnumType extends Type
      * @param referencedName of the type when created from a ref in a composite.
      * @throws XPathExpressionException if the XPath is invalid
      */
-    public EnumType(final Node node, final String givenName, final String referencedName)
+    EnumType(final Node node, final String givenName, final String referencedName)
         throws XPathExpressionException
     {
         super(node, givenName, referencedName);
@@ -242,11 +242,17 @@ public class EnumType extends Type
         return validValueByNameMap.values();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean isVariableLength()
     {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public String toString()
     {
         return "EnumType{" +
@@ -335,6 +341,9 @@ public class EnumType extends Type
             return deprecated;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public String toString()
         {
             return "ValidValue{" +

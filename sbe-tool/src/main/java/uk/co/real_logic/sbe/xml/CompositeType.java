@@ -50,7 +50,7 @@ public class CompositeType extends Type
     private final List<String> compositesPath = new ArrayList<>();
     private final Map<String, Type> containedTypeByNameMap = new LinkedHashMap<>();
 
-    public CompositeType(final Node node) throws XPathExpressionException
+    CompositeType(final Node node) throws XPathExpressionException
     {
         this(node, null, null, new ArrayList<>());
     }
@@ -64,7 +64,7 @@ public class CompositeType extends Type
      * @param compositesPath with the path of composites that represents the levels of composition.
      * @throws XPathExpressionException if the XPath is invalid.
      */
-    public CompositeType(
+    CompositeType(
         final Node node, final String givenName, final String referencedName, final List<String> compositesPath)
         throws XPathExpressionException
     {
@@ -394,6 +394,9 @@ public class CompositeType extends Type
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean isVariableLength()
     {
         return false;
@@ -483,6 +486,9 @@ public class CompositeType extends Type
         return type;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public String toString()
     {
         return "CompositeType{" +

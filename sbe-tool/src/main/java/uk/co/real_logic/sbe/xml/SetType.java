@@ -44,8 +44,8 @@ public class SetType extends Type
     private final Map<PrimitiveValue, Choice> choiceByPrimitiveValueMap = new LinkedHashMap<>();
     private final Map<String, Choice> choiceByNameMap = new LinkedHashMap<>();
 
-    public SetType(final Node node)
-        throws XPathExpressionException, IllegalArgumentException
+    SetType(final Node node)
+        throws XPathExpressionException
     {
         this(node, null, null);
     }
@@ -57,10 +57,9 @@ public class SetType extends Type
      * @param givenName      for the node.
      * @param referencedName of the type when created from a ref in a composite.
      * @throws XPathExpressionException on invalid XPath.
-     * @throws IllegalArgumentException on illegal encoding type.
      */
     public SetType(final Node node, final String givenName, final String referencedName)
-        throws XPathExpressionException, IllegalArgumentException
+        throws XPathExpressionException
     {
         super(node, givenName, referencedName);
 
@@ -186,6 +185,9 @@ public class SetType extends Type
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public String toString()
     {
         return "SetType{" +
@@ -279,6 +281,9 @@ public class SetType extends Type
             return deprecated;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public String toString()
         {
             return "Choice{" +

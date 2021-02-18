@@ -35,4 +35,11 @@ public interface CodeGenerator
      * @throws IOException if an error is encountered when writing the output.
      */
     void generate() throws IOException;
+
+    /**
+     * Generate the composites for dealing with the message header.
+     *
+     * @throws IOException if an error is encountered when writing the output.
+     */
+    void generateMessageHeaderStub() throws IOException;
 }

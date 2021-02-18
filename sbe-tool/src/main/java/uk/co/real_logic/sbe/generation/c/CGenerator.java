@@ -45,6 +45,12 @@ public class CGenerator implements CodeGenerator
     private final Ir ir;
     private final OutputManager outputManager;
 
+    /**
+     * Create a new C language {@link CodeGenerator}.
+     *
+     * @param ir            for the messages and types.
+     * @param outputManager for generating the codecs to.
+     */
     public CGenerator(final Ir ir, final OutputManager outputManager)
     {
         Verify.notNull(ir, "ir");
@@ -54,12 +60,15 @@ public class CGenerator implements CodeGenerator
         this.outputManager = outputManager;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void generateMessageHeaderStub() throws IOException
     {
         generateComposite(ir.namespaces(), ir.headerStructure().tokens());
     }
 
-    public List<String> generateTypeStubs(final CharSequence[] scope) throws IOException
+    List<String> generateTypeStubs(final CharSequence[] scope) throws IOException
     {
         final List<String> typesToInclude = new ArrayList<>();
 
@@ -86,7 +95,7 @@ public class CGenerator implements CodeGenerator
         return typesToInclude;
     }
 
-    public List<String> generateTypesToIncludes(final List<Token> tokens)
+    List<String> generateTypesToIncludes(final List<Token> tokens)
     {
         final List<String> typesToInclude = new ArrayList<>();
 
@@ -105,6 +114,9 @@ public class CGenerator implements CodeGenerator
         return typesToInclude;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void generate() throws IOException
     {
         generateMessageHeaderStub();

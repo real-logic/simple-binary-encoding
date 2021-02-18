@@ -121,8 +121,20 @@ public class CppUtil
         }
     }
 
+    /**
+     * Generate a count of closing braces, one on each line.
+     *
+     * @param count of closing braces.
+     * @return A string with count of closing braces.
+     */
     public static String closingBraces(final int count)
     {
-        return new String(new char[count]).replace("\0", "}\n");
+        final StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < count; i++)
+        {
+            sb.append("}\n");
+        }
+
+        return sb.toString();
     }
 }

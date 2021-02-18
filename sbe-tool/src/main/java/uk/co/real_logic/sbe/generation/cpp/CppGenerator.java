@@ -52,6 +52,13 @@ public class CppGenerator implements CodeGenerator
     private final OutputManager outputManager;
     private final boolean shouldDecodeUnknownEnumValues;
 
+    /**
+     * Create a new Go language {@link CodeGenerator}.
+     *
+     * @param ir                            for the messages and types.
+     * @param shouldDecodeUnknownEnumValues generate support for unknown enum values when decoding.
+     * @param outputManager                 for generating the codecs to.
+     */
     public CppGenerator(final Ir ir, final boolean shouldDecodeUnknownEnumValues, final OutputManager outputManager)
     {
         Verify.notNull(ir, "ir");
@@ -62,12 +69,15 @@ public class CppGenerator implements CodeGenerator
         this.outputManager = outputManager;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void generateMessageHeaderStub() throws IOException
     {
         generateComposite(ir.headerStructure().tokens());
     }
 
-    public List<String> generateTypeStubs() throws IOException
+    private List<String> generateTypeStubs() throws IOException
     {
         final List<String> typesToInclude = new ArrayList<>();
 
@@ -94,7 +104,7 @@ public class CppGenerator implements CodeGenerator
         return typesToInclude;
     }
 
-    public List<String> generateTypesToIncludes(final List<Token> tokens)
+    private List<String> generateTypesToIncludes(final List<Token> tokens)
     {
         final List<String> typesToInclude = new ArrayList<>();
 
@@ -113,6 +123,9 @@ public class CppGenerator implements CodeGenerator
         return typesToInclude;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void generate() throws IOException
     {
         generateMessageHeaderStub();

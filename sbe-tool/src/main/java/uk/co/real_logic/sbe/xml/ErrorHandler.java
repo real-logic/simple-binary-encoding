@@ -130,6 +130,9 @@ public class ErrorHandler
         return warnings;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public String toString()
     {
         return "ErrorHandler{" +

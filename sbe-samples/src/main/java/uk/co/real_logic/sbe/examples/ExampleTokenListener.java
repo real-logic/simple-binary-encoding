@@ -39,21 +39,35 @@ public class ExampleTokenListener implements TokenListener
     private final Deque<String> namedScope = new ArrayDeque<>();
     private final byte[] tempBuffer = new byte[1024];
 
+    /**
+     * Construct an example {@link TokenListener} that prints tokens out.
+     *
+     * @param out to print the tokens to.
+     */
     public ExampleTokenListener(final PrintWriter out)
     {
         this.out = out;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void onBeginMessage(final Token token)
     {
         namedScope.push(token.name() + ".");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void onEndMessage(final Token token)
     {
         namedScope.pop();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void onEncoding(
         final Token fieldToken,
         final DirectBuffer buffer,
@@ -70,6 +84,9 @@ public class ExampleTokenListener implements TokenListener
             .println();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void onEnum(
         final Token fieldToken,
         final DirectBuffer buffer,
@@ -109,6 +126,9 @@ public class ExampleTokenListener implements TokenListener
             .println();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void onBitSet(
         final Token fieldToken,
         final DirectBuffer buffer,
@@ -138,6 +158,9 @@ public class ExampleTokenListener implements TokenListener
         out.println();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void onBeginComposite(
         final Token fieldToken, final List<Token> tokens, final int fromIndex, final int toIndex)
     {
@@ -145,12 +168,18 @@ public class ExampleTokenListener implements TokenListener
         namedScope.push(determineName(1, fieldToken, tokens, fromIndex) + ".");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void onEndComposite(final Token fieldToken, final List<Token> tokens, final int fromIndex, final int toIndex)
     {
         --compositeLevel;
         namedScope.pop();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void onGroupHeader(final Token token, final int numInGroup)
     {
         printScope();
@@ -160,16 +189,25 @@ public class ExampleTokenListener implements TokenListener
             .println();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void onBeginGroup(final Token token, final int groupIndex, final int numInGroup)
     {
         namedScope.push(token.name() + ".");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void onEndGroup(final Token token, final int groupIndex, final int numInGroup)
     {
         namedScope.pop();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void onVarData(
         final Token fieldToken,
         final DirectBuffer buffer,

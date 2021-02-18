@@ -393,6 +393,9 @@ public class EncodedDataType extends Type
         return primitiveValue;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public String toString()
     {
         return "EncodedDataType{" +

@@ -62,6 +62,12 @@ public class ExampleUsingGeneratedStub
         }
     }
 
+    /**
+     * Main entry point for the example.
+     *
+     * @param args which are ignored.
+     * @throws Exception if an error occurs when parsing the XML or doing IO.
+     */
     public static void main(final String[] args) throws Exception
     {
         System.out.println("\n*** Basic Stub Example ***");
@@ -102,7 +108,7 @@ public class ExampleUsingGeneratedStub
         decode(CAR_DECODER, directBuffer, bufferOffset, actingBlockLength, actingVersion);
     }
 
-    public static int encode(
+    static int encode(
         final CarEncoder car, final UnsafeBuffer directBuffer, final MessageHeaderEncoder messageHeaderEncoder)
     {
         car.wrapAndApplyHeader(directBuffer, 0, messageHeaderEncoder)
@@ -156,7 +162,7 @@ public class ExampleUsingGeneratedStub
         return MessageHeaderEncoder.ENCODED_LENGTH + car.encodedLength();
     }
 
-    public static void decode(
+    static void decode(
         final CarDecoder car,
         final UnsafeBuffer directBuffer,
         final int bufferOffset,
