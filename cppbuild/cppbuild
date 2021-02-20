@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 SOURCE_DIR="$(pwd)"
-BUILD_DIR="$(pwd)/cppbuild/Release"
+BUILD_DIR="${SOURCE_DIR}/cppbuild/Release"
 
 ncpus=1
 case "$(uname)" in
@@ -13,13 +13,14 @@ case "$(uname)" in
     ;;
 esac
 
-echo "Will make with \"-j $ncpus\"."
+echo "Will make with \"-j ${ncpus}\"."
 
-if [ -d "$BUILD_DIR" ] ; then
-    echo "Build directory ($BUILD_DIR) exists, removing."
-    rm -rf "$BUILD_DIR"
+if [ -d "${BUILD_DIR}" ] ; then
+    echo "Build directory (${BUILD_DIR}) exists, removing."
+    rm -rf "${BUILD_DIR}"
 fi
 
-mkdir -p "$BUILD_DIR"
+mkdir -p "${BUILD_DIR}"
+cd "${BUILD_DIR}" || exit
 
-(cd "$BUILD_DIR" && cmake -G "Unix Makefiles" "$SOURCE_DIR" && make clean && make -j "$ncpus" all && ctest -C Release --output-on-failure)
+(cmake -G "Unix Makefiles" "${SOURCE_DIR}" && make clean && make -j ${ncpus} all && ctest -C Release --output-on-failure)
