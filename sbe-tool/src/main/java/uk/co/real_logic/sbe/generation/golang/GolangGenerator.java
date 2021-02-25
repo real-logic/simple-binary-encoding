@@ -112,9 +112,11 @@ public class GolangGenerator implements CodeGenerator
 
     // MessageHeader is special but the standard allows it to be
     // pretty arbitrary after the first four fields.
-    // All we need is the imports, type declaration, and encode/decode
+    // All we need is the imports, type declaration, and encode/decode.
     /**
-     * {@inheritDoc}
+     * Generate the composites for dealing with the message header.
+     *
+     * @throws IOException if an error is encountered when writing the output.
      */
     public void generateMessageHeaderStub() throws IOException
     {

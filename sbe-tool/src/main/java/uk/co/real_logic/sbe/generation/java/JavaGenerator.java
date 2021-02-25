@@ -42,6 +42,9 @@ import static uk.co.real_logic.sbe.ir.GenerationUtil.*;
 @SuppressWarnings("MethodLength")
 public class JavaGenerator implements CodeGenerator
 {
+    static final String MESSAGE_HEADER_ENCODER_TYPE = "MessageHeaderEncoder";
+    static final String MESSAGE_HEADER_DECODER_TYPE = "MessageHeaderDecoder";
+
     enum CodecType
     {
         DECODER,
@@ -101,7 +104,9 @@ public class JavaGenerator implements CodeGenerator
     }
 
     /**
-     * {@inheritDoc}
+     * Generate the composites for dealing with the message header.
+     *
+     * @throws IOException if an error is encountered when writing the output.
      */
     public void generateMessageHeaderStub() throws IOException
     {

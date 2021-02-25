@@ -20,26 +20,13 @@ import java.io.IOException;
 /**
  * Abstraction for code generators to implement.
  */
+@FunctionalInterface
 public interface CodeGenerator
 {
-    /**
-     * Class name to be used for visitor pattern that accesses the message headerStructure.
-     */
-    String MESSAGE_HEADER_ENCODER_TYPE = "MessageHeaderEncoder";
-
-    String MESSAGE_HEADER_DECODER_TYPE = "MessageHeaderDecoder";
-
     /**
      * Generate the complete set of types and messages for a schema.
      *
      * @throws IOException if an error is encountered when writing the output.
      */
     void generate() throws IOException;
-
-    /**
-     * Generate the composites for dealing with the message header.
-     *
-     * @throws IOException if an error is encountered when writing the output.
-     */
-    void generateMessageHeaderStub() throws IOException;
 }
