@@ -84,6 +84,26 @@ public final class TokenCodecDecoder
         return this;
     }
 
+    public TokenCodecDecoder wrapAndApplyHeader(
+        final DirectBuffer buffer,
+        final int offset,
+        final MessageHeaderDecoder headerDecoder)
+    {
+        headerDecoder.wrap(buffer, offset);
+
+        final int templateId = headerDecoder.templateId();
+        if (TEMPLATE_ID != templateId)
+        {
+            throw new IllegalStateException("Invalid TEMPLATE_ID: " + templateId);
+        }
+
+        return wrap(
+            buffer,
+            offset + MessageHeaderDecoder.ENCODED_LENGTH,
+            headerDecoder.blockLength(),
+            headerDecoder.version());
+    }
+
     public int encodedLength()
     {
         return limit - offset;

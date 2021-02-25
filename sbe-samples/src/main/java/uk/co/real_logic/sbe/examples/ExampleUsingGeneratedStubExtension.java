@@ -44,11 +44,6 @@ public class ExampleUsingGeneratedStubExtension
     private static final byte[] MODEL;
     private static final UnsafeBuffer ACTIVATION_CODE;
 
-    private static final baseline.MessageHeaderDecoder MESSAGE_HEADER_DECODER = new baseline.MessageHeaderDecoder();
-    private static final baseline.MessageHeaderEncoder MESSAGE_HEADER_ENCODER = new baseline.MessageHeaderEncoder();
-    private static final baseline.CarEncoder CAR_ENCODER_0 = new baseline.CarEncoder();
-    private static final extension.CarDecoder CAR_DECODER_1 = new extension.CarDecoder();
-
     static
     {
         try
@@ -76,10 +71,15 @@ public class ExampleUsingGeneratedStubExtension
     {
         System.out.println("\n*** Extension Stub Example ***");
 
-        final ByteBuffer byteBuffer = ByteBuffer.allocateDirect(4096);
+        final ByteBuffer byteBuffer = ByteBuffer.allocate(4096);
         final UnsafeBuffer directBuffer = new UnsafeBuffer(byteBuffer);
 
-        final int encodingLengthPlusHeader = encode(CAR_ENCODER_0, directBuffer, MESSAGE_HEADER_ENCODER);
+        final extension.MessageHeaderDecoder messageHeaderDecoder = new extension.MessageHeaderDecoder();
+        final baseline.MessageHeaderEncoder messageHeaderEncoder = new baseline.MessageHeaderEncoder();
+        final baseline.CarEncoder carEncoder = new baseline.CarEncoder();
+        final extension.CarDecoder carDecoder = new extension.CarDecoder();
+
+        final int encodingLengthPlusHeader = encode(carEncoder, directBuffer, messageHeaderEncoder);
 
         // Optionally write the encoded buffer to a file for decoding by the On-The-Fly decoder
 
@@ -95,21 +95,17 @@ public class ExampleUsingGeneratedStubExtension
 
         // Decode the encoded message
 
-        int bufferOffset = 0;
-        MESSAGE_HEADER_DECODER.wrap(directBuffer, bufferOffset);
+        final int bufferOffset = 0;
+        messageHeaderDecoder.wrap(directBuffer, bufferOffset);
 
         // Lookup the applicable flyweight to decode this type of message based on templateId and version.
-        final int templateId = MESSAGE_HEADER_DECODER.templateId();
+        final int templateId = messageHeaderDecoder.templateId();
         if (templateId != extension.CarEncoder.TEMPLATE_ID)
         {
             throw new IllegalStateException("Template ids do not match");
         }
 
-        final int actingBlockLength = MESSAGE_HEADER_DECODER.blockLength();
-        final int actingVersion = MESSAGE_HEADER_DECODER.version();
-
-        bufferOffset += MESSAGE_HEADER_DECODER.encodedLength();
-        decode(CAR_DECODER_1, directBuffer, bufferOffset, actingBlockLength, actingVersion);
+        decode(carDecoder, directBuffer, messageHeaderDecoder);
     }
 
     static int encode(
@@ -172,15 +168,13 @@ public class ExampleUsingGeneratedStubExtension
     static void decode(
         final extension.CarDecoder car,
         final UnsafeBuffer directBuffer,
-        final int bufferOffset,
-        final int actingBlockLength,
-        final int actingVersion)
+        final extension.MessageHeaderDecoder headerDecoder)
         throws Exception
     {
         final byte[] buffer = new byte[128];
         final StringBuilder sb = new StringBuilder();
 
-        car.wrap(directBuffer, bufferOffset, actingBlockLength, actingVersion);
+        car.wrapAndApplyHeader(directBuffer, 0, headerDecoder);
 
         sb.append("\ncar.serialNumber=").append(car.serialNumber());
         sb.append("\ncar.modelYear=").append(car.modelYear());
