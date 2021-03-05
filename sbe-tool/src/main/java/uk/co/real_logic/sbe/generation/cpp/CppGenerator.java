@@ -367,7 +367,7 @@ public class CppGenerator implements CodeGenerator
             formatClassName(groupName));
 
         sb.append("\n")
-            .append(indent).append("    inline std::uint64_t resetCountToIndex() SBE_NOEXCEPT\n")
+            .append(indent).append("    inline std::uint64_t resetCountToIndex()\n")
             .append(indent).append("    {\n")
             .append(indent).append("        m_count = m_index;\n")
             .append(indent).append("        ").append(dimensionsClassName)
@@ -379,7 +379,7 @@ public class CppGenerator implements CodeGenerator
 
         sb.append("\n")
             .append(indent).append("#if __cplusplus < 201103L\n")
-            .append(indent).append("    template<class Func> inline void forEach(Func& func)\n")
+            .append(indent).append("    template<class Func> inline void forEach(Func &func)\n")
             .append(indent).append("    {\n")
             .append(indent).append("        while (hasNext())\n")
             .append(indent).append("        {\n")
@@ -389,7 +389,7 @@ public class CppGenerator implements CodeGenerator
             .append(indent).append("    }\n\n")
 
             .append(indent).append("#else\n")
-            .append(indent).append("    template<class Func> inline void forEach(Func&& func)\n")
+            .append(indent).append("    template<class Func> inline void forEach(Func &&func)\n")
             .append(indent).append("    {\n")
             .append(indent).append("        while (hasNext())\n")
             .append(indent).append("        {\n")
@@ -1134,11 +1134,11 @@ public class CppGenerator implements CodeGenerator
             "#endif\n\n" +
 
             "#if defined(SBE_NO_BOUNDS_CHECK)\n" +
-            "#  define SBE_BOUNDS_CHECK_EXPECT(exp,c) (false)\n" +
+            "#  define SBE_BOUNDS_CHECK_EXPECT(exp, c) (false)\n" +
             "#elif defined(_MSC_VER)\n" +
-            "#  define SBE_BOUNDS_CHECK_EXPECT(exp,c) (exp)\n" +
+            "#  define SBE_BOUNDS_CHECK_EXPECT(exp, c) (exp)\n" +
             "#else\n" +
-            "#  define SBE_BOUNDS_CHECK_EXPECT(exp,c) (__builtin_expect(exp,c))\n" +
+            "#  define SBE_BOUNDS_CHECK_EXPECT(exp, c) (__builtin_expect(exp,c))\n" +
             "#endif\n\n" +
 
             "#define SBE_NULLVALUE_INT8 (std::numeric_limits<std::int8_t>::min)()\n" +
