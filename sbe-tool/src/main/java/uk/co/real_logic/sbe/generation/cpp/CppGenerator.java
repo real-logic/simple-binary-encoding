@@ -1138,7 +1138,7 @@ public class CppGenerator implements CodeGenerator
             "#elif defined(_MSC_VER)\n" +
             "#  define SBE_BOUNDS_CHECK_EXPECT(exp, c) (exp)\n" +
             "#else\n" +
-            "#  define SBE_BOUNDS_CHECK_EXPECT(exp, c) (__builtin_expect(exp,c))\n" +
+            "#  define SBE_BOUNDS_CHECK_EXPECT(exp, c) (__builtin_expect(exp, c))\n" +
             "#endif\n\n" +
 
             "#define SBE_NULLVALUE_INT8 (std::numeric_limits<std::int8_t>::min)()\n" +
