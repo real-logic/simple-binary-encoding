@@ -41,11 +41,6 @@ public class ExampleUsingGeneratedStub
     private static final byte[] MODEL;
     private static final UnsafeBuffer ACTIVATION_CODE;
 
-    private static final MessageHeaderDecoder MESSAGE_HEADER_DECODER = new MessageHeaderDecoder();
-    private static final MessageHeaderEncoder MESSAGE_HEADER_ENCODER = new MessageHeaderEncoder();
-    private static final CarDecoder CAR_DECODER = new CarDecoder();
-    private static final CarEncoder CAR_ENCODER = new CarEncoder();
-
     static
     {
         try
@@ -72,10 +67,15 @@ public class ExampleUsingGeneratedStub
     {
         System.out.println("\n*** Basic Stub Example ***");
 
-        final ByteBuffer byteBuffer = ByteBuffer.allocateDirect(4096);
+        final ByteBuffer byteBuffer = ByteBuffer.allocate(4096);
         final UnsafeBuffer directBuffer = new UnsafeBuffer(byteBuffer);
 
-        final int encodingLengthPlusHeader = encode(CAR_ENCODER, directBuffer, MESSAGE_HEADER_ENCODER);
+        final MessageHeaderDecoder messageHeaderDecoder = new MessageHeaderDecoder();
+        final MessageHeaderEncoder messageHeaderEncoder = new MessageHeaderEncoder();
+        final CarDecoder carDecoder = new CarDecoder();
+        final CarEncoder carEncoder = new CarEncoder();
+
+        final int encodingLengthPlusHeader = encode(carEncoder, directBuffer, messageHeaderEncoder);
 
         // Optionally write the encoded buffer to a file for decoding by the On-The-Fly decoder
 
@@ -91,21 +91,22 @@ public class ExampleUsingGeneratedStub
 
         // Decode the encoded message
 
-        int bufferOffset = 0;
-        MESSAGE_HEADER_DECODER.wrap(directBuffer, bufferOffset);
+        final int bufferOffset = 0;
+        messageHeaderDecoder.wrap(directBuffer, bufferOffset);
+
+        if (messageHeaderDecoder.schemaId() != CarEncoder.SCHEMA_ID)
+        {
+            throw new IllegalStateException("Schema ids do not match");
+        }
 
         // Lookup the applicable flyweight to decode this type of message based on templateId and version.
-        final int templateId = MESSAGE_HEADER_DECODER.templateId();
+        final int templateId = messageHeaderDecoder.templateId();
         if (templateId != baseline.CarEncoder.TEMPLATE_ID)
         {
             throw new IllegalStateException("Template ids do not match");
         }
 
-        final int actingBlockLength = MESSAGE_HEADER_DECODER.blockLength();
-        final int actingVersion = MESSAGE_HEADER_DECODER.version();
-
-        bufferOffset += MESSAGE_HEADER_DECODER.encodedLength();
-        decode(CAR_DECODER, directBuffer, bufferOffset, actingBlockLength, actingVersion);
+        decode(carDecoder, directBuffer, messageHeaderDecoder);
     }
 
     static int encode(
@@ -163,17 +164,13 @@ public class ExampleUsingGeneratedStub
     }
 
     static void decode(
-        final CarDecoder car,
-        final UnsafeBuffer directBuffer,
-        final int bufferOffset,
-        final int actingBlockLength,
-        final int actingVersion)
+        final CarDecoder car, final UnsafeBuffer directBuffer, final MessageHeaderDecoder headerDecoder)
         throws Exception
     {
         final byte[] buffer = new byte[128];
         final StringBuilder sb = new StringBuilder();
 
-        car.wrap(directBuffer, bufferOffset, actingBlockLength, actingVersion);
+        car.wrapAndApplyHeader(directBuffer, 0, headerDecoder);
 
         sb.append("\ncar.serialNumber=").append(car.serialNumber());
         sb.append("\ncar.modelYear=").append(car.modelYear());

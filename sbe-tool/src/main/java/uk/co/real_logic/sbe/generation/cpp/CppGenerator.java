@@ -70,7 +70,9 @@ public class CppGenerator implements CodeGenerator
     }
 
     /**
-     * {@inheritDoc}
+     * Generate the composites for dealing with the message header.
+     *
+     * @throws IOException if an error is encountered when writing the output.
      */
     public void generateMessageHeaderStub() throws IOException
     {
@@ -365,7 +367,7 @@ public class CppGenerator implements CodeGenerator
             formatClassName(groupName));
 
         sb.append("\n")
-            .append(indent).append("    inline std::uint64_t resetCountToIndex() SBE_NOEXCEPT\n")
+            .append(indent).append("    inline std::uint64_t resetCountToIndex()\n")
             .append(indent).append("    {\n")
             .append(indent).append("        m_count = m_index;\n")
             .append(indent).append("        ").append(dimensionsClassName)
@@ -377,7 +379,7 @@ public class CppGenerator implements CodeGenerator
 
         sb.append("\n")
             .append(indent).append("#if __cplusplus < 201103L\n")
-            .append(indent).append("    template<class Func> inline void forEach(Func& func)\n")
+            .append(indent).append("    template<class Func> inline void forEach(Func &func)\n")
             .append(indent).append("    {\n")
             .append(indent).append("        while (hasNext())\n")
             .append(indent).append("        {\n")
@@ -387,7 +389,7 @@ public class CppGenerator implements CodeGenerator
             .append(indent).append("    }\n\n")
 
             .append(indent).append("#else\n")
-            .append(indent).append("    template<class Func> inline void forEach(Func&& func)\n")
+            .append(indent).append("    template<class Func> inline void forEach(Func &&func)\n")
             .append(indent).append("    {\n")
             .append(indent).append("        while (hasNext())\n")
             .append(indent).append("        {\n")
@@ -1132,11 +1134,11 @@ public class CppGenerator implements CodeGenerator
             "#endif\n\n" +
 
             "#if defined(SBE_NO_BOUNDS_CHECK)\n" +
-            "#  define SBE_BOUNDS_CHECK_EXPECT(exp,c) (false)\n" +
+            "#  define SBE_BOUNDS_CHECK_EXPECT(exp, c) (false)\n" +
             "#elif defined(_MSC_VER)\n" +
-            "#  define SBE_BOUNDS_CHECK_EXPECT(exp,c) (exp)\n" +
+            "#  define SBE_BOUNDS_CHECK_EXPECT(exp, c) (exp)\n" +
             "#else\n" +
-            "#  define SBE_BOUNDS_CHECK_EXPECT(exp,c) (__builtin_expect(exp,c))\n" +
+            "#  define SBE_BOUNDS_CHECK_EXPECT(exp, c) (__builtin_expect(exp, c))\n" +
             "#endif\n\n" +
 
             "#define SBE_NULLVALUE_INT8 (std::numeric_limits<std::int8_t>::min)()\n" +
@@ -1909,6 +1911,7 @@ public class CppGenerator implements CodeGenerator
             "        m_bufferLength(bufferLength),\n" +
             "        m_offset(offset),\n" +
             "        m_position(sbeCheckPosition(offset + actingBlockLength)),\n" +
+            "        m_actingBlockLength(actingBlockLength),\n" +
             "        m_actingVersion(actingVersion)\n" +
             "    {\n" +
             "    }\n\n" +
@@ -1944,6 +1947,7 @@ public class CppGenerator implements CodeGenerator
             "    std::uint64_t m_bufferLength = 0;\n" +
             "    std::uint64_t m_offset = 0;\n" +
             "    std::uint64_t m_position = 0;\n" +
+            "    std::uint64_t m_actingBlockLength = 0;\n" +
             "    std::uint64_t m_actingVersion = 0;\n\n" +
 
             "    inline std::uint64_t *sbePositionPtr() SBE_NOEXCEPT\n" +
@@ -2516,8 +2520,12 @@ public class CppGenerator implements CodeGenerator
             "friend std::basic_ostream<CharT, Traits> & operator << (\n" +
             "    std::basic_ostream<CharT, Traits> &builder, %1$s _writer)\n" +
             "{\n" +
-            "    %1$s writer(_writer.m_buffer, _writer.m_offset,\n" +
-            "        _writer.m_bufferLength, _writer.sbeBlockLength(), _writer.m_actingVersion);\n" +
+            "    %1$s writer(\n" +
+            "        _writer.m_buffer,\n" +
+            "        _writer.m_offset,\n" +
+            "        _writer.m_bufferLength,\n" +
+            "        _writer.m_actingBlockLength,\n" +
+            "        _writer.m_actingVersion);\n\n" +
             "    builder << '{';\n" +
             "    builder << R\"(\"Name\": \"%1$s\", )\";\n" +
             "    builder << R\"(\"sbeTemplateId\": )\";\n" +

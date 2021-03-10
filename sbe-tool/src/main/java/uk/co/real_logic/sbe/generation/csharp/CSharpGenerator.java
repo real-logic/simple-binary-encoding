@@ -66,7 +66,9 @@ public class CSharpGenerator implements CodeGenerator
     }
 
     /**
-     * {@inheritDoc}
+     * Generate the composites for dealing with the message header.
+     *
+     * @throws IOException if an error is encountered when writing the output.
      */
     public void generateMessageHeaderStub() throws IOException
     {

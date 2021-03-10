@@ -42,6 +42,9 @@ import static uk.co.real_logic.sbe.ir.GenerationUtil.*;
 @SuppressWarnings("MethodLength")
 public class JavaGenerator implements CodeGenerator
 {
+    static final String MESSAGE_HEADER_ENCODER_TYPE = "MessageHeaderEncoder";
+    static final String MESSAGE_HEADER_DECODER_TYPE = "MessageHeaderDecoder";
+
     enum CodecType
     {
         DECODER,
@@ -101,7 +104,9 @@ public class JavaGenerator implements CodeGenerator
     }
 
     /**
-     * {@inheritDoc}
+     * Generate the composites for dealing with the message header.
+     *
+     * @throws IOException if an error is encountered when writing the output.
      */
     public void generateMessageHeaderStub() throws IOException
     {
@@ -2532,7 +2537,9 @@ public class JavaGenerator implements CodeGenerator
 
     private CharSequence generateDecoderFlyweightCode(final String className, final Token token)
     {
-        final String wrapMethod =
+        final String headerClassName = formatClassName(ir.headerStructure().tokens().get(0).applicableTypeName());
+
+        final String methods =
             "    public " + className + " wrap(\n" +
             "        final " + readOnlyBuffer + " buffer,\n" +
             "        final int offset,\n" +
@@ -2549,9 +2556,27 @@ public class JavaGenerator implements CodeGenerator
             "        this.actingVersion = actingVersion;\n" +
             "        limit(offset + actingBlockLength);\n\n" +
             "        return this;\n" +
+            "    }\n\n" +
+
+            "    public " + className + " wrapAndApplyHeader(\n" +
+            "        final " + readOnlyBuffer + " buffer,\n" +
+            "        final int offset,\n" +
+            "        final " + headerClassName + "Decoder headerDecoder)\n" +
+            "    {\n" +
+            "        headerDecoder.wrap(buffer, offset);\n\n" +
+            "        final int templateId = headerDecoder.templateId();\n" +
+            "        if (TEMPLATE_ID != templateId)\n" +
+            "        {\n" +
+            "            throw new IllegalStateException(\"Invalid TEMPLATE_ID: \" + templateId);\n" +
+            "        }\n\n" +
+            "        return wrap(\n" +
+            "            buffer,\n" +
+            "            offset + " + headerClassName + "Decoder.ENCODED_LENGTH,\n" +
+            "            headerDecoder.blockLength(),\n" +
+            "            headerDecoder.version());\n" +
             "    }\n\n";
 
-        return generateFlyweightCode(DECODER, className, token, wrapMethod, readOnlyBuffer);
+        return generateFlyweightCode(DECODER, className, token, methods, readOnlyBuffer);
     }
 
     private CharSequence generateFlyweightCode(
