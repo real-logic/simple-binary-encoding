@@ -442,8 +442,7 @@ TEST_F(CodeGenTest, shouldBeAbleToEncodeCarCorrectly)
         MANUFACTURER_LENGTH,
         MODEL_LENGTH,
         ACTIVATION_CODE_LENGTH,
-        COLOR_LENGTH
-    );
+        COLOR_LENGTH);
 
     EXPECT_EQ(sz, predictedCarSz);
     EXPECT_EQ(Car::isConstLength(), false);
