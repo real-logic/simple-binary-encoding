@@ -34,7 +34,7 @@ namespace Org.SbeTool.Sbe.Tests
             _issue435 = new Issue435.Issue435();
             _messageHeader = new Issue435.MessageHeader();
 
-            _messageHeader.Wrap(_directBuffer, 0, Issue435.Issue435.SchemaVersion);
+            _messageHeader.Wrap(_directBuffer, 0, Issue435.MessageHeader.SbeSchemaVersion);
             _messageHeader.BlockLength = Issue435.Issue435.BlockLength;
             _messageHeader.SchemaId = Issue435.Issue435.SchemaId;
             _messageHeader.TemplateId = Issue435.Issue435.TemplateId;

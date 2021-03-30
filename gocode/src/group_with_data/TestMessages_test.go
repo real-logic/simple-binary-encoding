@@ -23,7 +23,7 @@ func TestEncodeDecodeTestMessage1(t *testing.T) {
 		t.Fail()
 	}
 
-	var out TestMessage1 = *new(TestMessage1)
+	var out = *new(TestMessage1)
 	if err := out.Decode(m, buf, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
 		t.Log("Decoding Error", err)
 		t.Fail()
@@ -71,7 +71,7 @@ func TestEncodeDecodeTestMessage2(t *testing.T) {
 		t.Fail()
 	}
 
-	var out TestMessage2 = *new(TestMessage2)
+	var out = *new(TestMessage2)
 	if err := out.Decode(m, buf, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
 		t.Log("Decoding Error", err)
 		t.Fail()
@@ -129,7 +129,7 @@ func TestEncodeDecodeTestMessage3(t *testing.T) {
 		t.Fail()
 	}
 
-	var out TestMessage3 = *new(TestMessage3)
+	var out = *new(TestMessage3)
 	if err := out.Decode(m, buf, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
 		t.Log("Decoding Error", err)
 		t.Fail()
@@ -186,7 +186,7 @@ func TestEncodeDecodeTestMessage4(t *testing.T) {
 		t.Fail()
 	}
 
-	var out TestMessage4 = *new(TestMessage4)
+	var out = *new(TestMessage4)
 	if err := out.Decode(m, buf, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
 		t.Log("Decoding Error", err)
 		t.Fail()
@@ -210,5 +210,91 @@ func TestEncodeDecodeTestMessage4(t *testing.T) {
 			t.Fail()
 		}
 	}
+	return
+}
+
+func TestEncodeDecodeTestPreAlloc(t *testing.T) {
+	m := NewSbeGoMarshaller()
+
+	in := TestMessage4{
+		Tag1: 9876,
+		Entries: []TestMessage4Entries{
+			{
+				VarDataField1: []byte("abcdef"),
+				VarDataField2: []byte("ghij"),
+			},
+			{
+				VarDataField1: []byte("abc"),
+				VarDataField2: []byte("gh"),
+			},
+		},
+	}
+
+	var buf = new(bytes.Buffer)
+	if err := in.Encode(m, buf, true); err != nil {
+		t.Log("Encoding Error", err)
+		t.Fail()
+	}
+
+	var out = *new(TestMessage4)
+	if err := out.Decode(m, buf, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
+		t.Log("Decoding Error", err)
+		t.Fail()
+	}
+
+	if in.Tag1 != out.Tag1 {
+		t.Logf("in.Tag1 != out.Tag1")
+		t.Fail()
+	}
+
+	for i := 0; i < len(in.Entries); i++ {
+		if !bytes.Equal(in.Entries[i].VarDataField1, out.Entries[i].VarDataField1) {
+			t.Logf("in.Entries[%d].VarDataField (%v)!= out.Entries[%d].VarDataField (%v)", i, i, in.Entries[i].VarDataField1, out.Entries[i].VarDataField1)
+			t.Fail()
+		}
+		if !bytes.Equal(in.Entries[i].VarDataField2, out.Entries[i].VarDataField2) {
+			t.Logf("in.Entries[%d].VarDataField (%v) != out.Entries[%d].VarDataField (%v)", i, i, in.Entries[i].VarDataField2, out.Entries[i].VarDataField2)
+			t.Fail()
+		}
+	}
+
+	// new messages with newer group elements, shorter vardata
+	in = TestMessage4{
+		Tag1: 9876,
+		Entries: []TestMessage4Entries{
+			{
+				VarDataField1: []byte("abc"),
+				VarDataField2: []byte("ghijk"),
+			},
+		},
+	}
+
+	buf.Reset()
+	if err := in.Encode(m, buf, true); err != nil {
+		t.Log("Encoding Error", err)
+		t.Fail()
+	}
+
+	if err := out.Decode(m, buf, in.SbeSchemaVersion(), in.SbeBlockLength(), true); err != nil {
+		t.Log("Decoding Error", err)
+		t.Fail()
+	}
+
+	if in.Tag1 != out.Tag1 {
+		t.Logf("in.Tag1 != out.Tag1")
+		t.Fail()
+	}
+
+	for i := 0; i < len(in.Entries); i++ {
+		if !bytes.Equal(in.Entries[i].VarDataField1, out.Entries[i].VarDataField1) {
+			t.Logf("in.Entries[%d].VarDataField (%v)!= out.Entries[%d].VarDataField (%v)", i, i, in.Entries[i].VarDataField1, out.Entries[i].VarDataField1)
+			t.Fail()
+		}
+		if !bytes.Equal(in.Entries[i].VarDataField2, out.Entries[i].VarDataField2) {
+			t.Logf("in.Entries[%d].VarDataField (%v) != out.Entries[%d].VarDataField (%v)", i, i, in.Entries[i].VarDataField2, out.Entries[i].VarDataField2)
+			t.Fail()
+		}
+	}
+
 	return
 }

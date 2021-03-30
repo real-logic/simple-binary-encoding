@@ -33,16 +33,15 @@ class Example
 
         // Before encoding a message we need to create a SBE header which specify what we are going to encode (this will allow the decoder to detect that it's an encoded 'car' object)
         // We will probably simplify this part soon, so the header gets applied automatically, but for now it's manual
-        MessageHeader.Wrap(directBuffer, bufferOffset, Car.SchemaVersion); // position the MessageHeader on the DirectBuffer, at the correct position
+        MessageHeader.Wrap(directBuffer, bufferOffset, MessageHeader.SbeSchemaVersion); // position the MessageHeader on the DirectBuffer, at the correct position
         MessageHeader.BlockLength = Car.BlockLength; // size that a car takes on the wire
         MessageHeader.SchemaId = Car.SchemaId;
         MessageHeader.TemplateId = Car.TemplateId;   // identifier for the car object (SBE template ID)
-        MessageHeader.Version = Car.SchemaVersion; // this can be overriden if we want to support different versions of the car object (advanced functionality)
+        MessageHeader.Version = Car.SchemaVersion; // this can be overridden if we want to support different versions of the car object (advanced functionality)
 
         // Now that we have encoded the header in the byte array we can encode the car object itself
         bufferOffset += MessageHeader.Size;
         CarExample.Encode(Car, directBuffer, bufferOffset);
-
 
         // Now we have encoded the message is the byte array, we are going to decode it
 
@@ -59,7 +58,6 @@ class Example
         bufferOffset += MessageHeader.Size;
         // now we decode the message
         CarExample.Decode(Car, directBuffer, bufferOffset, actingBlockLength, actingVersion);
-
     }
 }
 
@@ -91,8 +89,6 @@ namespace Baseline
             }
         }
 
-
-
         public static int Encode(Car car, DirectBuffer directBuffer, int bufferOffset)
         {
             const int srcOffset = 0;
@@ -122,7 +118,7 @@ namespace Baseline
 
             // we have written all the constant length fields, now we can write the repeatable groups
 
-            var fuelFigures = car.FuelFiguresCount(3); // we specify that we are going to write 3 FueldFigures (the API is not very .NET friendly yet, we will address that)
+            var fuelFigures = car.FuelFiguresCount(3); // we specify that we are going to write 3 FuelFigures (the API is not very .NET friendly yet, we will address that)
             fuelFigures.Next(); // move to the first element
             fuelFigures.Speed = 30;
             fuelFigures.Mpg = 35.9f;
@@ -276,4 +272,3 @@ namespace Baseline
         }
     }
 }
-

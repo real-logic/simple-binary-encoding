@@ -1,4 +1,5 @@
 /*
+ * Copyright 2013-2021 Real Logic Limited.
  * Copyright (C) 2016 MarketFactory, Inc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,11 +34,15 @@ import java.util.Scanner;
 import java.util.TreeSet;
 
 import static uk.co.real_logic.sbe.PrimitiveType.CHAR;
+import static uk.co.real_logic.sbe.generation.Generators.toUpperFirstChar;
 import static uk.co.real_logic.sbe.generation.golang.GolangUtil.*;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectVarData;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectGroups;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectFields;
 
+/**
+ * Codec generator for the Go Lang programming language.
+ */
 @SuppressWarnings("MethodLength")
 public class GolangGenerator implements CodeGenerator
 {
@@ -46,6 +51,12 @@ public class GolangGenerator implements CodeGenerator
 
     private TreeSet<String> imports;
 
+    /**
+     * Create a new Go language {@link CodeGenerator}.
+     *
+     * @param ir            for the messages and types.
+     * @param outputManager for generating the codecs to.
+     */
     public GolangGenerator(final Ir ir, final OutputManager outputManager)
     {
         Verify.notNull(ir, "ir");
@@ -55,6 +66,13 @@ public class GolangGenerator implements CodeGenerator
         this.outputManager = outputManager;
     }
 
+    /**
+     * Generate a file for the Ir based on a template.
+     *
+     * @param fileName     to generate.
+     * @param templateName for the file.
+     * @throws IOException if an error is encountered when writing the output.
+     */
     public void generateFileFromTemplate(final String fileName, final String templateName) throws IOException
     {
         try (Writer out = outputManager.createOutput(fileName))
@@ -63,6 +81,11 @@ public class GolangGenerator implements CodeGenerator
         }
     }
 
+    /**
+     * Generate the stubs for the types used as message fields.
+     *
+     * @throws IOException if an error is encountered when writing the output.
+     */
     public void generateTypeStubs() throws IOException
     {
         for (final List<Token> tokens : ir.types())
@@ -89,7 +112,12 @@ public class GolangGenerator implements CodeGenerator
 
     // MessageHeader is special but the standard allows it to be
     // pretty arbitrary after the first four fields.
-    // All we need is the imports, type declaration, and encode/decode
+    // All we need is the imports, type declaration, and encode/decode.
+    /**
+     * Generate the composites for dealing with the message header.
+     *
+     * @throws IOException if an error is encountered when writing the output.
+     */
     public void generateMessageHeaderStub() throws IOException
     {
         final String messageHeader = "MessageHeader";
@@ -111,6 +139,9 @@ public class GolangGenerator implements CodeGenerator
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void generate() throws IOException
     {
         // Add the Marshalling from the big or little endian
@@ -1160,6 +1191,7 @@ public class GolangGenerator implements CodeGenerator
             "\t\tif cap(%1$c.%2$s) < int(%2$sLength) {\n" +
             "\t\t\t%1$s.%2$s = make([]%5$s, %2$sLength)\n" +
             "\t\t}\n" +
+            "\t\t%1$c.%2$s = %1$c.%2$s[:%2$sLength]\n" +
             "\t\tif err := _m.ReadBytes(_r, %1$c.%2$s); err != nil {\n" +
             "\t\t\treturn err\n" +
             "\t\t}\n" +
@@ -1267,6 +1299,7 @@ public class GolangGenerator implements CodeGenerator
             "\t\tif cap(%1$c.%2$s) < int(%2$sNumInGroup) {\n" +
             "\t\t\t%1$s.%2$s = make([]%3$s%2$s, %2$sNumInGroup)\n" +
             "\t\t}\n" +
+            "\t\t%1$c.%2$s = %1$c.%2$s[:%2$sNumInGroup]\n" +
             "\t\tfor i, _ := range %1$s.%2$s {\n" +
             "\t\t\tif err := %1$s.%2$s[i].Decode(_m, _r, actingVersion, uint(%4$sBlockLength)); err != nil {\n" +
             "\t\t\t\treturn err\n" +

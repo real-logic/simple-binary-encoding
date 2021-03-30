@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2021 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,8 @@ public enum PrimitiveType
     UINT64("uint64", 8, MIN_VALUE_UINT64, MAX_VALUE_UINT64, NULL_VALUE_UINT64),
     FLOAT("float", 4, MIN_VALUE_FLOAT, MAX_VALUE_FLOAT, NULL_VALUE_FLOAT),
     DOUBLE("double", 8, MIN_VALUE_DOUBLE, MAX_VALUE_DOUBLE, NULL_VALUE_DOUBLE);
+
+    private static final PrimitiveType[] VALUES = PrimitiveType.values();
 
     private final String name;
     private final int size;
@@ -139,23 +141,14 @@ public enum PrimitiveType
      */
     public static PrimitiveType get(final String name)
     {
-        for (final PrimitiveType p : Singleton.VALUES)
+        for (final PrimitiveType primitiveType : VALUES)
         {
-            if (p.name.equals(name))
+            if (primitiveType.name.equals(name))
             {
-                return p;
+                return primitiveType;
             }
         }
 
         throw new IllegalArgumentException("No PrimitiveType for name: " + name);
-    }
-
-    /**
-     * Used to hold a reference to the values array without having it defensively copied
-     * on every call to {@link Enum} values().
-     */
-    static class Singleton
-    {
-        public static final PrimitiveType[] VALUES = PrimitiveType.values();
     }
 }

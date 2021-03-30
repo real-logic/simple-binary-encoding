@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2021 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,13 +21,13 @@
 
 using namespace uk::co::real_logic::sbe::benchmarks;
 
-char VEHICLE_CODE[] = {'a', 'b', 'c', 'd', 'e', 'f'};
-uint32_t SOMENUMBERS[] = { 1, 2, 3, 4, 5 };
-char MANUFACTURER_CODE[] = {'1', '2', '3'};
+char VEHICLE_CODE[] = { 'a', 'b', 'c', 'd', 'e', 'f' };
+uint32_t SOME_NUMBERS[] = { 1, 2, 3, 4, 5 };
+char MANUFACTURER_CODE[] = { '1', '2', '3' };
 const char *MANUFACTURER = "Honda";
-int MANUFACTURERLEN = strlen(MANUFACTURER);
+size_t MANUFACTURER_LEN = strlen(MANUFACTURER);
 const char *MODEL = "Civic VTi";
-int MODELLEN = strlen(MODEL);
+size_t MODEL_LEN = strlen(MODEL);
 
 class SbeCarCodecBench : public CodecBench<SbeCarCodecBench>
 {
@@ -40,7 +40,7 @@ public:
            .available(BooleanType::T)
            .code(Model::A)
            .putVehicleCode(VEHICLE_CODE)
-           .putSomeNumbers((char *)SOMENUMBERS);
+           .putSomeNumbers((char *)SOME_NUMBERS);
 
         car.extras().clear()
            .cruiseControl(true)
@@ -73,8 +73,8 @@ public:
                 .next().mph(60).seconds(7.1f)
                 .next().mph(100).seconds(11.8f);
 
-        car.putManufacturer(MANUFACTURER, MANUFACTURERLEN);
-        car.putModel(MODEL, MODELLEN);
+        car.putManufacturer(MANUFACTURER, static_cast<std::uint32_t>(MANUFACTURER_LEN));
+        car.putModel(MODEL, static_cast<std::uint32_t>(MODEL_LEN));
 
         return car.encodedLength();
     }

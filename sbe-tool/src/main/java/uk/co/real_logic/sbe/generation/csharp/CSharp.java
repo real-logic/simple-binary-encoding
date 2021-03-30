@@ -1,4 +1,5 @@
 /*
+ * Copyright 2013-2021 Real Logic Limited.
  * Copyright 2017 MarketFactory Inc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,8 +20,14 @@ import uk.co.real_logic.sbe.generation.CodeGenerator;
 import uk.co.real_logic.sbe.generation.TargetCodeGenerator;
 import uk.co.real_logic.sbe.ir.Ir;
 
+/**
+ * {@link CodeGenerator} factory for the CSharp target programming language.
+ */
 public class CSharp implements TargetCodeGenerator
 {
+    /**
+     * {@inheritDoc}
+     */
     public CodeGenerator newInstance(final Ir ir, final String outputDir)
     {
         return new CSharpGenerator(ir, new CSharpNamespaceOutputManager(outputDir, ir.applicableNamespace()));

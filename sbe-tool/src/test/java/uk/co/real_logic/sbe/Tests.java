@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2021 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
-public class TestUtil
+public class Tests
 {
     public static InputStream getLocalResource(final String name) throws IOException
     {
         final String pathToResources = System.getProperty("test.resources.dir", "");
-        final URL url = TestUtil.class.getClassLoader().getResource(pathToResources + name);
+        final URL url = Tests.class.getClassLoader().getResource(pathToResources + name);
         if (url == null)
         {
             throw new FileNotFoundException(pathToResources + name);

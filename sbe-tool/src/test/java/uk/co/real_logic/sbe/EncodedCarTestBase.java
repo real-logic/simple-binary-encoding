@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2021 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,6 +86,9 @@ public class EncodedCarTestBase
             .capacity(2000)
             .numCylinders((short)4)
             .putManufacturerCode(manufacturerCode, srcOffset);
+
+        CAR.putUuid(7L, 3L)
+            .cupHolderCount((byte)5);
 
         CAR.fuelFiguresCount(3)
             .next().speed(30).mpg(35.9f)

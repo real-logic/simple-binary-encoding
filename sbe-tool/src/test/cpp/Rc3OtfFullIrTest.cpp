@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2021 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,86 +25,86 @@
 
 using namespace code::generation::test;
 
-constexpr const char *SCHEMA_FILENAME = "code-generation-schema.sbeir";
+SBE_CONSTEXPR const char *SCHEMA_FILENAME = "code-generation-schema.sbeir";
 
-constexpr std::uint8_t fieldIdSerialNumber = 1;
-constexpr std::uint8_t fieldIdModelYear = 2;
-constexpr std::uint8_t fieldIdAvailable = 3;
-constexpr std::uint8_t fieldIdCode = 4;
-constexpr std::uint8_t fieldIdSomeNumbers = 5;
-constexpr std::uint8_t fieldIdVehicleCode = 6;
-constexpr std::uint8_t fieldIdExtras = 7;
-constexpr std::uint8_t fieldIdDiscountedModel = 8;
-constexpr std::uint8_t fieldIdEngine = 9;
-constexpr std::uint8_t fieldIdFuelFigures = 10;
-constexpr std::uint8_t fieldIdFuelSpeed = 11;
-constexpr std::uint8_t fieldIdFuelMpg = 12;
-constexpr std::uint8_t fieldIdFuelUsageDescription = 200;
-constexpr std::uint8_t fieldIdPerformanceFigures = 13;
-constexpr std::uint8_t fieldIdPerfOctaneRating = 14;
-constexpr std::uint8_t fieldIdPerfAcceleration = 15;
-constexpr std::uint8_t fieldIdPerfAccMph = 16;
-constexpr std::uint8_t fieldIdPerfAccSeconds = 17;
-constexpr std::uint8_t fieldIdManufacturer = 18;
-constexpr std::uint8_t fieldIdModel = 19;
-constexpr std::uint8_t fieldIdActivationCode = 20;
-constexpr std::uint8_t fieldIdColor = 21;
+SBE_CONSTEXPR std::uint8_t fieldIdSerialNumber = 1;
+SBE_CONSTEXPR std::uint8_t fieldIdModelYear = 2;
+SBE_CONSTEXPR std::uint8_t fieldIdAvailable = 3;
+SBE_CONSTEXPR std::uint8_t fieldIdCode = 4;
+SBE_CONSTEXPR std::uint8_t fieldIdSomeNumbers = 5;
+SBE_CONSTEXPR std::uint8_t fieldIdVehicleCode = 6;
+SBE_CONSTEXPR std::uint8_t fieldIdExtras = 7;
+SBE_CONSTEXPR std::uint8_t fieldIdDiscountedModel = 8;
+SBE_CONSTEXPR std::uint8_t fieldIdEngine = 9;
+SBE_CONSTEXPR std::uint8_t fieldIdFuelFigures = 10;
+SBE_CONSTEXPR std::uint8_t fieldIdFuelSpeed = 11;
+SBE_CONSTEXPR std::uint8_t fieldIdFuelMpg = 12;
+SBE_CONSTEXPR std::uint8_t fieldIdFuelUsageDescription = 200;
+SBE_CONSTEXPR std::uint8_t fieldIdPerformanceFigures = 13;
+SBE_CONSTEXPR std::uint8_t fieldIdPerfOctaneRating = 14;
+SBE_CONSTEXPR std::uint8_t fieldIdPerfAcceleration = 15;
+SBE_CONSTEXPR std::uint8_t fieldIdPerfAccMph = 16;
+SBE_CONSTEXPR std::uint8_t fieldIdPerfAccSeconds = 17;
+SBE_CONSTEXPR std::uint8_t fieldIdManufacturer = 18;
+SBE_CONSTEXPR std::uint8_t fieldIdModel = 19;
+SBE_CONSTEXPR std::uint8_t fieldIdActivationCode = 20;
+SBE_CONSTEXPR std::uint8_t fieldIdColor = 21;
 
-constexpr std::uint32_t SERIAL_NUMBER = 1234;
-constexpr std::uint16_t MODEL_YEAR = 2013;
-constexpr BooleanType::Value AVAILABLE = BooleanType::T;
-constexpr Model::Value CODE = Model::A;
-constexpr bool CRUISE_CONTROL = true;
-constexpr bool SPORTS_PACK = true;
-constexpr bool SUNROOF = false;
+SBE_CONSTEXPR std::uint32_t SERIAL_NUMBER = 1234;
+SBE_CONSTEXPR std::uint16_t MODEL_YEAR = 2013;
+SBE_CONSTEXPR BooleanType::Value AVAILABLE = BooleanType::T;
+SBE_CONSTEXPR Model::Value CODE = Model::A;
+SBE_CONSTEXPR bool CRUISE_CONTROL = true;
+SBE_CONSTEXPR bool SPORTS_PACK = true;
+SBE_CONSTEXPR bool SUNROOF = false;
 
 static char VEHICLE_CODE[] = { 'a', 'b', 'c', 'd', 'e', 'f' };
 static char MANUFACTURER_CODE[] = { '1', '2', '3' };
-constexpr const char *FUEL_FIGURES_1_USAGE_DESCRIPTION = "Urban Cycle";
-constexpr const char *FUEL_FIGURES_2_USAGE_DESCRIPTION = "Combined Cycle";
-constexpr const char *FUEL_FIGURES_3_USAGE_DESCRIPTION = "Highway Cycle";
-constexpr const char *MANUFACTURER = "Honda";
-constexpr const char *MODEL = "Civic VTi";
-constexpr const char *ACTIVATION_CODE = "deadbeef";
-constexpr const char *COLOR = "red";
+SBE_CONSTEXPR const char *FUEL_FIGURES_1_USAGE_DESCRIPTION = "Urban Cycle";
+SBE_CONSTEXPR const char *FUEL_FIGURES_2_USAGE_DESCRIPTION = "Combined Cycle";
+SBE_CONSTEXPR const char *FUEL_FIGURES_3_USAGE_DESCRIPTION = "Highway Cycle";
+SBE_CONSTEXPR const char *MANUFACTURER = "Honda";
+SBE_CONSTEXPR const char *MODEL = "Civic VTi";
+SBE_CONSTEXPR const char *ACTIVATION_CODE = "deadbeef";
+SBE_CONSTEXPR const char *COLOR = "red";
 
 static const int VEHICLE_CODE_LENGTH = sizeof(VEHICLE_CODE);
 static const int MANUFACTURER_CODE_LENGTH = sizeof(MANUFACTURER_CODE);
-constexpr std::size_t MANUFACTURER_LENGTH = 5;
-constexpr std::size_t MODEL_LENGTH = 9;
-constexpr std::size_t ACTIVATION_CODE_LENGTH = 8;
-constexpr std::size_t COLOR_LENGTH = 3;
-constexpr std::size_t PERFORMANCE_FIGURES_COUNT = 2;
-constexpr std::size_t FUEL_FIGURES_COUNT = 3;
-constexpr std::size_t ACCELERATION_COUNT = 3;
+SBE_CONSTEXPR std::size_t MANUFACTURER_LENGTH = 5;
+SBE_CONSTEXPR std::size_t MODEL_LENGTH = 9;
+SBE_CONSTEXPR std::size_t ACTIVATION_CODE_LENGTH = 8;
+SBE_CONSTEXPR std::size_t COLOR_LENGTH = 3;
+SBE_CONSTEXPR std::uint16_t PERFORMANCE_FIGURES_COUNT = 2;
+SBE_CONSTEXPR std::uint16_t FUEL_FIGURES_COUNT = 3;
+SBE_CONSTEXPR std::uint16_t ACCELERATION_COUNT = 3;
 
-constexpr std::uint16_t fuel1Speed = 30;
-constexpr float fuel1Mpg = 35.9f;
-constexpr std::uint16_t fuel2Speed = 55;
-constexpr float fuel2Mpg = 49.0f;
-constexpr std::uint16_t fuel3Speed = 75;
-constexpr float fuel3Mpg = 40.0f;
+SBE_CONSTEXPR std::uint16_t fuel1Speed = 30;
+SBE_CONSTEXPR float fuel1Mpg = 35.9f;
+SBE_CONSTEXPR std::uint16_t fuel2Speed = 55;
+SBE_CONSTEXPR float fuel2Mpg = 49.0f;
+SBE_CONSTEXPR std::uint16_t fuel3Speed = 75;
+SBE_CONSTEXPR float fuel3Mpg = 40.0f;
 
-constexpr std::uint8_t perf1Octane = 95;
-constexpr std::uint16_t perf1aMph = 30;
-constexpr float perf1aSeconds = 4.0f;
-constexpr std::uint16_t perf1bMph = 60;
-constexpr float perf1bSeconds = 7.5f;
-constexpr std::uint16_t perf1cMph = 100;
-constexpr float perf1cSeconds = 12.2f;
+SBE_CONSTEXPR std::uint8_t perf1Octane = 95;
+SBE_CONSTEXPR std::uint16_t perf1aMph = 30;
+SBE_CONSTEXPR float perf1aSeconds = 4.0f;
+SBE_CONSTEXPR std::uint16_t perf1bMph = 60;
+SBE_CONSTEXPR float perf1bSeconds = 7.5f;
+SBE_CONSTEXPR std::uint16_t perf1cMph = 100;
+SBE_CONSTEXPR float perf1cSeconds = 12.2f;
 
-constexpr std::uint8_t perf2Octane = 99;
-constexpr std::uint16_t perf2aMph = 30;
-constexpr float perf2aSeconds = 3.8f;
-constexpr std::uint16_t perf2bMph = 60;
-constexpr float perf2bSeconds = 7.1f;
-constexpr std::uint16_t perf2cMph = 100;
-constexpr float perf2cSeconds = 11.8f;
+SBE_CONSTEXPR std::uint8_t perf2Octane = 99;
+SBE_CONSTEXPR std::uint16_t perf2aMph = 30;
+SBE_CONSTEXPR float perf2aSeconds = 3.8f;
+SBE_CONSTEXPR std::uint16_t perf2bMph = 60;
+SBE_CONSTEXPR float perf2bSeconds = 7.1f;
+SBE_CONSTEXPR std::uint16_t perf2cMph = 100;
+SBE_CONSTEXPR float perf2cSeconds = 11.8f;
 
-constexpr std::uint16_t engineCapacity = 2000;
-constexpr std::uint8_t engineNumCylinders = 4;
+SBE_CONSTEXPR std::uint16_t engineCapacity = 2000;
+SBE_CONSTEXPR std::uint8_t engineNumCylinders = 4;
 
-constexpr std::uint64_t encodedCarAndHdrLength = 198 + 8;
+SBE_CONSTEXPR std::uint64_t encodedCarAndHdrLength = 198 + 8;
 
 // This enum represents the expected events that
 // will be received during the decoding process.
@@ -190,21 +190,21 @@ enum EventNumber
 class Rc3OtfFullIrTest : public testing::Test
 {
 public:
-    char m_buffer[2048];
-    IrDecoder m_irDecoder;
-    int m_eventNumber;
-    int m_compositeLevel;
+    char m_buffer[2048] = {};
+    IrDecoder m_irDecoder = {};
+    int m_eventNumber = 0;
+    int m_compositeLevel = 0;
 
-    virtual void SetUp()
+    void SetUp() override
     {
         m_eventNumber = 0;
         m_compositeLevel = 0;
     }
 
     std::string determineName(
-        Token& fieldToken,
-        std::vector<Token>& tokens,
-        std::size_t fromIndex)
+        Token &fieldToken,
+        std::vector<Token> &tokens,
+        std::size_t fromIndex) const
     {
         return (m_compositeLevel > 1) ? tokens.at(fromIndex).name() : fieldToken.name();
     }
@@ -243,7 +243,7 @@ public:
             .putManufacturerCode(MANUFACTURER_CODE)
             .booster().boostType(BoostType::NITROUS).horsePower(200);
 
-        Car::FuelFigures& fuelFigures = car.fuelFiguresCount(FUEL_FIGURES_COUNT);
+        Car::FuelFigures &fuelFigures = car.fuelFiguresCount(FUEL_FIGURES_COUNT);
 
         fuelFigures
             .next().speed(fuel1Speed).mpg(fuel1Mpg);
@@ -266,16 +266,16 @@ public:
         perfFigs.next()
             .octaneRating(perf1Octane)
             .accelerationCount(ACCELERATION_COUNT)
-            .next().mph(perf1aMph).seconds(perf1aSeconds)
-            .next().mph(perf1bMph).seconds(perf1bSeconds)
-            .next().mph(perf1cMph).seconds(perf1cSeconds);
+                .next().mph(perf1aMph).seconds(perf1aSeconds)
+                .next().mph(perf1bMph).seconds(perf1bSeconds)
+                .next().mph(perf1cMph).seconds(perf1cSeconds);
 
         perfFigs.next()
             .octaneRating(perf2Octane)
             .accelerationCount(ACCELERATION_COUNT)
-            .next().mph(perf2aMph).seconds(perf2aSeconds)
-            .next().mph(perf2bMph).seconds(perf2bSeconds)
-            .next().mph(perf2cMph).seconds(perf2cSeconds);
+                .next().mph(perf2aMph).seconds(perf2aSeconds)
+                .next().mph(perf2bMph).seconds(perf2bSeconds)
+                .next().mph(perf2cMph).seconds(perf2cSeconds);
 
         car.putManufacturer(MANUFACTURER, static_cast<int>(strlen(MANUFACTURER)));
         car.putModel(MODEL, static_cast<int>(strlen(MODEL)));
@@ -285,7 +285,7 @@ public:
         return hdr.encodedLength() + car.encodedLength();
     }
 
-    void onBeginMessage(Token& token)
+    void onBeginMessage(Token &token)
     {
         std::cout << m_eventNumber << ": Begin Message " << token.name() << " id " << token.fieldId() << "\n";
 
@@ -294,7 +294,7 @@ public:
         m_eventNumber++;
     }
 
-    void onEndMessage(Token& token)
+    void onEndMessage(Token &token)
     {
         std::cout << m_eventNumber << ": End Message " << token.name() << "\n";
 
@@ -304,15 +304,15 @@ public:
     }
 
     void onEncoding(
-        Token& fieldToken,
+        Token &fieldToken,
         const char *buffer,
-        Token& typeToken,
+        Token &typeToken,
         std::uint64_t actingVersion)
     {
         std::string name = (m_compositeLevel > 1) ? typeToken.name() : fieldToken.name();
-        std::cout << m_eventNumber << ": Encoding " <<  name << " offset " << typeToken.offset() << "\n";
+        std::cout << m_eventNumber << ": Encoding " << name << " offset " << typeToken.offset() << "\n";
 
-        const Encoding& encoding = typeToken.encoding();
+        const Encoding &encoding = typeToken.encoding();
 
         switch (EventNumber(m_eventNumber))
         {
@@ -390,7 +390,7 @@ public:
                 EXPECT_TRUE(typeToken.isConstantEncoding());
                 EXPECT_EQ(encoding.primitiveType(), PrimitiveType::CHAR);
 
-                const PrimitiveValue& value = encoding.constValue();
+                const PrimitiveValue &value = encoding.constValue();
                 EXPECT_EQ(value.size(), static_cast<std::size_t>(6));
                 EXPECT_EQ(std::string(value.getArray(), value.size()), std::string("Petrol"));
                 break;
@@ -571,17 +571,17 @@ public:
     }
 
     void onEnum(
-        Token& fieldToken,
+        Token &fieldToken,
         const char *buffer,
-        std::vector<Token>& tokens,
+        std::vector<Token> &tokens,
         std::size_t fromIndex,
         std::size_t toIndex,
         std::uint64_t actingVersion)
     {
         std::cout << m_eventNumber << ": Enum " << determineName(fieldToken, tokens, fromIndex) << "\n";
 
-        const Token& typeToken = tokens.at(fromIndex + 1);
-        const Encoding& encoding = typeToken.encoding();
+        const Token &typeToken = tokens.at(fromIndex + 1);
+        const Encoding &encoding = typeToken.encoding();
 
         switch (EventNumber(m_eventNumber))
         {
@@ -594,9 +594,9 @@ public:
                 EXPECT_EQ(value, static_cast<std::uint64_t>(1));
 
                 bool found = false;
-                for (size_t i = fromIndex + 1; i < toIndex; i++)
+                for (std::size_t i = fromIndex + 1; i < toIndex; i++)
                 {
-                    const Token& token = tokens.at(i);
+                    const Token &token = tokens.at(i);
                     const std::uint64_t constValue = token.encoding().constValue().getAsUInt();
 
                     std::cout << "    " << token.name() << " = " << constValue << "\n";
@@ -620,9 +620,9 @@ public:
                 EXPECT_EQ(value, static_cast<std::int64_t>('A'));
 
                 bool found = false;
-                for (size_t i = fromIndex + 1; i < toIndex; i++)
+                for (std::size_t i = fromIndex + 1; i < toIndex; i++)
                 {
-                    const Token& token = tokens.at(i);
+                    const Token &token = tokens.at(i);
                     const std::int64_t constValue = token.encoding().constValue().getAsUInt();
 
                     std::cout << "    " << token.name() << " = " << constValue << "\n";
@@ -655,9 +655,9 @@ public:
                 EXPECT_EQ(value, static_cast<std::int64_t>('N'));
 
                 bool found = false;
-                for (size_t i = fromIndex + 1; i < toIndex; i++)
+                for (std::size_t i = fromIndex + 1; i < toIndex; i++)
                 {
-                    const Token& token = tokens.at(i);
+                    const Token &token = tokens.at(i);
                     const std::int64_t constValue = token.encoding().constValue().getAsUInt();
 
                     std::cout << "    " << token.name() << " = " << constValue << "\n";
@@ -680,17 +680,17 @@ public:
     }
 
     void onBitSet(
-        Token& fieldToken,
+        Token &fieldToken,
         const char *buffer,
-        std::vector<Token>& tokens,
+        std::vector<Token> &tokens,
         std::size_t fromIndex,
         std::size_t toIndex,
         std::uint64_t actingVersion)
     {
         std::cout << m_eventNumber << ": Bit Set " << fieldToken.name() << "\n";
 
-        const Token& typeToken = tokens.at(fromIndex + 1);
-        const Encoding& encoding = typeToken.encoding();
+        const Token &typeToken = tokens.at(fromIndex + 1);
+        const Encoding &encoding = typeToken.encoding();
 
         switch (EventNumber(m_eventNumber))
         {
@@ -703,9 +703,9 @@ public:
                 EXPECT_EQ(value, static_cast<std::uint64_t>(0x6));
 
                 int bitsSet = 0;
-                for (size_t i = fromIndex + 1; i < toIndex; i++)
+                for (std::size_t i = fromIndex + 1; i < toIndex; i++)
                 {
-                    const Token& token = tokens.at(i);
+                    const Token &token = tokens.at(i);
                     const std::uint64_t constValue = token.encoding().constValue().getAsUInt();
 
                     if (constValue && value)
@@ -732,8 +732,8 @@ public:
     }
 
     void onBeginComposite(
-        Token& fieldToken,
-        std::vector<Token>& tokens,
+        Token &fieldToken,
+        std::vector<Token> &tokens,
         std::size_t fromIndex,
         std::size_t toIndex)
     {
@@ -764,8 +764,8 @@ public:
     }
 
     void onEndComposite(
-        Token& fieldToken,
-        std::vector<Token>& tokens,
+        Token &fieldToken,
+        std::vector<Token> &tokens,
         std::size_t fromIndex,
         std::size_t toIndex)
     {
@@ -795,7 +795,7 @@ public:
         m_eventNumber++;
     }
 
-    void onGroupHeader(Token& token, std::uint64_t numInGroup)
+    void onGroupHeader(Token &token, std::uint64_t numInGroup)
     {
         std::cout << m_eventNumber << ": Group Header " << token.name() << " num " << numInGroup << "\n";
 
@@ -837,7 +837,7 @@ public:
 
     }
 
-    void onBeginGroup(Token& token, std::uint64_t groupIndex, std::uint64_t numInGroup)
+    void onBeginGroup(Token &token, std::uint64_t groupIndex, std::uint64_t numInGroup)
     {
         std::cout << m_eventNumber << ": Begin Group " << token.name()
                   << " " << groupIndex + 1 << "/" << numInGroup << "\n";
@@ -939,7 +939,7 @@ public:
         m_eventNumber++;
     }
 
-    void onEndGroup(Token& token, std::uint64_t groupIndex, std::uint64_t numInGroup)
+    void onEndGroup(Token &token, std::uint64_t groupIndex, std::uint64_t numInGroup)
     {
         std::cout << m_eventNumber << ": End Group " << token.name()
                   << " " << groupIndex + 1 << "/" << numInGroup << "\n";
@@ -1042,10 +1042,10 @@ public:
     }
 
     void onVarData(
-        Token& fieldToken,
+        Token &fieldToken,
         const char *buffer,
         std::uint64_t length,
-        Token& typeToken)
+        Token &typeToken)
     {
         std::cout << m_eventNumber << ": Data " << fieldToken.name() << "\n";
 
@@ -1149,7 +1149,7 @@ TEST_F(Rc3OtfFullIrTest, shouldHandleAllEventsCorrectlyAndInOrder)
         Car::sbeTemplateId(), Car::sbeSchemaVersion());
 
     ASSERT_TRUE(headerTokens != nullptr);
-    ASSERT_TRUE(messageTokens!= nullptr);
+    ASSERT_TRUE(messageTokens != nullptr);
 
     OtfHeaderDecoder headerDecoder(headerTokens);
 
@@ -1175,24 +1175,25 @@ TEST_P(Rc3OtfFullIrLengthTest, shouldExceptionIfLengthTooShort)
         Car::sbeTemplateId(), Car::sbeSchemaVersion());
 
     ASSERT_TRUE(headerTokens != nullptr);
-    ASSERT_TRUE(messageTokens!= nullptr);
+    ASSERT_TRUE(messageTokens != nullptr);
 
     OtfHeaderDecoder headerDecoder(headerTokens);
 
     EXPECT_EQ(headerDecoder.encodedLength(), MessageHeader::encodedLength());
-    std::size_t length = static_cast<std::size_t>(GetParam());
+    auto length = static_cast<std::size_t>(GetParam());
     std::uint64_t actingVersion = headerDecoder.getSchemaVersion(m_buffer);
     std::uint64_t blockLength = headerDecoder.getBlockLength(m_buffer);
 
     // set up so that if an error occurs, we intentionally write off the end of a new buffer so that valgrind can help
     // catch errors as well.
     EXPECT_THROW(
-    {
-        std::unique_ptr<char[]> decodeBuffer(new char[length]);
+        {
+            std::unique_ptr<char[]> decodeBuffer(new char[length]);
 
-        ::memcpy(decodeBuffer.get(), m_buffer + headerDecoder.encodedLength(), length);
-        OtfMessageDecoder::decode(decodeBuffer.get(), length, actingVersion, blockLength, messageTokens, *this);
-    }, std::runtime_error);
+            ::memcpy(decodeBuffer.get(), m_buffer + headerDecoder.encodedLength(), length);
+            OtfMessageDecoder::decode(decodeBuffer.get(), length, actingVersion, blockLength, messageTokens, *this);
+        },
+        std::runtime_error);
 }
 
 INSTANTIATE_TEST_SUITE_P(

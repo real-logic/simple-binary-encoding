@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2021 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,12 @@
  */
 package uk.co.real_logic.sbe.generation.java;
 
+import org.agrona.Strings;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.SbeTool;
 import uk.co.real_logic.sbe.generation.Generators;
 import uk.co.real_logic.sbe.ir.Token;
-import uk.co.real_logic.sbe.util.ValidationUtil;
+import uk.co.real_logic.sbe.ValidationUtil;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -32,11 +33,14 @@ import java.util.Map;
 import static java.lang.reflect.Modifier.STATIC;
 
 /**
- * Utilities for mapping between IR and the Java language.
+ * Utilities for mapping between {@link uk.co.real_logic.sbe.ir.Ir} and the Java language.
  */
 public class JavaUtil
 {
-    public enum Separators
+    /**
+     * Separator symbols for {@link Object#toString()} implementations on codecs.
+     */
+    enum Separator
     {
         BEGIN_GROUP('['),
         END_GROUP(']'),
@@ -50,9 +54,9 @@ public class JavaUtil
         KEY_VALUE('='),
         ENTRY(',');
 
-        public final char symbol;
+        private final char symbol;
 
-        Separators(final char symbol)
+        Separator(final char symbol)
         {
             this.symbol = symbol;
         }
@@ -64,11 +68,14 @@ public class JavaUtil
          * @param indent      the current generated code indentation
          * @param builderName of the generated StringBuilder to which separator should be added
          */
-        public void appendToGeneratedBuilder(final StringBuilder builder, final String indent, final String builderName)
+        void appendToGeneratedBuilder(final StringBuilder builder, final String indent, final String builderName)
         {
             builder.append(indent).append(builderName).append(".append('").append(symbol).append("');").append('\n');
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public String toString()
         {
             return String.valueOf(symbol);
@@ -272,13 +279,18 @@ public class JavaUtil
         final StringBuilder sb, final String indent, final Token typeToken)
     {
         final String description = typeToken.description();
-        if (null == description || description.isEmpty())
+        if (Strings.isEmpty(description))
         {
             return;
         }
 
-        sb.append(indent).append("/**\n")
-            .append(indent).append(" * ").append(description).append('\n')
+        sb.append('\n')
+            .append(indent).append("/**\n")
+            .append(indent).append(" * ");
+
+        escapeJavadoc(sb, description);
+
+        sb.append('\n')
             .append(indent).append(" */\n");
     }
 
@@ -295,15 +307,19 @@ public class JavaUtil
         throws IOException
     {
         final String description = optionToken.description();
-        if (null == description || description.isEmpty())
+        if (Strings.isEmpty(description))
         {
             return;
         }
 
         out.append(indent).append("/**\n")
-            .append(indent).append(" * ").append(description).append('\n')
+            .append(indent).append(" * ");
+
+        escapeJavadoc(out, description);
+
+        out.append('\n')
             .append(indent).append(" *\n")
-            .append(indent).append(" * @return true if ").append(optionToken.name()).append(" is set or false if not\n")
+            .append(indent).append(" * @return true if ").append(optionToken.name()).append(" set or false if not.\n")
             .append(indent).append(" */\n");
     }
 
@@ -320,16 +336,21 @@ public class JavaUtil
         throws IOException
     {
         final String description = optionToken.description();
-        if (null == description || description.isEmpty())
+        if (Strings.isEmpty(description))
         {
             return;
         }
 
-        final String name = optionToken.name();
         out.append(indent).append("/**\n")
-            .append(indent).append(" * ").append(description).append('\n')
+            .append(indent).append(" * ");
+
+        escapeJavadoc(out, description);
+
+        final String name = optionToken.name();
+        out.append('\n')
             .append(indent).append(" *\n")
             .append(indent).append(" * @param value true if ").append(name).append(" is set or false if not.\n")
+            .append(indent).append(" * @return this for a fluent API.\n")
             .append(indent).append(" */\n");
     }
 
@@ -345,16 +366,25 @@ public class JavaUtil
         final StringBuilder sb, final String indent, final Token propertyToken, final String typeName)
     {
         final String description = propertyToken.description();
-        if (null == description || description.isEmpty())
+        if (Strings.isEmpty(description))
         {
             return;
         }
 
-        sb.append(indent).append("/**\n")
-            .append(indent).append(" * ").append(description).append('\n')
+        sb.append('\n')
+            .append(indent).append("/**\n")
+            .append(indent).append(" * ");
+
+        escapeJavadoc(sb, description);
+
+        sb.append('\n')
             .append(indent).append(" *\n")
-            .append(indent).append(" * @return ").append(typeName).append(" : ").append(description).append("\n")
-            .append(indent).append(" */\n");
+            .append(indent).append(" * @return ").append(typeName).append(" : ");
+
+        escapeJavadoc(sb, description);
+
+        sb.append("\n")
+            .append(indent).append(" */");
     }
 
     /**
@@ -369,16 +399,69 @@ public class JavaUtil
         final StringBuilder sb, final String indent, final Token propertyToken, final String typeName)
     {
         final String description = propertyToken.description();
-        if (null == description || description.isEmpty())
+        if (Strings.isEmpty(description))
         {
             return;
         }
 
-        sb.append(indent).append("/**\n")
-            .append(indent).append(" * ").append(description).append("\n")
+        sb.append('\n')
+            .append(indent).append("/**\n")
+            .append(indent).append(" * ");
+
+        escapeJavadoc(sb, description);
+
+        sb.append("\n")
             .append(indent).append(" *\n")
-            .append(indent).append(" * @param count of times the group will be encoded\n")
-            .append(indent).append(" * @return ").append(typeName).append(" : encoder for the group\n")
-            .append(indent).append(" */\n");
+            .append(indent).append(" * @param count of times the group will be encoded.\n")
+            .append(indent).append(" * @return ").append(typeName).append(" : encoder for the group.\n")
+            .append(indent).append(" */");
+    }
+
+    private static void escapeJavadoc(final Appendable out, final String doc) throws IOException
+    {
+        for (int i = 0, length = doc.length(); i < length; i++)
+        {
+            final char c = doc.charAt(i);
+            switch (c)
+            {
+                case '<':
+                    out.append("&lt;");
+                    break;
+
+                case '>':
+                    out.append("&gt;");
+                    break;
+
+                default:
+                    out.append(c);
+                    break;
+            }
+        }
+    }
+
+    private static void escapeJavadoc(final StringBuilder sb, final String doc)
+    {
+        for (int i = 0, length = doc.length(); i < length; i++)
+        {
+            final char c = doc.charAt(i);
+            switch (c)
+            {
+                case '<':
+                    sb.append("&lt;");
+                    break;
+
+                case '>':
+                    sb.append("&gt;");
+                    break;
+
+                case '&':
+                    sb.append("&amp;");
+                    break;
+
+                default:
+                    sb.append(c);
+                    break;
+            }
+        }
     }
 }

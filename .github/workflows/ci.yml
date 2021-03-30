@@ -10,15 +10,16 @@ on:
 
 env:
   GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+  CMAKE_VERSION: "3.6.1"
 
 jobs:
   java-build:
     name: Java ${{ matrix.java }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
       matrix:
-        java: [ '8', '11' ]
+        java: [ '8', '11', '16', '17-ea' ]
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -38,16 +39,24 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: ${{ matrix.java }}
+      - name: Setup BUILD_JAVA_HOME & BUILD_JAVA_VERSION
+        run: |
+          echo "BUILD_JAVA_HOME=${JAVA_HOME}" >> $GITHUB_ENV
+          echo "BUILD_JAVA_VERSION=${{ matrix.java }}" >> $GITHUB_ENV
+      - name: Setup java 8 to run the Gradle script
+        uses: actions/setup-java@v1
+        with:
+          java-version: 8
       - name: Build with Gradle
         run: ./gradlew
 
   csharp-build:
     name: C# ${{ matrix.dotnet }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
       matrix:
-        dotnet: [ '2.2.103' ]
+        dotnet: [ '3.1.301' ]
     env:
       DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
       DOTNET_CLI_TELEMETRY_OPTOUT: 1
@@ -86,11 +95,11 @@ jobs:
 
   cpp-gcc-build:
     name: C++ GCC ${{ matrix.version }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
       matrix:
-        version: [ '6', '7', '8', '9' ]
+        version: [ '6', '7', '8', '9', '10' ]
     env:
       CC: gcc-${{ matrix.version }}
       CXX: g++-${{ matrix.version }}
@@ -111,17 +120,21 @@ jobs:
           key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
       - name: Install compiler
         run: |
-          sudo apt-get install -y g++-${{ matrix.version }} libsparsehash-dev
+          sudo add-apt-repository "deb http://dk.archive.ubuntu.com/ubuntu/ bionic main universe"
+          sudo apt-get install -y g++-${{ matrix.version }} libsparsehash-dev libidn11
+          curl -O -L https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.tar.gz
+          tar xf cmake-${CMAKE_VERSION}-Linux-x86_64.tar.gz
+          echo "cmake-${CMAKE_VERSION}-Linux-x86_64/bin" >> $GITHUB_PATH
       - name: Build
-        run: ./cppbuild/cppbuild
+        run: cmake --version && ./cppbuild/cppbuild
 
   cpp-clang-build:
     name: C++ Clang ${{ matrix.version }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     strategy:
       fail-fast: false
       matrix:
-        version: [ '6.0', '7', '8', '9' ]
+        version: [ '6.0', '7', '8', '9', '10', '11' ]
     env:
       CC: clang-${{ matrix.version }}
       CXX: clang++-${{ matrix.version }}
@@ -142,29 +155,51 @@ jobs:
           key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
       - name: Install compiler
         run: |
+          curl -L https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
           sudo add-apt-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-${{ matrix.version }} main"
-
           sudo apt-get update
-
-          sudo apt-get install -y clang-${{ matrix.version }} libsparsehash-dev
+          sudo apt-get install -y clang-${{ matrix.version }} libsparsehash-dev libidn11
+          curl -O -L https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.tar.gz
+          tar xf cmake-${CMAKE_VERSION}-Linux-x86_64.tar.gz
+          echo "cmake-${CMAKE_VERSION}-Linux-x86_64/bin" >> $GITHUB_PATH
       - name: Build
-        run: ./cppbuild/cppbuild
+        run: cmake --version && ./cppbuild/cppbuild
 
   cpp-clang-macos-build:
     name: C++ Xcode ${{ matrix.version }} (macOS)
     runs-on: macOS-latest
     strategy:
       fail-fast: false
-      matrix:
-        version: [ '11.2.1' ]
     env:
       CC: clang
       CXX: clang++
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Install compiler
+      - name: Install CMake
         run: |
-          sudo xcode-select -switch /Applications/Xcode_${{ matrix.version }}.app
+          curl -O -L https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Darwin-x86_64.tar.gz
+          tar xf cmake-${CMAKE_VERSION}-Darwin-x86_64.tar.gz
+          echo "cmake-${CMAKE_VERSION}-Darwin-x86_64/CMake.app/Contents/bin" >> $GITHUB_PATH
       - name: Build
-        run: ./cppbuild/cppbuild
+        run: cmake --version && ./cppbuild/cppbuild
+
+  cpp-msvc-build:
+    name: C++ MSVC (Windows)
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+    env:
+      CC: cl
+      CXX: cl
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install CMake
+        run: |
+          $client = new-object System.Net.WebClient
+          $client.DownloadFile("https://github.com/Kitware/CMake/releases/download/v$Env:CMAKE_VERSION/cmake-$Env:CMAKE_VERSION-win64-x64.zip","cmake-$Env:CMAKE_VERSION-win64-x64.zip")
+          7z x cmake-$Env:CMAKE_VERSION-win64-x64.zip
+          echo "cmake-$Env:CMAKE_VERSION-win64-x64/bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8
+      - name: Build
+        run: cppbuild/cppbuild.cmd

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2021 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,15 +31,26 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
+import static uk.co.real_logic.sbe.generation.Generators.toLowerFirstChar;
+import static uk.co.real_logic.sbe.generation.Generators.toUpperFirstChar;
 import static uk.co.real_logic.sbe.generation.c.CUtil.*;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.*;
 
+/**
+ * Codec generator for the C11 programming language.
+ */
 @SuppressWarnings("MethodLength")
 public class CGenerator implements CodeGenerator
 {
     private final Ir ir;
     private final OutputManager outputManager;
 
+    /**
+     * Create a new C language {@link CodeGenerator}.
+     *
+     * @param ir            for the messages and types.
+     * @param outputManager for generating the codecs to.
+     */
     public CGenerator(final Ir ir, final OutputManager outputManager)
     {
         Verify.notNull(ir, "ir");
@@ -49,12 +60,17 @@ public class CGenerator implements CodeGenerator
         this.outputManager = outputManager;
     }
 
+    /**
+     * Generate the composites for dealing with the message header.
+     *
+     * @throws IOException if an error is encountered when writing the output.
+     */
     public void generateMessageHeaderStub() throws IOException
     {
         generateComposite(ir.namespaces(), ir.headerStructure().tokens());
     }
 
-    public List<String> generateTypeStubs(final CharSequence[] scope) throws IOException
+    List<String> generateTypeStubs(final CharSequence[] scope) throws IOException
     {
         final List<String> typesToInclude = new ArrayList<>();
 
@@ -81,7 +97,7 @@ public class CGenerator implements CodeGenerator
         return typesToInclude;
     }
 
-    public List<String> generateTypesToIncludes(final List<Token> tokens)
+    List<String> generateTypesToIncludes(final List<Token> tokens)
     {
         final List<String> typesToInclude = new ArrayList<>();
 
@@ -100,6 +116,9 @@ public class CGenerator implements CodeGenerator
         return typesToInclude;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void generate() throws IOException
     {
         generateMessageHeaderStub();
@@ -946,14 +965,20 @@ public class CGenerator implements CodeGenerator
 
         for (final Token token : tokens)
         {
+            final CharSequence constVal = generateLiteral(
+                token.encoding().primitiveType(), token.encoding().constValue().toString());
+
             sb.append(String.format(
                 "        case %s:\n" +
                 "             *out = %s_%s;\n" +
                 "             return true;\n",
-                token.encoding().constValue().toString(),
+                constVal,
                 enumName,
                 token.name()));
         }
+
+        final CharSequence constVal = generateLiteral(
+            encodingToken.encoding().primitiveType(), encodingToken.encoding().applicableNullValue().toString());
 
         sb.append(String.format(
             "        case %s:\n" +
@@ -964,7 +989,7 @@ public class CGenerator implements CodeGenerator
             "    errno = E103;\n" +
             "    return false;\n" +
             "}\n",
-            encodingToken.encoding().applicableNullValue().toString(),
+            constVal,
             enumName));
 
         return sb;
@@ -978,10 +1003,10 @@ public class CGenerator implements CodeGenerator
         }
 
         return String.format(
-            "if (codec->acting_version < %1$d)\n" +
-            "{\n" +
-            "    return %2$s;\n" +
-            "}\n\n",
+            "    if (codec->acting_version < %1$d)\n" +
+            "    {\n" +
+            "        return %2$s;\n" +
+            "    }\n\n",
             sinceVersion,
             generateLiteral(encoding.primitiveType(), encoding.applicableNullValue().toString()));
     }
@@ -994,10 +1019,10 @@ public class CGenerator implements CodeGenerator
         }
 
         return String.format(
-            "if (codec->acting_version < %1$d)\n" +
-            "{\n" +
-            "    return 0;\n" +
-            "}\n\n",
+            "    if (codec->acting_version < %1$d)\n" +
+            "    {\n" +
+            "        return 0;\n" +
+            "    }\n\n",
             sinceVersion);
     }
 
@@ -1009,10 +1034,10 @@ public class CGenerator implements CodeGenerator
         }
 
         return String.format(
-            "if (codec->acting_version < %1$d)\n" +
-            "{\n" +
-            "    return {NULL, 0};\n" +
-            "}\n\n",
+            "    if (codec->acting_version < %1$d)\n" +
+            "    {\n" +
+            "        return { NULL, 0 };\n" +
+            "    }\n\n",
             sinceVersion);
     }
 
@@ -1024,10 +1049,10 @@ public class CGenerator implements CodeGenerator
         }
 
         return String.format(
-            "if (codec->acting_version < %1$d)\n" +
-            "{\n" +
-            "    return NULL;\n" +
-            "}\n\n",
+            "    if (codec->acting_version < %1$d)\n" +
+            "    {\n" +
+            "        return NULL;\n" +
+            "    }\n\n",
             sinceVersion);
     }
 
@@ -1351,8 +1376,7 @@ public class CGenerator implements CodeGenerator
 
         if (primitiveType == PrimitiveType.FLOAT || primitiveType == PrimitiveType.DOUBLE)
         {
-            final String stackUnion =
-                (primitiveType == PrimitiveType.FLOAT) ? "float" : "double";
+            final String stackUnion = primitiveType == PrimitiveType.FLOAT ? "float" : "double";
 
             sb.append(String.format(
                 "    union %1$s_%2$s_as_uint val;\n" +
@@ -1418,8 +1442,7 @@ public class CGenerator implements CodeGenerator
 
         if (primitiveType == PrimitiveType.FLOAT || primitiveType == PrimitiveType.DOUBLE)
         {
-            final String stackUnion =
-                (primitiveType == PrimitiveType.FLOAT) ? "float" : "double";
+            final String stackUnion = primitiveType == PrimitiveType.FLOAT ? "float" : "double";
 
             sb.append(String.format(
                 "    union %1$s_%2$s_as_uint val;\n" +
@@ -1956,7 +1979,7 @@ public class CGenerator implements CodeGenerator
             "    struct %11$s *const hdr)\n" +
             "{\n" +
             "    %11$s_wrap(\n" +
-            "        hdr, buffer + offset, 0, buffer_length, %11$s_sbe_schema_version());\n\n" +
+            "        hdr, buffer + offset, 0, %11$s_sbe_schema_version(), buffer_length);\n\n" +
 
             "    %11$s_set_blockLength(hdr, %10$s_sbe_block_length());\n" +
             "    %11$s_set_templateId(hdr, %10$s_sbe_template_id());\n" +
@@ -2167,6 +2190,21 @@ public class CGenerator implements CodeGenerator
             outermostStruct));
     }
 
+    private static CharSequence generateEnumFieldNotPresentCondition(final int sinceVersion)
+    {
+        if (0 == sinceVersion)
+        {
+            return "";
+        }
+
+        return String.format(
+            "    if (codec->acting_version < %1$d)\n" +
+            "    {\n" +
+            "        return false;\n" +
+            "    }\n\n",
+            sinceVersion);
+    }
+
     private static CharSequence generateEnumFieldNotPresentCondition(final int sinceVersion, final String enumName)
     {
         if (0 == sinceVersion)
@@ -2175,10 +2213,10 @@ public class CGenerator implements CodeGenerator
         }
 
         return String.format(
-            "if (codec->acting_version < %1$d)\n" +
-            "{\n" +
-            "    return %2$s_NULL_VALUE;\n" +
-            "}\n\n",
+            "    if (codec->acting_version < %1$d)\n" +
+            "    {\n" +
+            "        return %2$s_NULL_VALUE;\n" +
+            "    }\n\n",
             sinceVersion,
             enumName);
     }
@@ -2245,7 +2283,7 @@ public class CGenerator implements CodeGenerator
                 "}\n",
                 enumName,
                 propertyName,
-                generateEnumFieldNotPresentCondition(token.version(), enumName),
+                generateEnumFieldNotPresentCondition(token.version()),
                 formatByteOrderEncoding(token.encoding().byteOrder(), token.encoding().primitiveType()),
                 typeName,
                 offset,
@@ -2253,8 +2291,8 @@ public class CGenerator implements CodeGenerator
 
             sb.append(String.format("\n" +
                 "SBE_ONE_DEF struct %1$s *%1$s_set_%2$s(\n" +
-                "   struct %1$s *const codec,\n" +
-                "   const enum %3$s value)\n" +
+                "    struct %1$s *const codec,\n" +
+                "    const enum %3$s value)\n" +
                 "{\n" +
                 "    %4$s val = %6$s(value);\n" +
                 "    memcpy(codec->buffer + codec->offset + %5$d, &val, sizeof(%4$s));\n\n" +
@@ -2369,11 +2407,10 @@ public class CGenerator implements CodeGenerator
         return generateLiteral(primitiveType, encoding.applicableNullValue().toString());
     }
 
-    private CharSequence generateLiteral(final PrimitiveType type, final String value)
+    private static CharSequence generateLiteral(final PrimitiveType type, final String value)
     {
         String literal = "";
 
-        final String castType = cTypeName(type);
         switch (type)
         {
             case CHAR:
@@ -2381,28 +2418,47 @@ public class CGenerator implements CodeGenerator
             case UINT16:
             case INT8:
             case INT16:
-                literal = "(" + castType + ")" + value;
+                literal = "(" + cTypeName(type) + ")" + value;
                 break;
 
             case UINT32:
-            case INT32:
-                literal = value;
+                literal = "UINT32_C(0x" + Integer.toHexString((int)Long.parseLong(value)) + ")";
                 break;
+
+            case INT32:
+            {
+                final long intValue = Long.parseLong(value);
+                if (intValue == Integer.MIN_VALUE)
+                {
+                    literal = "INT32_MIN";
+                }
+                else
+                {
+                    literal = "INT32_C(" + value + ")";
+                }
+                break;
+            }
 
             case FLOAT:
                 literal = value.endsWith("NaN") ? "SBE_FLOAT_NAN" : value + "f";
                 break;
 
             case INT64:
-                literal = value + "L";
-                if (value.equals("-9223372036854775808"))
+            {
+                final long longValue = Long.parseLong(value);
+                if (longValue == Long.MIN_VALUE)
                 {
                     literal = "INT64_MIN";
                 }
+                else
+                {
+                    literal = "INT64_C(" + value + ")";
+                }
                 break;
+            }
 
             case UINT64:
-                literal = "0x" + Long.toHexString(Long.parseLong(value)) + "L";
+                literal = "UINT64_C(0x" + Long.toHexString(Long.parseLong(value)) + ")";
                 break;
 
             case DOUBLE:
