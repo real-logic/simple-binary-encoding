@@ -136,12 +136,16 @@ namespace Org.SbeTool.Sbe.Dll
         private void TryResizeBuffer(int limit)
         {
             if (bufferOverflow == null)
-                throw new IndexOutOfRangeException(string.Format("limit={0} is beyond capacity={1}", limit, _capacity));
+            {
+                throw new IndexOutOfRangeException("limit=" + limit + " is beyond capacity=" + _capacity));
+            }
 
             var newBuffer = bufferOverflow(_capacity, limit);
 
             if (newBuffer == null)
-                throw new IndexOutOfRangeException(string.Format("limit={0} is beyond capacity={1}", limit, _capacity));
+            {
+                throw new IndexOutOfRangeException("limit=" + limit + " is beyond capacity=" + _capacity));
+            }
 
             Marshal.Copy((IntPtr)_pBuffer, newBuffer, 0, _capacity);
             Wrap(newBuffer);
@@ -671,7 +675,9 @@ namespace Org.SbeTool.Sbe.Dll
         private void Dispose(bool disposing)
         {
             if (_disposed)
+            {
                 return;
+            }
 
             FreeGCHandle();
 
