@@ -137,14 +137,14 @@ namespace Org.SbeTool.Sbe.Dll
         {
             if (bufferOverflow == null)
             {
-                throw new IndexOutOfRangeException("limit=" + limit + " is beyond capacity=" + _capacity));
+                throw new IndexOutOfRangeException("limit=" + limit + " is beyond capacity=" + _capacity);
             }
 
             var newBuffer = bufferOverflow(_capacity, limit);
 
             if (newBuffer == null)
             {
-                throw new IndexOutOfRangeException("limit=" + limit + " is beyond capacity=" + _capacity));
+                throw new IndexOutOfRangeException("limit=" + limit + " is beyond capacity=" + _capacity);
             }
 
             Marshal.Copy((IntPtr)_pBuffer, newBuffer, 0, _capacity);
