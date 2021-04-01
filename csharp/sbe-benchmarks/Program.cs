@@ -12,40 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
+using BenchmarkDotNet.Running;
 
 namespace Org.SbeTool.Sbe.Benchmarks
 {
     public class Program
     {
-        public static void Main()
+        public static void Main(string[] args)
         {
-            Console.WriteLine("WARM UP");
-            SbePerfTestRunner.PerfTestEncode(-1);
-            SbePerfTestRunner.PerfTestDecode(-1);
-
-            long sbeDecodeLatency = 0L;
-            long sbeEncodeLatency = 0L;
-
-            Console.WriteLine();
-            Console.WriteLine("Running ...");
-
-            const int runsCount = 5;
-
-            for (int i = 0; i < runsCount; i++)
-            {
-                sbeEncodeLatency += SbePerfTestRunner.PerfTestEncode(i);
-                GC.Collect(2);
-
-                sbeDecodeLatency += SbePerfTestRunner.PerfTestDecode(i);
-                GC.Collect(2);
-            }
-
-            Console.WriteLine("##teamcity[buildStatisticValue key='AverageEncodeLatencyNanos' value='{0:0.0}']", (double) sbeEncodeLatency / runsCount);
-            Console.WriteLine("##teamcity[buildStatisticValue key='AverageDecodeLatencyNanos' value='{0:0.0}']", (double) sbeDecodeLatency / runsCount);
-
-            Console.WriteLine("Press a key to continue...");
-            Console.ReadKey();
+            BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args);
         }
     }
 }
