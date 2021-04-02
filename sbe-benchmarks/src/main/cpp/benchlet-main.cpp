@@ -23,7 +23,7 @@ int main(int argc, char **argv)
 
 #ifdef _WIN32
 #include <Windows.h>
-uint64_t BenchmarkRunner::currentTimestamp(void)
+uint64_t BenchmarkRunner::currentTimestamp()
 {
     static LARGE_INTEGER freq;
     static int first = 1;
@@ -35,7 +35,7 @@ uint64_t BenchmarkRunner::currentTimestamp(void)
         ::QueryPerformanceFrequency(&freq);
         first = 0;
     }
-    return (1000000000 * counter.QuadPart)/freq.QuadPart;
+    return (1000000000 * counter.QuadPart) / freq.QuadPart;
 }
 
 #endif

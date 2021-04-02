@@ -17,10 +17,10 @@
 #define _BENCHLET_HPP
 
 #define __STDC_LIMIT_MACROS 1
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 #if defined(Darwin)
 #   include <mach/mach.h>
@@ -59,40 +59,40 @@ public:
         const char *value;
     };
 
-    virtual void setUp(void) {};
-    virtual void tearDown(void) {};
+    virtual void setUp() {};
+    virtual void tearDown() {};
     virtual uint64_t run(int iterations) = 0;
 
     void name(const char *name) { name_ = name; };
-    const char *name(void ) const { return name_; };
+    const char *name() const { return name_; };
 
     void runName(const char *runName) { runName_ = runName; };
-    const char *runName(void ) const { return runName_; };
+    const char *runName() const { return runName_; };
 
     void iterations(const unsigned int i) { iterations_ = i; };
-    unsigned int iterations(void) const { return iterations_; };
+    unsigned int iterations() const { return iterations_; };
 
     void batches(const unsigned int i) { batches_ = i; };
-    unsigned int batches(void) const { return batches_; };
+    unsigned int batches() const { return batches_; };
 
     void config(const struct Config *cfg, unsigned int numConfigs) { config_ = cfg; numConfigs_ = numConfigs; };
-    const struct Config *config(void) const { return config_; };
-    unsigned int numConfigs(void) const { return numConfigs_; };
+    const struct Config *config() const { return config_; };
+    unsigned int numConfigs() const { return numConfigs_; };
 
     void stats(uint64_t *stats) { stats_ = stats; };
-    uint64_t *stats(void) { return stats_; };
+    uint64_t *stats() { return stats_; };
 
     void retainStats(bool retain) { retainStats_ = retain; };
-    bool retainStats(void) const { return retainStats_; };
+    bool retainStats() const { return retainStats_; };
 private:
-    const char *name_;
-    const char *runName_;
-    unsigned int iterations_;
-    unsigned int batches_;
-    const struct Config *config_;
-    unsigned int numConfigs_;
-    uint64_t *stats_;
-    bool retainStats_;
+    const char *name_ = nullptr;
+    const char *runName_ = nullptr;
+    unsigned int iterations_ = 0;
+    unsigned int batches_ = 0;
+    const struct Config *config_ = nullptr;
+    unsigned int numConfigs_ = 0;
+    uint64_t *stats_ = nullptr;
+    bool retainStats_ = false;
     // save start time, etc.
 };
 
@@ -134,7 +134,7 @@ public:
         return impl;
     };
 
-    static void run(void)
+    static void run()
     {
         for (std::vector<Benchmark *>::iterator it = table().begin(); it != table().end(); ++it)
         {
@@ -175,7 +175,7 @@ public:
         }
     };
 
-    static std::vector<Benchmark *> &table(void)
+    static std::vector<Benchmark *> &table()
     {
         static std::vector<Benchmark *> table;
         return table;
@@ -199,9 +199,9 @@ public:
         return (end_timestamp - start_timestamp) * timebaseInfo.numer / timebaseInfo.denom;
     };
 #elif defined(__linux__)
-    static uint64_t currentTimestamp(void)
+    static uint64_t currentTimestamp()
     {
-        struct timespec ts;
+        struct timespec ts = {};
 
         clock_gettime(CLOCK_REALTIME, &ts);
         return ts.tv_sec * 1000000000 + ts.tv_nsec;
@@ -223,15 +223,13 @@ public:
 template <typename C>
 uint64_t runBenchmark(C *obj, int iterations)
 {
-    uint64_t start, end;
-    int i = 0;
-
-    start = BenchmarkRunner::currentTimestamp();
-    for (; i < iterations; i++)
+    uint64_t start = BenchmarkRunner::currentTimestamp();
+    for (int i = 0; i < iterations; i++)
     {
         obj->benchmarkBody();
     }
-    end = BenchmarkRunner::currentTimestamp();
+    uint64_t end = BenchmarkRunner::currentTimestamp();
+
     return BenchmarkRunner::elapsedNanoseconds(start, end);
 }
 
@@ -242,12 +240,12 @@ uint64_t runBenchmark(C *obj, int iterations)
     public: \
       BENCHMARK_CLASS_NAME(c,r)() {}; \
       virtual uint64_t run(int iterations) { return runBenchmark<BENCHMARK_CLASS_NAME(c,r)>(this, iterations); }; \
-      void benchmarkBody(void); \
+      void benchmarkBody(); \
     private: \
       static Benchmark *instance_; \
     };                            \
     Benchmark *BENCHMARK_CLASS_NAME(c,r)::instance_ = BenchmarkRunner::registerBenchmark(#c, #r, new BENCHMARK_CLASS_NAME(c,r)(), i, sizeof(i)/sizeof(Benchmark::Config)); \
-    void BENCHMARK_CLASS_NAME(c,r)::benchmarkBody(void)
+    void BENCHMARK_CLASS_NAME(c,r)::benchmarkBody()
 
 #define BENCHMARK_ITERATIONS(c,r,i) \
     struct Benchmark::Config c ## r ## _cfg[] = {{Benchmark::ITERATIONS, #i},{Benchmark::BATCHES, DEFAULT_BATCHES_STRING}}; \

@@ -39,9 +39,9 @@ public:
     void printScope() const
     {
         std::for_each(scope.begin(), scope.end(),
-            [&](const std::string &scope)
+            [&](const std::string &s)
             {
-                std::cout << scope;
+                std::cout << s;
             });
     }
 
@@ -425,7 +425,7 @@ std::uint64_t encodeHdrAndCar(char *buffer, std::uint64_t length)
 
 int main(int argc, char **argv)
 {
-    char buffer[2048];
+    char buffer[2048] = {};
     ExampleTokenListener tokenListener;
 
     std::uint64_t sz = encodeHdrAndCar(buffer, sizeof(buffer));

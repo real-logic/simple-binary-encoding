@@ -16,29 +16,30 @@
 #include "benchlet.h"
 #include "SbeCarCodecBench.h"
 
-#define MAX_CAR_BUFFER (1000*1000)
+#define MAX_CAR_BUFFER (1000 * 1000)
 #define MAX_N 10
 
 class SbeCarBench : public Benchmark
 {
 public:
-    virtual void setUp(void)
+    void setUp() override
     {
         buffer_ = new char[MAX_CAR_BUFFER];
         bench_.runEncode(buffer_, MAX_N, MAX_CAR_BUFFER);  // set buffer up for decoding runs
         std::cout << "MAX N = " << MAX_N << " [for Multiple runs]" << std::endl;
     };
 
-    virtual void tearDown(void)
+    void tearDown() override
     {
         delete[] buffer_;
     };
 
     SbeCarCodecBench bench_;
-    char *buffer_;
+    char *buffer_ = nullptr;
 };
 
-static struct Benchmark::Config cfg[] = {
+static struct Benchmark::Config cfg[] =
+{
     { Benchmark::ITERATIONS, "1000000" },
     { Benchmark::BATCHES, "20" }
 };

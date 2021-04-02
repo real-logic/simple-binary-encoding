@@ -180,7 +180,7 @@ public:
 
     std::uint64_t decodeCarFuelFigures()
     {
-        char tmp[256];
+        char tmp[256] = {};
         Car::FuelFigures &fuelFigures = m_carDecoder.fuelFigures();
         EXPECT_EQ(fuelFigures.count(), 3u);
 
@@ -260,7 +260,7 @@ public:
 
     std::uint64_t decodeCarManufacturerModelAndActivationCode()
     {
-        char tmp[256];
+        char tmp[256] = {};
 
         EXPECT_EQ(m_carDecoder.getManufacturer(tmp, sizeof(tmp)), 5u);
         EXPECT_EQ(std::string(tmp, 5), "Honda");

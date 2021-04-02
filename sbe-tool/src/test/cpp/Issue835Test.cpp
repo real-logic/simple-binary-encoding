@@ -32,7 +32,7 @@ TEST_F(Issue835Test, shouldCompileWithSkipper)
     const std::uint64_t timeNs = 777;
     const std::size_t offset = 0;
     char buffer[BUFFER_LEN] = {};
-    MDIncrementalRefreshOrderBook47 encoder = {};
+    MDIncrementalRefreshOrderBook47 encoder;
 
     encoder
         .wrapForEncode(buffer, offset, BUFFER_LEN)
@@ -60,7 +60,7 @@ TEST_F(Issue835Test, shouldCompileWithSkipper)
     entries.mDUpdateAction(MDUpdateAction::Value::New);
     entries.mDEntryType(MDEntryTypeBook::Value::Offer);
 
-    MDIncrementalRefreshOrderBook47 decoder = {};
+    MDIncrementalRefreshOrderBook47 decoder;
     decoder.wrapForDecode(
         buffer,
         offset,

@@ -40,8 +40,8 @@ public:
 
     std::uint64_t encodeHdrAndMsg()
     {
-        MessageHeader hdr = {};
-        TestMessage1 msg = {};
+        MessageHeader hdr;
+        TestMessage1 msg;
 
         hdr.wrap(m_buffer, 0, 0, sizeof(m_buffer))
             .blockLength(TestMessage1::sbeBlockLength())
