@@ -62,5 +62,5 @@ To get all the details please refer to our wiki (https://github.com/real-logic/s
  - schema definition: https://github.com/real-logic/simple-binary-encoding/wiki/FIX-SBE-XML-Primer
  - SBE Tool command line: https://github.com/real-logic/simple-binary-encoding/wiki/Sbe-Tool-Guide
 
- If you face an issue, a suggestion or a question, please use the issue tracker on the main GitHub repo: https://github.com/real-logic/simple-binary-encoding/issues?state=open
+If you face an issue, a suggestion or a question, please use the issue tracker on the main GitHub repo: https://github.com/real-logic/simple-binary-encoding/issues?state=open
 

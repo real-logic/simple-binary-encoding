@@ -1911,6 +1911,7 @@ public class CppGenerator implements CodeGenerator
             "        m_bufferLength(bufferLength),\n" +
             "        m_offset(offset),\n" +
             "        m_position(sbeCheckPosition(offset + actingBlockLength)),\n" +
+            "        m_actingBlockLength(actingBlockLength),\n" +
             "        m_actingVersion(actingVersion)\n" +
             "    {\n" +
             "    }\n\n" +
@@ -1946,6 +1947,7 @@ public class CppGenerator implements CodeGenerator
             "    std::uint64_t m_bufferLength = 0;\n" +
             "    std::uint64_t m_offset = 0;\n" +
             "    std::uint64_t m_position = 0;\n" +
+            "    std::uint64_t m_actingBlockLength = 0;\n" +
             "    std::uint64_t m_actingVersion = 0;\n\n" +
 
             "    inline std::uint64_t *sbePositionPtr() SBE_NOEXCEPT\n" +
@@ -2518,8 +2520,12 @@ public class CppGenerator implements CodeGenerator
             "friend std::basic_ostream<CharT, Traits> & operator << (\n" +
             "    std::basic_ostream<CharT, Traits> &builder, %1$s _writer)\n" +
             "{\n" +
-            "    %1$s writer(_writer.m_buffer, _writer.m_offset,\n" +
-            "        _writer.m_bufferLength, _writer.sbeBlockLength(), _writer.m_actingVersion);\n" +
+            "    %1$s writer(\n" +
+            "        _writer.m_buffer,\n" +
+            "        _writer.m_offset,\n" +
+            "        _writer.m_bufferLength,\n" +
+            "        _writer.m_actingBlockLength,\n" +
+            "        _writer.m_actingVersion);\n\n" +
             "    builder << '{';\n" +
             "    builder << R\"(\"Name\": \"%1$s\", )\";\n" +
             "    builder << R\"(\"sbeTemplateId\": )\";\n" +
