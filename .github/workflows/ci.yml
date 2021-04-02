@@ -167,7 +167,7 @@ jobs:
 
   cpp-clang-macos-build:
     name: C++ Xcode ${{ matrix.version }} (macOS)
-    runs-on: macOS-latest
+    runs-on: macos-latest
     strategy:
       fail-fast: false
     env:
