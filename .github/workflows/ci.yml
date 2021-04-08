@@ -36,16 +36,19 @@ jobs:
           path: ~/.gradle/wrapper
           key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
       - name: Setup java
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v2
         with:
+          distribution: 'zulu'
           java-version: ${{ matrix.java }}
       - name: Setup BUILD_JAVA_HOME & BUILD_JAVA_VERSION
         run: |
+          java -Xinternalversion
           echo "BUILD_JAVA_HOME=${JAVA_HOME}" >> $GITHUB_ENV
           echo "BUILD_JAVA_VERSION=${{ matrix.java }}" >> $GITHUB_ENV
       - name: Setup java 8 to run the Gradle script
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v2
         with:
+          distribution: 'zulu'
           java-version: 8
       - name: Build with Gradle
         run: ./gradlew
