@@ -47,7 +47,7 @@ def toolchainLauncher = javaToolchains.launcherFor {
 
 def checkstyleVersion = '8.39'
 def hamcrestVersion = '2.2'
-def mockitoVersion = '3.8.0'
+def mockitoVersion = '3.9.0'
 def junitVersion = '5.7.1'
 def jmhVersion = '1.29'
 def agronaVersion = '1.9.0'
