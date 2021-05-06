@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net461;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net48;netcoreapp3.1</TargetFrameworks>
     <RootNamespace>Org.SbeTool.Sbe.Benchmarks</RootNamespace>
     <AssemblyName>sbe-benchmarks</AssemblyName>
     <OutputTypeEx>exe</OutputTypeEx>
