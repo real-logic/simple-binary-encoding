@@ -623,8 +623,8 @@ namespace Org.SbeTool.Sbe.Tests
        #endregion
 
        #region NullTerminatedBytesFromString
-            const byte Terminator = (byte)0;
-            readonly static Encoding AsciiEncoding = Encoding.ASCII;
+       const byte Terminator = (byte)0;
+       readonly static Encoding AsciiEncoding = Encoding.UTF8;
 
 
        [TestMethod]
@@ -657,7 +657,7 @@ namespace Org.SbeTool.Sbe.Tests
             Assert.AreEqual(value, result.Substring(0, read.Length));
         }
 
-                [TestMethod]
+        [TestMethod]
         public void ShouldPutStringWitoutNullTerminatorIfBytesToWriteEqualsRemainingCapacity()
         {
             // the string length is equal to the max legth
