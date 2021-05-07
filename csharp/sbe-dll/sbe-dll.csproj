@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net48;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net45;netstandard2.0</TargetFrameworks>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <AssemblyName>SBE</AssemblyName>
     <RootNamespace>Org.SbeTool.Sbe.Dll</RootNamespace>
@@ -37,7 +37,7 @@
     </None>
   </ItemGroup>
 
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net48' ">
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
     <Reference Include="System.Runtime" />
   </ItemGroup>
 

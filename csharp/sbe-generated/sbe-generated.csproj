@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net48;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net45;netstandard2.0</TargetFrameworks>
     <RootNamespace>Org.SbeTool.Sbe.Generated</RootNamespace>
     <AssemblyName>Org.SbeTool.Sbe.Generated</AssemblyName>
     <Copyright>Copyright (C) Bill Segall 2018, MarketFactory Inc 2017, Adaptive 2014. All rights reserved.</Copyright>

@@ -687,7 +687,7 @@ namespace Org.SbeTool.Sbe.Dll
                 ThrowHelper.ThrowIndexOutOfRangeException(_capacity);
             }
 
-            return encoding.GetString(_pBuffer + index, byteCount);
+            return new String((sbyte*)_pBuffer, index, byteCount, encoding);  // 4.8+ encoding.GetString(_pBuffer + index, byteCount);
         }
 
         /// <summary>
@@ -732,9 +732,8 @@ namespace Org.SbeTool.Sbe.Dll
             for (byteCount2 = 0; byteCount2 < count && _pBuffer[byteCount2] != nullByte; byteCount2++)
             { 
             }
-             return encoding.GetString(_pBuffer + index, byteCount2);
-
-            // return new string((sbyte*) _pBuffer, index, byteCount2, encoding);
+            // return encoding.GetString(_pBuffer + index, byteCount2);  // .net48+
+            return new String((sbyte*) _pBuffer, index, byteCount2, encoding);
         }
 
         /// <summary>

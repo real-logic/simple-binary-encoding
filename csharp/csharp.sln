@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 16
-VisualStudioVersion = 16.0.28803.452
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.6
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sbe-dll", "sbe-dll\sbe-dll.csproj", "{CE883FD9-14A5-409C-AEBC-86BEA4E3C502}"
 EndProject
