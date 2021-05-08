@@ -728,10 +728,68 @@ namespace Org.SbeTool.Sbe.Tests
             const int index = 0;
             var written = _directBuffer.SetBytes(index, bytes, 0, bytes.Length);
             Assert.AreEqual(bytes.Length, written);
-            var written2 = _directBuffer.SetBytes(index + bytes.Length, new byte[] { (byte)0 }, 0, 1);
+            var written2 = _directBuffer.SetBytes(index + bytes.Length, new byte[] { Terminator }, 0, 1);
             Assert.AreEqual(1, written2);
-            string result = _directBuffer.GetStringFromNullTerminatedBytes(encoding, index, _directBuffer.Capacity - index, (byte)0);
-            Assert.AreEqual(result, value);
+            string result = _directBuffer.GetStringFromNullTerminatedBytes(encoding, index, _directBuffer.Capacity - index, Terminator);
+            Assert.AreEqual(value, result);
+        }
+
+        [TestMethod]
+        public void ShouldGetStringWithoutNullTermination()
+        {
+            var encoding = System.Text.Encoding.UTF8;
+            const string value = "abc123";
+            var bytes = encoding.GetBytes(value);
+            const int index = 10;  // pushes the write to the end of the buffer so no terminator will be added
+            var written = _directBuffer.SetBytes(index, bytes, 0, bytes.Length);
+            Assert.AreEqual(bytes.Length, written);
+            string result = _directBuffer.GetStringFromNullTerminatedBytes(encoding, index, 100, Terminator);
+            Assert.AreEqual(value, result);
+        }
+
+        #endregion
+
+        #region SetBytesFromString
+        [TestMethod]
+        public void ShouldSetBytesFromString() {
+            const string value = "abc123";
+            var written = _directBuffer.SetBytesFromString(AsciiEncoding, value, 0);
+            Assert.AreEqual(6, written);
+            string result = _directBuffer.GetStringFromBytes(AsciiEncoding, 0, 6);
+            Assert.AreEqual(value, result);
+        }
+
+       [TestMethod]
+        public void ShouldSetZeroBytesFromEmptyString() {
+            const string value = "";
+            var written = _directBuffer.SetBytesFromString(AsciiEncoding, value, 0);
+            Assert.AreEqual(0, written);
+            string result = _directBuffer.GetStringFromBytes(AsciiEncoding, 0, 0);
+            Assert.AreEqual(value, result);
+        }
+
+
+       [TestMethod]
+        public void ShouldThrowExceptionIfNotEnoughRoomInBufferForBytes() {
+            const string value = "a";
+            Assert.ThrowsException<IndexOutOfRangeException>(() => _directBuffer.SetBytesFromString(AsciiEncoding, value, _directBuffer.Capacity - value.Length + 1));
+        }
+
+
+        #endregion
+
+        #region GetStringFromBytes
+       [TestMethod]
+        public void ShouldGetStringFromBytes() {
+            const string value = "abc123";
+            _directBuffer.SetBytesFromString(AsciiEncoding, value, 0);
+            string result = _directBuffer.GetStringFromBytes(AsciiEncoding, 0, AsciiEncoding.GetByteCount(value));
+            Assert.AreEqual(value, result);
+        }
+
+       [TestMethod]
+        public void ShouldThrowExceptionIfNotEnoughBytesToGetStringFromBytes() {
+            Assert.ThrowsException<IndexOutOfRangeException>(() =>  _directBuffer.GetStringFromBytes(AsciiEncoding, _directBuffer.Capacity, 1));
         }
 
         #endregion
