@@ -490,7 +490,7 @@ public class CSharpGenerator implements CodeGenerator
                     indent + INDENT + "_buffer.CheckLimit(limit + sizeOfLengthField);\n" +
                     indent + INDENT + "int dataLength = (int)_buffer.%3$sGet%4$s(limit);\n" +
                     indent + INDENT + "_parentMessage.Limit = limit + sizeOfLengthField + dataLength;\n" +
-                    indent  + INDENT + "return _buffer.GetStringFromBytes(%1$sResolvedCharacterEncoding," +
+                    indent + INDENT + "return _buffer.GetStringFromBytes(%1$sResolvedCharacterEncoding," +
                     " limit + sizeOfLengthField, dataLength);\n" +
                     indent + "}\n\n" +
                     indent + "public void Set%1$s(string value)\n" +
