@@ -661,7 +661,7 @@ namespace Org.SbeTool.Sbe.Dll
         /// </summary>
         /// <param name="encoding">encoding to use to write the bytes from the string</param>
         /// <param name="src">source string</param>
-        /// <param name="index">index in theunderlying buffer to start writing bytes</param>
+        /// <param name="index">index in the underlying buffer to start writing bytes</param>
         /// <returns>count of bytes written</returns>
         public unsafe int SetBytesFromString(Encoding encoding, string src, int index)
         {
@@ -676,9 +676,8 @@ namespace Org.SbeTool.Sbe.Dll
            }
            fixed (char* ptr = src)
            {
-               encoding.GetBytes(ptr, src.Length, _pBuffer + index, byteCount);
+               return encoding.GetBytes(ptr, src.Length, _pBuffer + index, byteCount);
            }
-           return byteCount;
         }
 
         /// <summary>
@@ -690,7 +689,7 @@ namespace Org.SbeTool.Sbe.Dll
         /// <param name="index">index in theunderlying buffer to start writing bytes</param>
         /// <param name="byteCount">the number of bytes to read into the string</param>
         /// <returns>the string representing the decoded bytes read from the buffer</returns>
-        public unsafe string GetStringFromBytes(Encoding encoding, int index, int byteCount)
+        public string GetStringFromBytes(Encoding encoding, int index, int byteCount)
         {
             int num = _capacity - index;
             if (byteCount > num)

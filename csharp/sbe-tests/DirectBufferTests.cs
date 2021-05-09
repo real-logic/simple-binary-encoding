@@ -645,7 +645,7 @@ namespace Org.SbeTool.Sbe.Tests
         [TestMethod]
         public void ShouldPutStringWitoutNullTerminator()
         {
-            // the string length is equal to the max legth
+            // the string length is equal to the max legth parameter
             const string value = "abc123";
             const int index = 0;
             var written = _directBuffer.SetNullTerminatedBytesFromString(AsciiEncoding, value, index, value.Length, Terminator);
@@ -660,7 +660,7 @@ namespace Org.SbeTool.Sbe.Tests
         [TestMethod]
         public void ShouldPutStringWitoutNullTerminatorIfBytesToWriteEqualsRemainingCapacity()
         {
-            // the string length is equal to the max legth
+            // the string length is equal to the remaining space in the buffer
             const string value = "abc123";
             int index = _directBuffer.Capacity - value.Length;
             var written = _directBuffer.SetNullTerminatedBytesFromString(AsciiEncoding, value, index, 100, Terminator);
@@ -750,6 +750,7 @@ namespace Org.SbeTool.Sbe.Tests
         #endregion
 
         #region SetBytesFromString
+
         [TestMethod]
         public void ShouldSetBytesFromString() {
             const string value = "abc123";
@@ -779,6 +780,7 @@ namespace Org.SbeTool.Sbe.Tests
         #endregion
 
         #region GetStringFromBytes
+
        [TestMethod]
         public void ShouldGetStringFromBytes() {
             const string value = "abc123";
