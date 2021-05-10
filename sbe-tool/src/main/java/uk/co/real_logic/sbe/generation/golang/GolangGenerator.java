@@ -1559,7 +1559,7 @@ public class GolangGenerator implements CodeGenerator
             sb.append(String.format(
                 "\t%1$s%2$s%3$sEnum\n",
                 token.name(),
-                String.format(String.format("%%%ds", longest - token.name().length() + 1), " "),
+                generateWhitespace(longest - token.name().length() + 1),
                 enumName));
         }
 
@@ -1568,7 +1568,7 @@ public class GolangGenerator implements CodeGenerator
             "\t%1$s%2$s%3$sEnum\n" +
             "}\n",
             nullValue,
-            String.format(String.format("%%%ds", longest - nullValue.length() + 1), " "),
+            generateWhitespace(longest - nullValue.length() + 1),
             enumName));
 
         // And now the Enum Values expressed as a variable
@@ -1616,7 +1616,7 @@ public class GolangGenerator implements CodeGenerator
             sb.append(String.format(
                 "\t%1$s%2$s%3$sChoiceValue\n",
                 toUpperFirstChar(token.name()),
-                String.format(String.format("%%%ds", longest - token.name().length() + 1), " "),
+                generateWhitespace(longest - token.name().length() + 1),
                 toUpperFirstChar(encodingToken.applicableTypeName())));
         }
 
@@ -1747,7 +1747,7 @@ public class GolangGenerator implements CodeGenerator
                         {
                             case BEGIN_ENUM:
                                 sb.append("\t").append(propertyName)
-                                    .append(String.format(String.format("%%%ds", length), " "))
+                                    .append(generateWhitespace(length))
                                     .append(arrayspec)
                                     .append(encodingToken.applicableTypeName())
                                     .append("Enum\n");
@@ -1755,7 +1755,7 @@ public class GolangGenerator implements CodeGenerator
 
                             case BEGIN_SET:
                                 sb.append("\t").append(propertyName)
-                                    .append(String.format(String.format("%%%ds", length), " "))
+                                    .append(generateWhitespace(length))
                                     .append(arrayspec)
                                     .append(encodingToken.applicableTypeName())
                                     .append("\n");
@@ -1778,7 +1778,7 @@ public class GolangGenerator implements CodeGenerator
                                     arrayspec = "[" + encodingToken.encoding().constValue().size() + "]";
                                 }
                                 sb.append("\t").append(propertyName)
-                                    .append(String.format(String.format("%%%ds", length), " "))
+                                    .append(generateWhitespace(length))
                                     .append(arrayspec).append(golangType).append("\n");
                                 break;
                         }
@@ -1790,7 +1790,7 @@ public class GolangGenerator implements CodeGenerator
                     sb.append(String.format(
                         "\t%1$s%2$s[]%3$s%1$s\n",
                         toUpperFirstChar(signalToken.name()),
-                        String.format(String.format("%%%ds", length), " "),
+                        generateWhitespace(length),
                         typeName));
                     generateTypeDeclaration(
                         nested,
@@ -1812,7 +1812,7 @@ public class GolangGenerator implements CodeGenerator
                     sb.append(String.format(
                         "\t%1$s%2$s[]%3$s\n",
                         toUpperFirstChar(signalToken.name()),
-                        String.format(String.format("%%%ds", length), " "),
+                        generateWhitespace(length),
                         golangTypeName(tokens.get(i + 3).encoding().primitiveType())));
                     break;
 
@@ -2009,14 +2009,14 @@ public class GolangGenerator implements CodeGenerator
                     {
                         arrayLength = token.encoding().constValue().size(); // can be 1
                         sb.append("\t").append(propertyName)
-                            .append(String.format(String.format("%%%ds", longest - propertyName.length() + 1), " "))
+                            .append(generateWhitespace(longest - propertyName.length() + 1))
                             .append("[").append(arrayLength).append("]")
                             .append(golangTypeName(token.encoding().primitiveType())).append("\n");
                     }
                     else
                     {
                         sb.append("\t").append(propertyName)
-                            .append(String.format(String.format("%%%ds", longest - propertyName.length() + 1), " "))
+                            .append(generateWhitespace(longest - propertyName.length() + 1))
                             .append((arrayLength > 1) ? ("[" + arrayLength + "]") : "")
                             .append(golangTypeName(token.encoding().primitiveType())).append("\n");
                     }
@@ -2024,14 +2024,14 @@ public class GolangGenerator implements CodeGenerator
 
                 case BEGIN_ENUM:
                     sb.append("\t").append(propertyName)
-                        .append(String.format(String.format("%%%ds", longest - propertyName.length() + 1), " "))
+                        .append(generateWhitespace(longest - propertyName.length() + 1))
                         .append((arrayLength > 1) ? ("[" + arrayLength + "]") : "")
                         .append(propertyType).append("Enum\n");
                     break;
 
                 case BEGIN_SET:
                     sb.append("\t").append(propertyName)
-                        .append(String.format(String.format("%%%ds", longest - propertyName.length() + 1), " "))
+                        .append(generateWhitespace(longest - propertyName.length() + 1))
                         .append((arrayLength > 1) ? ("[" + arrayLength + "]") : "").append(propertyType).append("\n");
                     break;
 
@@ -2041,7 +2041,7 @@ public class GolangGenerator implements CodeGenerator
                     i += token.componentTokenCount() - 2;
 
                     sb.append("\t").append(propertyName)
-                        .append(String.format(String.format("%%%ds", longest - propertyName.length() + 1), " "))
+                        .append(generateWhitespace(longest - propertyName.length() + 1))
                         .append((arrayLength > 1) ? ("[" + arrayLength + "]") : "")
                         .append(typeName).append(propertyName).append("\n");
                     break;
@@ -2346,6 +2346,13 @@ public class GolangGenerator implements CodeGenerator
         }
 
         return literal;
+    }
+
+    // Always generates at least one space
+    private String generateWhitespace(final int spaces)
+    {
+        final int limitedSpaces = Math.max(1, spaces);
+        return String.format(String.format("%%%ds", limitedSpaces), " ");
     }
 }
 
