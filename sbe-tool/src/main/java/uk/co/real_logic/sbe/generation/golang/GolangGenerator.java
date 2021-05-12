@@ -31,6 +31,7 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Stack;
 import java.util.TreeSet;
 
 import static uk.co.real_logic.sbe.PrimitiveType.CHAR;
@@ -49,7 +50,7 @@ public class GolangGenerator implements CodeGenerator
     private final Ir ir;
     private final OutputManager outputManager;
 
-    private TreeSet<String> imports;
+    private Stack<TreeSet<String>> imports;
 
     /**
      * Create a new Go language {@link CodeGenerator}.
@@ -64,6 +65,8 @@ public class GolangGenerator implements CodeGenerator
 
         this.ir = ir;
         this.outputManager = outputManager;
+        this.imports = new Stack<TreeSet<String>>();
+        this.imports.push(new TreeSet<>());  // ensure at least one
     }
 
     /**
@@ -126,8 +129,8 @@ public class GolangGenerator implements CodeGenerator
             final StringBuilder sb = new StringBuilder();
             final List<Token> tokens = ir.headerStructure().tokens();
 
-            imports = new TreeSet<>();
-            imports.add("io");
+            imports.push(new TreeSet<>());
+            imports.peek().add("io");
 
             generateTypeDeclaration(sb, messageHeader);
             generateTypeBodyComposite(sb, messageHeader, tokens.subList(1, tokens.size() - 1));
@@ -136,6 +139,7 @@ public class GolangGenerator implements CodeGenerator
             generateCompositePropertyElements(sb, messageHeader, tokens.subList(1, tokens.size() - 1));
             out.append(generateFileHeader(ir.namespaces()));
             out.append(sb);
+            imports.pop();
         }
     }
 
@@ -172,8 +176,8 @@ public class GolangGenerator implements CodeGenerator
             {
                 final StringBuilder sb = new StringBuilder();
 
-                imports = new TreeSet<>();
-                this.imports.add("io");
+                imports.push(new TreeSet<>());
+                imports.peek().add("io");
 
                 generateTypeDeclaration(sb, typeName);
                 generateTypeBody(sb, typeName, tokens.subList(1, tokens.size() - 1));
@@ -199,6 +203,7 @@ public class GolangGenerator implements CodeGenerator
 
                 out.append(generateFileHeader(ir.namespaces()));
                 out.append(sb);
+                imports.pop();
             }
         }
     }
@@ -223,8 +228,8 @@ public class GolangGenerator implements CodeGenerator
     {
         if (gap > 0)
         {
-            this.imports.add("io");
-            this.imports.add("io/ioutil");
+            imports.peek().add("io");
+            imports.peek().add("io/ioutil");
             return String.format("%1$s\tio.CopyN(ioutil.Discard, _r, %2$d)\n", indent, gap);
         }
 
@@ -243,7 +248,7 @@ public class GolangGenerator implements CodeGenerator
             switch (token.encoding().characterEncoding())
             {
                 case "ASCII":
-                    this.imports.add("fmt");
+                    imports.peek().add("fmt");
                     sb.append(String.format(
                         "\tfor idx, ch := range %1$s {\n" +
                         "\t\tif ch > 127 {\n" +
@@ -255,8 +260,8 @@ public class GolangGenerator implements CodeGenerator
                     break;
 
                 case "UTF-8":
-                    this.imports.add("errors");
-                    this.imports.add("unicode/utf8");
+                    imports.peek().add("errors");
+                    imports.peek().add("unicode/utf8");
                     sb.append(String.format(
                         "\tif !utf8.Valid(%1$s[:]) {\n" +
                         "\t\treturn errors.New(\"%1$s failed UTF-8 validation\")\n" +
@@ -466,7 +471,7 @@ public class GolangGenerator implements CodeGenerator
 
         // If this field is unknown then we have nothing to check
         // Otherwise do the Min,MaxValue checks (possibly for arrays)
-        this.imports.add("fmt");
+        imports.peek().add("fmt");
         if (token.arrayLength() > 1)
         {
             sb.append(String.format(
@@ -616,8 +621,8 @@ public class GolangGenerator implements CodeGenerator
         final StringBuilder sb,
         final char varName)
     {
-        this.imports.add("io");
-        this.imports.add("io/ioutil");
+        imports.peek().add("io");
+        imports.peek().add("io/ioutil");
         sb.append(String.format(
             "\tif actingVersion > %1$s.SbeSchemaVersion() && blockLength > %1$s.SbeBlockLength() {\n" +
             "\t\tio.CopyN(ioutil.Discard, _r, int64(blockLength-%1$s.SbeBlockLength()))\n" +
@@ -867,8 +872,8 @@ public class GolangGenerator implements CodeGenerator
         // Range check
         // We use golang's reflect to range over the values in the
         // struct to check which are legitimate
-        imports.add("fmt");
-        imports.add("reflect");
+        imports.peek().add("fmt");
+        imports.peek().add("reflect");
         generateRangeCheckHeader(sb, varName, enumName + "Enum", true);
 
         // For enums we can add new fields so if we're decoding a
@@ -1437,8 +1442,8 @@ public class GolangGenerator implements CodeGenerator
 
         try (Writer out = outputManager.createOutput(choiceName))
         {
-            imports = new TreeSet<>();
-            imports.add("io");
+            imports.push(new TreeSet<>());
+            imports.peek().add("io");
 
             generateChoiceDecls(
                 sb,
@@ -1462,6 +1467,7 @@ public class GolangGenerator implements CodeGenerator
             }
             out.append(generateFileHeader(ir.namespaces()));
             out.append(sb);
+            imports.pop();
         }
     }
 
@@ -1474,8 +1480,8 @@ public class GolangGenerator implements CodeGenerator
 
         try (Writer out = outputManager.createOutput(enumName))
         {
-            imports = new TreeSet<>();
-            imports.add("io");
+            imports.push(new TreeSet<>());
+            imports.peek().add("io");
 
             generateEnumDecls(
                 sb,
@@ -1501,6 +1507,7 @@ public class GolangGenerator implements CodeGenerator
 
             out.append(generateFileHeader(ir.namespaces()));
             out.append(sb);
+            imports.pop();
         }
     }
 
@@ -1511,8 +1518,8 @@ public class GolangGenerator implements CodeGenerator
 
         try (Writer out = outputManager.createOutput(compositeName))
         {
-            imports = new TreeSet<>();
-            imports.add("io");
+            imports.push(new TreeSet<>());
+            imports.peek().add("io");
 
             generateTypeDeclaration(sb, compositeName);
             generateTypeBodyComposite(sb, compositeName, tokens.subList(1, tokens.size() - 1));
@@ -1526,6 +1533,7 @@ public class GolangGenerator implements CodeGenerator
             // it's created last once that's known.
             out.append(generateFileHeader(ir.namespaces()));
             out.append(sb);
+            imports.pop();
         }
     }
 
@@ -1559,7 +1567,7 @@ public class GolangGenerator implements CodeGenerator
             sb.append(String.format(
                 "\t%1$s%2$s%3$sEnum\n",
                 token.name(),
-                String.format(String.format("%%%ds", longest - token.name().length() + 1), " "),
+                generateWhitespace(longest - token.name().length() + 1),
                 enumName));
         }
 
@@ -1568,7 +1576,7 @@ public class GolangGenerator implements CodeGenerator
             "\t%1$s%2$s%3$sEnum\n" +
             "}\n",
             nullValue,
-            String.format(String.format("%%%ds", longest - nullValue.length() + 1), " "),
+            generateWhitespace(longest - nullValue.length() + 1),
             enumName));
 
         // And now the Enum Values expressed as a variable
@@ -1616,7 +1624,7 @@ public class GolangGenerator implements CodeGenerator
             sb.append(String.format(
                 "\t%1$s%2$s%3$sChoiceValue\n",
                 toUpperFirstChar(token.name()),
-                String.format(String.format("%%%ds", longest - token.name().length() + 1), " "),
+                generateWhitespace(longest - token.name().length() + 1),
                 toUpperFirstChar(encodingToken.applicableTypeName())));
         }
 
@@ -1653,7 +1661,7 @@ public class GolangGenerator implements CodeGenerator
             "import (\n",
             namespacesToPackageName(namespaces)));
 
-        for (final String s : imports)
+        for (final String s : imports.peek())
         {
             sb.append("\t\"").append(s).append("\"\n");
         }
@@ -1747,7 +1755,7 @@ public class GolangGenerator implements CodeGenerator
                         {
                             case BEGIN_ENUM:
                                 sb.append("\t").append(propertyName)
-                                    .append(String.format(String.format("%%%ds", length), " "))
+                                    .append(generateWhitespace(length))
                                     .append(arrayspec)
                                     .append(encodingToken.applicableTypeName())
                                     .append("Enum\n");
@@ -1755,7 +1763,7 @@ public class GolangGenerator implements CodeGenerator
 
                             case BEGIN_SET:
                                 sb.append("\t").append(propertyName)
-                                    .append(String.format(String.format("%%%ds", length), " "))
+                                    .append(generateWhitespace(length))
                                     .append(arrayspec)
                                     .append(encodingToken.applicableTypeName())
                                     .append("\n");
@@ -1778,7 +1786,7 @@ public class GolangGenerator implements CodeGenerator
                                     arrayspec = "[" + encodingToken.encoding().constValue().size() + "]";
                                 }
                                 sb.append("\t").append(propertyName)
-                                    .append(String.format(String.format("%%%ds", length), " "))
+                                    .append(generateWhitespace(length))
                                     .append(arrayspec).append(golangType).append("\n");
                                 break;
                         }
@@ -1790,7 +1798,7 @@ public class GolangGenerator implements CodeGenerator
                     sb.append(String.format(
                         "\t%1$s%2$s[]%3$s%1$s\n",
                         toUpperFirstChar(signalToken.name()),
-                        String.format(String.format("%%%ds", length), " "),
+                        generateWhitespace(length),
                         typeName));
                     generateTypeDeclaration(
                         nested,
@@ -1812,7 +1820,7 @@ public class GolangGenerator implements CodeGenerator
                     sb.append(String.format(
                         "\t%1$s%2$s[]%3$s\n",
                         toUpperFirstChar(signalToken.name()),
-                        String.format(String.format("%%%ds", length), " "),
+                        generateWhitespace(length),
                         golangTypeName(tokens.get(i + 3).encoding().primitiveType())));
                     break;
 
@@ -2009,14 +2017,14 @@ public class GolangGenerator implements CodeGenerator
                     {
                         arrayLength = token.encoding().constValue().size(); // can be 1
                         sb.append("\t").append(propertyName)
-                            .append(String.format(String.format("%%%ds", longest - propertyName.length() + 1), " "))
+                            .append(generateWhitespace(longest - propertyName.length() + 1))
                             .append("[").append(arrayLength).append("]")
                             .append(golangTypeName(token.encoding().primitiveType())).append("\n");
                     }
                     else
                     {
                         sb.append("\t").append(propertyName)
-                            .append(String.format(String.format("%%%ds", longest - propertyName.length() + 1), " "))
+                            .append(generateWhitespace(longest - propertyName.length() + 1))
                             .append((arrayLength > 1) ? ("[" + arrayLength + "]") : "")
                             .append(golangTypeName(token.encoding().primitiveType())).append("\n");
                     }
@@ -2024,14 +2032,14 @@ public class GolangGenerator implements CodeGenerator
 
                 case BEGIN_ENUM:
                     sb.append("\t").append(propertyName)
-                        .append(String.format(String.format("%%%ds", longest - propertyName.length() + 1), " "))
+                        .append(generateWhitespace(longest - propertyName.length() + 1))
                         .append((arrayLength > 1) ? ("[" + arrayLength + "]") : "")
                         .append(propertyType).append("Enum\n");
                     break;
 
                 case BEGIN_SET:
                     sb.append("\t").append(propertyName)
-                        .append(String.format(String.format("%%%ds", longest - propertyName.length() + 1), " "))
+                        .append(generateWhitespace(longest - propertyName.length() + 1))
                         .append((arrayLength > 1) ? ("[" + arrayLength + "]") : "").append(propertyType).append("\n");
                     break;
 
@@ -2041,9 +2049,9 @@ public class GolangGenerator implements CodeGenerator
                     i += token.componentTokenCount() - 2;
 
                     sb.append("\t").append(propertyName)
-                        .append(String.format(String.format("%%%ds", longest - propertyName.length() + 1), " "))
+                        .append(generateWhitespace(longest - propertyName.length() + 1))
                         .append((arrayLength > 1) ? ("[" + arrayLength + "]") : "")
-                        .append(typeName).append(propertyName).append("\n");
+                        .append(typeName).append(propertyType).append("\n");
                     break;
             }
         }
@@ -2194,16 +2202,16 @@ public class GolangGenerator implements CodeGenerator
                 case CHAR:
                     return "byte(32)";
                 case INT8:
-                    imports.add("math");
+                    imports.peek().add("math");
                     return "math.MinInt8 + 1";
                 case INT16:
-                    imports.add("math");
+                    imports.peek().add("math");
                     return "math.MinInt16 + 1";
                 case INT32:
-                    imports.add("math");
+                    imports.peek().add("math");
                     return "math.MinInt32 + 1";
                 case INT64:
-                    imports.add("math");
+                    imports.peek().add("math");
                     return "math.MinInt64 + 1";
                 case UINT8:
                 case UINT16:
@@ -2211,10 +2219,10 @@ public class GolangGenerator implements CodeGenerator
                 case UINT64:
                     return "0";
                 case FLOAT:
-                    imports.add("math");
+                    imports.peek().add("math");
                     return "-math.MaxFloat32";
                 case DOUBLE:
-                    imports.add("math");
+                    imports.peek().add("math");
                     return "-math.MaxFloat64";
             }
         }
@@ -2231,34 +2239,34 @@ public class GolangGenerator implements CodeGenerator
                 case CHAR:
                     return "byte(126)";
                 case INT8:
-                    imports.add("math");
+                    imports.peek().add("math");
                     return "math.MaxInt8";
                 case INT16:
-                    imports.add("math");
+                    imports.peek().add("math");
                     return "math.MaxInt16";
                 case INT32:
-                    imports.add("math");
+                    imports.peek().add("math");
                     return "math.MaxInt32";
                 case INT64:
-                    imports.add("math");
+                    imports.peek().add("math");
                     return "math.MaxInt64";
                 case UINT8:
-                    imports.add("math");
+                    imports.peek().add("math");
                     return "math.MaxUint8 - 1";
                 case UINT16:
-                    imports.add("math");
+                    imports.peek().add("math");
                     return "math.MaxUint16 - 1";
                 case UINT32:
-                    imports.add("math");
+                    imports.peek().add("math");
                     return "math.MaxUint32 - 1";
                 case UINT64:
-                    imports.add("math");
+                    imports.peek().add("math");
                     return "math.MaxUint64 - 1";
                 case FLOAT:
-                    imports.add("math");
+                    imports.peek().add("math");
                     return "math.MaxFloat32";
                 case DOUBLE:
-                    imports.add("math");
+                    imports.peek().add("math");
                     return "math.MaxFloat64";
             }
         }
@@ -2273,28 +2281,28 @@ public class GolangGenerator implements CodeGenerator
             switch (primitiveType)
             {
                 case INT8:
-                    imports.add("math");
+                    imports.peek().add("math");
                     return "math.MinInt8";
                 case INT16:
-                    imports.add("math");
+                    imports.peek().add("math");
                     return "math.MinInt16";
                 case INT32:
-                    imports.add("math");
+                    imports.peek().add("math");
                     return "math.MinInt32";
                 case INT64:
-                    imports.add("math");
+                    imports.peek().add("math");
                     return "math.MinInt64";
                 case UINT8:
-                    imports.add("math");
+                    imports.peek().add("math");
                     return "math.MaxUint8";
                 case UINT16:
-                    imports.add("math");
+                    imports.peek().add("math");
                     return "math.MaxUint16";
                 case UINT32:
-                    imports.add("math");
+                    imports.peek().add("math");
                     return "math.MaxUint32";
                 case UINT64:
-                    imports.add("math");
+                    imports.peek().add("math");
                     return "math.MaxUint64";
             }
         }
@@ -2346,6 +2354,13 @@ public class GolangGenerator implements CodeGenerator
         }
 
         return literal;
+    }
+
+    // Always generates at least one space
+    private String generateWhitespace(final int spaces)
+    {
+        final int limitedSpaces = Math.max(1, spaces);
+        return String.format(String.format("%%%ds", limitedSpaces), " ");
     }
 }
 
