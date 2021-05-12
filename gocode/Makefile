@@ -60,7 +60,7 @@ src/baseline/SbeMarshalling.go: $(DEP)
 # The first set does a make install as there is a test that uses
 # multiple packages and needs them in GOPATH The second set work in
 # src/foo, and the third need a GOPATH addition as for Java and C++
-# they geenrate into the same directory but golang doesn't allow that
+# they generate into the same directory but golang doesn't allow that
 test: $(DEP)
 	(export GOPATH=$(GOPATH) && \
 		(for t in baseline extension; do \
@@ -72,7 +72,7 @@ test: $(DEP)
 		go install \
 		;done))
 	(export GOPATH=$(GOPATH) && \
-		(for t in baseline-bigendian mktdata group_with_data group_with_data_extension composite_elements composite since-deprecated simple issue435 issue472 issue483 issue488 issue560 issue847; do \
+		(for t in baseline-bigendian mktdata group_with_data group_with_data_extension composite_elements composite since-deprecated simple issue435 issue472 issue483 issue488 issue560 issue847 issue848; do \
 		cd $(GOPATH)/src/$$t && \
 		go build && \
 		go fmt && \
