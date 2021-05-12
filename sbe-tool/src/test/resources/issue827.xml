@@ -4,7 +4,7 @@
                    id="827"
                    version="1"
                    semanticVersion="1.0"
-                   description="issue 661 test case"
+                   description="issue 827 test case"
                    byteOrder="bigEndian">
     <types>
         <set name="FlagsSet" encodingType="uint64">

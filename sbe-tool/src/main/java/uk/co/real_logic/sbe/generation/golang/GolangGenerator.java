@@ -2043,7 +2043,7 @@ public class GolangGenerator implements CodeGenerator
                     sb.append("\t").append(propertyName)
                         .append(generateWhitespace(longest - propertyName.length() + 1))
                         .append((arrayLength > 1) ? ("[" + arrayLength + "]") : "")
-                        .append(typeName).append(propertyName).append("\n");
+                        .append(typeName).append(propertyType).append("\n");
                     break;
             }
         }

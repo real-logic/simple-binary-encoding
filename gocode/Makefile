@@ -1,9 +1,13 @@
 ROOT=..
 SBE_TOOL_VERSION=$(shell cat $(ROOT)/version.txt)
 SBE_JAR=$(ROOT)/sbe-all/build/libs/sbe-all-${SBE_TOOL_VERSION}.jar
+
 # FIXME: Go doesn't like relative paths so us a gnumake extension for now
 GOPATH=$(realpath $(ROOT)/gocode)
 
+# GO111MODULE=off is required for building with Go 1.16
+# GOPATH-style support will be removed in Go 1.17
+export GO111MODULE=off
 
 # Convenience during development
 #SAVE_FORMAT=mkdir -p fmt && cp *.go fmt &&
@@ -25,7 +29,7 @@ $(DEP): $(SBE_JAR)
 	go fmt && \
 	go test)
 
-# Wil regenerate codecs by removing dependencies
+# Will regenerate codecs by removing dependencies
 clean:
 	rm -f src/*/SbeMarshalling.go src/*/*/SbeMarshalling.go
 
@@ -68,7 +72,7 @@ test: $(DEP)
 		go install \
 		;done))
 	(export GOPATH=$(GOPATH) && \
-		(for t in baseline-bigendian mktdata group_with_data group_with_data_extension composite_elements composite since-deprecated simple issue435 issue472 issue483 issue488 issue560; do \
+		(for t in baseline-bigendian mktdata group_with_data group_with_data_extension composite_elements composite since-deprecated simple issue435 issue472 issue483 issue488 issue560 issue847; do \
 		cd $(GOPATH)/src/$$t && \
 		go build && \
 		go fmt && \

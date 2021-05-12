@@ -619,6 +619,7 @@ task generateGolangCodecsWithXSD(type: JavaExec) {
             'sbe-tool/src/test/resources/issue488.xml',
             'sbe-tool/src/test/resources/issue560.xml',
             'sbe-tool/src/test/resources/issue661.xml',
+            'sbe-tool/src/test/resources/issue847.xml',
             'sbe-tool/src/test/resources/since-deprecated-test-schema.xml',
             'sbe-tool/src/test/resources/example-bigendian-test-schema.xml',
             'gocode/resources/example-composite.xml',
