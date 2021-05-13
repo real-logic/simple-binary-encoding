@@ -2045,8 +2045,8 @@ public class GolangGenerator implements CodeGenerator
 
                 case BEGIN_COMPOSITE:
                     // recurse
-                    generateComposite(tokens.subList(i, tokens.size()), typeName);
-                    i += token.componentTokenCount() - 2;
+                    generateComposite(tokens.subList(i, i + token.componentTokenCount()), typeName);
+                    i += token.componentTokenCount() - 1;
 
                     sb.append("\t").append(propertyName)
                         .append(generateWhitespace(longest - propertyName.length() + 1))
