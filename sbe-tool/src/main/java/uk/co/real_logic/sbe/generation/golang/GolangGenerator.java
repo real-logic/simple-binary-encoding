@@ -1305,7 +1305,7 @@ public class GolangGenerator implements CodeGenerator
             "\t\t\t%1$s.%2$s = make([]%3$s%2$s, %2$sNumInGroup)\n" +
             "\t\t}\n" +
             "\t\t%1$c.%2$s = %1$c.%2$s[:%2$sNumInGroup]\n" +
-            "\t\tfor i, _ := range %1$s.%2$s {\n" +
+            "\t\tfor i := range %1$s.%2$s {\n" +
             "\t\t\tif err := %1$s.%2$s[i].Decode(_m, _r, actingVersion, uint(%4$sBlockLength)); err != nil {\n" +
             "\t\t\t\treturn err\n" +
             "\t\t\t}\n" +
