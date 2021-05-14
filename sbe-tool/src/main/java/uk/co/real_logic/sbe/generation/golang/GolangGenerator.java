@@ -1305,7 +1305,7 @@ public class GolangGenerator implements CodeGenerator
             "\t\t\t%1$s.%2$s = make([]%3$s%2$s, %2$sNumInGroup)\n" +
             "\t\t}\n" +
             "\t\t%1$c.%2$s = %1$c.%2$s[:%2$sNumInGroup]\n" +
-            "\t\tfor i, _ := range %1$s.%2$s {\n" +
+            "\t\tfor i := range %1$s.%2$s {\n" +
             "\t\t\tif err := %1$s.%2$s[i].Decode(_m, _r, actingVersion, uint(%4$sBlockLength)); err != nil {\n" +
             "\t\t\t\treturn err\n" +
             "\t\t\t}\n" +
@@ -2045,8 +2045,8 @@ public class GolangGenerator implements CodeGenerator
 
                 case BEGIN_COMPOSITE:
                     // recurse
-                    generateComposite(tokens.subList(i, tokens.size()), typeName);
-                    i += token.componentTokenCount() - 2;
+                    generateComposite(tokens.subList(i, i + token.componentTokenCount()), typeName);
+                    i += token.componentTokenCount() - 1;
 
                     sb.append("\t").append(propertyName)
                         .append(generateWhitespace(longest - propertyName.length() + 1))
