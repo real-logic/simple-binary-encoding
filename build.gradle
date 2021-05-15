@@ -46,7 +46,7 @@ def toolchainLauncher = javaToolchains.launcherFor {
 
 def checkstyleVersion = '8.39'
 def hamcrestVersion = '2.2'
-def mockitoVersion = '3.9.0'
+def mockitoVersion = '3.10.0'
 def byteBuddyVersion = '1.11.0'
 def junitVersion = '5.7.1'
 def jmhVersion = '1.31'
@@ -618,6 +618,9 @@ task generateGolangCodecsWithXSD(type: JavaExec) {
             'sbe-tool/src/test/resources/issue488.xml',
             'sbe-tool/src/test/resources/issue560.xml',
             'sbe-tool/src/test/resources/issue661.xml',
+            'sbe-tool/src/test/resources/issue847.xml',
+            'sbe-tool/src/test/resources/issue848.xml',
+            'sbe-tool/src/test/resources/issue849.xml',
             'sbe-tool/src/test/resources/since-deprecated-test-schema.xml',
             'sbe-tool/src/test/resources/example-bigendian-test-schema.xml',
             'gocode/resources/example-composite.xml',
