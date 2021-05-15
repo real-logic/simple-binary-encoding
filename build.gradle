@@ -22,7 +22,6 @@ buildscript {
 
 plugins {
     id 'java-library'
-    id 'idea'
     id 'com.github.johnrengelman.shadow' version '7.0.0' apply false
     id "com.github.ben-manes.versions" version "0.38.0"
 }
@@ -724,6 +723,6 @@ task testReport(type: TestReport) {
 }
 
 wrapper {
-    gradleVersion = '7.0.1'
+    gradleVersion = '7.0.2'
     distributionType = 'ALL'
 }
