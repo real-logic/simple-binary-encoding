@@ -65,23 +65,20 @@ namespace Baseline
 {
     public static class CarExample
     {
-        private static readonly byte[] VehicleCode;
         private static readonly byte[] ManufacturerCode;
-        private static readonly byte[] Manufacturer;
-        private static readonly byte[] Model;
         private static readonly byte[] ActivationCode;
 
+        private static readonly string VehicleCode = "abcdef";
+        private static readonly string Model = "Civic VTi";
+        private static readonly string Manufacturer = "Honda";
 
         static CarExample()
         {
             try
             {
                 // convert some sample strings to the correct encoding for this sample
-                VehicleCode = Encoding.GetEncoding(Car.VehicleCodeCharacterEncoding).GetBytes("abcdef");
-                ManufacturerCode = Encoding.GetEncoding(Engine.ManufacturerCodeCharacterEncoding).GetBytes("123");
-                Manufacturer = Encoding.GetEncoding(Car.ManufacturerCharacterEncoding).GetBytes("Honda");
-                Model = Encoding.GetEncoding(Car.ModelCharacterEncoding).GetBytes("Civic VTi");
-                ActivationCode = Encoding.GetEncoding(Car.ActivationCodeCharacterEncoding).GetBytes("abcdef");
+                ManufacturerCode = Engine.ManufacturerCodeResolvedCharacterEncoding.GetBytes("123");
+                ActivationCode = Car.ActivationCodeResolvedCharacterEncoding.GetBytes("abcdef");
             }
             catch (Exception ex)
             {
@@ -99,7 +96,7 @@ namespace Baseline
             car.ModelYear = 2013;
             car.Available = BooleanType.T; // enums are directly supported
             car.Code = Baseline.Model.A;
-            car.SetVehicleCode(VehicleCode, srcOffset); // we set a constant string
+            car.SetVehicleCode(VehicleCode); // we set a constant string
 
             for (int i = 0, size = Car.SomeNumbersLength; i < size; i++)
             {
@@ -122,17 +119,17 @@ namespace Baseline
             fuelFigures.Next(); // move to the first element
             fuelFigures.Speed = 30;
             fuelFigures.Mpg = 35.9f;
-            fuelFigures.SetUsageDescription(Encoding.GetEncoding(Car.FuelFiguresGroup.UsageDescriptionCharacterEncoding).GetBytes("Urban Cycle"));
+            fuelFigures.SetUsageDescription("Urban Cycle");
 
             fuelFigures.Next(); // second
             fuelFigures.Speed = 55;
             fuelFigures.Mpg = 49.0f;
-            fuelFigures.SetUsageDescription(Encoding.GetEncoding(Car.FuelFiguresGroup.UsageDescriptionCharacterEncoding).GetBytes("Combined Cycle"));
+            fuelFigures.SetUsageDescription("Combined Cycle");
 
             fuelFigures.Next();
             fuelFigures.Speed = 75;
             fuelFigures.Mpg = 40.0f;
-            fuelFigures.SetUsageDescription(Encoding.GetEncoding(Car.FuelFiguresGroup.UsageDescriptionCharacterEncoding).GetBytes("Highway Cycle"));
+            fuelFigures.SetUsageDescription("Highway Cycle");
 
 
             Car.PerformanceFiguresGroup perfFigures = car.PerformanceFiguresCount(2); // demonstrates how to create a nested group
@@ -168,8 +165,8 @@ namespace Baseline
 
             // once we have written all the repeatable groups we can write the variable length properties (you would use that for strings, byte[], etc)
 
-            car.SetManufacturer(Manufacturer, srcOffset, Manufacturer.Length);
-            car.SetModel(Model, srcOffset, Model.Length);
+            car.SetManufacturer(Manufacturer);
+            car.SetModel(Model);
             car.SetActivationCode(ActivationCode, srcOffset, ActivationCode.Length);
 
             return car.Size;
@@ -202,9 +199,7 @@ namespace Baseline
             }
 
             sb.Append("\ncar.vehicleCode=");
-            var vehicleCode = new byte[Car.VehicleCodeLength];
-            car.GetVehicleCode(vehicleCode, 0);
-            sb.Append(Encoding.GetEncoding(Car.VehicleCodeCharacterEncoding).GetString(vehicleCode, 0, Car.VehicleCodeLength));
+            sb.Append(car.GetVehicleCode());
    
             OptionalExtras extras = car.Extras;
             sb.Append("\ncar.extras.cruiseControl=").Append((extras & OptionalExtras.CruiseControl) == OptionalExtras.CruiseControl); // this is how you can find out if a specific flag is set in a flag enum
@@ -237,7 +232,7 @@ namespace Baseline
                 var fuelFigures = fuelFiguresGroup.Next();
                 sb.Append("\ncar.fuelFigures.speed=").Append(fuelFigures.Speed);
                 sb.Append("\ncar.fuelFigures.mpg=").Append(fuelFigures.Mpg);
-                sb.Append("\ncar.fuelFigures.UsageDescription=").Append(Encoding.GetEncoding(Car.FuelFiguresGroup.UsageDescriptionCharacterEncoding).GetString(fuelFigures.GetUsageDescriptionBytes()));
+                sb.Append("\ncar.fuelFigures.UsageDescription=").Append(fuelFigures.GetUsageDescription());
             }
 
             // The second way to access a repeating group is to use an iterator
@@ -258,13 +253,11 @@ namespace Baseline
             // variable length fields
             sb.Append("\ncar.manufacturer.semanticType=").Append(Car.ManufacturerMetaAttribute(MetaAttribute.SemanticType));
             length = car.GetManufacturer(buffer, 0, buffer.Length);
-            sb.Append("\ncar.manufacturer=").Append(Encoding.GetEncoding(Car.ManufacturerCharacterEncoding).GetString(buffer, 0, length));
+            sb.Append("\ncar.manufacturer=").Append(Car.ManufacturerResolvedCharacterEncoding.GetString(buffer, 0, length));
 
-            length = car.GetModel(buffer, 0, buffer.Length);
-            sb.Append("\ncar.model=").Append(Encoding.GetEncoding(Car.ModelCharacterEncoding).GetString(buffer, 0, length));
+            sb.Append("\ncar.model=").Append(car.GetModel());
 
-            length = car.GetActivationCode(buffer, 0, buffer.Length);
-            sb.Append("\ncar.activationcode=").Append(Encoding.GetEncoding(Car.ActivationCodeCharacterEncoding).GetString(buffer, 0, length));
+            sb.Append("\ncar.activationcode=").Append(car.GetActivationCode());
 
             sb.Append("\ncar.size=").Append(car.Size);
 

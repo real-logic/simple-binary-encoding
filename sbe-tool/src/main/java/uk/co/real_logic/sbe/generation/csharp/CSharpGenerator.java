@@ -30,6 +30,8 @@ import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.System.lineSeparator;
+
 import static uk.co.real_logic.sbe.generation.Generators.toLowerFirstChar;
 import static uk.co.real_logic.sbe.generation.Generators.toUpperFirstChar;
 import static uk.co.real_logic.sbe.generation.csharp.CSharpUtil.*;
@@ -478,6 +480,30 @@ public class CSharpGenerator implements CodeGenerator
                     lengthTypePrefix,
                     lengthCSharpType,
                     byteOrderStr));
+
+                sb.append(lineSeparator())
+                    .append(String.format(
+                    indent + "public string Get%1$s()\n" +
+                    indent + "{\n" +
+                    indent + INDENT + "const int sizeOfLengthField = %2$d;\n" +
+                    indent + INDENT + "int limit = _parentMessage.Limit;\n" +
+                    indent + INDENT + "_buffer.CheckLimit(limit + sizeOfLengthField);\n" +
+                    indent + INDENT + "int dataLength = (int)_buffer.%3$sGet%4$s(limit);\n" +
+                    indent + INDENT + "_parentMessage.Limit = limit + sizeOfLengthField + dataLength;\n" +
+                    indent + INDENT + "return _buffer.GetStringFromBytes(%1$sResolvedCharacterEncoding," +
+                    " limit + sizeOfLengthField, dataLength);\n" +
+                    indent + "}\n\n" +
+                    indent + "public void Set%1$s(string value)\n" +
+                    indent + "{\n" +
+                    indent + INDENT + "var encoding = %1$sResolvedCharacterEncoding;\n" +
+                    indent + INDENT + "const int sizeOfLengthField = %2$d;\n" +
+                    indent + INDENT + "int limit = _parentMessage.Limit;\n" +
+                    indent + INDENT + "int byteCount = _buffer.SetBytesFromString(encoding, value, " +
+                    "limit + sizeOfLengthField);\n" +
+                    indent + INDENT + "_parentMessage.Limit = limit + sizeOfLengthField + byteCount;\n" +
+                    indent + INDENT + "_buffer.%3$sPut%4$s(limit, (ushort)byteCount);\n" +
+                    indent + "}\n",
+                    propertyName, sizeOfLengthField, lengthTypePrefix, byteOrderStr));
             }
         }
 
@@ -638,6 +664,7 @@ public class CSharpGenerator implements CodeGenerator
             "// </auto-generated>\n\n" +
             "#pragma warning disable 1591 // disable warning on missing comments\n" +
             "using System;\n" +
+            "using System.Text;\n" +
             "using Org.SbeTool.Sbe.Dll;\n\n" +
             "namespace %s\n" +
             "{\n",
@@ -978,6 +1005,19 @@ public class CSharpGenerator implements CodeGenerator
                 indent + INDENT + "_buffer.SetBytes(_offset + %3$d, src);\n" +
                 indent + "}\n",
                 propName, fieldLength, offset));
+
+            sb.append(String.format("\n" +
+                indent + "public void Set%1$s(string value)\n" +
+                indent + "{\n" +
+                indent + INDENT + "_buffer.SetNullTerminatedBytesFromString(%1$sResolvedCharacterEncoding, " +
+                "value, _offset + %2$s, %1$sLength, %1$sNullValue);\n" +
+                indent + "}\n" +
+                indent + "public string Get%1$s()\n" +
+                indent + "{\n" +
+                indent + INDENT + "return _buffer.GetStringFromNullTerminatedBytes(%1$sResolvedCharacterEncoding, " +
+                "_offset + %2$s, %1$sLength, %1$sNullValue);\n" +
+                indent + "}\n",
+                propName, offset));
         }
 
         return sb;
@@ -990,7 +1030,9 @@ public class CSharpGenerator implements CodeGenerator
         final String indent)
     {
         sb.append(String.format("\n" +
-            indent + "public const string %sCharacterEncoding = \"%s\";\n\n",
+            indent + "public const string %1$sCharacterEncoding = \"%2$s\";\n" +
+            indent + "public static Encoding %1$sResolvedCharacterEncoding = " +
+            "Encoding.GetEncoding(%1$sCharacterEncoding);\n\n",
             formatPropertyName(propertyName),
             encoding));
     }

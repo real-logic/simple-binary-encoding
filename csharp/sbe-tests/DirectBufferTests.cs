@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Text;
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Org.SbeTool.Sbe.Dll;
@@ -620,5 +621,181 @@ namespace Org.SbeTool.Sbe.Tests
        }
 
        #endregion
+
+       #region NullTerminatedBytesFromString
+       const byte Terminator = (byte)0;
+       readonly static Encoding AsciiEncoding = Encoding.UTF8;
+
+
+       [TestMethod]
+       public void ShouldPutStringWithNullTermination()
+       {
+            // the string length is less than the max and less than the capacity - should add null terminator
+            const string value = "abc123";
+            const int index = 0;
+            var written = _directBuffer.SetNullTerminatedBytesFromString(AsciiEncoding, value, index, 100, Terminator);
+            var read = new byte[written];
+            var numBytesWritten = _directBuffer.GetBytes(index, read, 0, written);
+            Assert.AreEqual(7, numBytesWritten);
+            Assert.AreEqual(Terminator, read[read.Length - 1]);  // should be terminated with the null value
+            string result = AsciiEncoding.GetString(read);
+            Assert.AreEqual(value, result.Substring(0, read.Length - 1));
+        }
+
+        [TestMethod]
+        public void ShouldPutStringWitoutNullTerminator()
+        {
+            // the string length is equal to the max legth parameter
+            const string value = "abc123";
+            const int index = 0;
+            var written = _directBuffer.SetNullTerminatedBytesFromString(AsciiEncoding, value, index, value.Length, Terminator);
+            var read = new byte[written];
+            var numBytesWritten = _directBuffer.GetBytes(index, read, 0, written);
+            Assert.AreEqual(6, numBytesWritten);
+            Assert.AreNotEqual(Terminator, read[read.Length - 1]);  // should NOT be terminated with the null value
+            string result = AsciiEncoding.GetString(read);
+            Assert.AreEqual(value, result.Substring(0, read.Length));
+        }
+
+        [TestMethod]
+        public void ShouldPutStringWitoutNullTerminatorIfBytesToWriteEqualsRemainingCapacity()
+        {
+            // the string length is equal to the remaining space in the buffer
+            const string value = "abc123";
+            int index = _directBuffer.Capacity - value.Length;
+            var written = _directBuffer.SetNullTerminatedBytesFromString(AsciiEncoding, value, index, 100, Terminator);
+            var read = new byte[written];
+            var numBytesWritten = _directBuffer.GetBytes(index, read, 0, written);
+            Assert.AreEqual(6, numBytesWritten);
+            Assert.AreNotEqual(Terminator, read[read.Length - 1]);  // should NOT be terminated with the null value
+            string result = AsciiEncoding.GetString(read);
+            Assert.AreEqual(value, result.Substring(0, read.Length));
+        }
+
+
+        [TestMethod]
+        public void ShouldThrowIndexOutOfRangeExceptionWhenStringLengthGreaterThanMax()
+        {
+            const string value = "abc123";
+            const int index = 0;
+            int maxLength = value.Length - 1;  // max length is less than the value length
+            Assert.ThrowsException<IndexOutOfRangeException>(() =>  _directBuffer.SetNullTerminatedBytesFromString(AsciiEncoding, value, index, maxLength, Terminator));
+        }
+
+
+        [TestMethod]
+        public void ShouldThrowIndexOutOfRangeExceptionWhenStringLengthGreaterThanCapacity()
+        {
+            const string value = "abc123";
+            int index = _directBuffer.Capacity - value.Length + 1; // remaining capacity will be too short to write the string bytes
+            Assert.ThrowsException<IndexOutOfRangeException>(() =>  _directBuffer.SetNullTerminatedBytesFromString(AsciiEncoding, value, index, 100, Terminator));
+        }
+
+
+        [TestMethod]
+        public void ShouldPutNullStringNullTerminated()
+        {
+            const string value = null;
+
+            const int index = 0;
+            var written = _directBuffer.SetNullTerminatedBytesFromString(AsciiEncoding, value, index, 100, Terminator);
+            var read = new byte[written];
+            var len = _directBuffer.GetBytes(index, read, 0, written);
+            Assert.AreEqual(1, len);
+            Assert.AreEqual(Terminator, read[read.Length - 1]);
+        }
+
+        [TestMethod]
+        public void ShouldPutEmptyStringNullTerminated()
+        {
+            const string value = "";
+
+            const int index = 0;
+            var written = _directBuffer.SetNullTerminatedBytesFromString(AsciiEncoding, value, index, 100, Terminator);
+            var read = new byte[written];
+            var len = _directBuffer.GetBytes(index, read, 0, written);
+            Assert.AreEqual(1, len);
+            Assert.AreEqual(Terminator, read[read.Length - 1]);
+        }
+
+
+        [TestMethod]
+        public void ShouldGetStringNullTerminated()
+        {
+            var encoding = System.Text.Encoding.ASCII;
+            const string value = "abc123";
+            var bytes = encoding.GetBytes(value);
+            const int index = 0;
+            var written = _directBuffer.SetBytes(index, bytes, 0, bytes.Length);
+            Assert.AreEqual(bytes.Length, written);
+            var written2 = _directBuffer.SetBytes(index + bytes.Length, new byte[] { Terminator }, 0, 1);
+            Assert.AreEqual(1, written2);
+            string result = _directBuffer.GetStringFromNullTerminatedBytes(encoding, index, _directBuffer.Capacity - index, Terminator);
+            Assert.AreEqual(value, result);
+        }
+
+        [TestMethod]
+        public void ShouldGetStringWithoutNullTermination()
+        {
+            var encoding = System.Text.Encoding.UTF8;
+            const string value = "abc123";
+            var bytes = encoding.GetBytes(value);
+            const int index = 10;  // pushes the write to the end of the buffer so no terminator will be added
+            var written = _directBuffer.SetBytes(index, bytes, 0, bytes.Length);
+            Assert.AreEqual(bytes.Length, written);
+            string result = _directBuffer.GetStringFromNullTerminatedBytes(encoding, index, 100, Terminator);
+            Assert.AreEqual(value, result);
+        }
+
+        #endregion
+
+        #region SetBytesFromString
+
+        [TestMethod]
+        public void ShouldSetBytesFromString() {
+            const string value = "abc123";
+            var written = _directBuffer.SetBytesFromString(AsciiEncoding, value, 0);
+            Assert.AreEqual(6, written);
+            string result = _directBuffer.GetStringFromBytes(AsciiEncoding, 0, 6);
+            Assert.AreEqual(value, result);
+        }
+
+       [TestMethod]
+        public void ShouldSetZeroBytesFromEmptyString() {
+            const string value = "";
+            var written = _directBuffer.SetBytesFromString(AsciiEncoding, value, 0);
+            Assert.AreEqual(0, written);
+            string result = _directBuffer.GetStringFromBytes(AsciiEncoding, 0, 0);
+            Assert.AreEqual(value, result);
+        }
+
+
+       [TestMethod]
+        public void ShouldThrowExceptionIfNotEnoughRoomInBufferForBytes() {
+            const string value = "a";
+            Assert.ThrowsException<IndexOutOfRangeException>(() => _directBuffer.SetBytesFromString(AsciiEncoding, value, _directBuffer.Capacity - value.Length + 1));
+        }
+
+
+        #endregion
+
+        #region GetStringFromBytes
+
+       [TestMethod]
+        public void ShouldGetStringFromBytes() {
+            const string value = "abc123";
+            _directBuffer.SetBytesFromString(AsciiEncoding, value, 0);
+            string result = _directBuffer.GetStringFromBytes(AsciiEncoding, 0, AsciiEncoding.GetByteCount(value));
+            Assert.AreEqual(value, result);
+        }
+
+       [TestMethod]
+        public void ShouldThrowExceptionIfNotEnoughBytesToGetStringFromBytes() {
+            Assert.ThrowsException<IndexOutOfRangeException>(() =>  _directBuffer.GetStringFromBytes(AsciiEncoding, _directBuffer.Capacity, 1));
+        }
+
+        #endregion
     }
+
+
 }
