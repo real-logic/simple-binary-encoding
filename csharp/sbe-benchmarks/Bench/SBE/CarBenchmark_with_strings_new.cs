@@ -9,7 +9,6 @@ namespace Org.SbeTool.Sbe.Benchmarks.Bench.Benchmarks
     [MemoryDiagnoser]
     public class CarBenchmark_with_strings_new
     {
-
         private readonly byte[] _eBuffer = new byte[1024];
         private readonly byte[] _dBuffer = new byte[1024];
         private DirectBuffer _encodeBuffer;
@@ -173,7 +172,7 @@ namespace Org.SbeTool.Sbe.Benchmarks.Bench.Benchmarks
             while (performanceFiguresGroup.HasNext)
             {
                 performanceFiguresGroup.Next();
-                var octanceRating = performanceFiguresGroup.OctaneRating;
+                var octaneRating = performanceFiguresGroup.OctaneRating;
 
                 var accelerationGroup = performanceFiguresGroup.Acceleration;
                 for (int i = 0; i < accelerationGroup.Count; i++)
@@ -187,6 +186,7 @@ namespace Org.SbeTool.Sbe.Benchmarks.Bench.Benchmarks
             var man = car.GetManufacturer();
             var model = car.GetModel();
             var actCode = car.GetActivationCode();
+
             return car.Size;
         }
     }

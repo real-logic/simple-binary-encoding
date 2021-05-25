@@ -9,14 +9,12 @@ namespace Org.SbeTool.Sbe.Benchmarks.Bench.Benchmarks
     [MemoryDiagnoser]
     public class CarBenchmark_with_strings_original
     {
-
         private static readonly Encoding VehicleCodeEncoding = Encoding.GetEncoding(Car.VehicleCodeCharacterEncoding);
         private static readonly Encoding ManufacturerCodeEncoding = Encoding.GetEncoding(Engine.ManufacturerCodeCharacterEncoding);
         private static readonly Encoding ManufacturerEncoding = Encoding.GetEncoding(Car.ManufacturerCharacterEncoding);
         private static readonly Encoding ModelEncoding = Encoding.GetEncoding(Car.ModelCharacterEncoding);
         private static readonly Encoding ActivationCodeEncoding = Encoding.GetEncoding(Car.ActivationCodeCharacterEncoding);
         private static readonly Encoding UsageDescriptionEncoding = Encoding.GetEncoding(Car.FuelFiguresGroup.UsageDescriptionCharacterEncoding);
-
 
         private readonly byte[] _eBuffer = new byte[1024];
         private readonly byte[] _dBuffer = new byte[1024];
@@ -187,7 +185,7 @@ namespace Org.SbeTool.Sbe.Benchmarks.Bench.Benchmarks
             while (performanceFiguresGroup.HasNext)
             {
                 performanceFiguresGroup.Next();
-                var octanceRating = performanceFiguresGroup.OctaneRating;
+                var octaneRating = performanceFiguresGroup.OctaneRating;
 
                 var accelerationGroup = performanceFiguresGroup.Acceleration;
                 for (int i = 0; i < accelerationGroup.Count; i++)

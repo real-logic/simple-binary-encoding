@@ -184,7 +184,7 @@ namespace Org.SbeTool.Sbe.Benchmarks.Bench.Benchmarks
             while (performanceFiguresGroup.HasNext)
             {
                 performanceFiguresGroup.Next();
-                var octanceRating = performanceFiguresGroup.OctaneRating;
+                var octaneRating = performanceFiguresGroup.OctaneRating;
 
                 var accelerationGroup = performanceFiguresGroup.Acceleration;
                 for (int i = 0; i < accelerationGroup.Count; i++)

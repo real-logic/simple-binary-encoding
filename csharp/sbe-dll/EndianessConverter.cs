@@ -8,7 +8,8 @@ namespace Org.SbeTool.Sbe.Dll
     /// </summary>
     public static class EndianessConverter
     {
-        // TODO: we could assume the system is always little endian and have two methods for each (one no-op and another one which reverse, so we do not have branching)
+        // TODO: we could assume the system is always little endian and have two methods for each
+        // TODO: (one no-op and another one which reverse, so we do not have branching)
 
         private static readonly ByteOrder NativeByteOrder = BitConverter.IsLittleEndian
             ? ByteOrder.LittleEndian

@@ -657,7 +657,7 @@ namespace Org.SbeTool.Sbe.Dll
 
         /// <summary>
         /// Writes a string into the underlying buffer, encoding using the provided <see cref="System.Text.Encoding"/>.
-        /// If there is not enough room in the buffer for the bytes it will throw IndexOutOfRangeExcpetion.
+        /// If there is not enough room in the buffer for the bytes it will throw IndexOutOfRangeException.
         /// </summary>
         /// <param name="encoding">encoding to use to write the bytes from the string</param>
         /// <param name="src">source string</param>
@@ -665,15 +665,14 @@ namespace Org.SbeTool.Sbe.Dll
         /// <returns>count of bytes written</returns>
         public unsafe int SetBytesFromString(Encoding encoding, string src, int index)
         {
-
            int available = _capacity - index;
-
            int byteCount = encoding.GetByteCount(src);
 
            if (byteCount > available)
            {
                ThrowHelper.ThrowIndexOutOfRangeException(_capacity);
            }
+
            fixed (char* ptr = src)
            {
                return encoding.GetBytes(ptr, src.Length, _pBuffer + index, byteCount);
@@ -686,7 +685,7 @@ namespace Org.SbeTool.Sbe.Dll
         /// If there are not enough bytes in the buffer it will throw an IndexOutOfRangeException.
         /// </summary>
         /// <param name="encoding">encoding to use to convert the bytes into characters</param>
-        /// <param name="index">index in theunderlying buffer to start writing bytes</param>
+        /// <param name="index">index in the underlying buffer to start writing bytes</param>
         /// <param name="byteCount">the number of bytes to read into the string</param>
         /// <returns>the string representing the decoded bytes read from the buffer</returns>
         public string GetStringFromBytes(Encoding encoding, int index, int byteCount)
@@ -715,14 +714,17 @@ namespace Org.SbeTool.Sbe.Dll
             {
                 ThrowHelper.ThrowIndexOutOfRangeException(index);
             }
+
             if (_pBuffer[index] == nullByte)
             {
                 return null;
             }
+
             int byteCount2 = 0;
             for (byteCount2 = 0; byteCount2 < count && _pBuffer[byteCount2 + index] != nullByte; byteCount2++)
             { 
             }
+
             return new String((sbyte*) _pBuffer, index, byteCount2, encoding);
         }
 
@@ -743,25 +745,30 @@ namespace Org.SbeTool.Sbe.Dll
             {
                 ThrowHelper.ThrowIndexOutOfRangeException(index);
             }
+
             if (src == null)
             {
                 _pBuffer[index] = nullByte;
                 return 1;
             }
+
             int byteCount = encoding.GetByteCount(src);
             if (byteCount > available)
             {
                 ThrowHelper.ThrowIndexOutOfRangeException(index + available);
             }
+
             fixed (char* ptr = src)
             {
                 encoding.GetBytes(ptr, src.Length, _pBuffer + index, byteCount);
             }
+
             if (byteCount < available)
             {
                 *(_pBuffer + index + byteCount) = nullByte;
                 return byteCount + 1;
             }
+
             return byteCount;
         }
 
