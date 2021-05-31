@@ -49,6 +49,5 @@ namespace Org.SbeTool.Sbe.Tests
         {
             Assert.AreEqual(_issue560.DiscountedModel, Issue560.Model.C, "Incorrect const enum valueref");
         }
-
     }
 }

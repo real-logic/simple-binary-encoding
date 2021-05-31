@@ -14,17 +14,10 @@
  * limitations under the License.
  */
 
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-}
-
 plugins {
     id 'java-library'
-    id 'idea'
-    id 'com.github.johnrengelman.shadow' version '6.1.0' apply false
-    id "com.github.ben-manes.versions" version "0.38.0"
+    id 'com.github.johnrengelman.shadow' version '7.0.0' apply false
+    id "com.github.ben-manes.versions" version "0.39.0"
 }
 
 defaultTasks 'clean', 'build'
@@ -47,10 +40,10 @@ def toolchainLauncher = javaToolchains.launcherFor {
 
 def checkstyleVersion = '8.39'
 def hamcrestVersion = '2.2'
-def mockitoVersion = '3.9.0'
+def mockitoVersion = '3.10.0'
 def byteBuddyVersion = '1.11.0'
-def junitVersion = '5.7.1'
-def jmhVersion = '1.30'
+def junitVersion = '5.7.2'
+def jmhVersion = '1.32'
 def agronaVersion = '1.10.0'
 def agronaVersionRange = '[1.10,1.11[' // allow any patch release of 1.10.x
 
@@ -162,7 +155,6 @@ jar.enabled = false
 subprojects {
     apply plugin: 'java-library'
     apply plugin: 'checkstyle'
-    apply plugin: 'eclipse'
 
     group = sbeGroup
     version = sbeVersion
@@ -619,6 +611,9 @@ task generateGolangCodecsWithXSD(type: JavaExec) {
             'sbe-tool/src/test/resources/issue488.xml',
             'sbe-tool/src/test/resources/issue560.xml',
             'sbe-tool/src/test/resources/issue661.xml',
+            'sbe-tool/src/test/resources/issue847.xml',
+            'sbe-tool/src/test/resources/issue848.xml',
+            'sbe-tool/src/test/resources/issue849.xml',
             'sbe-tool/src/test/resources/since-deprecated-test-schema.xml',
             'sbe-tool/src/test/resources/example-bigendian-test-schema.xml',
             'gocode/resources/example-composite.xml',
@@ -723,7 +718,20 @@ task testReport(type: TestReport) {
     reportOn subprojects*.test
 }
 
+def isNonStable = { String version ->
+    def stableKeyword = ['RELEASE', 'FINAL', 'GA'].any { it -> version.toUpperCase().contains(it) }
+    def regex = /^[0-9,.v-]+(-r)?$/
+    return !stableKeyword && !(version ==~ regex)
+}
+
+tasks.named("dependencyUpdates").configure {
+    // Reject all non stable versions
+    rejectVersionIf {
+        isNonStable(it.candidate.version)
+    }
+}
+
 wrapper {
-    gradleVersion = '6.8.3'
+    gradleVersion = '7.0.2'
     distributionType = 'ALL'
 }

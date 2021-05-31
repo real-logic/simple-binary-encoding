@@ -302,7 +302,7 @@ public class CompositeType extends Type
      */
     public void checkForWellFormedMessageHeader(final Node node)
     {
-        final boolean shouldGenerateInterfaces = Boolean.getBoolean(JAVA_GENERATE_INTERFACES);
+        final boolean shouldGenerateInterfaces = "true".equals(System.getProperty(JAVA_GENERATE_INTERFACES));
 
         final EncodedDataType blockLengthType = (EncodedDataType)containedTypeByNameMap.get("blockLength");
         final EncodedDataType templateIdType = (EncodedDataType)containedTypeByNameMap.get("templateId");
