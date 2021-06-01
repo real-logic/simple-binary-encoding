@@ -38,6 +38,8 @@ import static uk.co.real_logic.sbe.generation.csharp.CSharpUtil.*;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectVarData;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectGroups;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectFields;
+import static uk.co.real_logic.sbe.ir.GenerationUtil.findEndSignal;
+import static uk.co.real_logic.sbe.ir.GenerationUtil.getMessageBody;
 
 /**
  * Codec generator for the CSharp programming language.
@@ -142,6 +144,8 @@ public class CSharpGenerator implements CodeGenerator
                 collectVarData(messageBody, offset, varData);
                 out.append(generateVarData(varData, BASE_INDENT + INDENT));
 
+                out.append(generateDisplay(toUpperFirstChar(msgToken.name()), fields, groups, varData));
+
                 out.append(INDENT + "}\n");
                 out.append("}\n");
             }
@@ -179,6 +183,8 @@ public class CSharpGenerator implements CodeGenerator
             final List<Token> varData = new ArrayList<>();
             i = collectVarData(tokens, i, varData);
             sb.append(generateVarData(varData, indent + INDENT + INDENT));
+
+            appendGroupInstanceDisplay(sb, fields, groups, varData, indent + INDENT);
 
             sb.append(indent).append(INDENT + "}\n");
         }
@@ -525,6 +531,7 @@ public class CSharpGenerator implements CodeGenerator
             out.append(generateChoices(tokens.subList(1, tokens.size() - 1)));
 
             out.append(INDENT + "}\n");
+            out.append(generateChoiceDisplay(enumName, getMessageBody(tokens)));
             out.append("}\n");
         }
     }
@@ -560,6 +567,7 @@ public class CSharpGenerator implements CodeGenerator
             out.append(generateFixedFlyweightCode(tokens.get(0).encodedLength()));
             out.append(generateCompositePropertyElements(tokens.subList(1, tokens.size() - 1), BASE_INDENT));
 
+            out.append(generateCompositeDisplay(tokens));
             out.append(INDENT + "}\n");
             out.append("}\n");
         }
@@ -1539,5 +1547,303 @@ public class CSharpGenerator implements CodeGenerator
         }
 
         return literal;
+    }
+
+    private void appendGroupInstanceDisplay(
+        final StringBuilder sb,
+        final List<Token> fields,
+        final List<Token> groups,
+        final List<Token> varData,
+        final String baseIndent)
+    {
+        final String indent = baseIndent + INDENT;
+
+        sb.append('\n');
+        append(sb, indent, "internal void BuildString(StringBuilder builder)");
+        append(sb, indent, "{");
+        append(sb, indent, "    if (_buffer == null)");
+        append(sb, indent, "        return;");
+        sb.append('\n');
+        Separators.BEGIN_COMPOSITE.appendToGeneratedBuilder(sb, indent + INDENT, "builder");
+        appendDisplay(sb, fields, groups, varData, indent + INDENT);
+        Separators.END_COMPOSITE.appendToGeneratedBuilder(sb, indent + INDENT, "builder");
+        sb.append('\n');
+        append(sb, indent, "}");
+    }
+
+    private void appendDisplay(
+        final StringBuilder sb,
+        final List<Token> fields,
+        final List<Token> groups,
+        final List<Token> varData,
+        final String indent)
+    {
+        int lengthBeforeLastGeneratedSeparator = -1;
+
+        for (int i = 0, size = fields.size(); i < size;)
+        {
+            final Token fieldToken = fields.get(i);
+            if (fieldToken.signal() == Signal.BEGIN_FIELD)
+            {
+                final Token encodingToken = fields.get(i + 1);
+                final String fieldName = formatPropertyName(fieldToken.name());
+                lengthBeforeLastGeneratedSeparator = writeTokenDisplay(fieldName, encodingToken, sb, indent);
+
+                i += fieldToken.componentTokenCount();
+            }
+            else
+            {
+                ++i;
+            }
+        }
+
+        for (int i = 0, size = groups.size(); i < size; i++)
+        {
+            final Token groupToken = groups.get(i);
+            if (groupToken.signal() != Signal.BEGIN_GROUP)
+            {
+                throw new IllegalStateException("tokens must begin with BEGIN_GROUP: token=" + groupToken);
+            }
+
+            final String groupName = formatPropertyName(groupToken.name());
+            final String className = formatClassName(groupToken.name());
+            final String varName = formatVariableName(groupToken.name());
+
+            append(sb, indent, "builder.Append(\"" + groupName + Separators.KEY_VALUE +
+                Separators.BEGIN_GROUP + "\");");
+            append(sb, indent, "var " + varName + " = this." + groupName + ";");
+            append(sb, indent, "if (" + varName + ".Count > 0)");
+            append(sb, indent, "{");
+            append(sb, indent, "    var first = true;");
+            append(sb, indent, "    while (" + varName + ".HasNext)");
+            append(sb, indent, "    {");
+            append(sb, indent, "        if (!first) builder.Append(',');");
+            append(sb, indent, "        first = false;");
+            append(sb, indent, "        " + varName + ".Next().BuildString(builder);");
+            append(sb, indent, "    }");
+            append(sb, indent, "}");
+            append(sb, indent, "builder.Append(\"" + Separators.END_GROUP + "\");");
+
+            lengthBeforeLastGeneratedSeparator = sb.length();
+            Separators.FIELD.appendToGeneratedBuilder(sb, indent, "builder");
+
+            i = findEndSignal(groups, i, Signal.END_GROUP, groupToken.name());
+        }
+
+        for (int i = 0, size = varData.size(); i < size;)
+        {
+            final Token varDataToken = varData.get(i);
+            if (varDataToken.signal() != Signal.BEGIN_VAR_DATA)
+            {
+                throw new IllegalStateException("tokens must begin with BEGIN_VAR_DATA: token=" + varDataToken);
+            }
+
+            final String characterEncoding = varData.get(i + 3).encoding().characterEncoding();
+            final String varDataName = formatPropertyName(varDataToken.name());
+            final String getterName = formatGetterName(varDataToken.name());
+            append(sb, indent, "builder.Append(\"" + varDataName + Separators.KEY_VALUE + "\");");
+            if (null == characterEncoding)
+            {
+                final String name = Generators.toUpperFirstChar(varDataToken.name());
+                append(sb, indent, "builder.Append(skip" + name + "()).Append(\" bytes of raw data\");");
+            }
+            else
+            {
+                append(sb, indent, "builder.Append('\\'').Append(" + getterName + "()).Append('\\'');");
+            }
+
+            lengthBeforeLastGeneratedSeparator = sb.length();
+            Separators.FIELD.appendToGeneratedBuilder(sb, indent, "builder");
+
+            i += varDataToken.componentTokenCount();
+        }
+
+        if (-1 != lengthBeforeLastGeneratedSeparator)
+        {
+            sb.setLength(lengthBeforeLastGeneratedSeparator);
+        }
+    }
+
+
+    private int writeTokenDisplay(
+        final String fieldName,
+        final Token typeToken,
+        final StringBuilder sb,
+        final String indent)
+    {
+        if (typeToken.encodedLength() <= 0 || typeToken.isConstantEncoding())
+        {
+            return -1;
+        }
+
+        append(sb, indent, "builder.Append(\"" + fieldName + Separators.KEY_VALUE + "\");");
+
+        switch (typeToken.signal())
+        {
+            case ENCODING:
+                if (typeToken.arrayLength() > 1)
+                {
+                    if (typeToken.encoding().primitiveType() == PrimitiveType.CHAR)
+                    {
+                        append(sb, indent, "for (int i = 0; i < " + fieldName +
+                            "Length && this.Get" + fieldName + "(i) > 0; ++i)");
+                        append(sb, indent, "{");
+                        append(sb, indent, "    builder.Append((char)this.Get" + fieldName + "(i));");
+                        append(sb, indent, "}");
+                    }
+                    else
+                    {
+                        Separators.BEGIN_ARRAY.appendToGeneratedBuilder(sb, indent, "builder");
+                        append(sb, indent, "for (int i = 0; i < " + fieldName + "Length; ++i)");
+                        append(sb, indent, "{");
+                        append(sb, indent, "    if (i > 0) builder.Append(',');");
+                        append(sb, indent, "    builder.Append(Get" + fieldName + "(i));");
+                        append(sb, indent, "}");
+                        Separators.END_ARRAY.appendToGeneratedBuilder(sb, indent, "builder");
+                    }
+                }
+                else
+                {
+                    // have to duplicate because of checkstyle :/
+                    append(sb, indent, "builder.Append(this." + fieldName + ");");
+                }
+                break;
+
+            case BEGIN_ENUM:
+                append(sb, indent, "builder.Append(this." + fieldName + ");");
+                break;
+
+            case BEGIN_SET:
+                append(sb, indent, "this." + fieldName + ".BuildString(builder);");
+                break;
+
+            case BEGIN_COMPOSITE:
+            {
+                final String varName = formatVariableName(typeToken.applicableTypeName());
+                append(sb, indent, "if (this." + fieldName + " != null)");
+                append(sb, indent, "     this." + fieldName + ".BuildString(builder);");
+                append(sb, indent, "else");
+                append(sb, indent, "    builder.Append(\"null\");");
+                break;
+            }
+        }
+
+        final int lengthBeforeFieldSeparator = sb.length();
+        Separators.FIELD.appendToGeneratedBuilder(sb, indent, "builder");
+
+        return lengthBeforeFieldSeparator;
+    }
+
+    private void appendToString(final StringBuilder sb, final String indent)
+    {
+        sb.append('\n');
+        append(sb, indent, "public override string ToString()");
+        append(sb, indent, "{");
+        append(sb, indent, "    var sb = new StringBuilder(100);");
+        append(sb, indent, "    this.BuildString(sb);");
+        append(sb, indent, "    return sb.ToString();");
+        append(sb, indent, "}");
+    }
+
+    private CharSequence generateChoiceDisplay(final String enumName, final List<Token> tokens)
+    {
+        final String indent = INDENT;
+        final String indentTwo = INDENT + INDENT;
+        final String indentThree = INDENT + INDENT + INDENT;
+        final StringBuilder sb = new StringBuilder();
+
+        sb.append('\n');
+        append(sb, indent, "static class " + enumName + "Ext");
+        append(sb, indent, "{");
+        append(sb, indentTwo, "internal static void BuildString(this " + enumName + " val, StringBuilder builder)");
+        append(sb, indentTwo, "{");
+        Separators.BEGIN_SET.appendToGeneratedBuilder(sb, indentThree, "builder");
+        append(sb, indentThree, "builder.Append(val.ToString());");
+        Separators.END_SET.appendToGeneratedBuilder(sb, indentThree, "builder");
+        append(sb, indentTwo, "}");
+        append(sb, indent, "}");
+        return sb;
+    }
+
+    private CharSequence generateDisplay(
+        final String name,
+        final List<Token> tokens,
+        final List<Token> groups,
+        final List<Token> varData)
+    {
+        final StringBuilder sb = new StringBuilder(100);
+        final String indent = INDENT + INDENT;
+
+        appendToString(sb, indent);
+        sb.append('\n');
+        append(sb, indent, "internal void BuildString(StringBuilder builder)");
+        append(sb, indent, "{");
+        append(sb, indent, "    if (_buffer == null)");
+        append(sb, indent, "        throw new ArgumentNullException(\"_buffer\");");
+        sb.append('\n');
+        append(sb, indent, "    int originalLimit = this.Limit;");
+        append(sb, indent, "    this.Limit = _offset + _actingBlockLength;");
+        append(sb, indent, "    builder.Append(\"[" + name + "](sbeTemplateId=\");");
+        append(sb, indent, "    builder.Append(" + name + ".TemplateId);");
+        append(sb, indent, "    builder.Append(\"|sbeSchemaId=\");");
+        append(sb, indent, "    builder.Append(" + name + ".SchemaId);");
+        append(sb, indent, "    builder.Append(\"|sbeSchemaVersion=\");");
+        append(sb, indent, "    if (_parentMessage._actingVersion != " + name + ".SchemaVersion)");
+        append(sb, indent, "    {");
+        append(sb, indent, "        builder.Append(_parentMessage._actingVersion);");
+        append(sb, indent, "        builder.Append('/');");
+        append(sb, indent, "    }");
+        append(sb, indent, "    builder.Append(" + name + ".SchemaVersion);");
+        append(sb, indent, "    builder.Append(\"|sbeBlockLength=\");");
+        append(sb, indent, "    if (_actingBlockLength != " + name + ".BlockLength)");
+        append(sb, indent, "    {");
+        append(sb, indent, "        builder.Append(_actingBlockLength);");
+        append(sb, indent, "        builder.Append('/');");
+        append(sb, indent, "    }");
+        append(sb, indent, "    builder.Append(" + name + ".BlockLength);");
+        append(sb, indent, "    builder.Append(\"):\");");
+        sb.append('\n');
+        appendDisplay(sb, tokens, groups, varData, indent + INDENT);
+        sb.append('\n');
+        append(sb, indent, "    this.Limit = originalLimit;");
+        sb.append('\n');
+        append(sb, indent, "}");
+        return sb;
+    }
+
+    private CharSequence generateCompositeDisplay(final List<Token> tokens)
+    {
+        final String indent = INDENT;
+        final StringBuilder sb = new StringBuilder();
+
+        appendToString(sb, indent);
+        sb.append('\n');
+        append(sb, indent, "internal void BuildString(StringBuilder builder)");
+        append(sb, indent, "{");
+        append(sb, indent, "    if (_buffer == null)");
+        append(sb, indent, "        return;");
+        sb.append('\n');
+        Separators.BEGIN_COMPOSITE.appendToGeneratedBuilder(sb, indent + INDENT, "builder");
+
+        int lengthBeforeLastGeneratedSeparator = -1;
+
+        for (int i = 1, end = tokens.size() - 1; i < end;)
+        {
+            final Token encodingToken = tokens.get(i);
+            final String propertyName = formatPropertyName(encodingToken.name());
+            lengthBeforeLastGeneratedSeparator = writeTokenDisplay(propertyName, encodingToken, sb, indent + INDENT);
+            i += encodingToken.componentTokenCount();
+        }
+
+        if (-1 != lengthBeforeLastGeneratedSeparator)
+        {
+            sb.setLength(lengthBeforeLastGeneratedSeparator);
+        }
+
+        Separators.END_COMPOSITE.appendToGeneratedBuilder(sb, indent + INDENT, "builder");
+        sb.append('\n');
+        append(sb, indent, "}");
+
+        return sb;
     }
 }
