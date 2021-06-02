@@ -487,29 +487,32 @@ public class CSharpGenerator implements CodeGenerator
                     lengthCSharpType,
                     byteOrderStr));
 
-                sb.append(lineSeparator())
-                    .append(String.format(
-                    indent + "public string Get%1$s()\n" +
-                    indent + "{\n" +
-                    indent + INDENT + "const int sizeOfLengthField = %2$d;\n" +
-                    indent + INDENT + "int limit = _parentMessage.Limit;\n" +
-                    indent + INDENT + "_buffer.CheckLimit(limit + sizeOfLengthField);\n" +
-                    indent + INDENT + "int dataLength = (int)_buffer.%3$sGet%4$s(limit);\n" +
-                    indent + INDENT + "_parentMessage.Limit = limit + sizeOfLengthField + dataLength;\n" +
-                    indent + INDENT + "return _buffer.GetStringFromBytes(%1$sResolvedCharacterEncoding," +
-                    " limit + sizeOfLengthField, dataLength);\n" +
-                    indent + "}\n\n" +
-                    indent + "public void Set%1$s(string value)\n" +
-                    indent + "{\n" +
-                    indent + INDENT + "var encoding = %1$sResolvedCharacterEncoding;\n" +
-                    indent + INDENT + "const int sizeOfLengthField = %2$d;\n" +
-                    indent + INDENT + "int limit = _parentMessage.Limit;\n" +
-                    indent + INDENT + "int byteCount = _buffer.SetBytesFromString(encoding, value, " +
-                    "limit + sizeOfLengthField);\n" +
-                    indent + INDENT + "_parentMessage.Limit = limit + sizeOfLengthField + byteCount;\n" +
-                    indent + INDENT + "_buffer.%3$sPut%4$s(limit, (ushort)byteCount);\n" +
-                    indent + "}\n",
-                    propertyName, sizeOfLengthField, lengthTypePrefix, byteOrderStr));
+                if (characterEncoding != null)  // only generate these string based methods if there is an encoding
+                {
+                    sb.append(lineSeparator())
+                        .append(String.format(
+                        indent + "public string Get%1$s()\n" +
+                        indent + "{\n" +
+                        indent + INDENT + "const int sizeOfLengthField = %2$d;\n" +
+                        indent + INDENT + "int limit = _parentMessage.Limit;\n" +
+                        indent + INDENT + "_buffer.CheckLimit(limit + sizeOfLengthField);\n" +
+                        indent + INDENT + "int dataLength = (int)_buffer.%3$sGet%4$s(limit);\n" +
+                        indent + INDENT + "_parentMessage.Limit = limit + sizeOfLengthField + dataLength;\n" +
+                        indent + INDENT + "return _buffer.GetStringFromBytes(%1$sResolvedCharacterEncoding," +
+                        " limit + sizeOfLengthField, dataLength);\n" +
+                        indent + "}\n\n" +
+                        indent + "public void Set%1$s(string value)\n" +
+                        indent + "{\n" +
+                        indent + INDENT + "var encoding = %1$sResolvedCharacterEncoding;\n" +
+                        indent + INDENT + "const int sizeOfLengthField = %2$d;\n" +
+                        indent + INDENT + "int limit = _parentMessage.Limit;\n" +
+                        indent + INDENT + "int byteCount = _buffer.SetBytesFromString(encoding, value, " +
+                        "limit + sizeOfLengthField);\n" +
+                        indent + INDENT + "_parentMessage.Limit = limit + sizeOfLengthField + byteCount;\n" +
+                        indent + INDENT + "_buffer.%3$sPut%4$s(limit, (ushort)byteCount);\n" +
+                        indent + "}\n",
+                        propertyName, sizeOfLengthField, lengthTypePrefix, byteOrderStr));
+                }
             }
         }
 
@@ -1037,12 +1040,14 @@ public class CSharpGenerator implements CodeGenerator
         final String encoding,
         final String indent)
     {
-        sb.append(String.format("\n" +
-            indent + "public const string %1$sCharacterEncoding = \"%2$s\";\n" +
-            indent + "public static Encoding %1$sResolvedCharacterEncoding = " +
-            "Encoding.GetEncoding(%1$sCharacterEncoding);\n\n",
-            formatPropertyName(propertyName),
-            encoding));
+        if (encoding != null) // Raw data fields might not have encodings
+        {
+            sb.append(String.format("\n" +
+                indent + "public const string %1$sCharacterEncoding = \"%2$s\";\n" +
+                indent + "public static Encoding %1$sResolvedCharacterEncoding = " +
+                "Encoding.GetEncoding(%1$sCharacterEncoding);\n\n",
+                formatPropertyName(propertyName), encoding));
+        }
     }
 
     private CharSequence generateConstPropertyMethods(
@@ -1631,6 +1636,8 @@ public class CSharpGenerator implements CodeGenerator
 
         for (int i = 0, size = varData.size(); i < size;)
         {
+            final Token lengthToken = Generators.findFirst("length", varData, i);
+            final int sizeOfLengthField = lengthToken.encodedLength();
             final Token varDataToken = varData.get(i);
             if (varDataToken.signal() != Signal.BEGIN_VAR_DATA)
             {
@@ -1641,10 +1648,12 @@ public class CSharpGenerator implements CodeGenerator
             final String varDataName = formatPropertyName(varDataToken.name());
             final String getterName = formatGetterName(varDataToken.name());
             append(sb, indent, "builder.Append(\"" + varDataName + Separators.KEY_VALUE + "\");");
-            if (null == characterEncoding)
+            if (characterEncoding == null)
             {
                 final String name = Generators.toUpperFirstChar(varDataToken.name());
-                append(sb, indent, "builder.Append(skip" + name + "()).Append(\" bytes of raw data\");");
+                append(sb, indent, "builder.Append(" + name + "Length()).Append(\" bytes of raw data\");");
+                append(sb, indent, "_parentMessage.Limit = _parentMessage.Limit + " +
+                    sizeOfLengthField + " + " + name + "Length();\n");
             }
             else
             {
