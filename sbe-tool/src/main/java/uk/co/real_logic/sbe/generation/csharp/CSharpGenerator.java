@@ -1593,7 +1593,7 @@ public class CSharpGenerator implements CodeGenerator
             }
             else
             {
-                ++i;
+                i++;
             }
         }
 
@@ -1606,7 +1606,6 @@ public class CSharpGenerator implements CodeGenerator
             }
 
             final String groupName = formatPropertyName(groupToken.name());
-            final String className = formatClassName(groupToken.name());
             final String varName = formatVariableName(groupToken.name());
 
             append(sb, indent, "builder.Append(\"" + groupName + Separators.KEY_VALUE +
@@ -1658,12 +1657,11 @@ public class CSharpGenerator implements CodeGenerator
             i += varDataToken.componentTokenCount();
         }
 
-        if (-1 != lengthBeforeLastGeneratedSeparator)
+        if (lengthBeforeLastGeneratedSeparator > -1)
         {
             sb.setLength(lengthBeforeLastGeneratedSeparator);
         }
     }
-
 
     private int writeTokenDisplay(
         final String fieldName,
@@ -1671,60 +1669,65 @@ public class CSharpGenerator implements CodeGenerator
         final StringBuilder sb,
         final String indent)
     {
-        if (typeToken.encodedLength() <= 0 || typeToken.isConstantEncoding())
+        if (typeToken.encodedLength() <= 0)
         {
             return -1;
         }
 
         append(sb, indent, "builder.Append(\"" + fieldName + Separators.KEY_VALUE + "\");");
 
-        switch (typeToken.signal())
+        if (typeToken.isConstantEncoding())
         {
-            case ENCODING:
-                if (typeToken.arrayLength() > 1)
-                {
-                    if (typeToken.encoding().primitiveType() == PrimitiveType.CHAR)
+            append(sb, indent, "builder.Append(\"" + typeToken.encoding().constValue() + "\");");
+        }
+        else
+        {
+            switch (typeToken.signal())
+            {
+                case ENCODING:
+                    if (typeToken.arrayLength() > 1)
                     {
-                        append(sb, indent, "for (int i = 0; i < " + fieldName +
-                            "Length && this.Get" + fieldName + "(i) > 0; ++i)");
-                        append(sb, indent, "{");
-                        append(sb, indent, "    builder.Append((char)this.Get" + fieldName + "(i));");
-                        append(sb, indent, "}");
+                        if (typeToken.encoding().primitiveType() == PrimitiveType.CHAR)
+                        {
+                            append(sb, indent, "for (int i = 0; i < " + fieldName +
+                                "Length && this.Get" + fieldName + "(i) > 0; ++i)");
+                            append(sb, indent, "{");
+                            append(sb, indent, "    builder.Append((char)this.Get" + fieldName + "(i));");
+                            append(sb, indent, "}");
+                        }
+                        else
+                        {
+                            Separators.BEGIN_ARRAY.appendToGeneratedBuilder(sb, indent, "builder");
+                            append(sb, indent, "for (int i = 0; i < " + fieldName + "Length; ++i)");
+                            append(sb, indent, "{");
+                            append(sb, indent, "    if (i > 0) builder.Append(',');");
+                            append(sb, indent, "    builder.Append(Get" + fieldName + "(i));");
+                            append(sb, indent, "}");
+                            Separators.END_ARRAY.appendToGeneratedBuilder(sb, indent, "builder");
+                        }
                     }
                     else
                     {
-                        Separators.BEGIN_ARRAY.appendToGeneratedBuilder(sb, indent, "builder");
-                        append(sb, indent, "for (int i = 0; i < " + fieldName + "Length; ++i)");
-                        append(sb, indent, "{");
-                        append(sb, indent, "    if (i > 0) builder.Append(',');");
-                        append(sb, indent, "    builder.Append(Get" + fieldName + "(i));");
-                        append(sb, indent, "}");
-                        Separators.END_ARRAY.appendToGeneratedBuilder(sb, indent, "builder");
+                        append(sb, indent, "builder.Append(this." + fieldName + ");");
                     }
-                }
-                else
-                {
-                    // have to duplicate because of checkstyle :/
+                    break;
+
+                case BEGIN_ENUM:
                     append(sb, indent, "builder.Append(this." + fieldName + ");");
+                    break;
+
+                case BEGIN_SET:
+                    append(sb, indent, "this." + fieldName + ".BuildString(builder);");
+                    break;
+
+                case BEGIN_COMPOSITE:
+                {
+                    append(sb, indent, "if (this." + fieldName + " != null)");
+                    append(sb, indent, "     this." + fieldName + ".BuildString(builder);");
+                    append(sb, indent, "else");
+                    append(sb, indent, "    builder.Append(\"null\");");
+                    break;
                 }
-                break;
-
-            case BEGIN_ENUM:
-                append(sb, indent, "builder.Append(this." + fieldName + ");");
-                break;
-
-            case BEGIN_SET:
-                append(sb, indent, "this." + fieldName + ".BuildString(builder);");
-                break;
-
-            case BEGIN_COMPOSITE:
-            {
-                final String varName = formatVariableName(typeToken.applicableTypeName());
-                append(sb, indent, "if (this." + fieldName + " != null)");
-                append(sb, indent, "     this." + fieldName + ".BuildString(builder);");
-                append(sb, indent, "else");
-                append(sb, indent, "    builder.Append(\"null\");");
-                break;
             }
         }
 
@@ -1835,7 +1838,7 @@ public class CSharpGenerator implements CodeGenerator
             i += encodingToken.componentTokenCount();
         }
 
-        if (-1 != lengthBeforeLastGeneratedSeparator)
+        if (lengthBeforeLastGeneratedSeparator > -1)
         {
             sb.setLength(lengthBeforeLastGeneratedSeparator);
         }

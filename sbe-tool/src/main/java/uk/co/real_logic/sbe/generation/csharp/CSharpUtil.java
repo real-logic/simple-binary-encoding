@@ -21,7 +21,6 @@ import uk.co.real_logic.sbe.PrimitiveType;
 import java.util.EnumMap;
 import java.util.Map;
 
-import static uk.co.real_logic.sbe.generation.Generators.toUpperFirstChar;
 
 /**
  * Utilities for mapping between IR and the C# language.
@@ -29,6 +28,9 @@ import static uk.co.real_logic.sbe.generation.Generators.toUpperFirstChar;
 public class CSharpUtil
 {
 
+    /**
+     * Useful separator constants for code generation
+     */
     public enum Separators
     {
         BEGIN_GROUP('['),
@@ -43,7 +45,7 @@ public class CSharpUtil
         KEY_VALUE('='),
         ENTRY(',');
 
-        public final char symbol;
+        private final char symbol;
 
         Separators(final char symbol)
         {
@@ -55,13 +57,17 @@ public class CSharpUtil
          *
          * @param builder     the code generation builder to which information should be added
          * @param indent      the current generated code indentation
-         * @param builderName of the generated StringBuilder to which separator should be added
+         * @param builderName the generated StringBuilder to which separator should be added
          */
         public void appendToGeneratedBuilder(final StringBuilder builder, final String indent, final String builderName)
         {
             builder.append(indent).append(builderName).append(".Append('").append(symbol).append("');").append('\n');
         }
 
+        /**
+         * Returns the string value of this separator.
+         * @return  the string value of this separator
+         */
         public String toString()
         {
             return String.valueOf(symbol);
@@ -121,7 +127,6 @@ public class CSharpUtil
         return Character.toLowerCase(str.charAt(0)) + str.substring(1);
     }
 
-
     /**
      * Format a String as a property name.
      *
@@ -143,7 +148,6 @@ public class CSharpUtil
     {
         return toLowerFirstChar(str);
     }
-
 
     /**
      * Format a String as a class name.
