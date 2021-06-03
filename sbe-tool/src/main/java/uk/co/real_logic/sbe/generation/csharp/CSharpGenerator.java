@@ -39,7 +39,6 @@ import static uk.co.real_logic.sbe.ir.GenerationUtil.collectVarData;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectGroups;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectFields;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.findEndSignal;
-import static uk.co.real_logic.sbe.ir.GenerationUtil.getMessageBody;
 
 /**
  * Codec generator for the CSharp programming language.
@@ -49,6 +48,8 @@ public class CSharpGenerator implements CodeGenerator
 {
     private static final String META_ATTRIBUTE_ENUM = "MetaAttribute";
     private static final String INDENT = "    ";
+    private static final String TWO_INDENT = INDENT + INDENT;
+    private static final String THREE_INDENT = INDENT + INDENT + INDENT;
     private static final String BASE_INDENT = INDENT;
 
     private final Ir ir;
@@ -184,7 +185,7 @@ public class CSharpGenerator implements CodeGenerator
             i = collectVarData(tokens, i, varData);
             sb.append(generateVarData(varData, indent + INDENT + INDENT));
 
-            appendGroupInstanceDisplay(sb, fields, groups, varData, indent + INDENT);
+            appendGroupInstanceDisplay(sb, fields, groups, varData, indent + TWO_INDENT);
 
             sb.append(indent).append(INDENT + "}\n");
         }
@@ -534,7 +535,7 @@ public class CSharpGenerator implements CodeGenerator
             out.append(generateChoices(tokens.subList(1, tokens.size() - 1)));
 
             out.append(INDENT + "}\n");
-            out.append(generateChoiceDisplay(enumName, getMessageBody(tokens)));
+            out.append(generateChoiceDisplay(enumName));
             out.append("}\n");
         }
     }
@@ -1567,7 +1568,9 @@ public class CSharpGenerator implements CodeGenerator
         append(sb, indent, "internal void BuildString(StringBuilder builder)");
         append(sb, indent, "{");
         append(sb, indent, "    if (_buffer == null)");
+        append(sb, indent, "    {");
         append(sb, indent, "        return;");
+        append(sb, indent, "    }");
         sb.append('\n');
         Separators.BEGIN_COMPOSITE.appendToGeneratedBuilder(sb, indent + INDENT, "builder");
         appendDisplay(sb, fields, groups, varData, indent + INDENT);
@@ -1621,7 +1624,10 @@ public class CSharpGenerator implements CodeGenerator
             append(sb, indent, "    var first = true;");
             append(sb, indent, "    while (" + varName + ".HasNext)");
             append(sb, indent, "    {");
-            append(sb, indent, "        if (!first) builder.Append(',');");
+            append(sb, indent, "        if (!first)");
+            append(sb, indent, "        {");
+            append(sb, indent, "            builder.Append(',');");
+            append(sb, indent, "        }");
             append(sb, indent, "        first = false;");
             append(sb, indent, "        " + varName + ".Next().BuildString(builder);");
             append(sb, indent, "    }");
@@ -1732,9 +1738,13 @@ public class CSharpGenerator implements CodeGenerator
                 case BEGIN_COMPOSITE:
                 {
                     append(sb, indent, "if (this." + fieldName + " != null)");
+                    append(sb, indent, "{");
                     append(sb, indent, "     this." + fieldName + ".BuildString(builder);");
+                    append(sb, indent, "}");
                     append(sb, indent, "else");
+                    append(sb, indent, "{");
                     append(sb, indent, "    builder.Append(\"null\");");
+                    append(sb, indent, "}");
                     break;
                 }
             }
@@ -1757,23 +1767,20 @@ public class CSharpGenerator implements CodeGenerator
         append(sb, indent, "}");
     }
 
-    private CharSequence generateChoiceDisplay(final String enumName, final List<Token> tokens)
+    private CharSequence generateChoiceDisplay(final String enumName)
     {
-        final String indent = INDENT;
-        final String indentTwo = INDENT + INDENT;
-        final String indentThree = INDENT + INDENT + INDENT;
         final StringBuilder sb = new StringBuilder();
 
         sb.append('\n');
-        append(sb, indent, "static class " + enumName + "Ext");
-        append(sb, indent, "{");
-        append(sb, indentTwo, "internal static void BuildString(this " + enumName + " val, StringBuilder builder)");
-        append(sb, indentTwo, "{");
-        Separators.BEGIN_SET.appendToGeneratedBuilder(sb, indentThree, "builder");
-        append(sb, indentThree, "builder.Append(val.ToString());");
-        Separators.END_SET.appendToGeneratedBuilder(sb, indentThree, "builder");
-        append(sb, indentTwo, "}");
-        append(sb, indent, "}");
+        append(sb, INDENT, "static class " + enumName + "Ext");
+        append(sb, INDENT, "{");
+        append(sb, TWO_INDENT, "internal static void BuildString(this " + enumName + " val, StringBuilder builder)");
+        append(sb, TWO_INDENT, "{");
+        Separators.BEGIN_SET.appendToGeneratedBuilder(sb, THREE_INDENT, "builder");
+        append(sb, THREE_INDENT, "builder.Append(val.ToString());");
+        Separators.END_SET.appendToGeneratedBuilder(sb, THREE_INDENT, "builder");
+        append(sb, TWO_INDENT, "}");
+        append(sb, INDENT, "}");
         return sb;
     }
 
@@ -1784,58 +1791,60 @@ public class CSharpGenerator implements CodeGenerator
         final List<Token> varData)
     {
         final StringBuilder sb = new StringBuilder(100);
-        final String indent = INDENT + INDENT;
 
-        appendToString(sb, indent);
+        appendToString(sb, TWO_INDENT);
         sb.append('\n');
-        append(sb, indent, "internal void BuildString(StringBuilder builder)");
-        append(sb, indent, "{");
-        append(sb, indent, "    if (_buffer == null)");
-        append(sb, indent, "        throw new ArgumentNullException(\"_buffer\");");
+        append(sb, TWO_INDENT, "internal void BuildString(StringBuilder builder)");
+        append(sb, TWO_INDENT, "{");
+        append(sb, TWO_INDENT, "    if (_buffer == null)");
+        append(sb, TWO_INDENT, "{");
+        append(sb, TWO_INDENT, "        throw new ArgumentNullException(\"_buffer\");");
+        append(sb, TWO_INDENT, "}");
         sb.append('\n');
-        append(sb, indent, "    int originalLimit = this.Limit;");
-        append(sb, indent, "    this.Limit = _offset + _actingBlockLength;");
-        append(sb, indent, "    builder.Append(\"[" + name + "](sbeTemplateId=\");");
-        append(sb, indent, "    builder.Append(" + name + ".TemplateId);");
-        append(sb, indent, "    builder.Append(\"|sbeSchemaId=\");");
-        append(sb, indent, "    builder.Append(" + name + ".SchemaId);");
-        append(sb, indent, "    builder.Append(\"|sbeSchemaVersion=\");");
-        append(sb, indent, "    if (_parentMessage._actingVersion != " + name + ".SchemaVersion)");
-        append(sb, indent, "    {");
-        append(sb, indent, "        builder.Append(_parentMessage._actingVersion);");
-        append(sb, indent, "        builder.Append('/');");
-        append(sb, indent, "    }");
-        append(sb, indent, "    builder.Append(" + name + ".SchemaVersion);");
-        append(sb, indent, "    builder.Append(\"|sbeBlockLength=\");");
-        append(sb, indent, "    if (_actingBlockLength != " + name + ".BlockLength)");
-        append(sb, indent, "    {");
-        append(sb, indent, "        builder.Append(_actingBlockLength);");
-        append(sb, indent, "        builder.Append('/');");
-        append(sb, indent, "    }");
-        append(sb, indent, "    builder.Append(" + name + ".BlockLength);");
-        append(sb, indent, "    builder.Append(\"):\");");
+        append(sb, TWO_INDENT, "    int originalLimit = this.Limit;");
+        append(sb, TWO_INDENT, "    this.Limit = _offset + _actingBlockLength;");
+        append(sb, TWO_INDENT, "    builder.Append(\"[" + name + "](sbeTemplateId=\");");
+        append(sb, TWO_INDENT, "    builder.Append(" + name + ".TemplateId);");
+        append(sb, TWO_INDENT, "    builder.Append(\"|sbeSchemaId=\");");
+        append(sb, TWO_INDENT, "    builder.Append(" + name + ".SchemaId);");
+        append(sb, TWO_INDENT, "    builder.Append(\"|sbeSchemaVersion=\");");
+        append(sb, TWO_INDENT, "    if (_parentMessage._actingVersion != " + name + ".SchemaVersion)");
+        append(sb, TWO_INDENT, "    {");
+        append(sb, TWO_INDENT, "        builder.Append(_parentMessage._actingVersion);");
+        append(sb, TWO_INDENT, "        builder.Append('/');");
+        append(sb, TWO_INDENT, "    }");
+        append(sb, TWO_INDENT, "    builder.Append(" + name + ".SchemaVersion);");
+        append(sb, TWO_INDENT, "    builder.Append(\"|sbeBlockLength=\");");
+        append(sb, TWO_INDENT, "    if (_actingBlockLength != " + name + ".BlockLength)");
+        append(sb, TWO_INDENT, "    {");
+        append(sb, TWO_INDENT, "        builder.Append(_actingBlockLength);");
+        append(sb, TWO_INDENT, "        builder.Append('/');");
+        append(sb, TWO_INDENT, "    }");
+        append(sb, TWO_INDENT, "    builder.Append(" + name + ".BlockLength);");
+        append(sb, TWO_INDENT, "    builder.Append(\"):\");");
         sb.append('\n');
-        appendDisplay(sb, tokens, groups, varData, indent + INDENT);
+        appendDisplay(sb, tokens, groups, varData, THREE_INDENT);
         sb.append('\n');
-        append(sb, indent, "    this.Limit = originalLimit;");
+        append(sb, TWO_INDENT, "    this.Limit = originalLimit;");
         sb.append('\n');
-        append(sb, indent, "}");
+        append(sb, TWO_INDENT, "}");
         return sb;
     }
 
     private CharSequence generateCompositeDisplay(final List<Token> tokens)
     {
-        final String indent = INDENT;
         final StringBuilder sb = new StringBuilder();
 
-        appendToString(sb, indent);
+        appendToString(sb, TWO_INDENT);
         sb.append('\n');
-        append(sb, indent, "internal void BuildString(StringBuilder builder)");
-        append(sb, indent, "{");
-        append(sb, indent, "    if (_buffer == null)");
-        append(sb, indent, "        return;");
+        append(sb, TWO_INDENT, "internal void BuildString(StringBuilder builder)");
+        append(sb, TWO_INDENT, "{");
+        append(sb, TWO_INDENT, "    if (_buffer == null)");
+        append(sb, TWO_INDENT, "    {");
+        append(sb, TWO_INDENT, "        return;");
+        append(sb, TWO_INDENT, "    }");
         sb.append('\n');
-        Separators.BEGIN_COMPOSITE.appendToGeneratedBuilder(sb, indent + INDENT, "builder");
+        Separators.BEGIN_COMPOSITE.appendToGeneratedBuilder(sb, THREE_INDENT, "builder");
 
         int lengthBeforeLastGeneratedSeparator = -1;
 
@@ -1843,7 +1852,7 @@ public class CSharpGenerator implements CodeGenerator
         {
             final Token encodingToken = tokens.get(i);
             final String propertyName = formatPropertyName(encodingToken.name());
-            lengthBeforeLastGeneratedSeparator = writeTokenDisplay(propertyName, encodingToken, sb, indent + INDENT);
+            lengthBeforeLastGeneratedSeparator = writeTokenDisplay(propertyName, encodingToken, sb, THREE_INDENT);
             i += encodingToken.componentTokenCount();
         }
 
@@ -1852,9 +1861,9 @@ public class CSharpGenerator implements CodeGenerator
             sb.setLength(lengthBeforeLastGeneratedSeparator);
         }
 
-        Separators.END_COMPOSITE.appendToGeneratedBuilder(sb, indent + INDENT, "builder");
+        Separators.END_COMPOSITE.appendToGeneratedBuilder(sb, THREE_INDENT, "builder");
         sb.append('\n');
-        append(sb, indent, "}");
+        append(sb, TWO_INDENT, "}");
 
         return sb;
     }
