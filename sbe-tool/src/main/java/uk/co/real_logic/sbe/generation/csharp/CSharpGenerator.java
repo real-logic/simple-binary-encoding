@@ -1616,8 +1616,8 @@ public class CSharpGenerator implements CodeGenerator
             final String groupName = formatPropertyName(groupToken.name());
             final String varName = formatVariableName(groupToken.name());
 
-            append(sb, indent, "builder.Append(\"" + groupName + Separators.KEY_VALUE +
-                Separators.BEGIN_GROUP + "\");");
+            append(
+                sb, indent, "builder.Append(\"" + groupName + Separators.KEY_VALUE + Separators.BEGIN_GROUP + "\");");
             append(sb, indent, "var " + varName + " = this." + groupName + ";");
             append(sb, indent, "if (" + varName + ".Count > 0)");
             append(sb, indent, "{");
@@ -1715,7 +1715,10 @@ public class CSharpGenerator implements CodeGenerator
                             Separators.BEGIN_ARRAY.appendToGeneratedBuilder(sb, indent, "builder");
                             append(sb, indent, "for (int i = 0; i < " + fieldName + "Length; ++i)");
                             append(sb, indent, "{");
-                            append(sb, indent, "    if (i > 0) builder.Append(',');");
+                            append(sb, indent, "    if (i > 0)");
+                            append(sb, indent, "    {");
+                            append(sb, indent, "        builder.Append(',');");
+                            append(sb, indent, "    }");
                             append(sb, indent, "    builder.Append(Get" + fieldName + "(i));");
                             append(sb, indent, "}");
                             Separators.END_ARRAY.appendToGeneratedBuilder(sb, indent, "builder");
@@ -1739,7 +1742,7 @@ public class CSharpGenerator implements CodeGenerator
                 {
                     append(sb, indent, "if (this." + fieldName + " != null)");
                     append(sb, indent, "{");
-                    append(sb, indent, "     this." + fieldName + ".BuildString(builder);");
+                    append(sb, indent, "    this." + fieldName + ".BuildString(builder);");
                     append(sb, indent, "}");
                     append(sb, indent, "else");
                     append(sb, indent, "{");
@@ -1797,9 +1800,9 @@ public class CSharpGenerator implements CodeGenerator
         append(sb, TWO_INDENT, "internal void BuildString(StringBuilder builder)");
         append(sb, TWO_INDENT, "{");
         append(sb, TWO_INDENT, "    if (_buffer == null)");
-        append(sb, TWO_INDENT, "{");
+        append(sb, TWO_INDENT, "    {");
         append(sb, TWO_INDENT, "        throw new ArgumentNullException(\"_buffer\");");
-        append(sb, TWO_INDENT, "}");
+        append(sb, TWO_INDENT, "    }");
         sb.append('\n');
         append(sb, TWO_INDENT, "    int originalLimit = this.Limit;");
         append(sb, TWO_INDENT, "    this.Limit = _offset + _actingBlockLength;");
