@@ -4,6 +4,9 @@ using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Diagnosers;
 using Org.SbeTool.Sbe.Dll;
 
+// Whilst running decoding timing tests there are values we don't use
+#pragma warning disable 219
+
 namespace Org.SbeTool.Sbe.Benchmarks.Bench.Benchmarks
 {
     [MemoryDiagnoser]
@@ -137,6 +140,7 @@ namespace Org.SbeTool.Sbe.Benchmarks.Bench.Benchmarks
 
             var templateId = Car.TemplateId;
             var schemaVersion = Car.SchemaVersion;
+#pragma warning restore 2019
             var serialNumber = car.SerialNumber;
             var modelYear = car.ModelYear;
             var available = car.Available;
