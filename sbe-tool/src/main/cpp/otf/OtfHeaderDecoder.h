@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2021 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,18 +30,18 @@ namespace otf {
 class OtfHeaderDecoder
 {
 public:
-    explicit OtfHeaderDecoder(const std::shared_ptr<std::vector<Token>>& tokens)
+    explicit OtfHeaderDecoder(const std::shared_ptr<std::vector<Token>> &tokens)
     {
         m_encodedLength = tokens->at(0).encodedLength();
 
-        Token* blockLengthToken = nullptr;
-        Token* templateIdToken = nullptr;
-        Token* schemaIdToken = nullptr;
-        Token* versionToken = nullptr;
+        Token *blockLengthToken = nullptr;
+        Token *templateIdToken = nullptr;
+        Token *schemaIdToken = nullptr;
+        Token *versionToken = nullptr;
 
-        std::for_each(tokens->begin(), tokens->end(), [&](Token& token)
+        std::for_each(tokens->begin(), tokens->end(), [&](Token &token)
         {
-            const std::string& name = token.name();
+            const std::string &name = token.name();
 
             if (name == "blockLength")
             {

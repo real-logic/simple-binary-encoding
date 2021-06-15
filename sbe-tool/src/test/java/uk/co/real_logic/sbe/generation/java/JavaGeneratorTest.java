@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2021 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import org.agrona.generation.CompilerUtil;
 import org.agrona.generation.StringWriterOutputManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import uk.co.real_logic.sbe.TestUtil;
+import uk.co.real_logic.sbe.Tests;
 import uk.co.real_logic.sbe.ir.Ir;
 import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
@@ -38,8 +38,7 @@ import static org.hamcrest.Matchers.startsWith;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static uk.co.real_logic.sbe.generation.CodeGenerator.MESSAGE_HEADER_DECODER_TYPE;
-import static uk.co.real_logic.sbe.generation.java.JavaGenerator.MESSAGE_HEADER_ENCODER_TYPE;
+import static uk.co.real_logic.sbe.generation.java.JavaGenerator.MESSAGE_HEADER_DECODER_TYPE;
 import static uk.co.real_logic.sbe.generation.java.ReflectionUtil.*;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
@@ -60,7 +59,7 @@ public class JavaGeneratorTest
     public void setUp() throws Exception
     {
         final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
-        final MessageSchema schema = parse(TestUtil.getLocalResource("code-generation-schema.xml"), options);
+        final MessageSchema schema = parse(Tests.getLocalResource("code-generation-schema.xml"), options);
         final IrGenerator irg = new IrGenerator();
         ir = irg.generate(schema);
 
@@ -75,7 +74,7 @@ public class JavaGeneratorTest
         final int templateIdOffset = 2;
         final short templateId = (short)7;
         final int blockLength = 32;
-        final String fqClassName = ir.applicableNamespace() + "." + MESSAGE_HEADER_ENCODER_TYPE;
+        final String fqClassName = ir.applicableNamespace() + "." + JavaGenerator.MESSAGE_HEADER_ENCODER_TYPE;
 
         when(mockBuffer.getShort(bufferOffset + templateIdOffset, BYTE_ORDER)).thenReturn(templateId);
 
@@ -440,6 +439,23 @@ public class JavaGeneratorTest
 
         set(encoder, "vehicleCode", CharSequence.class, "R11R12");
         assertThat(get(decoder, "vehicleCode"), is("R11R12"));
+    }
+
+    @Test
+    public void shouldGenerateRepeatingGroupCountLimits() throws Exception
+    {
+        generator().generate();
+
+        final String className = "CarEncoder$FuelFiguresEncoder";
+        final String fqClassName = ir.applicableNamespace() + "." + className;
+
+        final Class<?> clazz = compile(fqClassName);
+        final Method minValue = clazz.getMethod("countMinValue");
+        assertNotNull(minValue);
+        assertEquals(0, minValue.invoke(null));
+        final Method maxValue = clazz.getMethod("countMaxValue");
+        assertNotNull(maxValue);
+        assertEquals(65534, maxValue.invoke(null));
     }
 
     private Class<?> getModelClass(final Object encoder) throws ClassNotFoundException

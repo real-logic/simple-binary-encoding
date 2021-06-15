@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2021 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,8 +42,7 @@ import static uk.co.real_logic.sbe.PrimitiveValue.parse;
 public class EncodedDataTypeTest
 {
     @Test
-    public void shouldHandleSettingAllAttributes()
-        throws Exception
+    public void shouldHandleSettingAllAttributes() throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -66,8 +65,7 @@ public class EncodedDataTypeTest
     }
 
     @Test
-    public void shouldHandleMultipleTypes()
-        throws Exception
+    public void shouldHandleMultipleTypes() throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -86,8 +84,7 @@ public class EncodedDataTypeTest
     }
 
     @Test
-    public void shouldSetAppropriateDefaultsWhenNoneSpecified()
-        throws Exception
+    public void shouldSetAppropriateDefaultsWhenNoneSpecified() throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -107,8 +104,7 @@ public class EncodedDataTypeTest
     }
 
     @Test
-    public void shouldUseAppropriatePresence()
-        throws Exception
+    public void shouldUseAppropriatePresence() throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -128,7 +124,6 @@ public class EncodedDataTypeTest
 
     @Test
     public void shouldThrowExceptionWhenUnknownPresenceSpecified()
-        throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -140,7 +135,6 @@ public class EncodedDataTypeTest
 
     @Test
     public void shouldThrowExceptionWhenNoPrimitiveTypeSpecified()
-        throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -152,7 +146,6 @@ public class EncodedDataTypeTest
 
     @Test
     public void shouldThrowExceptionWhenNoNameSpecified()
-        throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -163,8 +156,7 @@ public class EncodedDataTypeTest
     }
 
     @Test
-    public void shouldUseAppropriatePrimitiveType()
-        throws Exception
+    public void shouldUseAppropriatePrimitiveType() throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -198,7 +190,6 @@ public class EncodedDataTypeTest
 
     @Test
     public void shouldThrowExceptionWhenUnknownPrimitiveTypeSpecified()
-        throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -210,8 +201,7 @@ public class EncodedDataTypeTest
     }
 
     @Test
-    public void shouldReturnCorrectSizeForPrimitiveTypes()
-        throws Exception
+    public void shouldReturnCorrectSizeForPrimitiveTypes() throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -243,8 +233,7 @@ public class EncodedDataTypeTest
     }
 
     @Test
-    public void shouldReturnCorrectDescriptionForType()
-        throws Exception
+    public void shouldReturnCorrectDescriptionForType() throws Exception
     {
         final String desc = "basic description attribute of a type element";
         final String testXmlString =
@@ -258,8 +247,7 @@ public class EncodedDataTypeTest
     }
 
     @Test
-    public void shouldReturnNullOnNoDescriptionSet()
-        throws Exception
+    public void shouldReturnNullOnNoDescriptionSet() throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -273,8 +261,7 @@ public class EncodedDataTypeTest
     }
 
     @Test
-    public void shouldReturnCorrectSemanticTypeForType()
-        throws Exception
+    public void shouldReturnCorrectSemanticTypeForType() throws Exception
     {
         final String semanticType = "char";
         final String testXmlString =
@@ -288,8 +275,7 @@ public class EncodedDataTypeTest
     }
 
     @Test
-    public void shouldReturnNullWhenSemanticTypeNotSpecified()
-        throws Exception
+    public void shouldReturnNullWhenSemanticTypeNotSpecified() throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -303,7 +289,6 @@ public class EncodedDataTypeTest
 
     @Test
     public void shouldThrowExceptionWhenConstantPresenceButNoDataSpecified()
-        throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -314,8 +299,7 @@ public class EncodedDataTypeTest
     }
 
     @Test
-    public void shouldReturnCorrectPresenceConstantWhenSpecified()
-        throws Exception
+    public void shouldReturnCorrectPresenceConstantWhenSpecified() throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -330,8 +314,7 @@ public class EncodedDataTypeTest
     }
 
     @Test
-    public void shouldReturnCorrectConstantStringWhenSpecified()
-        throws Exception
+    public void shouldReturnCorrectConstantStringWhenSpecified() throws Exception
     {
         final String strConst = "string constant";
         final String testXmlString =
@@ -348,8 +331,7 @@ public class EncodedDataTypeTest
     }
 
     @Test
-    public void shouldReturnDefaultMinValueWhenSpecified()
-        throws Exception
+    public void shouldReturnDefaultMinValueWhenSpecified() throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -362,8 +344,7 @@ public class EncodedDataTypeTest
     }
 
     @Test
-    public void shouldReturnDefaultMaxValueWhenSpecified()
-        throws Exception
+    public void shouldReturnDefaultMaxValueWhenSpecified() throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -376,8 +357,7 @@ public class EncodedDataTypeTest
     }
 
     @Test
-    public void shouldReturnDefaultNullValueWhenSpecified()
-        throws Exception
+    public void shouldReturnDefaultNullValueWhenSpecified() throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -390,8 +370,7 @@ public class EncodedDataTypeTest
     }
 
     @Test
-    public void shouldReturnCorrectMinValueWhenSpecified()
-        throws Exception
+    public void shouldReturnCorrectMinValueWhenSpecified() throws Exception
     {
         final String minVal = "10";
         final String testXmlString =
@@ -405,8 +384,7 @@ public class EncodedDataTypeTest
     }
 
     @Test
-    public void shouldReturnCorrectMaxValueWhenSpecified()
-        throws Exception
+    public void shouldReturnCorrectMaxValueWhenSpecified() throws Exception
     {
         final String maxVal = "10";
         final String testXmlString =
@@ -421,8 +399,7 @@ public class EncodedDataTypeTest
     }
 
     @Test
-    public void shouldReturnCorrectNullValueWhenSpecified()
-        throws Exception
+    public void shouldReturnCorrectNullValueWhenSpecified() throws Exception
     {
         final String nullVal = "10";
         final String testXmlString =

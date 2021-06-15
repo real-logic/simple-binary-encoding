@@ -1,13 +1,14 @@
-/* Generated SBE (Simple Binary Encoding) message codec */
+/* Generated SBE (Simple Binary Encoding) message codec. */
 package uk.co.real_logic.sbe.ir.generated;
 
 import org.agrona.DirectBuffer;
+
 
 /**
  * Message identifiers and length of message root
  */
 @SuppressWarnings("all")
-public class MessageHeaderDecoder
+public final class MessageHeaderDecoder
 {
     public static final int SCHEMA_ID = 1;
     public static final int SCHEMA_VERSION = 0;

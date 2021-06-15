@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2021 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,14 +22,13 @@ import uk.co.real_logic.sbe.xml.ParserOptions;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static uk.co.real_logic.sbe.TestUtil.getLocalResource;
+import static uk.co.real_logic.sbe.Tests.getLocalResource;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 public class ValueRefsTest
 {
     @Test
-    public void shouldGenerateValueRefToEnum()
-        throws Exception
+    public void shouldGenerateValueRefToEnum() throws Exception
     {
         final MessageSchema schema = parse(getLocalResource("value-ref-schema.xml"), ParserOptions.DEFAULT);
         final IrGenerator irg = new IrGenerator();

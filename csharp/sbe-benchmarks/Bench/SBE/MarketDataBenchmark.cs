@@ -1,27 +1,48 @@
-﻿using Org.SbeTool.Sbe.Dll;
+﻿using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Diagnosers;
+using Org.SbeTool.Sbe.Dll;
 using Uk.Co.Real_logic.Sbe.Benchmarks.Fix;
 
 namespace Org.SbeTool.Sbe.Benchmarks
 {
-    public static class MarketDataBenchmark
+    [MemoryDiagnoser]
+    public class MarketDataBenchmark
     {
-        public static int Encode(MessageHeader messageHeader,
-            MarketDataIncrementalRefreshTrades marketData,
-            DirectBuffer buffer,
-            int bufferIndex)
+        private readonly byte[] _eBuffer = new byte[1024];
+        private readonly byte[] _dBuffer = new byte[1024];
+        private DirectBuffer _encodeBuffer;
+        private DirectBuffer _decodeBuffer;
+        private readonly MarketDataIncrementalRefreshTrades _marketData = new MarketDataIncrementalRefreshTrades();
+        private readonly MessageHeader _messageHeader = new MessageHeader();
+
+        [GlobalSetup]
+        public void Setup()
         {
-            messageHeader.Wrap(buffer, bufferIndex, 0);
-            messageHeader.BlockLength = MarketDataIncrementalRefreshTrades.BlockLength;
-            messageHeader.TemplateId = MarketDataIncrementalRefreshTrades.TemplateId;
-            messageHeader.SchemaId = MarketDataIncrementalRefreshTrades.SchemaId;
-            messageHeader.Version = MarketDataIncrementalRefreshTrades.SchemaVersion;
+            _encodeBuffer = new DirectBuffer(_eBuffer);
+            _decodeBuffer = new DirectBuffer(_dBuffer);
+            Encode(_decodeBuffer, 0);
+        }
 
-            marketData.WrapForEncode(buffer, bufferIndex + MessageHeader.Size);
-            marketData.TransactTime = 1234L;
-            marketData.EventTimeDelta = 987;
-            marketData.MatchEventIndicator = MatchEventIndicator.END_EVENT;
+        [Benchmark]
+        public int Encode()
+        {
+            return Encode(_encodeBuffer, 0);
+        }
 
-            var mdIncGrp = marketData.MdIncGrpCount(2);
+        public int Encode(DirectBuffer buffer, int bufferOffset)
+        {
+            _messageHeader.Wrap(buffer, bufferOffset, 0);
+            _messageHeader.BlockLength = MarketDataIncrementalRefreshTrades.BlockLength;
+            _messageHeader.TemplateId = MarketDataIncrementalRefreshTrades.TemplateId;
+            _messageHeader.SchemaId = MarketDataIncrementalRefreshTrades.SchemaId;
+            _messageHeader.Version = MarketDataIncrementalRefreshTrades.SchemaVersion;
+
+            _marketData.WrapForEncode(buffer, bufferOffset + MessageHeader.Size);
+            _marketData.TransactTime = 1234L;
+            _marketData.EventTimeDelta = 987;
+            _marketData.MatchEventIndicator = MatchEventIndicator.END_EVENT;
+
+            var mdIncGrp = _marketData.MdIncGrpCount(2);
 
             mdIncGrp.Next();
             mdIncGrp.TradeId = 1234L;
@@ -43,25 +64,28 @@ namespace Org.SbeTool.Sbe.Benchmarks
             mdIncGrp.RptSeq = 1;
             mdIncGrp.AggressorSide = Side.SELL;
             
-            return marketData.Size;
+            return _marketData.Size;
         }
 
-        public static int Decode(MessageHeader messageHeader,
-            MarketDataIncrementalRefreshTrades marketData,
-            DirectBuffer buffer,
-            int bufferIndex)
+        [Benchmark]
+        public int Decode()
         {
-            messageHeader.Wrap(buffer, bufferIndex, 0);
+            return Decode(_decodeBuffer, 0);
+        }
 
-            int actingVersion = messageHeader.Version;
-            int actingBlockLength = messageHeader.BlockLength;
+        public int Decode(DirectBuffer buffer, int bufferOffset)
+        {
+            _messageHeader.Wrap(buffer, bufferOffset, 0);
 
-            marketData.WrapForDecode(buffer, bufferIndex + MessageHeader.Size, actingBlockLength, actingVersion);
+            int actingVersion = _messageHeader.Version;
+            int actingBlockLength = _messageHeader.BlockLength;
 
-            var transactTime = marketData.TransactTime;
-            var matchEventIndicator = marketData.MatchEventIndicator;
+            _marketData.WrapForDecode(buffer, bufferOffset + MessageHeader.Size, actingBlockLength, actingVersion);
 
-            var mdIncGrpGroup = marketData.MdIncGrp;
+            var transactTime = _marketData.TransactTime;
+            var matchEventIndicator = _marketData.MatchEventIndicator;
+
+            var mdIncGrpGroup = _marketData.MdIncGrp;
             while (mdIncGrpGroup.HasNext)
             {
                 mdIncGrpGroup.Next();
@@ -76,7 +100,7 @@ namespace Org.SbeTool.Sbe.Benchmarks
                 var mdEntryType = mdIncGrpGroup.MdEntryType;
             }
 
-            return marketData.Size;
+            return _marketData.Size;
         }
     }
 }

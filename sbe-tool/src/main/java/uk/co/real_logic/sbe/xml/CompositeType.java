@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2021 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,12 +45,12 @@ public class CompositeType extends Type
      * SBE schema composite type.
      */
     public static final String COMPOSITE_TYPE = "composite";
-    public static final String SUB_TYPES_EXP = "type|enum|set|composite|ref";
+    private static final String SUB_TYPES_EXP = "type|enum|set|composite|ref|data|group";
 
     private final List<String> compositesPath = new ArrayList<>();
     private final Map<String, Type> containedTypeByNameMap = new LinkedHashMap<>();
 
-    public CompositeType(final Node node) throws XPathExpressionException
+    CompositeType(final Node node) throws XPathExpressionException
     {
         this(node, null, null, new ArrayList<>());
     }
@@ -64,7 +64,7 @@ public class CompositeType extends Type
      * @param compositesPath with the path of composites that represents the levels of composition.
      * @throws XPathExpressionException if the XPath is invalid.
      */
-    public CompositeType(
+    CompositeType(
         final Node node, final String givenName, final String referencedName, final List<String> compositesPath)
         throws XPathExpressionException
     {
@@ -135,7 +135,6 @@ public class CompositeType extends Type
      */
     public List<Type> getTypeList()
     {
-
         return new ArrayList<>(containedTypeByNameMap.values());
     }
 
@@ -395,6 +394,9 @@ public class CompositeType extends Type
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean isVariableLength()
     {
         return false;
@@ -462,6 +464,11 @@ public class CompositeType extends Type
                 break;
             }
 
+            case "data":
+            case "group":
+                XmlSchemaParser.handleError(subTypeNode, nodeName + " not valid within composite");
+                break;
+
             default:
                 throw new IllegalStateException("Unknown node type: name=" + nodeName);
         }
@@ -479,6 +486,9 @@ public class CompositeType extends Type
         return type;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public String toString()
     {
         return "CompositeType{" +

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2021 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 /**
- * Intermediate representation of SBE messages to be used for the generation of encoders and decoders
+ * Intermediate Representation (IR) of SBE messages to be used for the generation of encoders and decoders
  * as stubs in various languages.
  */
 public class Ir

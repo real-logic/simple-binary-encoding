@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2021 Real Logic Limited.
  * Copyright 2017 MarketFactory Inc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,24 +17,19 @@
 package uk.co.real_logic.sbe.xml;
 
 import org.agrona.collections.ObjectHashSet;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import uk.co.real_logic.sbe.util.ValidationUtil;
+import org.w3c.dom.*;
+import org.xml.sax.InputSource;
+import uk.co.real_logic.sbe.ValidationUtil;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.validation.SchemaFactory;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
+import javax.xml.xpath.*;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.ByteOrder;
 import java.util.HashMap;
 import java.util.Map;
-import org.xml.sax.InputSource;
 
 import static uk.co.real_logic.sbe.PrimitiveType.*;
 import static uk.co.real_logic.sbe.xml.Presence.REQUIRED;
@@ -46,30 +41,30 @@ import static uk.co.real_logic.sbe.xml.Presence.REQUIRED;
 public class XmlSchemaParser
 {
     /**
-     * Key for storing {@link ErrorHandler} as user data in XML document
+     * Key for storing {@link ErrorHandler} as user data in XML document.
      */
     public static final String ERROR_HANDLER_KEY = "SbeErrorHandler";
 
-    public static final String TYPE_XPATH_EXPR =
+    static final String TYPE_XPATH_EXPR =
         "/*[local-name() = 'messageSchema']/types/" + EncodedDataType.ENCODED_DATA_TYPE;
 
-    public static final String COMPOSITE_XPATH_EXPR =
+    static final String COMPOSITE_XPATH_EXPR =
         "/*[local-name() = 'messageSchema']/types/" + CompositeType.COMPOSITE_TYPE;
 
-    public static final String ENUM_XPATH_EXPR =
+    static final String ENUM_XPATH_EXPR =
         "/*[local-name() = 'messageSchema']/types/" + EnumType.ENUM_TYPE;
 
-    public static final String SET_XPATH_EXPR =
+    static final String SET_XPATH_EXPR =
         "/*[local-name() = 'messageSchema']/types/" + SetType.SET_TYPE;
 
-    public static final String MESSAGE_SCHEMA_XPATH_EXPR =
+    static final String MESSAGE_SCHEMA_XPATH_EXPR =
         "/*[local-name() = 'messageSchema']";
 
-    public static final String MESSAGE_XPATH_EXPR =
-        "//*[local-name() = 'message']";
+    static final String MESSAGE_XPATH_EXPR =
+        "/*[local-name() = 'messageSchema']/*[local-name() = 'message']";
 
     /**
-     * Validate the document against a given schema. Error will be written to {@link java.lang.System#err}.
+     * Validate the document against a given schema. Errors will be written to {@link java.lang.System#err}.
      *
      * @param xsdFilename schema to validate against.
      * @param is          source from which schema is read. Ideally it will have the systemId property set to resolve
@@ -146,6 +141,11 @@ public class XmlSchemaParser
         errorHandler.checkIfShouldExit();
 
         final Node schemaNode = (Node)xPath.compile(MESSAGE_SCHEMA_XPATH_EXPR).evaluate(document, XPathConstants.NODE);
+        if (null == schemaNode)
+        {
+            throw new IllegalStateException("messageSchema element not found in document, schema is not valid for SBE");
+        }
+
         final MessageSchema messageSchema = new MessageSchema(schemaNode, typeByNameMap, messageByIdMap);
         errorHandler.checkIfShouldExit();
 
@@ -172,9 +172,9 @@ public class XmlSchemaParser
     /**
      * Scan XML for all types (encodedDataType, compositeType, enumType, and setType) and save in map.
      *
-     * @param document for the XML parsing
-     * @param xPath    for XPath expression reuse
-     * @return {@link java.util.Map} of name {@link java.lang.String} to Type
+     * @param document for the XML parsing.
+     * @param xPath    for XPath expression reuse.
+     * @return {@link java.util.Map} of name {@link java.lang.String} to {@link Type}.
      * @throws Exception on parsing error.
      */
     public static Map<String, Type> findTypes(final Document document, final XPath xPath) throws Exception
@@ -211,10 +211,10 @@ public class XmlSchemaParser
     /**
      * Scan XML for all message definitions and save in map.
      *
-     * @param document      for the XML parsing
-     * @param xPath         for XPath expression reuse
-     * @param typeByNameMap to use for Type objects
-     * @return {@link java.util.Map} of schemaId to Message
+     * @param document      for the XML parsing.
+     * @param xPath         for XPath expression reuse.
+     * @param typeByNameMap to use for Type objects.
+     * @return {@link java.util.Map} of schemaId to {@link Message}.
      * @throws Exception on parsing error.
      */
     public static Map<Long, Message> findMessages(
@@ -225,6 +225,11 @@ public class XmlSchemaParser
 
         forEach((NodeList)xPath.compile(MESSAGE_XPATH_EXPR).evaluate(document, XPathConstants.NODESET),
             (node) -> addMessageWithIdCheck(distinctNames, messageByIdMap, new Message(node, typeByNameMap), node));
+
+        if (messageByIdMap.isEmpty())
+        {
+            handleWarning(document.getDocumentElement(), "no messages found in document");
+        }
 
         return messageByIdMap;
     }
@@ -238,8 +243,7 @@ public class XmlSchemaParser
     public static void handleError(final Node node, final String msg)
     {
         final ErrorHandler handler = (ErrorHandler)node.getOwnerDocument().getUserData(ERROR_HANDLER_KEY);
-
-        if (handler == null)
+        if (null == handler)
         {
             throw new IllegalStateException("ERROR: " + formatLocationInfo(node) + msg);
         }
@@ -258,8 +262,7 @@ public class XmlSchemaParser
     public static void handleWarning(final Node node, final String msg)
     {
         final ErrorHandler handler = (ErrorHandler)node.getOwnerDocument().getUserData(ERROR_HANDLER_KEY);
-
-        if (handler == null)
+        if (null == handler)
         {
             throw new IllegalStateException("WARNING: " + formatLocationInfo(node) + msg);
         }
@@ -272,19 +275,31 @@ public class XmlSchemaParser
     /**
      * Helper function that throws an exception when the attribute is not set.
      *
-     * @param elementNode that should have the attribute
-     * @param attrName    that is to be looked up
-     * @return value of the attribute
-     * @throws IllegalArgumentException if the attribute is not present
+     * @param elementNode that should have the attribute.
+     * @param attrName    that is to be looked up.
+     * @return value of the attribute.
+     * @throws IllegalStateException if the attribute is not present.
      */
     public static String getAttributeValue(final Node elementNode, final String attrName)
     {
-        final Node attrNode = elementNode.getAttributes().getNamedItemNS(null, attrName);
-
-        if (attrNode == null || "".equals(attrNode.getNodeValue()))
+        if (null == elementNode)
         {
             throw new IllegalStateException(
-                "Element '" + elementNode.getNodeName() + "' has empty or missing attribute: " + attrName);
+                "element node is null when looking for attribute: " + attrName);
+        }
+
+        final NamedNodeMap attributes = elementNode.getAttributes();
+        if (null == attributes)
+        {
+            throw new IllegalStateException(
+                "element '" + elementNode.getNodeName() + "' has empty or missing attribute: " + attrName);
+        }
+
+        final Node attrNode = attributes.getNamedItemNS(null, attrName);
+        if (null == attrNode || "".equals(attrNode.getNodeValue()))
+        {
+            throw new IllegalStateException(
+                "element '" + elementNode.getNodeName() + "' has empty or missing attribute: " + attrName);
         }
 
         return attrNode.getNodeValue();
@@ -293,16 +308,27 @@ public class XmlSchemaParser
     /**
      * Helper function that uses a default value when value not set.
      *
-     * @param elementNode that should have the attribute
-     * @param attrName    that is to be looked up
-     * @param defValue    String to return if not set
-     * @return value of the attribute or defValue
+     * @param elementNode that should have the attribute.
+     * @param attrName    that is to be looked up.
+     * @param defValue    value to return if not set.
+     * @return value of the attribute or defValue.
      */
     public static String getAttributeValue(final Node elementNode, final String attrName, final String defValue)
     {
-        final Node attrNode = elementNode.getAttributes().getNamedItemNS(null, attrName);
+        if (null == elementNode)
+        {
+            throw new IllegalStateException(
+                "element node is null when looking for attribute: " + attrName);
+        }
 
-        if (attrNode == null)
+        final NamedNodeMap attributes = elementNode.getAttributes();
+        if (null == attributes)
+        {
+            return defValue;
+        }
+
+        final Node attrNode = attributes.getNamedItemNS(null, attrName);
+        if (null == attrNode)
         {
             return defValue;
         }
@@ -313,9 +339,9 @@ public class XmlSchemaParser
     /**
      * Helper function that hides the null return from {@link org.w3c.dom.NamedNodeMap#getNamedItem(String)}.
      *
-     * @param elementNode that could be null
-     * @param attrName    that is to be looked up
-     * @return null or value of the attribute
+     * @param elementNode that could be null.
+     * @param attrName    that is to be looked up.
+     * @return null or value of the attribute.
      */
     public static String getAttributeValueOrNull(final Node elementNode, final String attrName)
     {
@@ -336,8 +362,8 @@ public class XmlSchemaParser
     /**
      * Helper function to convert a schema byteOrderName into a {@link ByteOrder}.
      *
-     * @param byteOrderName specified as a FIX SBE string
-     * @return ByteOrder representation
+     * @param byteOrderName specified as a FIX SBE string.
+     * @return ByteOrder representation.
      */
     public static ByteOrder getByteOrder(final String byteOrderName)
     {

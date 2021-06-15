@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2021 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,38 +39,36 @@ public:
     void printScope() const
     {
         std::for_each(scope.begin(), scope.end(),
-            [&](const std::string& scope)
+            [&](const std::string &s)
             {
-                std::cout << scope;
+                std::cout << s;
             });
     }
 
     virtual std::string determineName(
-        Token& fieldToken,
-        std::vector<Token>& tokens,
+        Token &fieldToken,
+        std::vector<Token> &tokens,
         std::size_t fromIndex)
     {
-        return (compositeLevel > 1) ? tokens.at(fromIndex).name() : fieldToken.name();
+        return compositeLevel > 1 ? tokens.at(fromIndex).name() : fieldToken.name();
     }
 
-    virtual void onBeginMessage(Token& token)
+    virtual void onBeginMessage(Token &token)
     {
         scope.push_back(token.name() + ".");
     }
 
-    virtual void onEndMessage(Token& token)
+    virtual void onEndMessage(Token &token)
     {
         scope.pop_back();
     }
 
-    std::string asString(const Token& token, const char *buffer)
+    static std::string asString(const Token &token, const char *buffer)
     {
-        const Encoding& encoding = token.encoding();
+        const Encoding &encoding = token.encoding();
         const PrimitiveType type = encoding.primitiveType();
-        const std::uint64_t length =
-            (token.isConstantEncoding()) ?
-                encoding.constValue().size() :
-                static_cast<std::uint64_t>(token.encodedLength());
+        const std::uint64_t length = token.isConstantEncoding() ?
+            encoding.constValue().size() : static_cast<std::uint64_t>(token.encodedLength());
         std::ostringstream result;
 
         std::uint64_t num = length / lengthOfType(type);
@@ -90,6 +88,7 @@ public:
                 }
                 break;
             }
+
             case PrimitiveType::INT8:
             case PrimitiveType::INT16:
             case PrimitiveType::INT32:
@@ -99,9 +98,10 @@ public:
                 {
                     const char *separator = "";
 
-                    for (size_t i = 0; i < num; i++)
+                    for (std::size_t i = 0; i < num; i++)
                     {
-                        result << separator << Encoding::getInt(type, encoding.byteOrder(), buffer + (i * lengthOfType(type)));
+                        result << separator
+                               << Encoding::getInt(type, encoding.byteOrder(), buffer + (i * lengthOfType(type)));
                         separator = ", ";
                     }
                 }
@@ -118,6 +118,7 @@ public:
                 }
                 break;
             }
+
             case PrimitiveType::UINT8:
             case PrimitiveType::UINT16:
             case PrimitiveType::UINT32:
@@ -136,6 +137,7 @@ public:
                 }
                 break;
             }
+
             case PrimitiveType::FLOAT:
             case PrimitiveType::DOUBLE:
             {
@@ -146,42 +148,41 @@ public:
                 }
                 break;
             }
+
             default:
-            {
                 break;
-            }
         }
 
         return result.str();
     }
 
     virtual void onEncoding(
-        Token& fieldToken,
+        Token &fieldToken,
         const char *buffer,
-        Token& typeToken,
+        Token &typeToken,
         std::uint64_t actingVersion)
     {
         printScope();
-        std::string name = (compositeLevel > 1) ? typeToken.name() : fieldToken.name();
+        std::string name = compositeLevel > 1 ? typeToken.name() : fieldToken.name();
 
-        std::cout << name << "=" << asString(typeToken, buffer) << "\n";
+        std::cout << name << "=" << asString(typeToken, buffer) << std::endl;
     }
 
     virtual void onEnum(
-        Token& fieldToken,
+        Token &fieldToken,
         const char *buffer,
-        std::vector<Token>& tokens,
+        std::vector<Token> &tokens,
         std::size_t fromIndex,
         std::size_t toIndex,
         std::uint64_t actingVersion)
     {
-        const Token& typeToken = tokens.at(fromIndex + 1);
-        const Encoding& encoding = typeToken.encoding();
+        const Token &typeToken = tokens.at(fromIndex + 1);
+        const Encoding &encoding = typeToken.encoding();
 
         printScope();
         std::cout << fieldToken.name() << "=";
 
-        for (size_t i = fromIndex + 1; i < toIndex; i++)
+        for (std::size_t i = fromIndex + 1; i < toIndex; i++)
         {
             const Token &token = tokens.at(i);
             const PrimitiveValue constValue = token.encoding().constValue();
@@ -210,25 +211,25 @@ public:
             }
         }
 
-        std::cout << "\n";
+        std::cout << std::endl;
     }
 
     virtual void onBitSet(
-        Token& fieldToken,
+        Token &fieldToken,
         const char *buffer,
-        std::vector<Token>& tokens,
+        std::vector<Token> &tokens,
         std::size_t fromIndex,
         std::size_t toIndex,
         std::uint64_t actingVersion)
     {
-        const Token& typeToken = tokens.at(fromIndex + 1);
-        const Encoding& encoding = typeToken.encoding();
+        const Token &typeToken = tokens.at(fromIndex + 1);
+        const Encoding &encoding = typeToken.encoding();
         const std::uint64_t value = encoding.getAsUInt(buffer);
 
         printScope();
         std::cout << fieldToken.name() << ":";
 
-        for (size_t i = fromIndex + 1; i < toIndex; i++)
+        for (std::size_t i = fromIndex + 1; i < toIndex; i++)
         {
             const Token &token = tokens.at(i);
             const std::uint64_t constValue = token.encoding().constValue().getAsUInt();
@@ -244,12 +245,12 @@ public:
             }
         }
 
-        std::cout << "\n";
+        std::cout << std::endl;
     }
 
     virtual void onBeginComposite(
-        Token& fieldToken,
-        std::vector<Token>& tokens,
+        Token &fieldToken,
+        std::vector<Token> &tokens,
         std::size_t fromIndex,
         std::size_t toIndex)
     {
@@ -258,8 +259,8 @@ public:
     }
 
     virtual void onEndComposite(
-        Token& fieldToken,
-        std::vector<Token>& tokens,
+        Token &fieldToken,
+        std::vector<Token> &tokens,
         std::size_t fromIndex,
         std::size_t toIndex)
     {
@@ -267,16 +268,14 @@ public:
         scope.pop_back();
     }
 
-    virtual void onGroupHeader(
-        Token& token,
-        std::uint64_t numInGroup)
+    virtual void onGroupHeader(Token &token, std::uint64_t numInGroup)
     {
         printScope();
         std::cout << token.name() << " Group Header: numInGroup=" << numInGroup << "\n";
     }
 
     virtual void onBeginGroup(
-        Token& token,
+        Token &token,
         std::uint64_t groupIndex,
         std::uint64_t numInGroup)
     {
@@ -284,7 +283,7 @@ public:
     }
 
     virtual void onEndGroup(
-        Token& token,
+        Token &token,
         std::uint64_t groupIndex,
         std::uint64_t numInGroup)
     {
@@ -292,13 +291,13 @@ public:
     }
 
     virtual void onVarData(
-        Token& fieldToken,
+        Token &fieldToken,
         const char *buffer,
         std::uint64_t length,
-        Token& typeToken)
+        Token &typeToken)
     {
         printScope();
-        std::cout << fieldToken.name() << "=" << std::string(buffer, length) << "\n";
+        std::cout << fieldToken.name() << "=" << std::string(buffer, length) << std::endl;
     }
 };
 
@@ -383,7 +382,7 @@ std::uint64_t encodeHdrAndCar(char *buffer, std::uint64_t length)
         .putManufacturerCode(MANUFACTURER_CODE)
         .booster().boostType(BoostType::NITROUS).horsePower(200);
 
-    Car::FuelFigures& fuelFigures = car.fuelFiguresCount(FUEL_FIGURES_COUNT);
+    Car::FuelFigures &fuelFigures = car.fuelFiguresCount(FUEL_FIGURES_COUNT);
 
     fuelFigures
         .next().speed(fuel1Speed).mpg(fuel1Mpg);
@@ -406,16 +405,16 @@ std::uint64_t encodeHdrAndCar(char *buffer, std::uint64_t length)
     perfFigs.next()
         .octaneRating(perf1Octane)
         .accelerationCount(ACCELERATION_COUNT)
-        .next().mph(perf1aMph).seconds(perf1aSeconds)
-        .next().mph(perf1bMph).seconds(perf1bSeconds)
-        .next().mph(perf1cMph).seconds(perf1cSeconds);
+            .next().mph(perf1aMph).seconds(perf1aSeconds)
+            .next().mph(perf1bMph).seconds(perf1bSeconds)
+            .next().mph(perf1cMph).seconds(perf1cSeconds);
 
     perfFigs.next()
         .octaneRating(perf2Octane)
         .accelerationCount(ACCELERATION_COUNT)
-        .next().mph(perf2aMph).seconds(perf2aSeconds)
-        .next().mph(perf2bMph).seconds(perf2bSeconds)
-        .next().mph(perf2cMph).seconds(perf2cSeconds);
+            .next().mph(perf2aMph).seconds(perf2aSeconds)
+            .next().mph(perf2bMph).seconds(perf2bSeconds)
+            .next().mph(perf2cMph).seconds(perf2cSeconds);
 
     car.putManufacturer(MANUFACTURER, static_cast<int>(strlen(MANUFACTURER)))
         .putModel(MODEL, static_cast<int>(strlen(MODEL)))
@@ -426,7 +425,7 @@ std::uint64_t encodeHdrAndCar(char *buffer, std::uint64_t length)
 
 int main(int argc, char **argv)
 {
-    char buffer[2048];
+    char buffer[2048] = {};
     ExampleTokenListener tokenListener;
 
     std::uint64_t sz = encodeHdrAndCar(buffer, sizeof(buffer));
@@ -435,7 +434,7 @@ int main(int argc, char **argv)
 
     if (irDecoder.decode("generated/example-schema.sbeir") != 0)
     {
-        std::cerr << "could not load SBE IR\n";
+        std::cerr << "could not load SBE IR" << std::endl;
         return -1;
     }
 
@@ -449,16 +448,18 @@ int main(int argc, char **argv)
     std::uint64_t actingVersion = headerDecoder.getSchemaVersion(buffer);
     std::uint64_t blockLength = headerDecoder.getBlockLength(buffer);
 
-    std::shared_ptr<std::vector<Token>> messageTokens = irDecoder.message(templateId, actingVersion);
+    std::shared_ptr<std::vector<Token>> messageTokens = irDecoder.message(
+        static_cast<int>(templateId), static_cast<int>(actingVersion));
 
-    const std::size_t result =
-        OtfMessageDecoder::decode(messageBuffer, length, actingVersion, blockLength, messageTokens, tokenListener);
+    std::size_t result = OtfMessageDecoder::decode(
+        messageBuffer, length, actingVersion, blockLength, messageTokens, tokenListener);
 
-    std::cout << "result = " << result << "\n";
+    std::cout << "result = " << result << std::endl;
 
     if (result != static_cast<std::size_t>(sz - headerDecoder.encodedLength()))
     {
-        std::cerr << "Message not properly decoded " << result << "/(" << sz << " - " << headerDecoder.encodedLength() << ")\n";
+        std::cerr << "Message not properly decoded " << result << "/(" << sz << " - " << headerDecoder.encodedLength()
+                  << ")" << std::endl;
         return -1;
     }
 

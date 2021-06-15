@@ -1,5 +1,6 @@
-/* Generated SBE (Simple Binary Encoding) message codec */
+/* Generated SBE (Simple Binary Encoding) message codec. */
 package uk.co.real_logic.sbe.ir.generated;
+
 
 /**
  * Number encoding byte order
@@ -22,11 +23,22 @@ public enum ByteOrderCodec
         this.value = value;
     }
 
+    /**
+     * The raw encoded value in the Java type representation.
+     *
+     * @return the raw value encoded.
+     */
     public short value()
     {
         return value;
     }
 
+    /**
+     * Lookup the enum value representing the value.
+     *
+     * @param value encoded to be looked up.
+     * @return the enum value representing the value.
+     */
     public static ByteOrderCodec get(final short value)
     {
         switch (value)

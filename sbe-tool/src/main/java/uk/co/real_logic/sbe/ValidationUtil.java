@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2021 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.co.real_logic.sbe.util;
+package uk.co.real_logic.sbe;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -65,11 +65,23 @@ public class ValidationUtil
         return true;
     }
 
+    /**
+     * Is the token a C language keyword?
+     *
+     * @param token to be checked.
+     * @return true if the token a C language keyword.
+     */
     public static boolean isCKeyword(final String token)
     {
         return C_KEYWORDS.contains(token);
     }
 
+    /**
+     * Is the value a possible C language keyword?
+     *
+     * @param value to be checked.
+     * @return true if the value a possible C language keyword.
+     */
     private static boolean possibleCKeyword(final String value)
     {
         for (int i = 0, size = value.length(); i < size; i++)
@@ -151,11 +163,23 @@ public class ValidationUtil
         return true;
     }
 
+    /**
+     * Is the token a C++ language keyword?
+     *
+     * @param token to be checked.
+     * @return true if the token a C++ language keyword.
+     */
     public static boolean isCppKeyword(final String token)
     {
         return CPP_KEYWORDS.contains(token);
     }
 
+    /**
+     * Is the value a possible C++ language keyword?
+     *
+     * @param value to be checked.
+     * @return true if the value a possible C++ language keyword.
+     */
     private static boolean possibleCppKeyword(final String value)
     {
         for (int i = 0, size = value.length(); i < size; i++)
@@ -319,11 +343,23 @@ public class ValidationUtil
         return true;
     }
 
+    /**
+     * Is the token a Go language keyword?
+     *
+     * @param token to be checked.
+     * @return true if the token a Go language keyword.
+     */
     public static boolean isGolangKeyword(final String token)
     {
         return GOLANG_KEYWORDS.contains(token);
     }
 
+    /**
+     * Is the value a possible Go language keyword?
+     *
+     * @param value to be checked.
+     * @return true if the value a possible Go language keyword.
+     */
     private static boolean possibleGolangKeyword(final String value)
     {
         for (int i = 0, size = value.length(); i < size; i++)
@@ -417,12 +453,24 @@ public class ValidationUtil
         return true;
     }
 
+    /**
+     * Is the token a C# language keyword?
+     *
+     * @param token to be checked.
+     * @return true if the token a C# language keyword.
+     */
     public static boolean isCSharpKeyword(final String token)
     {
         return CSHARP_KEYWORDS.contains(token);
     }
 
-    private static boolean possibleCSharpKeyword(final String value)
+    /**
+     * Is the value a possible C# language keyword?
+     *
+     * @param value to be checked.
+     * @return true if the value a possible C# language keyword.
+     */
+    public static boolean possibleCSharpKeyword(final String value)
     {
         for (int i = 0, size = value.length(); i < size; i++)
         {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2021 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,22 +21,23 @@
 class SbeMarketDataBench : public Benchmark
 {
 public:
-    virtual void setUp(void)
+    void setUp() override
     {
         buffer_ = new char[MAX_MD_BUFFER];
         bench_.runEncode(buffer_, MAX_MD_BUFFER);  // set buffer up for decoding runs
     };
 
-    virtual void tearDown(void)
+    void tearDown() override
     {
         delete[] buffer_;
     };
 
     SbeMarketDataCodecBench bench_;
-    char *buffer_;
+    char *buffer_ = nullptr;
 };
 
-static struct Benchmark::Config cfg[] = {
+static struct Benchmark::Config cfg[] =
+{
     { Benchmark::ITERATIONS, "10000000" },
     { Benchmark::BATCHES, "20" }
 };

@@ -1,14 +1,15 @@
-/* Generated SBE (Simple Binary Encoding) message codec */
+/* Generated SBE (Simple Binary Encoding) message codec. */
 package uk.co.real_logic.sbe.ir.generated;
 
 import org.agrona.MutableDirectBuffer;
 import org.agrona.DirectBuffer;
 
+
 /**
  * Codec for an IR Token
  */
 @SuppressWarnings("all")
-public class TokenCodecEncoder
+public final class TokenCodecEncoder
 {
     public static final int BLOCK_LENGTH = 28;
     public static final int TEMPLATE_ID = 2;
@@ -18,9 +19,9 @@ public class TokenCodecEncoder
 
     private final TokenCodecEncoder parentMessage = this;
     private MutableDirectBuffer buffer;
-    protected int initialOffset;
-    protected int offset;
-    protected int limit;
+    private int initialOffset;
+    private int offset;
+    private int limit;
 
     public int sbeBlockLength()
     {

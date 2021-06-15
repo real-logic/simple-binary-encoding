@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2021 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,11 +74,6 @@ public class Token
      * Length not determined
      */
     public static final int VARIABLE_LENGTH = -1;
-
-    /**
-     * Offset not computed or set
-     */
-    public static final int UNKNOWN_OFFSET = -1;
 
     private final Signal signal;
     private final String name;
@@ -281,7 +276,7 @@ public class Token
      * The offset for this token in the message.
      *
      * @return the offset of this Token. A value of 0 means the node has no relevant offset. A value of
-     * {@link Token#UNKNOWN_OFFSET} means this nodes true offset is dependent on variable length
+     * {@link Token#VARIABLE_LENGTH} means this nodes true offset is dependent on variable length
      * fields ahead of it in the encoding.
      */
     public int offset()
@@ -319,16 +314,29 @@ public class Token
         return encoding;
     }
 
+    /**
+     * Is the encoding presence is a constant or not?
+     *
+     * @return true if the encoding presence is a constant or false if not.
+     */
     public boolean isConstantEncoding()
     {
         return encoding.presence() == CONSTANT;
     }
 
+    /**
+     * Is the encoding presence is optional or not?
+     *
+     * @return true if the encoding presence is optional or false if not.
+     */
     public boolean isOptionalEncoding()
     {
         return encoding.presence() == OPTIONAL;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public String toString()
     {
         return "Token{" +
@@ -346,6 +354,9 @@ public class Token
             '}';
     }
 
+    /**
+     * Builder for {@link Token} which can simplify construction.
+     */
     public static class Builder
     {
         private Signal signal;
@@ -360,72 +371,143 @@ public class Token
         private int componentTokenCount = 1;
         private Encoding encoding = new Encoding();
 
+        /**
+         * Signal for the Token.
+         *
+         * @param signal for the Token.
+         * @return this for a fluent API.
+         */
         public Builder signal(final Signal signal)
         {
             this.signal = signal;
             return this;
         }
 
+        /**
+         * Name for the Token.
+         *
+         * @param name for the Token.
+         * @return this for a fluent API.
+         */
         public Builder name(final String name)
         {
             this.name = name;
             return this;
         }
 
+        /**
+         * Referenced type name for the Token.
+         *
+         * @param referencedName for the Token.
+         * @return this for a fluent API.
+         */
         public Builder referencedName(final String referencedName)
         {
             this.referencedName = referencedName;
             return this;
         }
 
+        /**
+         * Description attribute for the Token.
+         *
+         * @param description for the Token.
+         * @return this for a fluent API.
+         */
         public Builder description(final String description)
         {
             this.description = description;
             return this;
         }
 
+        /**
+         * ID attribute for the Token.
+         *
+         * @param id for the Token.
+         * @return this for a fluent API.
+         */
         public Builder id(final int id)
         {
             this.id = id;
             return this;
         }
 
+        /**
+         * Version attribute for the Token.
+         *
+         * @param version for the Token.
+         * @return this for a fluent API.
+         */
         public Builder version(final int version)
         {
             this.version = version;
             return this;
         }
 
+        /**
+         * Deprecated version attribute for the Token.
+         *
+         * @param deprecated version for the Token.
+         * @return this for a fluent API.
+         */
         public Builder deprecated(final int deprecated)
         {
             this.deprecated = deprecated;
             return this;
         }
 
+        /**
+         * Size of the type for the Token.
+         *
+         * @param size for the Token.
+         * @return this for a fluent API.
+         */
         public Builder size(final int size)
         {
             this.size = size;
             return this;
         }
 
+        /**
+         * Offset in the message for the Token.
+         *
+         * @param offset for the Token.
+         * @return this for a fluent API.
+         */
         public Builder offset(final int offset)
         {
             this.offset = offset;
             return this;
         }
 
+        /**
+         * Count of tokens in the component.
+         *
+         * @param componentTokenCount for the component.
+         * @return this for a fluent API.
+         */
         public Builder componentTokenCount(final int componentTokenCount)
         {
             this.componentTokenCount = componentTokenCount;
             return this;
         }
 
+        /**
+         * Encoding type for the Token.
+         *
+         * @param encoding for the Token.
+         * @return this for a fluent API.
+         */
         public Builder encoding(final Encoding encoding)
         {
             this.encoding = encoding;
             return this;
         }
 
+        /**
+         * Build a new Token based on the values.
+         *
+         * @return a new Token based on the values.
+         */
         public Token build()
         {
             return new Token(

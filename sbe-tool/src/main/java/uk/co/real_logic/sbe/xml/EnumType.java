@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2021 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,11 +29,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static uk.co.real_logic.sbe.xml.Presence.OPTIONAL;
-import static uk.co.real_logic.sbe.xml.XmlSchemaParser.handleError;
-import static uk.co.real_logic.sbe.xml.XmlSchemaParser.handleWarning;
-import static uk.co.real_logic.sbe.xml.XmlSchemaParser.checkForValidName;
-import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValue;
-import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValueOrNull;
+import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
 
 /**
  * SBE enum type for representing an enumeration of values.
@@ -50,7 +46,7 @@ public class EnumType extends Type
     private final Map<PrimitiveValue, ValidValue> validValueByPrimitiveValueMap = new LinkedHashMap<>();
     private final Map<String, ValidValue> validValueByNameMap = new LinkedHashMap<>();
 
-    public EnumType(final Node node) throws XPathExpressionException
+    EnumType(final Node node) throws XPathExpressionException
     {
         this(node, null, null);
     }
@@ -63,7 +59,7 @@ public class EnumType extends Type
      * @param referencedName of the type when created from a ref in a composite.
      * @throws XPathExpressionException if the XPath is invalid
      */
-    public EnumType(final Node node, final String givenName, final String referencedName)
+    EnumType(final Node node, final String givenName, final String referencedName)
         throws XPathExpressionException
     {
         super(node, givenName, referencedName);
@@ -149,6 +145,31 @@ public class EnumType extends Type
                 handleWarning(node, "validValue already exists for name: " + v.name());
             }
 
+            if (PrimitiveType.CHAR != encodingType)
+            {
+                final long value = v.primitiveValue().longValue();
+                final long minValue = null != encodedDataType && null != encodedDataType.minValue() ?
+                    encodedDataType.minValue().longValue() : encodingType.minValue().longValue();
+                final long maxValue = null != encodedDataType && null != encodedDataType.maxValue() ?
+                    encodedDataType.maxValue().longValue() : encodingType.maxValue().longValue();
+                final long nullLongValue = null != nullValue ? nullValue.longValue() :
+                    encodingType.nullValue().longValue();
+
+                if (nullLongValue == value)
+                {
+                    handleError(
+                        node,
+                        "validValue " + v.name() + " uses nullValue: " +
+                        (null != nullValue ? nullValue : encodingType.nullValue()));
+                }
+                else if (value < minValue || value > maxValue)
+                {
+                    handleError(
+                        node,
+                        "validValue " + v.name() + " outside of range " + minValue + " - " + maxValue + ": " + value);
+                }
+            }
+
             validValueByPrimitiveValueMap.put(v.primitiveValue(), v);
             validValueByNameMap.put(v.name(), v);
         }
@@ -221,11 +242,17 @@ public class EnumType extends Type
         return validValueByNameMap.values();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean isVariableLength()
     {
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public String toString()
     {
         return "EnumType{" +
@@ -237,7 +264,7 @@ public class EnumType extends Type
     }
 
     /**
-     * Class to hold valid values for EnumType
+     * Holder for valid values for and {@link EnumType}.
      */
     public static class ValidValue
     {
@@ -314,6 +341,9 @@ public class EnumType extends Type
             return deprecated;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public String toString()
         {
             return "ValidValue{" +

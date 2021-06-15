@@ -1,6 +1,5 @@
-/* -*- mode: java; c-basic-offset: 4; tab-width: 4; indent-tabs-mode: nil -*- */
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2021 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -112,6 +111,9 @@ public final class ParserOptions
         return new Builder();
     }
 
+    /**
+     * Builder to make {@link ParserOptions} easier to create.
+     */
     public static class Builder
     {
         private boolean stopOnError;

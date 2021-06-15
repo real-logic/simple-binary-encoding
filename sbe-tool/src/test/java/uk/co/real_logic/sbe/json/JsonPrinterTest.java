@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2021 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,6 +70,8 @@ public class JsonPrinterTest extends EncodedCarTestBase
             "        \"manufacturerCode\": \"123\",\n" +
             "        \"fuel\": \"Petrol\"\n" +
             "    },\n" +
+            "    \"uuid\": [7, 3],\n" +
+            "    \"cupHolderCount\": 5,\n" +
             "    \"fuelFigures\": [\n" +
             "    {\n" +
             "        \"speed\": 30,\n" +

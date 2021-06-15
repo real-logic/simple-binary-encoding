@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2021 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,27 +27,44 @@ import java.util.List;
 
 import static uk.co.real_logic.sbe.PrimitiveType.CHAR;
 
+/**
+ * Listener for tokens when dynamically decoding a message which converts them to JSON for output.
+ */
 public class JsonTokenListener implements TokenListener
 {
     private final StringBuilder output;
     private int indentation = 0;
     private int compositeLevel = 0;
 
+    /**
+     * Construct a new TokenListener that will write JSON formatted output.
+     *
+     * @param output to write the JSON formatted output to.
+     */
     public JsonTokenListener(final StringBuilder output)
     {
         this.output = output;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void onBeginMessage(final Token token)
     {
         startObject();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void onEndMessage(final Token token)
     {
         endObject();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void onEncoding(
         final Token fieldToken,
         final DirectBuffer buffer,
@@ -56,10 +73,13 @@ public class JsonTokenListener implements TokenListener
         final int actingVersion)
     {
         property(compositeLevel > 0 ? typeToken.name() : fieldToken.name());
-        appendEncodingAsString(buffer, bufferIndex, typeToken, actingVersion);
+        appendEncodingAsString(buffer, bufferIndex, fieldToken, typeToken, actingVersion);
         next();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void onEnum(
         final Token fieldToken,
         final DirectBuffer buffer,
@@ -70,7 +90,7 @@ public class JsonTokenListener implements TokenListener
         final int actingVersion)
     {
         final Token typeToken = tokens.get(fromIndex + 1);
-        final long encodedValue = readEncodingAsLong(buffer, bufferIndex, typeToken, actingVersion);
+        final long encodedValue = readEncodingAsLong(buffer, bufferIndex, typeToken, fieldToken, actingVersion);
 
         String value = null;
         if (fieldToken.isConstantEncoding())
@@ -98,6 +118,9 @@ public class JsonTokenListener implements TokenListener
         next();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void onBitSet(
         final Token fieldToken,
         final DirectBuffer buffer,
@@ -108,7 +131,7 @@ public class JsonTokenListener implements TokenListener
         final int actingVersion)
     {
         final Token typeToken = tokens.get(fromIndex + 1);
-        final long encodedValue = readEncodingAsLong(buffer, bufferIndex, typeToken, actingVersion);
+        final long encodedValue = readEncodingAsLong(buffer, bufferIndex, typeToken, fieldToken, actingVersion);
 
         property(determineName(0, fieldToken, tokens, fromIndex));
 
@@ -128,20 +151,24 @@ public class JsonTokenListener implements TokenListener
             }
         }
         output.append(" }");
-
         next();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void onBeginComposite(
         final Token fieldToken, final List<Token> tokens, final int fromIndex, final int toIndex)
     {
         ++compositeLevel;
-
         property(determineName(1, fieldToken, tokens, fromIndex));
         output.append('\n');
         startObject();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void onEndComposite(
         final Token fieldToken, final List<Token> tokens, final int fromIndex, final int toIndex)
     {
@@ -149,17 +176,33 @@ public class JsonTokenListener implements TokenListener
         endObject();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void onGroupHeader(final Token token, final int numInGroup)
     {
         property(token.name());
-        output.append("[\n");
+        if (numInGroup > 0)
+        {
+            output.append("[\n");
+        }
+        else
+        {
+            output.append("[],\n");
+        }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void onBeginGroup(final Token token, final int groupIndex, final int numInGroup)
     {
         startObject();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void onEndGroup(final Token token, final int groupIndex, final int numInGroup)
     {
         endObject();
@@ -170,6 +213,9 @@ public class JsonTokenListener implements TokenListener
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void onVarData(
         final Token fieldToken,
         final DirectBuffer buffer,
@@ -216,64 +262,116 @@ public class JsonTokenListener implements TokenListener
     }
 
     private void appendEncodingAsString(
-        final DirectBuffer buffer, final int index, final Token typeToken, final int actingVersion)
+        final DirectBuffer buffer,
+        final int index,
+        final Token fieldToken,
+        final Token typeToken,
+        final int actingVersion)
     {
+        final int arrayLength = typeToken.arrayLength();
         final Encoding encoding = typeToken.encoding();
-        final PrimitiveValue constOrNotPresentValue = constOrNotPresentValue(typeToken, actingVersion);
+        final PrimitiveValue constOrNotPresentValue = constOrNotPresentValue(typeToken, fieldToken, actingVersion);
+
         if (null != constOrNotPresentValue)
         {
-            if (encoding.primitiveType() == CHAR)
+            final String characterEncoding = encoding.characterEncoding();
+            if (null != characterEncoding)
             {
                 doubleQuote();
-                output.append(constOrNotPresentValue.toString());
+
+                if (PrimitiveValue.Representation.LONG == constOrNotPresentValue.representation())
+                {
+                    try
+                    {
+                        final long longValue = constOrNotPresentValue.longValue();
+                        if (PrimitiveValue.NULL_VALUE_CHAR != longValue)
+                        {
+                            escape(new String(new byte[]{ (byte)longValue }, characterEncoding));
+                        }
+                    }
+                    catch (final UnsupportedEncodingException ex)
+                    {
+                        throw new RuntimeException(ex);
+                    }
+                }
+                else
+                {
+                    escape(constOrNotPresentValue.toString());
+                }
+
                 doubleQuote();
             }
             else
             {
-                output.append(constOrNotPresentValue.toString());
+                if (arrayLength < 2)
+                {
+                    Types.appendAsJsonString(output, constOrNotPresentValue, encoding);
+                }
+                else
+                {
+                    output.append('[');
+
+                    for (int i = 0; i < arrayLength; i++)
+                    {
+                        if (i > 0)
+                        {
+                            output.append(", ");
+                        }
+                        Types.appendAsJsonString(output, constOrNotPresentValue, encoding);
+                    }
+
+                    output.append(']');
+                }
             }
-
-            return;
-        }
-
-        final int elementSize = encoding.primitiveType().size();
-
-        final int size = typeToken.arrayLength();
-        if (size > 1 && encoding.primitiveType() == CHAR)
-        {
-            doubleQuote();
-
-            for (int i = 0; i < size; i++)
-            {
-                escape((char)buffer.getByte(index + (i * elementSize)));
-            }
-
-            doubleQuote();
         }
         else
         {
-            if (size > 1)
-            {
-                output.append('[');
-            }
+            final int elementSize = encoding.primitiveType().size();
+            final int size = typeToken.arrayLength();
 
-            for (int i = 0; i < size; i++)
+            if (size > 1 && encoding.primitiveType() == CHAR)
             {
-                Types.appendAsJsonString(output, buffer, index + (i * elementSize), encoding);
-                output.append(", ");
-            }
+                doubleQuote();
 
-            backup();
-            if (size > 1)
+                for (int i = 0; i < size; i++)
+                {
+                    escape((char)buffer.getByte(index + (i * elementSize)));
+                }
+
+                doubleQuote();
+            }
+            else
             {
-                output.append(']');
+                if (1 == size)
+                {
+                    Types.appendAsJsonString(output, buffer, index, encoding);
+                }
+                else
+                {
+                    output.append('[');
+
+                    for (int i = 0; i < size; i++)
+                    {
+                        if (i > 0)
+                        {
+                            output.append(", ");
+                        }
+                        Types.appendAsJsonString(output, buffer, index + (i * elementSize), encoding);
+                    }
+
+                    output.append(']');
+                }
             }
         }
     }
 
     private void backup()
     {
-        output.setLength(output.length() - 2);
+        final int newLength = output.length() - 2;
+        if (output.charAt(newLength) == ',')
+        {
+            output.setLength(newLength);
+        }
     }
 
     private void indent()
@@ -323,14 +421,15 @@ public class JsonTokenListener implements TokenListener
         }
     }
 
-    private static PrimitiveValue constOrNotPresentValue(final Token token, final int actingVersion)
+    private static PrimitiveValue constOrNotPresentValue(
+        final Token typeToken, final Token fieldToken, final int actingVersion)
     {
-        final Encoding encoding = token.encoding();
-        if (token.isConstantEncoding())
+        final Encoding encoding = typeToken.encoding();
+        if (typeToken.isConstantEncoding())
         {
             return encoding.constValue();
         }
-        else if (token.isOptionalEncoding() && actingVersion < token.version())
+        else if (fieldToken.isOptionalEncoding() && actingVersion < fieldToken.version())
         {
             return encoding.applicableNullValue();
         }
@@ -339,9 +438,13 @@ public class JsonTokenListener implements TokenListener
     }
 
     private static long readEncodingAsLong(
-        final DirectBuffer buffer, final int bufferIndex, final Token typeToken, final int actingVersion)
+        final DirectBuffer buffer,
+        final int bufferIndex,
+        final Token typeToken,
+        final Token fieldToken,
+        final int actingVersion)
     {
-        final PrimitiveValue constOrNotPresentValue = constOrNotPresentValue(typeToken, actingVersion);
+        final PrimitiveValue constOrNotPresentValue = constOrNotPresentValue(typeToken, fieldToken, actingVersion);
         if (null != constOrNotPresentValue)
         {
             return constOrNotPresentValue.longValue();

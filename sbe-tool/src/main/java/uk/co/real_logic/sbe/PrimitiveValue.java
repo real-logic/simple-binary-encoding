@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2021 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,10 +24,13 @@ import static java.nio.charset.Charset.forName;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 
 /**
- * Class used to encapsulate values for primitives. Used for nullValue, minValue, maxValue, and constants
+ * Class used to encapsulate values for primitives. Used for nullValue, minValue, maxValue, and constants.
  */
 public class PrimitiveValue
 {
+    /**
+     * Representation type used for the stored value.
+     */
     public enum Representation
     {
         /**
@@ -192,7 +195,7 @@ public class PrimitiveValue
                 {
                     throw new IllegalArgumentException("Constant char value malformed: " + value);
                 }
-                return new PrimitiveValue((long)value.getBytes(US_ASCII)[0], 1);
+                return new PrimitiveValue(value.getBytes(US_ASCII)[0], 1);
 
             case INT8:
                 return new PrimitiveValue(Byte.parseByte(value), 1);
@@ -379,33 +382,35 @@ public class PrimitiveValue
     }
 
     /**
-     * Return String representation of this object
+     * Return String value representation of this object.
      *
-     * @return String representing object value
+     * @return String representing object value.
      */
     public String toString()
     {
-        switch (representation)
+        if (Representation.LONG == representation)
         {
-            case LONG:
-                return Long.toString(longValue);
-
-            case DOUBLE:
-                return Double.toString(doubleValue);
-
-            case BYTE_ARRAY:
-                try
-                {
-                    return null == characterEncoding ?
-                        new String(byteArrayValue) : new String(byteArrayValue, characterEncoding);
-                }
-                catch (final UnsupportedEncodingException ex)
-                {
-                    throw new IllegalStateException(ex);
-                }
-
-            default:
-                throw new IllegalStateException("Unsupported Representation: " + representation);
+            return Long.toString(longValue);
+        }
+        else if (Representation.DOUBLE == representation)
+        {
+            return Double.toString(doubleValue);
+        }
+        else if (Representation.BYTE_ARRAY == representation)
+        {
+            try
+            {
+                return null == characterEncoding ?
+                    new String(byteArrayValue) : new String(byteArrayValue, characterEncoding);
+            }
+            catch (final UnsupportedEncodingException ex)
+            {
+                throw new IllegalStateException(ex);
+            }
+        }
+        else
+        {
+            throw new IllegalStateException("Unsupported Representation: " + representation);
         }
     }
 

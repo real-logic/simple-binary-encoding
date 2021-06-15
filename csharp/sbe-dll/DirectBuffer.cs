@@ -120,7 +120,7 @@ namespace Org.SbeTool.Sbe.Dll
         {
             get { return _capacity; }
         }
-
+        
         /// <summary>
         /// Check that a given limit is not greater than the capacity of a buffer from a given offset.
         /// </summary>
@@ -129,17 +129,26 @@ namespace Org.SbeTool.Sbe.Dll
         {
             if (limit > _capacity)
             {
-                if (bufferOverflow == null)
-                    throw new IndexOutOfRangeException(string.Format("limit={0} is beyond capacity={1}", limit, _capacity));
-
-                var newBuffer = bufferOverflow(_capacity, limit);
-
-                if (newBuffer == null)
-                    throw new IndexOutOfRangeException(string.Format("limit={0} is beyond capacity={1}", limit, _capacity));
-
-                Marshal.Copy((IntPtr)_pBuffer, newBuffer, 0, _capacity);
-                Wrap(newBuffer);
+                TryResizeBuffer(limit);
             }
+        }
+
+        private void TryResizeBuffer(int limit)
+        {
+            if (bufferOverflow == null)
+            {
+                throw new IndexOutOfRangeException("limit=" + limit + " is beyond capacity=" + _capacity);
+            }
+
+            var newBuffer = bufferOverflow(_capacity, limit);
+
+            if (newBuffer == null)
+            {
+                throw new IndexOutOfRangeException("limit=" + limit + " is beyond capacity=" + _capacity);
+            }
+
+            Marshal.Copy((IntPtr)_pBuffer, newBuffer, 0, _capacity);
+            Wrap(newBuffer);
         }
 
         /// <summary>
@@ -666,7 +675,9 @@ namespace Org.SbeTool.Sbe.Dll
         private void Dispose(bool disposing)
         {
             if (_disposed)
+            {
                 return;
+            }
 
             FreeGCHandle();
 

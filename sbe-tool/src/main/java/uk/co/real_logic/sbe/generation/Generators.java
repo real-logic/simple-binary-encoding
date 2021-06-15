@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2021 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,9 @@ import uk.co.real_logic.sbe.ir.Token;
 import java.util.List;
 import java.util.function.BiConsumer;
 
+/**
+ * Common operations available to all {@link CodeGenerator}s.
+ */
 public class Generators
 {
     /**

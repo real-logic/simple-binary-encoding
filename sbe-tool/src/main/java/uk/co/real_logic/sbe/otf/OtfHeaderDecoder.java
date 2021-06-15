@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2021 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -97,6 +97,18 @@ public class OtfHeaderDecoder
     }
 
     /**
+     * Get the block length of the root block in the message.
+     *
+     * @param buffer       from which to read the value.
+     * @param bufferOffset in the buffer at which the message header begins.
+     * @return the length of the root block in the coming message.
+     */
+    public int getBlockLength(final DirectBuffer buffer, final int bufferOffset)
+    {
+        return Types.getInt(buffer, bufferOffset + blockLengthOffset, blockLengthType, blockLengthByteOrder);
+    }
+
+    /**
      * Get the template id from the message header.
      *
      * @param buffer       from which to read the value.
@@ -130,17 +142,5 @@ public class OtfHeaderDecoder
     public int getSchemaVersion(final DirectBuffer buffer, final int bufferOffset)
     {
         return Types.getInt(buffer, bufferOffset + schemaVersionOffset, schemaVersionType, schemaVersionByteOrder);
-    }
-
-    /**
-     * Get the block length of the root block in the message.
-     *
-     * @param buffer       from which to read the value.
-     * @param bufferOffset in the buffer at which the message header begins.
-     * @return the length of the root block in the coming message.
-     */
-    public int getBlockLength(final DirectBuffer buffer, final int bufferOffset)
-    {
-        return Types.getInt(buffer, bufferOffset + blockLengthOffset, blockLengthType, blockLengthByteOrder);
     }
 }

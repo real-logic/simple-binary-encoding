@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2021 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,10 +27,20 @@ import uk.co.real_logic.sbe.ir.Ir;
 
 import static uk.co.real_logic.sbe.SbeTool.*;
 
+/**
+ * Loader for {@link CodeGenerator}s which target a language. This provide convenient short names rather than the
+ * fully qualified class name of the generator.
+ */
 public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
 {
+    /**
+     * Generates codecs for the Java 8 programming language.
+     */
     JAVA()
     {
+        /**
+         * {@inheritDoc}
+         */
         public CodeGenerator newInstance(final Ir ir, final String outputDir)
         {
             return new JavaGenerator(
@@ -44,24 +54,45 @@ public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
         }
     },
 
+    /**
+     * Generates codecs for the C11 programming language.
+     */
     C()
     {
+        /**
+         * {@inheritDoc}
+         */
         public CodeGenerator newInstance(final Ir ir, final String outputDir)
         {
             return new CGenerator(ir, new COutputManager(outputDir, ir.applicableNamespace()));
         }
     },
 
+    /**
+     * Generates codecs for the C++11 programming language with some conditional includes for C++14 and C++17.
+     */
     CPP()
     {
+        /**
+         * {@inheritDoc}
+         */
         public CodeGenerator newInstance(final Ir ir, final String outputDir)
         {
-            return new CppGenerator(ir, new NamespaceOutputManager(outputDir, ir.applicableNamespace()));
+            return new CppGenerator(
+                ir,
+                Boolean.getBoolean(DECODE_UNKNOWN_ENUM_VALUES),
+                new NamespaceOutputManager(outputDir, ir.applicableNamespace()));
         }
     },
 
+    /**
+     * Generates codecs for the Go programming language.
+     */
     GOLANG()
     {
+        /**
+         * {@inheritDoc}
+         */
         public CodeGenerator newInstance(final Ir ir, final String outputDir)
         {
             return new GolangGenerator(ir, new GolangOutputManager(outputDir, ir.applicableNamespace()));

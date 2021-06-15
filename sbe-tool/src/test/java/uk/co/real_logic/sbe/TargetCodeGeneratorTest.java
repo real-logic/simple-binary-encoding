@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2021 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import static org.mockito.Mockito.verify;
 public class TargetCodeGeneratorTest
 {
     @Test
-    public void shouldThrowOnNoTargetLanguage() throws Exception
+    public void shouldThrowOnNoTargetLanguage()
     {
         assertThrows(IllegalArgumentException.class, () ->
             SbeTool.generate(mock(Ir.class), ".", "none"));

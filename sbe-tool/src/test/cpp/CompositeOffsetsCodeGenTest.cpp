@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2021 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,10 +53,10 @@ public:
         return m_msg.encodedLength();
     }
 
-    MessageHeader m_hdr;
-    MessageHeader m_hdrDecoder;
-    TestMessage1 m_msg;
-    TestMessage1 m_msgDecoder;
+    MessageHeader m_hdr = {};
+    MessageHeader m_hdrDecoder = {};
+    TestMessage1 m_msg = {};
+    TestMessage1 m_msgDecoder = {};
 };
 
 TEST_F(CompositeOffsetsCodeGenTest, shouldReturnCorrectValuesForMessageHeaderStaticFields)
@@ -81,7 +81,7 @@ TEST_F(CompositeOffsetsCodeGenTest, shouldReturnCorrectValuesForTestMessage1Stat
 
 TEST_F(CompositeOffsetsCodeGenTest, shouldBeAbleToEncodeMessageHeaderCorrectly)
 {
-    char buffer[2048];
+    char buffer[2048] = {};
     const char *bp = buffer;
 
     std::uint64_t sz = encodeHdr(buffer, 0, sizeof(buffer));
@@ -95,7 +95,7 @@ TEST_F(CompositeOffsetsCodeGenTest, shouldBeAbleToEncodeMessageHeaderCorrectly)
 
 TEST_F(CompositeOffsetsCodeGenTest, shouldBeAbleToEncodeAndDecodeMessageHeaderCorrectly)
 {
-    char buffer[2048];
+    char buffer[2048] = {};
 
     encodeHdr(buffer, 0, sizeof(buffer));
 
@@ -108,7 +108,7 @@ TEST_F(CompositeOffsetsCodeGenTest, shouldBeAbleToEncodeAndDecodeMessageHeaderCo
 
 TEST_F(CompositeOffsetsCodeGenTest, shouldBeAbleToEncodeMessageCorrectly)
 {
-    char buffer[2048];
+    char buffer[2048] = {};
     const char *bp = buffer;
     std::uint64_t sz = encodeMsg(buffer, 0, sizeof(buffer));
 
@@ -124,7 +124,7 @@ TEST_F(CompositeOffsetsCodeGenTest, shouldBeAbleToEncodeMessageCorrectly)
 
 TEST_F(CompositeOffsetsCodeGenTest, shouldBeAbleToDecodeHeaderAndMsgCorrectly)
 {
-    char buffer[2048];
+    char buffer[2048] = {};
     std::uint64_t hdrSz = encodeHdr(buffer, 0, sizeof(buffer));
     std::uint64_t sz = encodeMsg(buffer, hdrSz, sizeof(buffer));
 
@@ -138,7 +138,8 @@ TEST_F(CompositeOffsetsCodeGenTest, shouldBeAbleToDecodeHeaderAndMsgCorrectly)
     EXPECT_EQ(m_hdrDecoder.schemaId(), TestMessage1::sbeSchemaId());
     EXPECT_EQ(m_hdrDecoder.version(), TestMessage1::sbeSchemaVersion());
 
-    m_msgDecoder.wrapForDecode(buffer, hdrSz, TestMessage1::sbeBlockLength(), TestMessage1::sbeSchemaVersion(), hdrSz + sz);
+    m_msgDecoder.wrapForDecode(
+        buffer, hdrSz, TestMessage1::sbeBlockLength(), TestMessage1::sbeSchemaVersion(), hdrSz + sz);
 
     TestMessage1::Entries entries = m_msgDecoder.entries();
     EXPECT_EQ(entries.count(), 2u);
