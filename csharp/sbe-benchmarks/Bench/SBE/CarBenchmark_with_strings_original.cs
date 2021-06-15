@@ -4,6 +4,9 @@ using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Diagnosers;
 using Org.SbeTool.Sbe.Dll;
 
+// Whilst running decoding timing tests there are values we don't use
+#pragma warning disable 219
+
 namespace Org.SbeTool.Sbe.Benchmarks.Bench.Benchmarks
 {
     [MemoryDiagnoser]
