@@ -79,7 +79,7 @@ public class Ir
 
         captureTypes(headerTokens, 0, headerTokens.size() - 1);
 
-        if (Boolean.getBoolean(SbeTool.CPP_NAMESPACES_COLLAPSE))
+        if ("true".equals(System.getProperty(SbeTool.CPP_NAMESPACES_COLLAPSE)))
         {
             this.namespaces = new String[]{ (namespaceName == null ? packageName : namespaceName).replace(".", "_") };
         }

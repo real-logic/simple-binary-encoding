@@ -39,6 +39,5 @@ namespace Org.SbeTool.Sbe.Tests
             Assert.AreEqual(Issue483.Issue483.ConstantMetaAttribute(Issue483.MetaAttribute.Presence), "constant");
             Assert.AreEqual(Issue483.Issue483.OptionalMetaAttribute(Issue483.MetaAttribute.Presence), "optional");
         }
-
     }
 }

@@ -7,17 +7,14 @@ using Org.SbeTool.Sbe.Dll;
 namespace Org.SbeTool.Sbe.Benchmarks.Bench.Benchmarks
 {
     [MemoryDiagnoser]
-    public class CarBenchmark
+    public class CarBenchmark_with_strings_original
     {
-        // string values are deliberately encoded outside of the benchmark
-        private static readonly byte[] VehicleCode = Encoding.GetEncoding(Car.VehicleCodeCharacterEncoding).GetBytes("CODE12");
-        private static readonly byte[] ManufacturerCode = Encoding.GetEncoding(Engine.ManufacturerCodeCharacterEncoding).GetBytes("123");
-        private static readonly byte[] Manufacturer = Encoding.GetEncoding(Car.ManufacturerCharacterEncoding).GetBytes("Honda");
-        private static readonly byte[] Model = Encoding.GetEncoding(Car.ModelCharacterEncoding).GetBytes("Civic VTi");
-        private static readonly byte[] ActivationCode = Encoding.GetEncoding(Car.ActivationCodeCharacterEncoding).GetBytes("code");
-        private static readonly byte[] UrbanCycle = Encoding.GetEncoding(Car.FuelFiguresGroup.UsageDescriptionCharacterEncoding).GetBytes("Urban Cycle");
-        private static readonly byte[] CombinedCycle = Encoding.GetEncoding(Car.FuelFiguresGroup.UsageDescriptionCharacterEncoding).GetBytes("Combined Cycle");
-        private static readonly byte[] HighwayCycle = Encoding.GetEncoding(Car.FuelFiguresGroup.UsageDescriptionCharacterEncoding).GetBytes("Highway Cycle");
+        private static readonly Encoding VehicleCodeEncoding = Encoding.GetEncoding(Car.VehicleCodeCharacterEncoding);
+        private static readonly Encoding ManufacturerCodeEncoding = Encoding.GetEncoding(Engine.ManufacturerCodeCharacterEncoding);
+        private static readonly Encoding ManufacturerEncoding = Encoding.GetEncoding(Car.ManufacturerCharacterEncoding);
+        private static readonly Encoding ModelEncoding = Encoding.GetEncoding(Car.ModelCharacterEncoding);
+        private static readonly Encoding ActivationCodeEncoding = Encoding.GetEncoding(Car.ActivationCodeCharacterEncoding);
+        private static readonly Encoding UsageDescriptionEncoding = Encoding.GetEncoding(Car.FuelFiguresGroup.UsageDescriptionCharacterEncoding);
 
         private readonly byte[] _eBuffer = new byte[1024];
         private readonly byte[] _dBuffer = new byte[1024];
@@ -56,7 +53,7 @@ namespace Org.SbeTool.Sbe.Benchmarks.Bench.Benchmarks
             car.ModelYear = 2013;
             car.Available = BooleanType.T;
             car.Code = Baseline.Model.A;
-            car.SetVehicleCode(VehicleCode, srcOffset);
+            car.SetVehicleCode(VehicleCodeEncoding.GetBytes("CODE12"), 0);
 
             for (int i = 0, size = Car.SomeNumbersLength; i < size; i++)
             {
@@ -66,7 +63,7 @@ namespace Org.SbeTool.Sbe.Benchmarks.Bench.Benchmarks
             car.Extras = OptionalExtras.CruiseControl | OptionalExtras.SportsPack;
             car.Engine.Capacity = 2000;
             car.Engine.NumCylinders = 4;
-            car.Engine.SetManufacturerCode(ManufacturerCode, srcOffset);
+            car.Engine.SetManufacturerCode(ManufacturerCodeEncoding.GetBytes("123"), 0);
             car.Engine.Efficiency = 35;
             car.Engine.BoosterEnabled = BooleanType.T;
             car.Engine.Booster.BoostType = BoostType.NITROUS;
@@ -76,18 +73,17 @@ namespace Org.SbeTool.Sbe.Benchmarks.Bench.Benchmarks
             fuelFigures.Next();
             fuelFigures.Speed = 30;
             fuelFigures.Mpg = 35.9f;
-            fuelFigures.SetUsageDescription(UrbanCycle);
+            fuelFigures.SetUsageDescription(UsageDescriptionEncoding.GetBytes("Urban Cycle"));
 
             fuelFigures.Next();
             fuelFigures.Speed = 55;
             fuelFigures.Mpg = 49.0f;
-            fuelFigures.SetUsageDescription(CombinedCycle);
+            fuelFigures.SetUsageDescription(UsageDescriptionEncoding.GetBytes("Combined Cycle"));
 
             fuelFigures.Next();
             fuelFigures.Speed = 75;
             fuelFigures.Mpg = 40.0f;
-            fuelFigures.SetUsageDescription(HighwayCycle);
-
+            fuelFigures.SetUsageDescription(UsageDescriptionEncoding.GetBytes("Highway Cycle"));
 
             Car.PerformanceFiguresGroup perfFigures = car.PerformanceFiguresCount(2);
             perfFigures.Next();
@@ -120,6 +116,10 @@ namespace Org.SbeTool.Sbe.Benchmarks.Bench.Benchmarks
             acceleration.Mph = 100;
             acceleration.Seconds = 11.8f;
 
+            byte[] Manufacturer = ManufacturerEncoding.GetBytes("Honda");
+            byte[] Model = ModelEncoding.GetBytes("Civic VTi");
+            byte[] ActivationCode = ActivationCodeEncoding.GetBytes("code");
+
             car.SetManufacturer(Manufacturer, srcOffset, Manufacturer.Length);
             car.SetModel(Model, srcOffset, Model.Length);
             car.SetActivationCode(ActivationCode, srcOffset, ActivationCode.Length);
@@ -147,8 +147,8 @@ namespace Org.SbeTool.Sbe.Benchmarks.Bench.Benchmarks
                 var number = car.GetSomeNumbers(i);
             }
 
-            // strings are not actually decoded, only copied out into a buffer
-            car.GetVehicleCode(_buffer, 0);
+            var length = car.GetVehicleCode(_buffer, 0);
+            var vehicleCode = VehicleCodeEncoding.GetString(_buffer, 0, length);
 
             OptionalExtras extras = car.Extras;
             var cruiseControl = (extras & OptionalExtras.CruiseControl) == OptionalExtras.CruiseControl;
@@ -164,7 +164,7 @@ namespace Org.SbeTool.Sbe.Benchmarks.Bench.Benchmarks
                 engine.GetManufacturerCode(i);
             }
 
-            int length = engine.GetFuel(_buffer, 0, _buffer.Length);
+            length = engine.GetFuel(_buffer, 0, _buffer.Length);
 
             var efficiency = engine.Efficiency;
             var boosterEnabled = engine.BoosterEnabled;
@@ -177,7 +177,8 @@ namespace Org.SbeTool.Sbe.Benchmarks.Bench.Benchmarks
                 var fuelFigures = fuelFiguresGroup.Next();
                 var speed = fuelFigures.Speed;
                 var mpg = fuelFigures.Mpg;
-                fuelFigures.GetUsageDescription(_buffer, 0, _buffer.Length);
+                length = fuelFigures.GetUsageDescription(_buffer, 0, _buffer.Length);
+                var fuelUsage = UsageDescriptionEncoding.GetString(_buffer, 0, length);
             }
 
             var performanceFiguresGroup = car.PerformanceFigures;
@@ -196,8 +197,13 @@ namespace Org.SbeTool.Sbe.Benchmarks.Bench.Benchmarks
             }
 
             length = car.GetManufacturer(_buffer, 0, _buffer.Length);
+            var usage = ManufacturerEncoding.GetString(_buffer, 0, length);
+
             length = car.GetModel(_buffer, 0, _buffer.Length);
+            usage = ModelEncoding.GetString(_buffer, 0, length);
+
             length = car.GetActivationCode(_buffer, 0, _buffer.Length);
+            usage = ActivationCodeEncoding.GetString(_buffer, 0, length);
 
             return car.Size;
         }

@@ -21,13 +21,59 @@ import uk.co.real_logic.sbe.PrimitiveType;
 import java.util.EnumMap;
 import java.util.Map;
 
-import static uk.co.real_logic.sbe.generation.Generators.toUpperFirstChar;
 
 /**
  * Utilities for mapping between IR and the C# language.
  */
 public class CSharpUtil
 {
+
+    /**
+     * Useful separator constants for code generation
+     */
+    public enum Separators
+    {
+        BEGIN_GROUP('['),
+        END_GROUP(']'),
+        BEGIN_COMPOSITE('('),
+        END_COMPOSITE(')'),
+        BEGIN_SET('{'),
+        END_SET('}'),
+        BEGIN_ARRAY('['),
+        END_ARRAY(']'),
+        FIELD('|'),
+        KEY_VALUE('='),
+        ENTRY(',');
+
+        private final char symbol;
+
+        Separators(final char symbol)
+        {
+            this.symbol = symbol;
+        }
+
+        /**
+         * Add separator to a generated append to a {@link StringBuilder}.
+         *
+         * @param builder     the code generation builder to which information should be added
+         * @param indent      the current generated code indentation
+         * @param builderName the generated StringBuilder to which separator should be added
+         */
+        public void appendToGeneratedBuilder(final StringBuilder builder, final String indent, final String builderName)
+        {
+            builder.append(indent).append(builderName).append(".Append('").append(symbol).append("');").append('\n');
+        }
+
+        /**
+         * Returns the string value of this separator.
+         * @return  the string value of this separator
+         */
+        public String toString()
+        {
+            return String.valueOf(symbol);
+        }
+    }
+
     private static final Map<PrimitiveType, String> PRIMITIVE_TYPE_STRING_ENUM_MAP = new EnumMap<>(PrimitiveType.class);
 
     /*
@@ -60,6 +106,28 @@ public class CSharpUtil
     }
 
     /**
+     * Uppercase the first character of a given String.
+     *
+     * @param str to have the first character upper cased.
+     * @return a new String with the first character in uppercase.
+     */
+    public static String toUpperFirstChar(final String str)
+    {
+        return Character.toUpperCase(str.charAt(0)) + str.substring(1);
+    }
+
+    /**
+     * Lowercase the first character of a given String.
+     *
+     * @param str to have the first character upper cased.
+     * @return a new String with the first character in uppercase.
+     */
+    public static String toLowerFirstChar(final String str)
+    {
+        return Character.toLowerCase(str.charAt(0)) + str.substring(1);
+    }
+
+    /**
      * Format a String as a property name.
      *
      * @param str to be formatted.
@@ -68,6 +136,17 @@ public class CSharpUtil
     public static String formatPropertyName(final String str)
     {
         return toUpperFirstChar(str);
+    }
+
+    /**
+     * Format a String as a variable name.
+     *
+     * @param str to be formatted.
+     * @return the string formatted as a property name.
+     */
+    public static String formatVariableName(final String str)
+    {
+        return toLowerFirstChar(str);
     }
 
     /**
@@ -80,4 +159,28 @@ public class CSharpUtil
     {
         return toUpperFirstChar(str);
     }
+
+    /**
+     * Format a Getter name for generated code.
+     *
+     * @param propertyName to be formatted.
+     * @return the property name formatted as a getter name.
+     */
+    public static String formatGetterName(final String propertyName)
+    {
+        return "Get" + toUpperFirstChar(propertyName);
+    }
+
+    /**
+     * Shortcut to append a line of generated code
+     *
+     * @param builder string builder to which to append the line
+     * @param indent  current text indentation
+     * @param line    line to be appended
+     */
+    public static void append(final StringBuilder builder, final String indent, final String line)
+    {
+        builder.append(indent).append(line).append('\n');
+    }
+
 }

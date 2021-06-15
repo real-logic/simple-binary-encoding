@@ -60,7 +60,7 @@ namespace Org.SbeTool.Sbe.Tests
             _issue435.Example.E = Issue435.EnumRef.Two;
 
             // Check size is normal eight bytes plus one extra for S
-            Assert.IsTrue(Issue435.Issue435.BlockLength == 1, "Issue435 size has unexpected blocklength");
+            Assert.IsTrue(Issue435.Issue435.BlockLength == 1, "Issue435 size has unexpected BlockLength");
 
             // Now let's decode
             _messageHeader.Wrap(_directBuffer, 0, Issue435.Issue435.SchemaVersion);

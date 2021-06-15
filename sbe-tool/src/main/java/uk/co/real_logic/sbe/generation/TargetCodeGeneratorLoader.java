@@ -47,9 +47,9 @@ public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
                 ir,
                 System.getProperty(JAVA_ENCODING_BUFFER_TYPE, JAVA_DEFAULT_ENCODING_BUFFER_TYPE),
                 System.getProperty(JAVA_DECODING_BUFFER_TYPE, JAVA_DEFAULT_DECODING_BUFFER_TYPE),
-                Boolean.getBoolean(JAVA_GROUP_ORDER_ANNOTATION),
-                Boolean.getBoolean(JAVA_GENERATE_INTERFACES),
-                Boolean.getBoolean(DECODE_UNKNOWN_ENUM_VALUES),
+                "true".equals(System.getProperty(JAVA_GROUP_ORDER_ANNOTATION)),
+                "true".equals(System.getProperty(JAVA_GENERATE_INTERFACES)),
+                "true".equals(System.getProperty(DECODE_UNKNOWN_ENUM_VALUES)),
                 new PackageOutputManager(outputDir, ir.applicableNamespace()));
         }
     },
@@ -80,7 +80,7 @@ public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
         {
             return new CppGenerator(
                 ir,
-                Boolean.getBoolean(DECODE_UNKNOWN_ENUM_VALUES),
+                "true".equals(System.getProperty(DECODE_UNKNOWN_ENUM_VALUES)),
                 new NamespaceOutputManager(outputDir, ir.applicableNamespace()));
         }
     },

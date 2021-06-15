@@ -3,7 +3,6 @@
 ROOTDIR=$(dirname ${0})
 SBE_JAR=${ROOTDIR}/sbe-tool-all.jar
 
-
 [ -f "${SBE_JAR}" ] || (echo "Missing ${SBE_JAR}"; exit 1)
 
 function usage {
