@@ -145,7 +145,7 @@ allprojects {
     }
 
     tasks.withType(JavaExec).configureEach {
-        javaLauncher = toolchainLauncher
+        javaLauncher.set(toolchainLauncher)
     }
 }
 
@@ -259,7 +259,7 @@ project(':sbe-tool') {
     compileTestJava.dependsOn compileGeneratedJava
 
     task generateTestCodecs(dependsOn: 'compileJava', type: JavaExec) {
-        main = 'uk.co.real_logic.sbe.SbeTool'
+        mainClass.set('uk.co.real_logic.sbe.SbeTool')
         classpath = sourceSets.main.runtimeClasspath
         systemProperties(
             'sbe.output.dir': generatedDir,
@@ -731,6 +731,6 @@ tasks.named("dependencyUpdates").configure {
 }
 
 wrapper {
-    gradleVersion = '7.0.2'
+    gradleVersion = '7.1.1'
     distributionType = 'ALL'
 }
