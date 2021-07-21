@@ -23,6 +23,8 @@ import uk.co.real_logic.sbe.generation.cpp.NamespaceOutputManager;
 import uk.co.real_logic.sbe.generation.golang.GolangGenerator;
 import uk.co.real_logic.sbe.generation.golang.GolangOutputManager;
 import uk.co.real_logic.sbe.generation.java.JavaGenerator;
+import uk.co.real_logic.sbe.generation.rust.RustGenerator;
+import uk.co.real_logic.sbe.generation.rust.RustOutputManager;
 import uk.co.real_logic.sbe.ir.Ir;
 
 import static uk.co.real_logic.sbe.SbeTool.*;
@@ -96,6 +98,22 @@ public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
         public CodeGenerator newInstance(final Ir ir, final String outputDir)
         {
             return new GolangGenerator(ir, new GolangOutputManager(outputDir, ir.applicableNamespace()));
+        }
+    },
+
+    /**
+     * Generates codecs for the Rust programming language.
+     */
+    RUST()
+    {
+        /**
+         * {@inheritDoc}
+         */
+        public CodeGenerator newInstance(final Ir ir, final String outputDir)
+        {
+            return new RustGenerator(
+                ir,
+                new RustOutputManager(outputDir, ir.packageName()));
         }
     };
 
