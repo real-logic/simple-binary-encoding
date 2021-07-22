@@ -535,7 +535,7 @@ project(':sbe-benchmarks') {
  * Rust codec targets used for testing
  */
 task generateRustExamples(type: JavaExec) {
-    main = 'uk.co.real_logic.sbe.SbeTool'
+    mainClass = 'uk.co.real_logic.sbe.SbeTool'
     classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
     systemProperties(
             'sbe.output.dir': 'generated/rust',
@@ -550,7 +550,7 @@ task generateRustExamples(type: JavaExec) {
 }
 
 task generateCarExampleDataFile(type: JavaExec) {
-    main = 'uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStub'
+    mainClass = 'uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStub'
     classpath = project(':sbe-samples').sourceSets.main.runtimeClasspath
     systemProperties('sbe.encoding.filename': 'rust/car_example_baseline_data.sbe')
     args = []
@@ -558,7 +558,7 @@ task generateCarExampleDataFile(type: JavaExec) {
 }
 
 task generateCarExampleExtensionDataFile(type: JavaExec) {
-    main = 'uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStubExtension'
+    mainClass = 'uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStubExtension'
     classpath = project(':sbe-samples').sourceSets.main.runtimeClasspath
     systemProperties('sbe.encoding.filename': 'rust/car_example_extension_data.sbe')
     args = []
