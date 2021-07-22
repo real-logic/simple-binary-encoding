@@ -283,6 +283,5 @@ class LibRsDef
         indent(writer, 1, "}\n");
 
         indent(writer, 0, "}\n\n");
-        
     }
 }
