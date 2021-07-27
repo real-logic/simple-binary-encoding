@@ -41,7 +41,6 @@ def toolchainLauncher = javaToolchains.launcherFor {
 def checkstyleVersion = '8.39'
 def hamcrestVersion = '2.2'
 def mockitoVersion = '3.11.2'
-def byteBuddyVersion = '1.11.3'
 def junitVersion = '5.7.2'
 def jmhVersion = '1.32'
 def agronaVersion = '1.11.0'
@@ -138,8 +137,6 @@ allprojects {
     configurations.all {
         resolutionStrategy {
             failOnVersionConflict()
-
-            force "net.bytebuddy:byte-buddy:${byteBuddyVersion}", "net.bytebuddy:byte-buddy-agent:${byteBuddyVersion}"
         }
     }
 
