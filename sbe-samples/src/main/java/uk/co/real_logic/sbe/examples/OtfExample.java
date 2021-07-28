@@ -63,7 +63,7 @@ public class OtfExample
         final ByteBuffer encodedMsgBuffer = ByteBuffer.allocate(MSG_BUFFER_CAPACITY);
         encodeTestMessage(encodedMsgBuffer);
 
-        // Now lets decode the schema IR so we have IR objects.
+        // Now let's decode the schema IR, so we have IR objects.
         encodedSchemaBuffer.flip();
         final Ir ir = decodeIr(encodedSchemaBuffer);
 
@@ -81,7 +81,7 @@ public class OtfExample
 
         bufferOffset += headerDecoder.encodedLength();
 
-        // Given the header information we can select the appropriate message template to do the decode.
+        // Given the header information we can select the appropriate message template to do the decode operation.
         // The OTF Java classes are thread safe so the same instances can be reused across multiple threads.
 
         final List<Token> msgTokens = ir.getMessage(templateId);

@@ -210,7 +210,7 @@ public class CarBenchmark
     }
 
     /*
-     * Benchmarks to allow execution outside of JMH.
+     * Benchmarks to allow execution outside JMH.
      */
 
     public static void main(final String[] args)

@@ -76,7 +76,7 @@ public class SetType extends Type
                 break;
 
             default:
-                // might not have ran into this type yet, so look for it
+                // might not have run into this type yet, so look for it
                 final String expression = TYPE_XPATH_EXPR + "[@name='" + encodingTypeStr + "']";
                 final Node encodingTypeNode = (Node)xPath
                     .compile(expression)

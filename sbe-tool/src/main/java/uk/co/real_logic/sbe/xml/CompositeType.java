@@ -152,7 +152,7 @@ public class CompositeType extends Type
     }
 
     /**
-     * Check the composite for being a well formed group encodedLength encoding. This means
+     * Check the composite for being a well-formed group encodedLength encoding. This means
      * that there are the fields "blockLength" and "numInGroup" present.
      *
      * @param node of the XML for this composite
@@ -226,7 +226,7 @@ public class CompositeType extends Type
     }
 
     /**
-     * Check the composite for being a well formed variable length data encoding. This means
+     * Check the composite for being a well-formed variable length data encoding. This means
      * that there are the fields "length" and "varData" present.
      *
      * @param node of the XML for this composite
@@ -295,7 +295,7 @@ public class CompositeType extends Type
     }
 
     /**
-     * Check the composite for being a well formed message headerStructure encoding. This means
+     * Check the composite for being a well-formed message headerStructure encoding. This means
      * that there are the fields "blockLength", "templateId" and "version" present.
      *
      * @param node of the XML for this composite

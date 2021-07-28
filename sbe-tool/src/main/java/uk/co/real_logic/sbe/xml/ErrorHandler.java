@@ -74,9 +74,9 @@ public class ErrorHandler
     }
 
     /**
-     * Record a message signifying an warning condition.
+     * Record a message signifying a warning condition.
      *
-     * @param msg signifying an warning.
+     * @param msg signifying a warning.
      */
     public void warning(final String msg)
     {

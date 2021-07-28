@@ -1488,7 +1488,7 @@ public class JavaGenerator implements CodeGenerator
         if (shouldDecodeUnknownEnumValues)
         {
             sb.append(INDENT).append("/**\n");
-            sb.append(INDENT).append(" * To be used to represent a unknown value from a later version.\n");
+            sb.append(INDENT).append(" * To be used to represent an unknown value from a later version.\n");
             sb.append(INDENT).append(" */\n");
             sb.append(INDENT).append("SBE_UNKNOWN").append('(').append(nullVal).append("),\n\n");
         }
@@ -1693,7 +1693,7 @@ public class JavaGenerator implements CodeGenerator
                 "public enum MetaAttribute\n" +
                 "{\n" +
                 "    /**\n" +
-                "     * The epoch or start of time. Default is 'UNIX' which is midnight January 1, 1970 UTC\n" +
+                "     * The epoch or start of time. Default is 'UNIX' which is midnight 1st January 1970 UTC.\n" +
                 "     */\n" +
                 "    EPOCH,\n\n" +
                 "    /**\n" +

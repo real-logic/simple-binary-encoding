@@ -108,7 +108,7 @@ public class CSharpUtil
     /**
      * Uppercase the first character of a given String.
      *
-     * @param str to have the first character upper cased.
+     * @param str to have the first character upper-cased.
      * @return a new String with the first character in uppercase.
      */
     public static String toUpperFirstChar(final String str)
@@ -119,7 +119,7 @@ public class CSharpUtil
     /**
      * Lowercase the first character of a given String.
      *
-     * @param str to have the first character upper cased.
+     * @param str to have the first character upper-cased.
      * @return a new String with the first character in uppercase.
      */
     public static String toLowerFirstChar(final String str)

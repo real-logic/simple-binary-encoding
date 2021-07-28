@@ -133,10 +133,10 @@ public final class GenerationUtil
     }
 
     /**
-     * Find a list of sub group names.
+     * Find a list of sub-group names.
      *
      * @param tokens to search.
-     * @return list of names for the sub groups.
+     * @return list of names for the sub-groups.
      */
     public static List<String> findSubGroupNames(final List<Token> tokens)
     {

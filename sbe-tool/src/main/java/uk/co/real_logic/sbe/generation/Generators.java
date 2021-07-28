@@ -54,7 +54,7 @@ public class Generators
     /**
      * Uppercase the first character of a given String.
      *
-     * @param s to have the first character upper cased.
+     * @param s to have the first character upper-cased.
      * @return a new String with the first character in uppercase.
      */
     public static String toUpperFirstChar(final String s)
@@ -70,7 +70,7 @@ public class Generators
     /**
      * Lowercase the first character of a given String.
      *
-     * @param s to have the first character upper cased.
+     * @param s to have the first character upper-cased.
      * @return a new String with the first character in uppercase.
      */
     public static String toLowerFirstChar(final String s)

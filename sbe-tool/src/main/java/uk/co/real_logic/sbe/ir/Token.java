@@ -276,7 +276,7 @@ public class Token
      * The offset for this token in the message.
      *
      * @return the offset of this Token. A value of 0 means the node has no relevant offset. A value of
-     * {@link Token#VARIABLE_LENGTH} means this nodes true offset is dependent on variable length
+     * {@link Token#VARIABLE_LENGTH} means this node's true offset is dependent on variable length
      * fields ahead of it in the encoding.
      */
     public int offset()
@@ -432,7 +432,7 @@ public class Token
         }
 
         /**
-         * Version attribute for the Token.
+         * Version attribute value for the Token.
          *
          * @param version for the Token.
          * @return this for a fluent API.
