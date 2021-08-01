@@ -935,3 +935,101 @@ TEST_F(CodeGenTest, shouldPrintFullDecodedFlyweightRegardlessOfReadPosition)
 
     EXPECT_EQ(carDecoder.encodedLength(), expectedCarEncodedLength);
 }
+
+std::string walkCar(Car& carDecoder)
+{
+    std::stringstream output;
+
+    output <<
+        carDecoder.serialNumber() << ';' <<
+        carDecoder.modelYear() << ';' <<
+        carDecoder.available() << ';' <<
+        carDecoder.code() << ';';
+
+    for (std::uint64_t i = 0; i < Car::someNumbersLength(); i++)
+    {
+        output << carDecoder.someNumbers(i) << ';';
+    }
+
+    output << carDecoder.getVehicleCodeAsString() << ';';
+    
+    OptionalExtras &extras = carDecoder.extras();
+    output <<
+       extras.sunRoof() << ';' <<
+       extras.sportsPack() << ';' <<
+       extras.cruiseControl() << ';';
+
+    Engine &engine = carDecoder.engine();
+    output <<
+        engine.capacity() << ';' <<
+        static_cast<int>(engine.numCylinders()) << ';' <<
+        Engine::maxRpm() << ';' <<
+        engine.getManufacturerCodeAsString() << ';' <<
+        engine.getFuelAsString() << ';';
+
+    Car::FuelFigures &fuelFigures = carDecoder.fuelFigures();
+    while (fuelFigures.hasNext())
+    {
+        fuelFigures.next();
+        output <<
+            fuelFigures.speed() << ';' <<
+            fuelFigures.mpg() << ';' <<
+            fuelFigures.getUsageDescriptionAsString() << ';';
+    }
+
+    Car::PerformanceFigures &performanceFigures = carDecoder.performanceFigures();
+    output << performanceFigures.count() << ';';
+    while (performanceFigures.hasNext())
+    {
+        performanceFigures.next();
+        output << performanceFigures.octaneRating() << ';';
+        Car::PerformanceFigures::Acceleration &acceleration = performanceFigures.acceleration();
+        while (acceleration.hasNext())
+        {
+            acceleration.next();
+            output <<
+                acceleration.mph() << ';' <<
+                acceleration.seconds() << ';';
+        }
+    }
+    
+//    values.add(engine.capacity());
+//    values.add(engine.numCylinders());
+//    values.add(engine.maxRpm());
+//    values.add(engine.manufacturerCode());
+//    values.add(engine.fuel());
+
+    
+    
+    return output.str();
+}
+
+TEST_F(CodeGenTest, shouldAllowForMultipleIterations)
+{
+    char buffer[BUFFER_LEN] = {};
+
+//    std::uint64_t carEncodedLength = encodeCar(buffer, m_hdr.encodedLength(), sizeof(buffer) - m_hdr.encodedLength());
+//
+//    EXPECT_EQ(hdrSz, expectedHeaderSize);
+//    EXPECT_EQ(carEncodedLength, expectedCarEncodedLength);
+//
+//    m_hdrDecoder.wrap(buffer, 0, 0, hdrSz);
+//
+//    EXPECT_EQ(m_hdrDecoder.blockLength(), Car::sbeBlockLength());
+//    EXPECT_EQ(m_hdrDecoder.templateId(), Car::sbeTemplateId());
+//    EXPECT_EQ(m_hdrDecoder.schemaId(), Car::sbeSchemaId());
+//    EXPECT_EQ(m_hdrDecoder.version(), Car::sbeSchemaVersion());
+//    EXPECT_EQ(m_hdrDecoder.encodedLength(), expectedHeaderSize);
+//
+//    m_carDecoder.wrapForDecode(
+//        buffer, m_hdrDecoder.encodedLength(), Car::sbeBlockLength(), Car::sbeSchemaVersion(), hdrSz + carEncodedLength);
+
+
+    Car carEncoder(buffer, sizeof(buffer));
+    uint64_t encodedLength = encodeCar(carEncoder);
+    Car carDecoder(buffer, encodedLength, Car::sbeBlockLength(), Car::sbeSchemaVersion());
+
+    std::string passOne = walkCar(carDecoder);
+
+    std::cout << passOne << std::endl;
+}
