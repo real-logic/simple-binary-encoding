@@ -186,6 +186,129 @@ public:
         displayStream.clear();
     }
 
+    std::string walkCar(Car& carDecoder)
+    {
+        std::stringstream output;
+
+        output <<
+            carDecoder.serialNumber() << ';' <<
+            carDecoder.modelYear() << ';' <<
+            carDecoder.available() << ';' <<
+            carDecoder.code() << ';';
+
+        for (std::uint64_t i = 0; i < Car::someNumbersLength(); i++)
+        {
+            output << carDecoder.someNumbers(i) << ';';
+        }
+
+        output << carDecoder.getVehicleCodeAsString() << ';';
+
+        OptionalExtras &extras = carDecoder.extras();
+        output <<
+        extras.sunRoof() << ';' <<
+        extras.sportsPack() << ';' <<
+        extras.cruiseControl() << ';';
+
+        Engine &engine = carDecoder.engine();
+        output <<
+        engine.capacity() << ';' <<
+        static_cast<int>(engine.numCylinders()) << ';' <<
+        Engine::maxRpm() << ';' <<
+        engine.getManufacturerCodeAsString() << ';' <<
+        engine.getFuelAsString() << ';';
+
+        Car::FuelFigures &fuelFigures = carDecoder.fuelFigures();
+        while (fuelFigures.hasNext())
+        {
+            fuelFigures.next();
+            output <<
+            fuelFigures.speed() << ';' <<
+            fuelFigures.mpg() << ';' <<
+            fuelFigures.getUsageDescriptionAsString() << ';';
+        }
+
+        Car::PerformanceFigures &performanceFigures = carDecoder.performanceFigures();
+        output << performanceFigures.count() << ';';
+        while (performanceFigures.hasNext())
+        {
+            performanceFigures.next();
+            output << performanceFigures.octaneRating() << ';';
+            Car::PerformanceFigures::Acceleration &acceleration = performanceFigures.acceleration();
+            while (acceleration.hasNext())
+            {
+                acceleration.next();
+                output <<
+                acceleration.mph() << ';' <<
+                acceleration.seconds() << ';';
+            }
+        }
+
+        output << carDecoder.getManufacturerAsString() << ';';
+        output << carDecoder.getModelAsString() << ';';
+
+        return output.str();
+    }
+
+    std::string partialWalkCar(Car& carDecoder)
+    {
+        std::stringstream output;
+
+        output <<
+            carDecoder.serialNumber() << ';' <<
+            carDecoder.modelYear() << ';' <<
+            carDecoder.available() << ';' <<
+            carDecoder.code() << ';';
+
+        for (std::uint64_t i = 0; i < Car::someNumbersLength(); i++)
+        {
+            output << carDecoder.someNumbers(i) << ';';
+        }
+
+        output << carDecoder.getVehicleCodeAsString() << ';';
+
+        OptionalExtras &extras = carDecoder.extras();
+        output <<
+        extras.sunRoof() << ';' <<
+        extras.sportsPack() << ';' <<
+        extras.cruiseControl() << ';';
+
+        Engine &engine = carDecoder.engine();
+        output <<
+        engine.capacity() << ';' <<
+        static_cast<int>(engine.numCylinders()) << ';' <<
+        Engine::maxRpm() << ';' <<
+        engine.getManufacturerCodeAsString() << ';' <<
+        engine.getFuelAsString() << ';';
+
+        Car::FuelFigures &fuelFigures = carDecoder.fuelFigures();
+        while (fuelFigures.hasNext())
+        {
+            fuelFigures.next();
+            output <<
+            fuelFigures.speed() << ';' <<
+            fuelFigures.mpg() << ';' <<
+            fuelFigures.getUsageDescriptionAsString() << ';';
+        }
+
+        Car::PerformanceFigures &performanceFigures = carDecoder.performanceFigures();
+        output << performanceFigures.count() << ';';
+        if (performanceFigures.hasNext())
+        {
+            performanceFigures.next();
+            output << performanceFigures.octaneRating() << ';';
+            Car::PerformanceFigures::Acceleration &acceleration = performanceFigures.acceleration();
+            if (acceleration.hasNext())
+            {
+                acceleration.next();
+                output <<
+                acceleration.mph() << ';' <<
+                acceleration.seconds() << ';';
+            }
+        }
+
+        return output.str();
+    }
+
     MessageHeader m_hdr = {};
     MessageHeader m_hdrDecoder = {};
     Car m_car = {};
@@ -934,4 +1057,28 @@ TEST_F(CodeGenTest, shouldPrintFullDecodedFlyweightRegardlessOfReadPosition)
     expectDisplayString(expectedDisplayString, carDecoder);
 
     EXPECT_EQ(carDecoder.encodedLength(), expectedCarEncodedLength);
+}
+
+TEST_F(CodeGenTest, shouldAllowForMultipleIterations)
+{
+    char buffer[BUFFER_LEN] = {};
+
+    Car carEncoder(buffer, sizeof(buffer));
+    uint64_t encodedLength = encodeCar(carEncoder);
+    Car carDecoder(buffer, encodedLength, Car::sbeBlockLength(), Car::sbeSchemaVersion());
+
+    std::string passOne = walkCar(carDecoder);
+    carDecoder.sbeRewind();
+    std::string passTwo = walkCar(carDecoder);
+    EXPECT_EQ(passOne, passTwo);
+
+    carDecoder.sbeRewind();
+    std::string passThree = partialWalkCar(carDecoder);
+    carDecoder.sbeRewind();
+    std::string passFour = partialWalkCar(carDecoder);
+    EXPECT_EQ(passThree, passFour);
+
+    carDecoder.sbeRewind();
+    std::string passFive = walkCar(carDecoder);
+    EXPECT_EQ(passOne, passFive);
 }
