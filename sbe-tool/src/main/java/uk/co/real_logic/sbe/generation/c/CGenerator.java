@@ -2032,9 +2032,9 @@ public class CGenerator implements CodeGenerator
             "}\n\n" +
 
             "SBE_ONE_DEF struct %10$s *%10$s_sbe_rewind(\n" +
-            "    struct code_generation_test_car *const codec)\n" +
+            "    struct %10$s *const codec)\n" +
             "{\n" +
-            "    return code_generation_test_car_wrap_for_decode(\n" +
+            "    return %10$s_wrap_for_decode(\n" +
             "        codec,\n" +
             "        codec->buffer,\n" +
             "        codec->offset,\n" +
