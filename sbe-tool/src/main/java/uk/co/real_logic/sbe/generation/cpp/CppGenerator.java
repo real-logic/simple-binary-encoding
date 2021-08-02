@@ -2050,6 +2050,12 @@ public class CppGenerator implements CodeGenerator
             "        return *this = %10$s(buffer, offset, bufferLength, actingBlockLength, actingVersion);\n" +
             "    }\n\n" +
 
+            "    %10$s &sbeRewind()\n" +
+            "    {\n" +
+            "        return wrapForDecode(" +
+            "m_buffer, m_offset, m_actingBlockLength, m_actingVersion, m_bufferLength);\n" +
+            "    }\n\n" +
+
             "    SBE_NODISCARD std::uint64_t sbePosition() const SBE_NOEXCEPT\n" +
             "    {\n" +
             "        return m_position;\n" +
