@@ -297,7 +297,12 @@ public class RustGenerator implements CodeGenerator
                 throw new IllegalStateException("tokens must begin with BEGIN_VAR_DATA: token=" + varDataToken);
             }
 
-            final String characterEncoding = tokens.get(i + 3).encoding().characterEncoding();
+            String characterEncoding = tokens.get(i + 3).encoding().characterEncoding();
+            if (characterEncoding == null)
+            {
+                characterEncoding = "";
+            }
+
             final String propertyName = toLowerSnakeCase(varDataToken.name());
             final Token lengthToken = tokens.get(i + 2);
             final Encoding lengthEncoding = lengthToken.encoding();
