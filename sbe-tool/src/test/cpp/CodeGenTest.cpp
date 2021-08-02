@@ -191,10 +191,10 @@ public:
         std::stringstream output;
 
         output <<
-        carDecoder.serialNumber() << ';' <<
-        carDecoder.modelYear() << ';' <<
-        carDecoder.available() << ';' <<
-        carDecoder.code() << ';';
+            carDecoder.serialNumber() << ';' <<
+            carDecoder.modelYear() << ';' <<
+            carDecoder.available() << ';' <<
+            carDecoder.code() << ';';
 
         for (std::uint64_t i = 0; i < Car::someNumbersLength(); i++)
         {
@@ -254,10 +254,10 @@ public:
         std::stringstream output;
 
         output <<
-        carDecoder.serialNumber() << ';' <<
-        carDecoder.modelYear() << ';' <<
-        carDecoder.available() << ';' <<
-        carDecoder.code() << ';';
+            carDecoder.serialNumber() << ';' <<
+            carDecoder.modelYear() << ';' <<
+            carDecoder.available() << ';' <<
+            carDecoder.code() << ';';
 
         for (std::uint64_t i = 0; i < Car::someNumbersLength(); i++)
         {
