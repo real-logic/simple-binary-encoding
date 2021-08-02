@@ -2576,9 +2576,9 @@ public class JavaGenerator implements CodeGenerator
             "            headerDecoder.version());\n" +
             "    }\n\n" +
 
-            "    public void sbeRewind()\n" +
+            "    public " + className + " sbeRewind()\n" +
             "    {\n" +
-            "        wrap(buffer, initialOffset, actingBlockLength, actingVersion);\n" +
+            "        return wrap(buffer, initialOffset, actingBlockLength, actingVersion);\n" +
             "    }\n\n";
 
         return generateFlyweightCode(DECODER, className, token, methods, readOnlyBuffer);
