@@ -160,8 +160,6 @@ fn decode_car_and_assert_expected_content(buffer: &[u8]) -> SbeResult<()> {
 fn encode_car_from_scratch() -> SbeResult<(usize, Vec<u8>)> {
     let mut buffer = vec![0u8; 256];
     let mut car = CarEncoder::default();
-    let mut engine = EngineEncoder::default();
-    let mut booster = BoosterEncoder::default();
     let mut fuel_figures = FuelFiguresEncoder::default();
     let mut performance_figures = PerformanceFiguresEncoder::default();
     let mut acceleration = AccelerationEncoder::default();
@@ -185,13 +183,13 @@ fn encode_car_from_scratch() -> SbeResult<(usize, Vec<u8>)> {
     extras.set_sun_roof(false);
     car.extras(extras);
 
-    engine = car.engine_encoder(engine);
+    let mut engine = car.engine_encoder();
     engine.capacity(2000);
     engine.num_cylinders(4);
     engine.manufacturer_code([49, 50, 51]); // 123
     engine.efficiency(35);
     engine.booster_enabled(BooleanType::T);
-    booster = engine.booster_encoder(booster);
+    let mut booster = engine.booster_encoder();
     booster.boost_type(BoostType::NITROUS);
     booster.horse_power(200);
 

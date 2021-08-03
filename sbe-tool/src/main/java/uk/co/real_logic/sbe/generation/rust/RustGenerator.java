@@ -484,13 +484,13 @@ public class RustGenerator implements CodeGenerator
         final String encoderTypeName = encoderName(formatStructName(typeToken.name()));
         indent(sb, level, "/// COMPOSITE ENCODER\n");
         indent(sb, level, "#[inline]\n");
-        indent(sb, level, "pub fn %s(self, %1$s: %2$s<Self>) -> %2$s<Self> {\n",
+        indent(sb, level, "pub fn %s(self) -> %2$s<Self> {\n",
             encoderName,
             encoderTypeName);
 
         // NB: must create variable 'offset' before moving 'self'
         indent(sb, level + 1, "let offset = self.%s;\n", getBufOffset(typeToken));
-        indent(sb, level + 1, "%s.wrap(self, offset)\n", encoderName);
+        indent(sb, level + 1, "%s::default().wrap(self, offset)\n", encoderTypeName);
         indent(sb, level, "}\n\n");
     }
 
@@ -1248,7 +1248,7 @@ public class RustGenerator implements CodeGenerator
         final String name) throws IOException
     {
         // impl Decoder...
-        indent(out, level, "impl<'a, P> Writer<'a> for %s<P> where P: Writer<'a> {\n", name);
+        indent(out, level, "impl<'a, P> Writer<'a> for %s<P> where P: Writer<'a> + Default {\n", name);
         indent(out, level + 1, "#[inline]\n");
         indent(out, level + 1, "fn get_buf_mut(&mut self) -> &mut WriteBuf<'a> {\n");
         indent(out, level + 2, "if let Some(parent) = self.parent.as_mut() {\n");
@@ -1268,7 +1268,7 @@ public class RustGenerator implements CodeGenerator
         appendImplWriterForComposite(out, level, name);
 
         // impl Encoder...
-        indent(out, level, "impl<'a, P> Encoder<'a> for %s<P> where P: Encoder<'a> {\n", name);
+        indent(out, level, "impl<'a, P> Encoder<'a> for %s<P> where P: Encoder<'a> + Default {\n", name);
         indent(out, level + 1, "#[inline]\n");
         indent(out, level + 1, "fn get_limit(&self) -> usize {\n");
         indent(out, level + 2, "self.parent.as_ref().expect(\"parent missing\").get_limit()\n");
@@ -1338,7 +1338,7 @@ public class RustGenerator implements CodeGenerator
         appendImplWriterForComposite(out, 1, encoderName);
 
         // impl<'a> start
-        indent(out, 1, "impl<'a, P> %s<P> where P: Writer<'a> {\n", encoderName);
+        indent(out, 1, "impl<'a, P> %s<P> where P: Writer<'a> + Default {\n", encoderName);
         indent(out, 2, "pub fn wrap(mut self, parent: P, offset: usize) -> Self {\n");
         indent(out, 3, "self.parent = Some(parent);\n");
         indent(out, 3, "self.offset = offset;\n");

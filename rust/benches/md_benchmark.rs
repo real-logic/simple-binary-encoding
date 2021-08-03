@@ -22,9 +22,6 @@ fn encode_md(state: &mut State) -> SbeResult<usize> {
     let mut market_data = MarketDataIncrementalRefreshTradesEncoder::default();
     let mut md_inc_grp = MdIncGrpEncoder::default();
 
-    let mut md_entry_px = Decimal64Encoder::default();
-    let mut md_entry_size = IntQty32Encoder::default();
-
     market_data = market_data.wrap(WriteBuf::new(buffer), message_header::ENCODED_LENGTH);
     market_data = market_data.header(0).parent()?;
 
@@ -38,10 +35,10 @@ fn encode_md(state: &mut State) -> SbeResult<usize> {
     md_inc_grp.advance()?;
     md_inc_grp.trade_id(1234);
     md_inc_grp.security_id(56789);
-    md_entry_px = md_inc_grp.md_entry_px_encoder(md_entry_px);
+    let mut md_entry_px = md_inc_grp.md_entry_px_encoder();
     md_entry_px.mantissa(50);
     md_inc_grp = md_entry_px.parent()?;
-    md_entry_size = md_inc_grp.md_entry_size_encoder(md_entry_size);
+    let mut md_entry_size = md_inc_grp.md_entry_size_encoder();
     md_entry_size.mantissa(10);
     md_inc_grp = md_entry_size.parent()?;
     md_inc_grp.number_of_orders(1);
@@ -53,10 +50,10 @@ fn encode_md(state: &mut State) -> SbeResult<usize> {
     md_inc_grp.advance()?;
     md_inc_grp.trade_id(1234);
     md_inc_grp.security_id(56789);
-    md_entry_px = md_inc_grp.md_entry_px_encoder(md_entry_px);
+    let mut md_entry_px = md_inc_grp.md_entry_px_encoder();
     md_entry_px.mantissa(50);
     md_inc_grp = md_entry_px.parent()?;
-    md_entry_size = md_inc_grp.md_entry_size_encoder(md_entry_size);
+    let mut md_entry_size = md_inc_grp.md_entry_size_encoder();
     md_entry_size.mantissa(10);
     md_inc_grp = md_entry_size.parent()?;
     md_inc_grp.number_of_orders(1);

@@ -23,7 +23,6 @@ pub fn car_encode_benchmark(c: &mut Criterion) {
 fn encode(state: &mut State) -> SbeResult<usize> {
     let buffer = state.buffer.as_mut_slice();
     let mut car = CarEncoder::default();
-    let mut engine = EngineEncoder::default();
     let mut fuel_figures = FuelFiguresEncoder::default();
     let mut performance_figures = PerformanceFiguresEncoder::default();
     let mut acceleration = AccelerationEncoder::default();
@@ -43,7 +42,7 @@ fn encode(state: &mut State) -> SbeResult<usize> {
     extras.set_sun_roof(true);
     car.extras(extras);
 
-    engine = car.engine_encoder(engine);
+    let mut engine = car.engine_encoder();
     engine.capacity(4200);
     engine.num_cylinders(8);
     engine.manufacturer_code([97, 98, 99]); // abc

@@ -75,7 +75,7 @@ class SubGroup implements RustGenerator.ParentDef
         RustGenerator.appendImplEncoderForComposite(sb, level - 1, name);
 
         // define impl...
-        indent(sb, level - 1, "impl<'a, P> %s<P> where P: Encoder<'a> {\n", name);
+        indent(sb, level - 1, "impl<'a, P> %s<P> where P: Encoder<'a> + Default {\n", name);
 
         final int headerSize = blockLengthPrimitiveType.size() + numInGroupPrimitiveType.size();
 
