@@ -11,7 +11,8 @@ examples_extension = { path = "../generated/rust/extension" }
 examples_uk_co_real_logic_sbe_benchmarks = { path = "../generated/rust/uk_co_real_logic_sbe_benchmarks" }
 examples_uk_co_real_logic_sbe_benchmarks_fix = { path = "../generated/rust/uk_co_real_logic_sbe_benchmarks_fix" }
 
-issue435 = { path = "../generated/rust/issue435" }
+issue_435 = { path = "../generated/rust/issue435" }
+baseline_bigendian = { path = "../generated/rust/baseline-bigendian" }
 
 [dev-dependencies]
 criterion = "0.3"

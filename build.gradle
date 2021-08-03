@@ -549,6 +549,19 @@ task generateRustExamples(type: JavaExec) {
     ]
 }
 
+task generateRustTestCodecs(type: JavaExec) {
+    mainClass = 'uk.co.real_logic.sbe.SbeTool'
+    classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
+    systemProperties(
+            'sbe.output.dir': 'generated/rust',
+            'sbe.xinclude.aware': 'true',
+            'sbe.target.language': 'Rust',
+            'sbe.validation.xsd': validationXsdPath)
+    args = ['sbe-tool/src/test/resources/issue435.xml',
+            'sbe-tool/src/test/resources/example-bigendian-test-schema.xml',
+    ]
+}
+
 task generateCarExampleDataFile(type: JavaExec) {
     mainClass = 'uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStub'
     classpath = project(':sbe-samples').sourceSets.main.runtimeClasspath
@@ -565,18 +578,19 @@ task generateCarExampleExtensionDataFile(type: JavaExec) {
     standardOutput = new ByteArrayOutputStream()
 }
 
-task runRustCarExample(type: Exec) {
+task generateRustCodecs {
+    description = 'Generate rust test codecs'
+    dependsOn 'generateRustExamples', 'generateRustTestCodecs',
+            'generateCarExampleDataFile', 'generateCarExampleExtensionDataFile'
+}
+
+task runRustExamples(type: Exec) {
     workingDir = './rust'
     executable = 'cargo'
     args = ['run']
     standardOutput = new ByteArrayOutputStream()
     errorOutput = new ByteArrayOutputStream()
-    dependsOn 'generateRustExamples', 'generateCarExampleDataFile', 'generateCarExampleExtensionDataFile'
-}
-
-task generateRustCodecs {
-    description = 'Generate rust test codecs'
-    dependsOn 'generateRustExamples', 'generateCarExampleDataFile', 'generateCarExampleExtensionDataFile'
+    dependsOn 'generateRustCodecs'
 }
 
 /*
