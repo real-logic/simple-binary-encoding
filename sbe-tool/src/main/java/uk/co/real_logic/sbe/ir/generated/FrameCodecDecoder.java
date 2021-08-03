@@ -104,9 +104,9 @@ public final class FrameCodecDecoder
             headerDecoder.version());
     }
 
-    public void sbeRewind()
+    public FrameCodecDecoder sbeRewind()
     {
-        wrap(buffer, initialOffset, actingBlockLength, actingVersion);
+        return wrap(buffer, initialOffset, actingBlockLength, actingVersion);
     }
 
     public int encodedLength()

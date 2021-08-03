@@ -104,9 +104,9 @@ public final class TokenCodecDecoder
             headerDecoder.version());
     }
 
-    public void sbeRewind()
+    public TokenCodecDecoder sbeRewind()
     {
-        wrap(buffer, initialOffset, actingBlockLength, actingVersion);
+        return wrap(buffer, initialOffset, actingBlockLength, actingVersion);
     }
 
     public int encodedLength()
