@@ -584,12 +584,10 @@ task generateRustCodecs {
             'generateCarExampleDataFile', 'generateCarExampleExtensionDataFile'
 }
 
-task runRustExamples(type: Exec) {
+task runRustTests(type: Exec) {
     workingDir = './rust'
     executable = 'cargo'
-    args = ['run']
-    standardOutput = new ByteArrayOutputStream()
-    errorOutput = new ByteArrayOutputStream()
+    args = ['test']
     dependsOn 'generateRustCodecs'
 }
 
