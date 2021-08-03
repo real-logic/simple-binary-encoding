@@ -188,8 +188,10 @@ public class RustUtil
 
         for (int i = 0, j = 0; j < length; j++)
         {
+            final boolean wasUpper = isUpperAlpha(lastChar);
+            final boolean wasNumeric = isNumeric(lastChar);
+            final boolean wasUnderscore = lastChar == '_';
             final char c = s.charAt(j);
-            final boolean upper = isUpperAlpha(lastChar);
 
             if (c == '_')
             {
@@ -198,7 +200,7 @@ public class RustUtil
             }
             else if (isUpperAlpha(c))
             {
-                if (!upper && j - i > 1 && lastChar != '_')
+                if (wasNumeric || (!wasUpper && j - i > 1 && !wasUnderscore))
                 {
                     out.append('_');
                     out.append(toLowerSnakeCase(s.substring(j)));
@@ -206,9 +208,19 @@ public class RustUtil
                 }
                 out.append(Character.toLowerCase(c));
             }
+            else if (isNumeric(c))
+            {
+                if (!wasNumeric && j - i > 1 && !wasUnderscore)
+                {
+                    out.append('_');
+                    out.append(toLowerSnakeCase(s.substring(j)));
+                    return out.toString();
+                }
+                out.append(c);
+            }
             else
             {
-                if (upper && j - i > 1 && lastChar != '_')
+                if ((wasUpper || wasNumeric) && j - i > 1 && !wasUnderscore)
                 {
                     out.append('_');
                     out.append(toLowerSnakeCase(s.substring(j)));

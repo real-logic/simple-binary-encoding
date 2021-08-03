@@ -101,7 +101,7 @@ public class RustGenerator implements CodeGenerator
         // create Cargo.toml
         try (Writer writer = outputManager.createCargoToml())
         {
-            final String packageName = ir.packageName().replaceAll("\\.", "_");
+            final String packageName = toLowerSnakeCase(ir.packageName()).replaceAll("[.-]", "_");
             final String namespace;
             if (ir.namespaceName() == null || ir.namespaceName().equalsIgnoreCase(packageName))
             {
