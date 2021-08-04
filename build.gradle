@@ -1,3 +1,8 @@
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.nio.file.StandardOpenOption
+import java.security.MessageDigest
+
 /*
  * Copyright 2013-2021 Real Logic Limited.
  *
@@ -20,7 +25,7 @@ plugins {
     id "com.github.ben-manes.versions" version "0.39.0"
 }
 
-defaultTasks 'clean', 'build'
+defaultTasks 'clean', 'verifyJavaIrCodecsInSync', 'build'
 
 static def getBuildJavaVersion() {
     def buildJavaVersion = System.getenv('BUILD_JAVA_VERSION') ?: JavaVersion.current().getMajorVersion()
@@ -660,7 +665,7 @@ task generateCSharpCodecs {
         'generateCSharpCodecsWithXIncludes'
 }
 
-task generateJavaIrCodecs(type: JavaExec) {
+task generateJavaIrCodecs(type: JavaExec, dependsOn: 'computeOriginalIrHash') {
     mainClass = 'uk.co.real_logic.sbe.SbeTool'
     classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
     systemProperties(
@@ -708,6 +713,32 @@ task testReport(type: TestReport) {
     reportOn subprojects*.test
 }
 
+final codecsDir = Paths.get('sbe-tool/src/main/java/uk/co/real_logic/sbe/ir/generated').toFile()
+final outputDir = Paths.get('sbe-tool/build')
+final originalHashFile = outputDir.resolve('original.sha256').toFile()
+final newHashFile = outputDir.resolve('new.sha256').toFile()
+
+task computeOriginalIrHash(type: ChecksumTask) {
+    inputDirectory = codecsDir
+    outputFile = originalHashFile
+}
+
+task computeUpdatedIrHash(type: ChecksumTask, dependsOn: 'generateJavaIrCodecs') {
+    inputDirectory = codecsDir
+    outputFile = newHashFile
+}
+
+task verifyJavaIrCodecsInSync(dependsOn: 'computeUpdatedIrHash') {
+    doLast {
+        final byte[] oldHash = Files.readAllBytes(originalHashFile.toPath())
+        final byte[] newHash = Files.readAllBytes(newHashFile.toPath())
+        if (!Arrays.equals(oldHash, newHash))
+        {
+            throw new GradleException("Java Ir codecs are out of sync!")
+        }
+    }
+}
+
 def isNonStable = { String version ->
     def stableKeyword = ['RELEASE', 'FINAL', 'GA'].any { it -> version.toUpperCase().contains(it) }
     def regex = /^[0-9,.v-]+(-r)?$/
@@ -724,4 +755,35 @@ tasks.named("dependencyUpdates").configure {
 wrapper {
     gradleVersion = '7.1.1'
     distributionType = 'ALL'
+}
+
+class ChecksumTask extends DefaultTask
+{
+    private static final MessageDigest SHA_256 = MessageDigest.getInstance("SHA-256");
+
+    @InputDirectory
+    File inputDirectory
+
+    @OutputFile
+    File outputFile
+
+    @TaskAction
+    def checksum() {
+        SHA_256.reset()
+
+        final File[] files = inputDirectory.listFiles();
+        for (final File f : files)
+        {
+            SHA_256.update(Files.readAllBytes(f.toPath()))
+        }
+
+        final byte[] hash = SHA_256.digest()
+
+        Files.write(
+            outputFile.toPath(),
+            hash,
+            StandardOpenOption.CREATE,
+            StandardOpenOption.WRITE,
+            StandardOpenOption.TRUNCATE_EXISTING)
+    }
 }
