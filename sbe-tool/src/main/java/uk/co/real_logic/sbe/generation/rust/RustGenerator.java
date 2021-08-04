@@ -586,12 +586,12 @@ public class RustGenerator implements CodeGenerator
     }
 
     private static void generatePrimitiveDecoder(
-            final StringBuilder sb,
-            final int level,
-            final Token fieldToken,
-            final Token typeToken,
-            final String name,
-            final Encoding encoding) throws IOException
+        final StringBuilder sb,
+        final int level,
+        final Token fieldToken,
+        final Token typeToken,
+        final String name,
+        final Encoding encoding) throws IOException
     {
         if (typeToken.arrayLength() > 1)
         {
@@ -612,12 +612,12 @@ public class RustGenerator implements CodeGenerator
     }
 
     private static void generatePrimitiveArrayDecoder(
-            final StringBuilder sb,
-            final int level,
-            final Token fieldToken,
-            final Token typeToken,
-            final String name,
-            final Encoding encoding) throws IOException
+        final StringBuilder sb,
+        final int level,
+        final Token fieldToken,
+        final Token typeToken,
+        final String name,
+        final Encoding encoding) throws IOException
     {
         final PrimitiveType primitiveType = encoding.primitiveType();
         final String rustPrimitiveType = rustTypeName(primitiveType);
@@ -711,11 +711,11 @@ public class RustGenerator implements CodeGenerator
     }
 
     private static void generatePrimitiveOptionalDecoder(
-            final StringBuilder sb,
-            final int level,
-            final Token fieldToken,
-            final String name,
-            final Encoding encoding) throws IOException
+        final StringBuilder sb,
+        final int level,
+        final Token fieldToken,
+        final String name,
+        final Encoding encoding) throws IOException
     {
         assert encoding.presence() == Encoding.Presence.OPTIONAL;
         final PrimitiveType primitiveType = encoding.primitiveType();
@@ -755,11 +755,11 @@ public class RustGenerator implements CodeGenerator
     }
 
     private static void generatePrimitiveRequiredDecoder(
-            final StringBuilder sb,
-            final int level,
-            final Token fieldToken,
-            final String name,
-            final Encoding encoding) throws IOException
+        final StringBuilder sb,
+        final int level,
+        final Token fieldToken,
+        final String name,
+        final Encoding encoding) throws IOException
     {
         assert encoding.presence() == Encoding.Presence.REQUIRED;
         final PrimitiveType primitiveType = encoding.primitiveType();
@@ -1424,7 +1424,8 @@ public class RustGenerator implements CodeGenerator
             switch (encodingToken.signal())
             {
                 case ENCODING:
-                    generatePrimitiveDecoder(sb, 2, encodingToken, encodingToken, encodingToken.name(), encodingToken.encoding());
+                    generatePrimitiveDecoder(sb, 2, encodingToken, encodingToken, encodingToken.name(),
+                        encodingToken.encoding());
                     break;
                 case BEGIN_ENUM:
                     generateEnumDecoder(sb, 2, encodingToken, encodingToken, encodingToken.name());
