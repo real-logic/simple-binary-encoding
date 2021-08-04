@@ -734,7 +734,7 @@ task verifyJavaIrCodecsInSync(dependsOn: 'computeUpdatedIrHash') {
         final byte[] newHash = Files.readAllBytes(newHashFile.toPath())
         if (!Arrays.equals(oldHash, newHash))
         {
-            throw new GradleException("Java Ir codecs are out of sync!")
+            throw new GradleException("Java Ir codecs are out of sync! Please execute the `generateJavaIrCodecs` task and commit the changes.")
         }
     }
 }
