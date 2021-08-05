@@ -19,6 +19,7 @@ import org.agrona.Verify;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.generation.Generators;
 import uk.co.real_logic.sbe.generation.rust.RustGenerator.CodecType;
+import uk.co.real_logic.sbe.ir.Encoding;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -163,6 +164,17 @@ public class RustUtil
         }
 
         return value;
+    }
+
+    static String characterEncoding(final Encoding encoding)
+    {
+        final String characterEncoding = encoding.characterEncoding();
+        if (characterEncoding == null)
+        {
+            return "None";
+        }
+
+        return characterEncoding;
     }
 
     /**

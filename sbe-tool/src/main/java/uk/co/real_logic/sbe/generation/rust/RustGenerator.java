@@ -296,12 +296,7 @@ public class RustGenerator implements CodeGenerator
                 throw new IllegalStateException("tokens must begin with BEGIN_VAR_DATA: token=" + varDataToken);
             }
 
-            String characterEncoding = tokens.get(i + 3).encoding().characterEncoding();
-            if (characterEncoding == null)
-            {
-                characterEncoding = "";
-            }
-
+            final String characterEncoding = characterEncoding(tokens.get(i + 3).encoding());
             final String propertyName = toLowerSnakeCase(varDataToken.name());
             final Token lengthToken = tokens.get(i + 2);
             final Encoding lengthEncoding = lengthToken.encoding();
@@ -326,7 +321,7 @@ public class RustGenerator implements CodeGenerator
             }
 
             // function to write slice ... todo - handle character encoding ?
-            indent(sb, level, "/// VAR_DATA ENCODER - character encoding %s\n", characterEncoding);
+            indent(sb, level, "/// VAR_DATA ENCODER - character encoding: '%s'\n", characterEncoding);
             indent(sb, level, "#[inline]\n");
             indent(sb, level, "pub fn %s(&mut self, value: %s) {\n", propertyName, varDataType);
 
@@ -915,13 +910,13 @@ public class RustGenerator implements CodeGenerator
                 throw new IllegalStateException("tokens must begin with BEGIN_VAR_DATA: token=" + varDataToken);
             }
 
-            final String characterEncoding = tokens.get(i + 3).encoding().characterEncoding();
+            final String characterEncoding = characterEncoding(tokens.get(i + 3).encoding());
             final String propertyName = toLowerSnakeCase(varDataToken.name());
             final Token lengthToken = tokens.get(i + 2);
             final Encoding lengthEncoding = lengthToken.encoding();
             final PrimitiveType lengthType = lengthEncoding.primitiveType();
 
-            indent(sb, level, "/// VAR_DATA DECODER - character encoding %s\n", characterEncoding);
+            indent(sb, level, "/// VAR_DATA DECODER - character encoding: '%s'\n", characterEncoding);
             indent(sb, level, "#[inline]\n");
             indent(sb, level, "pub fn %s_decoder(&mut self) -> (usize, usize) {\n", propertyName);
 
