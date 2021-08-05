@@ -179,7 +179,6 @@ public class RustGenerator implements CodeGenerator
         return rustTypeName(ir.headerStructure().schemaVersionType());
     }
 
-
     static String withLifetime(final String typeName)
     {
         return format("%s<%s>", typeName, BUF_LIFETIME);
@@ -518,7 +517,7 @@ public class RustGenerator implements CodeGenerator
                         generateBitSetDecoder(sb, level, typeToken, name);
                         break;
                     case BEGIN_COMPOSITE:
-                        generateCompositeDecoder(sb, level, typeToken, name);
+                        generateCompositeDecoder(sb, level, fieldToken, typeToken, name);
                         break;
                     default:
                         throw new UnsupportedOperationException("Unable to handle: " + typeToken);
@@ -534,6 +533,7 @@ public class RustGenerator implements CodeGenerator
     private static void generateCompositeDecoder(
         final StringBuilder sb,
         final int level,
+        final Token fieldToken,
         final Token typeToken,
         final String name) throws IOException
     {
@@ -541,17 +541,17 @@ public class RustGenerator implements CodeGenerator
         final String decoderTypeName = decoderName(formatStructName(typeToken.name()));
         indent(sb, level, "/// COMPOSITE DECODER\n");
         indent(sb, level, "#[inline]\n");
-        if (typeToken.version() > 0)
+        if (fieldToken.version() > 0)
         {
             indent(sb, level, "pub fn %s(self) -> Either<Self, %2$s<Self>> {\n",
                 decoderName,
                 decoderTypeName);
 
-            indent(sb, level + 1, "if self.acting_version < %d {\n", typeToken.version());
+            indent(sb, level + 1, "if self.acting_version < %d {\n", fieldToken.version());
             indent(sb, level + 2, "return Either::Left(self);\n");
             indent(sb, level + 1, "}\n\n");
 
-            indent(sb, level + 1, "let offset = self.%s;\n", getBufOffset(typeToken));
+            indent(sb, level + 1, "let offset = self.%s;\n", getBufOffset(fieldToken));
             indent(sb, level + 1, "Either::Right(%s::default().wrap(self, offset))\n",
                 decoderTypeName);
         }
@@ -561,7 +561,7 @@ public class RustGenerator implements CodeGenerator
                 decoderName,
                 decoderTypeName);
 
-            indent(sb, level + 1, "let offset = self.%s;\n", getBufOffset(typeToken));
+            indent(sb, level + 1, "let offset = self.%s;\n", getBufOffset(fieldToken));
             indent(sb, level + 1, "%s::default().wrap(self, offset)\n", decoderTypeName);
         }
         indent(sb, level, "}\n\n");
@@ -824,6 +824,14 @@ public class RustGenerator implements CodeGenerator
             indent(sb, level, "/// REQUIRED\n");
             indent(sb, level, "#[inline]\n");
             indent(sb, level, "pub fn %s(&self) -> %s {\n", formatFunctionName(name), enumType);
+
+            if (fieldToken.version() > 0)
+            {
+                indent(sb, level + 1, "if self.acting_version < %d {\n", fieldToken.version());
+                indent(sb, level + 2, "return %s::default();\n", enumType);
+                indent(sb, level + 1, "}\n\n");
+            }
+
             indent(sb, level + 1, "self.get_buf().get_%s_at(self.%s).into()\n",
                 rustPrimitiveType,
                 getBufOffset(typeToken));
@@ -1434,7 +1442,7 @@ public class RustGenerator implements CodeGenerator
                     generateBitSetDecoder(sb, 2, encodingToken, encodingToken.name());
                     break;
                 case BEGIN_COMPOSITE:
-                    generateCompositeDecoder(sb, 2, encodingToken, encodingToken.name());
+                    generateCompositeDecoder(sb, 2, encodingToken, encodingToken, encodingToken.name());
                     break;
             }
 
