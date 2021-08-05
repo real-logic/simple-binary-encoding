@@ -24,7 +24,7 @@ plugins {
     id "com.github.ben-manes.versions" version "0.39.0"
 }
 
-defaultTasks 'clean', 'verifyJavaIrCodecsInSync', 'build'
+defaultTasks 'clean', 'build'
 
 static def getBuildJavaVersion() {
     def buildJavaVersion = System.getenv('BUILD_JAVA_VERSION') ?: JavaVersion.current().getMajorVersion()
@@ -744,12 +744,14 @@ def isNonStable = { String version ->
     return !stableKeyword && !(version ==~ regex)
 }
 
-tasks.named("dependencyUpdates").configure {
+tasks.named('dependencyUpdates').configure {
     // Reject all non stable versions
     rejectVersionIf {
         isNonStable(it.candidate.version)
     }
 }
+
+tasks.findByName('build').dependsOn verifyJavaIrCodecsInSync
 
 wrapper {
     gradleVersion = '7.1.1'
