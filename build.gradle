@@ -759,6 +759,8 @@ wrapper {
 class ChecksumTask extends DefaultTask
 {
     private static final MessageDigest SHA_256 = MessageDigest.getInstance("SHA-256");
+    private static final byte CR = (byte) ('\r' as char)
+    private static final byte LF = (byte) ('\n' as char)
 
     @InputDirectory
     File inputDirectory
@@ -773,7 +775,9 @@ class ChecksumTask extends DefaultTask
         final File[] files = inputDirectory.listFiles();
         for (final File f : files)
         {
-            SHA_256.update(Files.readAllBytes(f.toPath()))
+            final byte[] raw = Files.readAllBytes(f.toPath())
+            final byte[] normalized = normalizeEOL(raw);
+            SHA_256.update(normalized)
         }
 
         final byte[] hash = SHA_256.digest()
@@ -784,5 +788,20 @@ class ChecksumTask extends DefaultTask
             StandardOpenOption.CREATE,
             StandardOpenOption.WRITE,
             StandardOpenOption.TRUNCATE_EXISTING)
+    }
+
+    private byte[] normalizeEOL(final byte[] raw)
+    {
+        final byte[] result = new byte[raw.length]
+        int i = 0
+        for (int j = 0, size = raw.length; j < size; j++)
+        {
+            if (CR == raw[j] && (j == size - 1 || LF == raw[j + 1]))
+            {
+                continue;
+            }
+            result[i++] = raw[j]
+        }
+        return raw.length == i ? result : Arrays.copyOf(result, i);
     }
 }
