@@ -713,14 +713,14 @@ task testReport(type: TestReport) {
     reportOn subprojects*.test
 }
 
-final codecsDir = Paths.get('sbe-tool/src/main/java/uk/co/real_logic/sbe/ir/generated').toFile()
-final outputDir = Paths.get('sbe-tool/build')
-final originalHashFile = outputDir.resolve('original.sha256').toFile()
-final newHashFile = outputDir.resolve('new.sha256').toFile()
+final codecsDir = project.file('sbe-tool/src/main/java/uk/co/real_logic/sbe/ir/generated')
+final outputDir = project.file('sbe-tool/build')
+final oldHashFile = new File(outputDir, 'old.sha256')
+final newHashFile = new File(outputDir, 'new.sha256')
 
 task computeOriginalIrHash(type: ChecksumTask) {
     inputDirectory = codecsDir
-    outputFile = originalHashFile
+    outputFile = oldHashFile
 }
 
 task computeUpdatedIrHash(type: ChecksumTask, dependsOn: 'generateJavaIrCodecs') {
@@ -730,7 +730,7 @@ task computeUpdatedIrHash(type: ChecksumTask, dependsOn: 'generateJavaIrCodecs')
 
 task verifyJavaIrCodecsInSync(dependsOn: 'computeUpdatedIrHash') {
     doLast {
-        final byte[] oldHash = Files.readAllBytes(originalHashFile.toPath())
+        final byte[] oldHash = Files.readAllBytes(oldHashFile.toPath())
         final byte[] newHash = Files.readAllBytes(newHashFile.toPath())
         if (!Arrays.equals(oldHash, newHash))
         {
