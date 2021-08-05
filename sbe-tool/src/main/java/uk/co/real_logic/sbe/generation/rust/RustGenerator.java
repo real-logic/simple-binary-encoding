@@ -573,6 +573,14 @@ public class RustGenerator implements CodeGenerator
         final String structTypeName = formatStructName(bitsetToken.applicableTypeName());
         indent(sb, level, "#[inline]\n");
         indent(sb, level, "pub fn %s(&self) -> %s {\n", formatFunctionName(name), structTypeName);
+
+        if (bitsetToken.version() > 0)
+        {
+            indent(sb, level + 1, "if self.acting_version < %d {\n", bitsetToken.version());
+            indent(sb, level + 2, "return %s::default();\n", structTypeName);
+            indent(sb, level + 1, "}\n\n");
+        }
+
         indent(sb, level + 1, "%s::new(self.get_buf().get_%s_at(self.%s))\n",
             structTypeName,
             rustPrimitiveType,

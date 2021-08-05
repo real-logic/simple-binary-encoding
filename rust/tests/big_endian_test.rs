@@ -40,7 +40,7 @@ fn decode_car_and_assert_expected_content(buffer: &[u8]) -> SbeResult<()> {
     assert_eq!(Model::A, car.code());
 
     assert_eq!([0, 1, 2, 3, 4], car.some_numbers());
-    assert_eq!([97, 98, 99, 100, 101, 102], car.vehicle_code());
+    assert_eq!(*b"abcdef", car.vehicle_code());
 
     let extras = car.extras();
     assert_eq!(6, extras.0);
@@ -146,10 +146,7 @@ fn decode_car_and_assert_expected_content(buffer: &[u8]) -> SbeResult<()> {
     assert_eq!("Civic VTi", String::from_utf8_lossy(car.model_slice(coord)));
 
     let coord = car.activation_code_decoder();
-    assert_eq!(
-        "abcdef",
-        String::from_utf8_lossy(car.activation_code_slice(coord))
-    );
+    assert_eq!(b"abcdef", car.activation_code_slice(coord));
 
     Ok(())
 }
@@ -183,7 +180,7 @@ fn encode_car_from_scratch() -> SbeResult<(usize, Vec<u8>)> {
     let mut engine = car.engine_encoder();
     engine.capacity(2000);
     engine.num_cylinders(4);
-    engine.manufacturer_code([49, 50, 51]); // 123
+    engine.manufacturer_code(*b"123");
     engine.efficiency(35);
     engine.booster_enabled(BooleanType::T);
     let mut booster = engine.booster_encoder();
