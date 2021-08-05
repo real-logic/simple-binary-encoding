@@ -1081,12 +1081,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "        final int limit = parentMessage.limit();\n" +
                 indent + "        parentMessage.limit(limit + headerLength + length);\n" +
                 indent + "        %5$s;\n" +
-                indent + "        for (int i = 0; i < length; ++i)\n" +
-                indent + "        {\n" +
-                indent + "            final char charValue = value.charAt(i);\n" +
-                indent + "            final byte byteValue = charValue > 127 ? (byte)'?' : (byte)charValue;\n" +
-                indent + "            buffer.putByte(limit + headerLength + i, byteValue);\n" +
-                indent + "        }\n\n" +
+                indent + "        buffer.putStringWithoutLengthAscii(limit + headerLength, value);\n\n" +
                 indent + "        return this;\n" +
                 indent + "    }\n",
                 className,
