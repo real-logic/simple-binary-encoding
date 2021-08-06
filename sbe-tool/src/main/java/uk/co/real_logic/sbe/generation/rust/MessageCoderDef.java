@@ -111,7 +111,7 @@ class MessageCoderDef implements RustGenerator.ParentDef
             subGroup.appendTo(sb);
         }
 
-        indent(sb, 0, "}\n"); // mod end
+        indent(sb, 0, "} // end %s\n\n", codecType.toString().toLowerCase()); // mod end
     }
 
     void appendTo(final Appendable dest) throws IOException

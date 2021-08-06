@@ -355,7 +355,7 @@ public class RustGenerator implements CodeGenerator
         final int arrayLength = typeToken.arrayLength();
         if (arrayLength > 1)
         {
-            indent(sb, level, "/// primitive array field %s\n", name);
+            indent(sb, level, "/// primitive array field '%s'\n", name);
             indent(sb, level, "/// - min value: %s\n", encoding.applicableMinValue());
             indent(sb, level, "/// - max value: %s\n", encoding.applicableMaxValue());
             indent(sb, level, "/// - null value: %s\n", encoding.applicableNullValue());
@@ -399,7 +399,7 @@ public class RustGenerator implements CodeGenerator
             }
             else
             {
-                indent(sb, level, "/// primitive field %s\n", name);
+                indent(sb, level, "/// primitive field '%s'\n", name);
                 indent(sb, level, "/// - min value: %s\n", encoding.applicableMinValue());
                 indent(sb, level, "/// - max value: %s\n", encoding.applicableMaxValue());
                 indent(sb, level, "/// - null value: %s\n", encoding.applicableNullValue());
@@ -432,14 +432,14 @@ public class RustGenerator implements CodeGenerator
 
         if (fieldToken.isConstantEncoding())
         {
-            indent(sb, level, "// skipping CONSTANT %s\n\n", name);
+            indent(sb, level, "// skipping CONSTANT enum '%s'\n\n", name);
         }
         else
         {
             final Encoding encoding = typeToken.encoding();
             final String rustPrimitiveType = rustTypeName(encoding.primitiveType());
 
-            indent(sb, level, "/// REQUIRED\n");
+            indent(sb, level, "/// REQUIRED enum\n");
             indent(sb, level, "#[inline]\n");
             indent(sb, level, "pub fn %s(&mut self, value: %s) {\n", formatFunctionName(name), enumType);
 
@@ -724,7 +724,7 @@ public class RustGenerator implements CodeGenerator
         final PrimitiveType primitiveType = encoding.primitiveType();
         final String rustPrimitiveType = rustTypeName(primitiveType);
         final String characterEncoding = encoding.characterEncoding();
-        indent(sb, level, "/// primitive field - %s { null_value: '%s' }\n",
+        indent(sb, level, "/// primitive field - '%s' { null_value: '%s' }\n",
             encoding.presence(), encoding.applicableNullValue());
 
         if (characterEncoding != null)
@@ -768,7 +768,7 @@ public class RustGenerator implements CodeGenerator
         final PrimitiveType primitiveType = encoding.primitiveType();
         final String rustPrimitiveType = rustTypeName(primitiveType);
         final String characterEncoding = encoding.characterEncoding();
-        indent(sb, level, "/// primitive field - %s\n", encoding.presence());
+        indent(sb, level, "/// primitive field - '%s'\n", encoding.presence());
 
         if (characterEncoding != null)
         {
@@ -808,7 +808,7 @@ public class RustGenerator implements CodeGenerator
 
         if (fieldToken.isConstantEncoding())
         {
-            indent(sb, level, "/// CONSTANT \n");
+            indent(sb, level, "/// CONSTANT enum\n");
             final Encoding encoding = fieldToken.encoding();
             final String rawConstValueName = encoding.constValue().toString();
             final int indexOfDot = rawConstValueName.indexOf('.');
@@ -824,7 +824,7 @@ public class RustGenerator implements CodeGenerator
             final Encoding encoding = typeToken.encoding();
             final String rustPrimitiveType = rustTypeName(encoding.primitiveType());
 
-            indent(sb, level, "/// REQUIRED\n");
+            indent(sb, level, "/// REQUIRED enum\n");
             indent(sb, level, "#[inline]\n");
             indent(sb, level, "pub fn %s(&self) -> %s {\n", formatFunctionName(name), enumType);
 
