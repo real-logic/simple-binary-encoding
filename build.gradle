@@ -46,7 +46,7 @@ def checkstyleVersion = '8.39'
 def hamcrestVersion = '2.2'
 def mockitoVersion = '3.11.2'
 def junitVersion = '5.7.2'
-def jmhVersion = '1.32'
+def jmhVersion = '1.33'
 def agronaVersion = '1.12.0'
 def agronaVersionRange = '[1.12,1.13[' // allow any patch release of 1.12.x
 
