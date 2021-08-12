@@ -104,6 +104,11 @@ public final class FrameCodecDecoder
             headerDecoder.version());
     }
 
+    public FrameCodecDecoder sbeRewind()
+    {
+        return wrap(buffer, initialOffset, actingBlockLength, actingVersion);
+    }
+
     public int encodedLength()
     {
         return limit - offset;

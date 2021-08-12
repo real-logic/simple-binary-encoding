@@ -1868,6 +1868,7 @@ public class CGenerator implements CodeGenerator
             "    uint64_t buffer_length;\n" +
             "    uint64_t offset;\n" +
             "    uint64_t position;\n" +
+            "    uint64_t acting_block_length;\n" +
             "    uint64_t acting_version;\n" +
             "};\n",
             structName);
@@ -1920,6 +1921,7 @@ public class CGenerator implements CodeGenerator
             "    codec->buffer = buffer;\n" +
             "    codec->offset = offset;\n" +
             "    codec->buffer_length = buffer_length;\n" +
+            "    codec->acting_block_length = acting_block_length;\n" +
             "    codec->acting_version = acting_version;\n" +
             "    if (!%10$s_set_sbe_position(codec, offset + acting_block_length))\n" +
             "    {\n" +
@@ -1935,6 +1937,7 @@ public class CGenerator implements CodeGenerator
             "     codec->buffer = other->buffer;\n" +
             "     codec->offset = other->offset;\n" +
             "     codec->buffer_length = other->buffer_length;\n" +
+            "     codec->acting_block_length = other->acting_block_length;\n" +
             "     codec->acting_version = other->acting_version;\n" +
             "     codec->position = other->position;\n\n" +
             "     return codec;\n" +
@@ -2026,6 +2029,18 @@ public class CGenerator implements CodeGenerator
             "        buffer_length,\n" +
             "        acting_block_length,\n" +
             "        acting_version);\n" +
+            "}\n\n" +
+
+            "SBE_ONE_DEF struct %10$s *%10$s_sbe_rewind(\n" +
+            "    struct %10$s *const codec)\n" +
+            "{\n" +
+            "    return %10$s_wrap_for_decode(\n" +
+            "        codec,\n" +
+            "        codec->buffer,\n" +
+            "        codec->offset,\n" +
+            "        codec->acting_block_length,\n" +
+            "        codec->acting_version,\n" +
+            "        codec->buffer_length);\n" +
             "}\n\n" +
 
             "SBE_ONE_DEF uint64_t %10$s_encoded_length(\n" +
@@ -2376,7 +2391,7 @@ public class CGenerator implements CodeGenerator
     {
         // Visual C++ does not handle minimum integer values properly
         // See: http://msdn.microsoft.com/en-us/library/4kh09110.aspx
-        // So some of the null values get special handling
+        // So some null values get special handling
         if (null == encoding.nullValue())
         {
             switch (primitiveType)

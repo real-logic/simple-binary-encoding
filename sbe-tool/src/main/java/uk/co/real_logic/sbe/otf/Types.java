@@ -23,7 +23,7 @@ import uk.co.real_logic.sbe.ir.Encoding;
 import java.nio.ByteOrder;
 
 /**
- * Utility functions for applying to types to help with on-the-fly (OTF) decoding.
+ * Utility functions for applying over encoded types to help with on-the-fly (OTF) decoding.
  */
 public class Types
 {
@@ -31,7 +31,7 @@ public class Types
      * Get an integer value from a buffer at a given index for a {@link PrimitiveType}.
      *
      * @param buffer    from which to read.
-     * @param index     at which he integer should be read.
+     * @param index     at which the integer should be read.
      * @param type      of the integer encoded in the buffer.
      * @param byteOrder of the integer in the buffer.
      * @return the value of the encoded integer.
@@ -74,7 +74,7 @@ public class Types
      * Get a long value from a buffer at a given index for a given {@link Encoding}.
      *
      * @param buffer   from which to read.
-     * @param index    at which he integer should be read.
+     * @param index    at which the integer should be read.
      * @param encoding of the value.
      * @return the value of the encoded long.
      */
@@ -269,7 +269,7 @@ public class Types
     }
 
     /**
-     * Append an value as a Json String to a {@link StringBuilder}.
+     * Append a value as a Json String to a {@link StringBuilder}.
      *
      * @param sb       to append the value to.
      * @param value    to append.

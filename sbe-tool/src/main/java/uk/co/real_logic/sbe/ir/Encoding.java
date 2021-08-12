@@ -259,9 +259,9 @@ public class Encoding
     }
 
     /**
-     * The semantic type of an encoding which can have relevance to the application layer.
+     * The semantic type of encoding value which can have relevance to the application layer.
      *
-     * @return semantic type of an encoding which can have relevance to the application layer.
+     * @return semantic type of encoding value which can have relevance to the application layer.
      */
     public String semanticType()
     {
@@ -379,7 +379,7 @@ public class Encoding
         }
 
         /**
-         * Const value for the Encoding.
+         * Constant value to be used for the Encoding.
          *
          * @param constValue for the Encoding.
          * @return this for a fluent API.

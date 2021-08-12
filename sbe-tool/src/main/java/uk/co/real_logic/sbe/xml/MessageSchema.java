@@ -114,7 +114,7 @@ public class MessageSchema
     }
 
     /**
-     * The semantic version number of the schema. Typically use to reference a third party standard such as FIX.
+     * The semantic version number of the schema. Typically, used to reference a third party standard such as FIX.
      *
      * @return the semantic version number of the schema.
      */

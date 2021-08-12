@@ -25,7 +25,7 @@ public interface TargetCodeGenerator
     /**
      * Get a new {@link CodeGenerator} for the given target language.
      *
-     * @param ir        describing the message schemas from which code should generated.
+     * @param ir        describing the message schemas from which code should be generated.
      * @param outputDir to which the generated code with be written.
      * @return a new instance of a {@link CodeGenerator} for the given target language.
      */

@@ -30,14 +30,14 @@ public interface TokenListener
     /**
      * Called on beginning the decoding of a message.
      *
-     * @param token representing the IR for message including meta data.
+     * @param token representing the IR for message including metadata.
      */
     void onBeginMessage(Token token);
 
     /**
      * Called on end of decoding of a message.
      *
-     * @param token representing the IR for message including meta data.
+     * @param token representing the IR for message including metadata.
      */
     void onEndMessage(Token token);
 

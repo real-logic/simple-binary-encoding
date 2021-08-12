@@ -2050,6 +2050,12 @@ public class CppGenerator implements CodeGenerator
             "        return *this = %10$s(buffer, offset, bufferLength, actingBlockLength, actingVersion);\n" +
             "    }\n\n" +
 
+            "    %10$s &sbeRewind()\n" +
+            "    {\n" +
+            "        return wrapForDecode(" +
+            "m_buffer, m_offset, m_actingBlockLength, m_actingVersion, m_bufferLength);\n" +
+            "    }\n\n" +
+
             "    SBE_NODISCARD std::uint64_t sbePosition() const SBE_NOEXCEPT\n" +
             "    {\n" +
             "        return m_position;\n" +
@@ -2419,7 +2425,7 @@ public class CppGenerator implements CodeGenerator
     {
         // Visual C++ does not handle minimum integer values properly
         // See: http://msdn.microsoft.com/en-us/library/4kh09110.aspx
-        // So some of the null values get special handling
+        // So null values get special handling
         if (null == encoding.nullValue())
         {
             switch (primitiveType)

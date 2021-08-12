@@ -80,7 +80,7 @@ public class ValidationUtil
      * Is the value a possible C language keyword?
      *
      * @param value to be checked.
-     * @return true if the value a possible C language keyword.
+     * @return true if the value is a possible C language keyword.
      */
     private static boolean possibleCKeyword(final String value)
     {
@@ -178,7 +178,7 @@ public class ValidationUtil
      * Is the value a possible C++ language keyword?
      *
      * @param value to be checked.
-     * @return true if the value a possible C++ language keyword.
+     * @return true if the value is a possible C++ language keyword.
      */
     private static boolean possibleCppKeyword(final String value)
     {
@@ -319,7 +319,7 @@ public class ValidationUtil
      * identifier = letter { letter | unicode_digit }
      * letter        = unicode_letter | "_" .
      * <p>
-     * unicode_letter and unicode_digit are defined in section 4.5 of the the unicode
+     * unicode_letter and unicode_digit are defined in section 4.5 of the unicode
      * standard at http://www.unicode.org/versions/Unicode8.0.0/ and
      * the Java Character and Digit functions are unicode friendly
      *
@@ -358,7 +358,7 @@ public class ValidationUtil
      * Is the value a possible Go language keyword?
      *
      * @param value to be checked.
-     * @return true if the value a possible Go language keyword.
+     * @return true if the value is a possible Go language keyword.
      */
     private static boolean possibleGolangKeyword(final String value)
     {
@@ -418,11 +418,11 @@ public class ValidationUtil
     /**
      * "Check" value for validity of usage as a csharp identifier.
      * https://msdn.microsoft.com/en-us/library/aa664670(v=vs.71).aspx
-     * ( Which basically boils down to
+     * Which basically boils down to
      * <p>
      * first subsequent*
      * first is { @ | letter | underscore }
-     * subsequent is { first | digit | connecing | combining | formatting }*
+     * subsequent is { first | digit | connecting | combining | formatting }*
      * <p>
      * letter is Lu, Ll, Lt, Lm, Lo, or Nl (possibly escaped)
      * digit is Nd (possibly escaped)
@@ -468,7 +468,7 @@ public class ValidationUtil
      * Is the value a possible C# language keyword?
      *
      * @param value to be checked.
-     * @return true if the value a possible C# language keyword.
+     * @return true if the value is a possible C# language keyword.
      */
     public static boolean possibleCSharpKeyword(final String value)
     {

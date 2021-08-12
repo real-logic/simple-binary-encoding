@@ -1081,12 +1081,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "        final int limit = parentMessage.limit();\n" +
                 indent + "        parentMessage.limit(limit + headerLength + length);\n" +
                 indent + "        %5$s;\n" +
-                indent + "        for (int i = 0; i < length; ++i)\n" +
-                indent + "        {\n" +
-                indent + "            final char charValue = value.charAt(i);\n" +
-                indent + "            final byte byteValue = charValue > 127 ? (byte)'?' : (byte)charValue;\n" +
-                indent + "            buffer.putByte(limit + headerLength + i, byteValue);\n" +
-                indent + "        }\n\n" +
+                indent + "        buffer.putStringWithoutLengthAscii(limit + headerLength, value);\n\n" +
                 indent + "        return this;\n" +
                 indent + "    }\n",
                 className,
@@ -1488,7 +1483,7 @@ public class JavaGenerator implements CodeGenerator
         if (shouldDecodeUnknownEnumValues)
         {
             sb.append(INDENT).append("/**\n");
-            sb.append(INDENT).append(" * To be used to represent a unknown value from a later version.\n");
+            sb.append(INDENT).append(" * To be used to represent an unknown value from a later version.\n");
             sb.append(INDENT).append(" */\n");
             sb.append(INDENT).append("SBE_UNKNOWN").append('(').append(nullVal).append("),\n\n");
         }
@@ -1693,7 +1688,7 @@ public class JavaGenerator implements CodeGenerator
                 "public enum MetaAttribute\n" +
                 "{\n" +
                 "    /**\n" +
-                "     * The epoch or start of time. Default is 'UNIX' which is midnight January 1, 1970 UTC\n" +
+                "     * The epoch or start of time. Default is 'UNIX' which is midnight 1st January 1970 UTC.\n" +
                 "     */\n" +
                 "    EPOCH,\n\n" +
                 "    /**\n" +
@@ -2574,6 +2569,11 @@ public class JavaGenerator implements CodeGenerator
             "            offset + " + headerClassName + "Decoder.ENCODED_LENGTH,\n" +
             "            headerDecoder.blockLength(),\n" +
             "            headerDecoder.version());\n" +
+            "    }\n\n" +
+
+            "    public " + className + " sbeRewind()\n" +
+            "    {\n" +
+            "        return wrap(buffer, initialOffset, actingBlockLength, actingVersion);\n" +
             "    }\n\n";
 
         return generateFlyweightCode(DECODER, className, token, methods, readOnlyBuffer);

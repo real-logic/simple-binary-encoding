@@ -50,7 +50,7 @@ public class GolangGenerator implements CodeGenerator
     private final Ir ir;
     private final OutputManager outputManager;
 
-    private Stack<TreeSet<String>> imports;
+    private final Stack<TreeSet<String>> imports = new Stack<>();
 
     /**
      * Create a new Go language {@link CodeGenerator}.
@@ -65,7 +65,6 @@ public class GolangGenerator implements CodeGenerator
 
         this.ir = ir;
         this.outputManager = outputManager;
-        this.imports = new Stack<TreeSet<String>>();
         this.imports.push(new TreeSet<>());  // ensure at least one
     }
 
@@ -151,7 +150,7 @@ public class GolangGenerator implements CodeGenerator
         // Add the Marshalling from the big or little endian
         // template kept inside the jar.
         //
-        // The MessageHeader structure along with it's en/decoding is
+        // The MessageHeader structure along with its en/decoding is
         // also in the templated SbeMarshalling.go
         //
         // final Token token = ir.messages().iterator().next().get(0);

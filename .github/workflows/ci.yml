@@ -14,12 +14,13 @@ env:
 
 jobs:
   java-build:
-    name: Java ${{ matrix.java }}
-    runs-on: ubuntu-20.04
+    name: Java ${{ matrix.java }} (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         java: [ '8', '11', '16', '17-ea' ]
+        os: [ 'ubuntu-20.04', 'windows-latest' ]
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -170,9 +171,11 @@ jobs:
 
   cpp-clang-macos-build:
     name: C++ Xcode ${{ matrix.version }} (macOS)
-    runs-on: macos-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
+      matrix:
+        os: [ 'macos-latest' ]
     env:
       CC: clang
       CXX: clang++
@@ -189,9 +192,11 @@ jobs:
 
   cpp-msvc-build:
     name: C++ MSVC (Windows)
-    runs-on: windows-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
+      matrix:
+        os: [ 'windows-latest' ]
     env:
       CC: cl
       CXX: cl

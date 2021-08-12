@@ -220,6 +220,178 @@ public:
         return CGT(car_encoded_length)(&car);
     }
 
+    static std::string walkCar(CGT(car)& car)
+    {
+        std::stringstream output;
+
+        output <<
+            CGT(car_serialNumber)(&car) << ';' <<
+            CGT(car_modelYear) << ';' <<
+            CGT(car_available) << ';' <<
+            CGT(car_code) << ';';
+
+        for (std::uint64_t i = 0; i < CGT(car_someNumbers_length()); i++)
+        {
+            output << (int)CGT(car_someNumbers_buffer(&car))[i] << ';';
+        }
+
+        output << std::string(CGT(car_vehicleCode_buffer(&car)), CGT(car_vehicleCode_length())) << ';';
+
+        CGT(optionalExtras) extras = {};
+        if (!CGT(car_extras)(&car, &extras))
+        {
+            output <<
+                CGT(optionalExtras_sunRoof)(&extras) << ';' <<
+                CGT(optionalExtras_sportsPack)(&extras) << ';' <<
+                CGT(optionalExtras_cruiseControl)(&extras) << ';';
+        }
+
+        char code_buf[4];
+        CGT(engine) engine = {};
+        if (CGT(car_engine)(&car, &engine))
+        {
+            output <<
+                CGT(engine_capacity(&engine)) << ';' <<
+                (int)CGT(engine_numCylinders(&engine)) << ';' <<
+                CGT(engine_maxRpm()) << ';' <<
+                CGT(engine_get_manufacturerCode(&engine, code_buf, 3)) << ';' <<
+                std::string(CGT(engine_fuel()), CGT(engine_fuel_length())) << ';';
+        }
+
+        CGT(car_fuelFigures) fuelFigures = {};
+        if (CGT(car_get_fuelFigures)(&car, &fuelFigures))
+        {
+            while (CGT(car_fuelFigures_has_next)(&fuelFigures))
+            {
+                CGT(car_fuelFigures_next)(&fuelFigures);
+                output <<
+                    CGT(car_fuelFigures_speed(&fuelFigures)) << ';' <<
+                    CGT(car_fuelFigures_mpg(&fuelFigures)) << ';' <<
+                    std::string(
+                        CGT(car_fuelFigures_usageDescription(&fuelFigures)),
+                        CGT(car_fuelFigures_usageDescription_length(&fuelFigures))) << ';';
+            }
+        }
+
+        CGT(car_performanceFigures) perfFigures = {};
+        if (CGT(car_get_performanceFigures(&car, &perfFigures)))
+        {
+            output << CGT(car_performanceFigures_count)(&perfFigures) << ';';
+
+            while (CGT(car_performanceFigures_has_next)(&perfFigures))
+            {
+                CGT(car_performanceFigures_next(&perfFigures));
+                output << CGT(car_performanceFigures_octaneRating(&perfFigures)) << ';';
+
+                CGT(car_performanceFigures_acceleration) acceleration = {};
+                if (CGT(car_performanceFigures_get_acceleration(&perfFigures, &acceleration)))
+                {
+                    while (CGT(car_performanceFigures_acceleration_has_next)(&acceleration))
+                    {
+                        CGT(car_performanceFigures_acceleration_next(&acceleration));
+                        output <<
+                            CGT(car_performanceFigures_acceleration_mph(&acceleration)) << ';' <<
+                            CGT(car_performanceFigures_acceleration_seconds(&acceleration)) << ';';
+                    }
+                }
+            }
+        }
+
+        CGT(car_string_view) manufacturer = CGT(car_get_manufacturer_as_string_view(&car));
+        if (nullptr != manufacturer.data)
+        {
+            output << std::string(manufacturer.data, manufacturer.length) << ';';
+        }
+        CGT(car_string_view) model = CGT(car_get_model_as_string_view(&car));
+        if (nullptr != model.data)
+        {
+            output << std::string(model.data, model.length) << ';';
+        }
+
+        return output.str();
+    }
+
+    static std::string partialWalkCar(CGT(car)& car)
+    {
+        std::stringstream output;
+
+        output <<
+        CGT(car_serialNumber)(&car) << ';' <<
+        CGT(car_modelYear) << ';' <<
+        CGT(car_available) << ';' <<
+        CGT(car_code) << ';';
+
+        for (std::uint64_t i = 0; i < CGT(car_someNumbers_length()); i++)
+        {
+            output << (int)CGT(car_someNumbers_buffer(&car))[i] << ';';
+        }
+
+        output << std::string(CGT(car_vehicleCode_buffer(&car)), CGT(car_vehicleCode_length())) << ';';
+
+        CGT(optionalExtras) extras = {};
+        if (!CGT(car_extras)(&car, &extras))
+        {
+            output <<
+            CGT(optionalExtras_sunRoof)(&extras) << ';' <<
+            CGT(optionalExtras_sportsPack)(&extras) << ';' <<
+            CGT(optionalExtras_cruiseControl)(&extras) << ';';
+        }
+
+        char code_buf[4];
+        CGT(engine) engine = {};
+        if (CGT(car_engine)(&car, &engine))
+        {
+            output <<
+            CGT(engine_capacity(&engine)) << ';' <<
+            (int)CGT(engine_numCylinders(&engine)) << ';' <<
+            CGT(engine_maxRpm()) << ';' <<
+            CGT(engine_get_manufacturerCode(&engine, code_buf, 3)) << ';' <<
+            std::string(CGT(engine_fuel()), CGT(engine_fuel_length())) << ';';
+        }
+
+        CGT(car_fuelFigures) fuelFigures = {};
+        if (CGT(car_get_fuelFigures)(&car, &fuelFigures))
+        {
+            while (CGT(car_fuelFigures_has_next)(&fuelFigures))
+            {
+                CGT(car_fuelFigures_next)(&fuelFigures);
+                output <<
+                CGT(car_fuelFigures_speed(&fuelFigures)) << ';' <<
+                CGT(car_fuelFigures_mpg(&fuelFigures)) << ';' <<
+                std::string(
+                    CGT(car_fuelFigures_usageDescription(&fuelFigures)),
+                    CGT(car_fuelFigures_usageDescription_length(&fuelFigures))) << ';';
+            }
+        }
+
+        CGT(car_performanceFigures) perfFigures = {};
+        if (CGT(car_get_performanceFigures(&car, &perfFigures)))
+        {
+            output << CGT(car_performanceFigures_count)(&perfFigures) << ';';
+
+            if (CGT(car_performanceFigures_has_next)(&perfFigures))
+            {
+                CGT(car_performanceFigures_next(&perfFigures));
+                output << CGT(car_performanceFigures_octaneRating(&perfFigures)) << ';';
+
+                CGT(car_performanceFigures_acceleration) acceleration = {};
+                if (CGT(car_performanceFigures_get_acceleration(&perfFigures, &acceleration)))
+                {
+                    if (CGT(car_performanceFigures_acceleration_has_next)(&acceleration))
+                    {
+                        CGT(car_performanceFigures_acceleration_next(&acceleration));
+                        output <<
+                        CGT(car_performanceFigures_acceleration_mph(&acceleration)) << ';' <<
+                        CGT(car_performanceFigures_acceleration_seconds(&acceleration)) << ';';
+                    }
+                }
+            }
+        }
+
+        return output.str();
+    }
+
+
     std::uint64_t encodeHdr(char *buffer, std::uint64_t offset, std::uint64_t bufferLength)
     {
         if (!CGT(messageHeader_wrap)(&m_hdr, buffer, offset, 0, bufferLength))
@@ -1008,4 +1180,44 @@ TEST_F(CodeGenTest, shouldBeAbleToUseStdStringMethodsForDecode)
     }
 
     EXPECT_EQ(CGT(car_encoded_length)(&carDecoder), expectedCarEncodedLength);
+}
+
+TEST_F(CodeGenTest, shouldAllowForMultipleIterations2)
+{
+    char buffer[2048] = {};
+
+    std::uint64_t hdrSz = encodeHdr(buffer, 0, sizeof(buffer));
+    std::uint64_t carEncodedLength = encodeCar(
+        buffer, CGT(messageHeader_encoded_length)(), sizeof(buffer) - CGT(messageHeader_encoded_length)());
+
+    if (!CGT(messageHeader_wrap)(&m_hdrDecoder, buffer, 0, 0, hdrSz))
+    {
+        throw std::runtime_error(sbe_strerror(errno));
+    }
+
+    if (!CGT(car_wrap_for_decode)(
+        &m_carDecoder,
+        buffer,
+        CGT(messageHeader_encoded_length)(),
+        CGT(car_sbe_block_length)(),
+        CGT(car_sbe_schema_version)(),
+        hdrSz + carEncodedLength))
+    {
+        throw std::runtime_error(sbe_strerror(errno));
+    }
+
+    std::string passOne = walkCar(m_carDecoder);
+    CGT(car_sbe_rewind(&m_carDecoder));
+    std::string passTwo = walkCar(m_carDecoder);
+    EXPECT_EQ(passOne, passTwo);
+
+    CGT(car_sbe_rewind(&m_carDecoder));
+    std::string passThree = partialWalkCar(m_carDecoder);
+    CGT(car_sbe_rewind(&m_carDecoder));
+    std::string passFour = partialWalkCar(m_carDecoder);
+    EXPECT_EQ(passThree, passFour);
+
+    CGT(car_sbe_rewind(&m_carDecoder));
+    std::string passFive = walkCar(m_carDecoder);
+    EXPECT_EQ(passOne, passFive);
 }

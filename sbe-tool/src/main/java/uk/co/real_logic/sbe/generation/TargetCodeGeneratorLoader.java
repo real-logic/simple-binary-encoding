@@ -30,7 +30,7 @@ import uk.co.real_logic.sbe.ir.Ir;
 import static uk.co.real_logic.sbe.SbeTool.*;
 
 /**
- * Loader for {@link CodeGenerator}s which target a language. This provide convenient short names rather than the
+ * Loader for {@link CodeGenerator}s which target a language. This provides convenient short names rather than the
  * fully qualified class name of the generator.
  */
 public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
@@ -118,7 +118,7 @@ public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
     };
 
     /**
-     * Do a case insensitive lookup of a target language for code generation.
+     * Do a case-insensitive lookup of a target language for code generation.
      *
      * @param name of the target language to lookup.
      * @return the {@link TargetCodeGenerator} for the given language name.
