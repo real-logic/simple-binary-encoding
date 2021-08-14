@@ -98,7 +98,7 @@ public class PrimitiveValue
     private final Representation representation;
     private final long longValue;
     private final double doubleValue;
-    private final byte[] byteArrayValue;
+    private final byte[] bytesValue;
     private final String characterEncoding;
     private final int size;
     private final byte[] byteArrayValueForLong = new byte[1];
@@ -114,7 +114,7 @@ public class PrimitiveValue
         representation = Representation.LONG;
         longValue = value;
         doubleValue = 0.0;
-        byteArrayValue = null;
+        bytesValue = null;
         characterEncoding = null;
         this.size = size;
     }
@@ -130,7 +130,7 @@ public class PrimitiveValue
         representation = Representation.LONG;
         longValue = value;
         doubleValue = 0.0;
-        byteArrayValue = null;
+        bytesValue = null;
         this.characterEncoding = characterEncoding;
         this.size = 1;
     }
@@ -146,7 +146,7 @@ public class PrimitiveValue
         representation = Representation.DOUBLE;
         longValue = 0;
         doubleValue = value;
-        byteArrayValue = null;
+        bytesValue = null;
         characterEncoding = null;
         this.size = size;
     }
@@ -163,7 +163,7 @@ public class PrimitiveValue
         representation = Representation.BYTE_ARRAY;
         longValue = 0;
         doubleValue = 0.0;
-        byteArrayValue = value;
+        bytesValue = value;
         this.characterEncoding = characterEncoding;
         this.size = size;
     }
@@ -299,7 +299,7 @@ public class PrimitiveValue
         if (representation != Representation.LONG)
         {
             throw new IllegalStateException(
-                "Not a long representation: representation=" + representation + " value=" + toString());
+                "Not a long representation: representation=" + representation + " value=" + this);
         }
 
         return longValue;
@@ -316,7 +316,7 @@ public class PrimitiveValue
         if (representation != Representation.DOUBLE)
         {
             throw new IllegalStateException(
-                "Not a double representation: representation=" + representation + " value=" + toString());
+                "Not a double representation: representation=" + representation + " value=" + this);
         }
 
         return doubleValue;
@@ -333,10 +333,10 @@ public class PrimitiveValue
         if (representation != Representation.BYTE_ARRAY)
         {
             throw new IllegalStateException(
-                "Not a byte[] representation: representation=" + representation + " value=" + toString());
+                "Not a byte[] representation: representation=" + representation + " value=" + this);
         }
 
-        return byteArrayValue;
+        return bytesValue;
     }
 
     /**
@@ -350,7 +350,7 @@ public class PrimitiveValue
     {
         if (representation == Representation.BYTE_ARRAY)
         {
-            return byteArrayValue;
+            return bytesValue;
         }
         else if (representation == Representation.LONG && size == 1 && type == PrimitiveType.CHAR)
         {
@@ -400,8 +400,7 @@ public class PrimitiveValue
         {
             try
             {
-                return null == characterEncoding ?
-                    new String(byteArrayValue) : new String(byteArrayValue, characterEncoding);
+                return null == characterEncoding ? new String(bytesValue) : new String(bytesValue, characterEncoding);
             }
             catch (final UnsupportedEncodingException ex)
             {
@@ -437,7 +436,7 @@ public class PrimitiveValue
                         return doubleToLongBits(doubleValue) == doubleToLongBits(rhs.doubleValue);
 
                     case BYTE_ARRAY:
-                        return Arrays.equals(byteArrayValue, rhs.byteArrayValue);
+                        return Arrays.equals(bytesValue, rhs.bytesValue);
                 }
             }
         }
@@ -464,7 +463,7 @@ public class PrimitiveValue
                 break;
 
             case BYTE_ARRAY:
-                return Arrays.hashCode(byteArrayValue);
+                return Arrays.hashCode(bytesValue);
 
             default:
                 throw new IllegalStateException("Unrecognised representation: " + representation);

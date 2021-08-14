@@ -497,29 +497,33 @@ public class JavaGeneratorTest
     @Test
     public void shouldValidateMissingMutableBufferClass()
     {
-        assertThrows(IllegalArgumentException.class, () ->
-            new JavaGenerator(ir, "dasdsads", BUFFER_NAME, false, false, false, outputManager));
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> new JavaGenerator(ir, "dasdsads", BUFFER_NAME, false, false, false, outputManager));
     }
 
     @Test
     public void shouldValidateNotImplementedMutableBufferClass()
     {
-        assertThrows(IllegalArgumentException.class, () ->
-            new JavaGenerator(ir, "java.nio.ByteBuffer", BUFFER_NAME, false, false, false, outputManager));
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> new JavaGenerator(ir, "java.nio.ByteBuffer", BUFFER_NAME, false, false, false, outputManager));
     }
 
     @Test
     public void shouldValidateMissingReadOnlyBufferClass()
     {
-        assertThrows(IllegalArgumentException.class, () ->
-            new JavaGenerator(ir, BUFFER_NAME, "dasdsads", false, false, false, outputManager));
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> new JavaGenerator(ir, BUFFER_NAME, "dasdsads", false, false, false, outputManager));
     }
 
     @Test
     public void shouldValidateNotImplementedReadOnlyBufferClass()
     {
-        assertThrows(IllegalArgumentException.class, () ->
-            new JavaGenerator(ir, BUFFER_NAME, "java.nio.ByteBuffer", false, false, false, outputManager));
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> new JavaGenerator(ir, BUFFER_NAME, "java.nio.ByteBuffer", false, false, false, outputManager));
     }
 
     private Class<?> compileCarEncoder() throws Exception
@@ -570,7 +574,7 @@ public class JavaGeneratorTest
     {
         final Map<String, CharSequence> sources = outputManager.getSources();
         final Class<?> aClass = CompilerUtil.compileInMemory(fqClassName, sources);
-        if (aClass == null)
+        if (null == aClass)
         {
             System.out.println(sources);
         }

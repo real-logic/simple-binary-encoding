@@ -42,7 +42,7 @@ def toolchainLauncher = javaToolchains.launcherFor {
     languageVersion = JavaLanguageVersion.of(buildJavaVersion)
 }
 
-def checkstyleVersion = '8.39'
+def checkstyleVersion = '8.45.1'
 def hamcrestVersion = '2.2'
 def mockitoVersion = '3.11.2'
 def junitVersion = '5.7.2'
