@@ -109,6 +109,15 @@ public final class FrameCodecDecoder
         return wrap(buffer, initialOffset, actingBlockLength, actingVersion);
     }
 
+    public int sbeDecodedLength()
+    {
+        final int currentLimit = limit();
+        sbeSkip();
+        final int decodedLength = encodedLength();
+        limit(currentLimit);
+        return decodedLength;
+    }
+
     public int encodedLength()
     {
         return limit - offset;
@@ -663,5 +672,14 @@ public final class FrameCodecDecoder
         limit(originalLimit);
 
         return builder;
+    }
+    
+    public FrameCodecDecoder sbeSkip()
+    {
+        sbeRewind();
+        skipPackageName();
+        skipNamespaceName();
+        skipSemanticVersion();
+        return this;
     }
 }
