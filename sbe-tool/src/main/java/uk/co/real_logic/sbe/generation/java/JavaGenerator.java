@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.function.Function;
 
 import static uk.co.real_logic.sbe.SbeTool.JAVA_INTERFACE_PACKAGE;
+import static uk.co.real_logic.sbe.generation.cpp.CppUtil.formatClassName;
+import static uk.co.real_logic.sbe.generation.cpp.CppUtil.formatPropertyName;
 import static uk.co.real_logic.sbe.generation.java.JavaGenerator.CodecType.DECODER;
 import static uk.co.real_logic.sbe.generation.java.JavaGenerator.CodecType.ENCODER;
 import static uk.co.real_logic.sbe.generation.java.JavaUtil.*;
@@ -233,6 +235,7 @@ public class JavaGenerator implements CodeGenerator
             generateDecoderVarData(sb, varData, BASE_INDENT);
 
             generateDecoderDisplay(sb, msgToken.name(), fields, groups, varData);
+            generateMessageLength(sb, className, true, groups, varData, BASE_INDENT);
 
             out.append(sb);
             out.append("}\n");
@@ -284,6 +287,7 @@ public class JavaGenerator implements CodeGenerator
             generateDecoderVarData(sb, varData, indent + INDENT);
 
             appendGroupInstanceDecoderDisplay(sb, fields, groups, varData, indent + INDENT);
+            generateMessageLength(sb, groupName, false, groups, varData, indent + INDENT);
 
             sb.append(indent).append("    }\n");
         }
@@ -2574,6 +2578,15 @@ public class JavaGenerator implements CodeGenerator
             "    public " + className + " sbeRewind()\n" +
             "    {\n" +
             "        return wrap(buffer, initialOffset, actingBlockLength, actingVersion);\n" +
+            "    }\n\n" +
+
+            "    public int sbeDecodedLength()\n" +
+            "    {\n" +
+            "        final int currentLimit = limit();\n" +
+            "        sbeSkip();\n" +
+            "        final int decodedLength = encodedLength();\n" +
+            "        limit(currentLimit);\n" +
+            "        return decodedLength;\n" +
             "    }\n\n";
 
         return generateFlyweightCode(DECODER, className, token, methods, readOnlyBuffer);
@@ -3648,6 +3661,64 @@ public class JavaGenerator implements CodeGenerator
         sb.append('\n');
         append(sb, INDENT, "    return decoder.appendTo(new StringBuilder()).toString();");
         append(sb, INDENT, "}");
+    }
+
+    private void generateMessageLength(
+        final StringBuilder sb,
+        final String className,
+        final boolean isParent,
+        final List<Token> groups,
+        final List<Token> varData,
+        final String baseIndent)
+    {
+        final String methodIndent = baseIndent + INDENT;
+        final String bodyIndent = methodIndent + INDENT;
+        append(sb, methodIndent, "");
+        append(sb, methodIndent, "public " + className + " sbeSkip()");
+        append(sb, methodIndent, "{");
+        if (isParent)
+        {
+            append(sb, bodyIndent, "sbeRewind();");
+        }
+        for (int i = 0, size = groups.size(); i < size; i++)
+        {
+            final Token groupToken = groups.get(i);
+            if (groupToken.signal() != Signal.BEGIN_GROUP)
+            {
+                throw new IllegalStateException("tokens must begin with BEGIN_GROUP: token=" + groupToken);
+            }
+
+            final String groupName = formatPropertyName(groupToken.name());
+            final String groupDecoderName = decoderName(groupToken.name());
+
+            append(sb, bodyIndent, groupDecoderName + " " + groupName + " = " + groupName + "();");
+            append(sb, bodyIndent, "if (" + groupName + ".count() > 0)");
+            append(sb, bodyIndent, "{");
+            append(sb, bodyIndent, "    while (" + groupName + ".hasNext())");
+            append(sb, bodyIndent, "    {");
+            append(sb, bodyIndent, "        " + groupName + ".next();");
+            append(sb, bodyIndent, "        " + groupName + ".sbeSkip();");
+            append(sb, bodyIndent, "    }");
+            append(sb, bodyIndent, "}");
+            i = findEndSignal(groups, i, Signal.END_GROUP, groupToken.name());
+        }
+
+        for (int i = 0, size = varData.size(); i < size;)
+        {
+            final Token varDataToken = varData.get(i);
+            if (varDataToken.signal() != Signal.BEGIN_VAR_DATA)
+            {
+                throw new IllegalStateException("tokens must begin with BEGIN_VAR_DATA: token=" + varDataToken);
+            }
+
+            final String varDataName = formatPropertyName(varDataToken.name());
+            append(sb, bodyIndent, "skip" + Generators.toUpperFirstChar(varDataName) + "();");
+
+            i += varDataToken.componentTokenCount();
+        }
+
+        append(sb, bodyIndent, "return this;");
+        append(sb, methodIndent, "}");
     }
 
     private static String validateBufferImplementation(

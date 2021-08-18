@@ -109,6 +109,15 @@ public final class TokenCodecDecoder
         return wrap(buffer, initialOffset, actingBlockLength, actingVersion);
     }
 
+    public int sbeDecodedLength()
+    {
+        final int currentLimit = limit();
+        sbeSkip();
+        final int decodedLength = encodedLength();
+        limit(currentLimit);
+        return decodedLength;
+    }
+
     public int encodedLength()
     {
         return limit - offset;
@@ -1889,5 +1898,22 @@ public final class TokenCodecDecoder
         limit(originalLimit);
 
         return builder;
+    }
+    
+    public TokenCodecDecoder sbeSkip()
+    {
+        sbeRewind();
+        skipName();
+        skipConstValue();
+        skipMinValue();
+        skipMaxValue();
+        skipNullValue();
+        skipCharacterEncoding();
+        skipEpoch();
+        skipTimeUnit();
+        skipSemanticType();
+        skipDescription();
+        skipReferencedName();
+        return this;
     }
 }
