@@ -22,12 +22,10 @@ import org.junit.jupiter.api.Test;
 import uk.co.real_logic.sbe.EncodedCarTestBase;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-public class RewindTest extends EncodedCarTestBase
+public class SkipAndDecodedLengthTest extends EncodedCarTestBase
 {
     private static final int MSG_BUFFER_CAPACITY = 4 * 1024;
 
@@ -37,25 +35,33 @@ public class RewindTest extends EncodedCarTestBase
         final ByteBuffer encodedMsgBuffer = ByteBuffer.allocate(MSG_BUFFER_CAPACITY);
         encodeTestMessage(encodedMsgBuffer);
 
+        final int encodedLength = CAR.encodedLength();
+
         final MessageHeaderDecoder header = new MessageHeaderDecoder();
         final CarDecoder carDecoder = new CarDecoder();
         carDecoder.wrapAndApplyHeader(new UnsafeBuffer(encodedMsgBuffer), 0, header);
+        final int decodedLengthNoRead = carDecoder.sbeDecodedLength();
 
-        final ArrayList<Object> passOne = CarDecodeTestUtil.getValues(carDecoder);
-        carDecoder.sbeRewind();
-        final ArrayList<Object> passTwo = CarDecodeTestUtil.getValues(carDecoder);
-        assertEquals(passOne, passTwo);
-
-        carDecoder.sbeRewind();
-        final ArrayList<Object> partialPassOne = CarDecodeTestUtil.getPartialValues(carDecoder);
-        carDecoder.sbeRewind();
-        final ArrayList<Object> partialPassTwo = CarDecodeTestUtil.getPartialValues(carDecoder);
-        assertNotEquals(passOne, partialPassOne);
-        assertEquals(partialPassOne, partialPassTwo);
+        final int initialLimit = carDecoder.limit();
+        CarDecodeTestUtil.getValues(carDecoder);
+        final int readLimit = carDecoder.limit();
 
         carDecoder.sbeRewind();
-        final ArrayList<Object> passThree = CarDecodeTestUtil.getValues(carDecoder);
-        assertEquals(passOne, passThree);
+        final int rewindLimit = carDecoder.limit();
+        carDecoder.sbeSkip();
+
+        final int skipLimit = carDecoder.limit();
+        final int decodedLengthFullSkip = carDecoder.sbeDecodedLength();
+        carDecoder.sbeRewind();
+        final int decodedLengthAfterRewind = carDecoder.sbeDecodedLength();
+        CarDecodeTestUtil.getPartialValues(carDecoder);
+        final int decodedLengthPartialRead = carDecoder.sbeDecodedLength();
+
+        assertEquals(initialLimit, rewindLimit);
+        assertEquals(readLimit, skipLimit);
+        assertEquals(encodedLength, decodedLengthNoRead);
+        assertEquals(encodedLength, decodedLengthFullSkip);
+        assertEquals(encodedLength, decodedLengthAfterRewind);
+        assertEquals(encodedLength, decodedLengthPartialRead);
     }
-
 }

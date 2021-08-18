@@ -235,7 +235,7 @@ public class JavaGenerator implements CodeGenerator
             generateDecoderVarData(sb, varData, BASE_INDENT);
 
             generateDecoderDisplay(sb, msgToken.name(), fields, groups, varData);
-            generateMessageLength(sb, className, groups, varData, BASE_INDENT);
+            generateMessageLength(sb, className, true, groups, varData, BASE_INDENT);
 
             out.append(sb);
             out.append("}\n");
@@ -287,6 +287,7 @@ public class JavaGenerator implements CodeGenerator
             generateDecoderVarData(sb, varData, indent + INDENT);
 
             appendGroupInstanceDecoderDisplay(sb, fields, groups, varData, indent + INDENT);
+            generateMessageLength(sb, groupName, false, groups, varData, indent + INDENT);
 
             sb.append(indent).append("    }\n");
         }
@@ -2582,6 +2583,15 @@ public class JavaGenerator implements CodeGenerator
             "    public " + className + " sbeRewind()\n" +
             "    {\n" +
             "        return wrap(buffer, initialOffset, actingBlockLength, actingVersion);\n" +
+            "    }\n\n" +
+
+            "    public int sbeDecodedLength()\n" +
+            "    {\n" +
+            "        final int currentLimit = limit();\n" +
+            "        sbeSkip();\n" +
+            "        final int decodedLength = encodedLength();\n" +
+            "        limit(currentLimit);\n" +
+            "        return decodedLength;\n" +
             "    }\n\n";
 
         return generateFlyweightCode(DECODER, className, token, methods, readOnlyBuffer);
@@ -3660,7 +3670,9 @@ public class JavaGenerator implements CodeGenerator
 
     private void generateMessageLength(
         final StringBuilder sb,
-        final String className, final List<Token> groups,
+        final String className,
+        final boolean isParent,
+        final List<Token> groups,
         final List<Token> varData,
         final String baseIndent)
     {
@@ -3669,6 +3681,10 @@ public class JavaGenerator implements CodeGenerator
         append(sb, methodIndent, "");
         append(sb, methodIndent, "public " + className + " sbeSkip()");
         append(sb, methodIndent, "{");
+        if (isParent)
+        {
+            append(sb, bodyIndent, "sbeRewind();");
+        }
         for (int i = 0, size = groups.size(); i < size; i++)
         {
             final Token groupToken = groups.get(i);
@@ -3685,7 +3701,8 @@ public class JavaGenerator implements CodeGenerator
             append(sb, bodyIndent, "{");
             append(sb, bodyIndent, "    while (" + groupName + ".hasNext())");
             append(sb, bodyIndent, "    {");
-            append(sb, bodyIndent, "        " + groupName + ".skip();");
+            append(sb, bodyIndent, "        " + groupName + ".next();");
+            append(sb, bodyIndent, "        " + groupName + ".sbeSkip();");
             append(sb, bodyIndent, "    }");
             append(sb, bodyIndent, "}");
             i = findEndSignal(groups, i, Signal.END_GROUP, groupToken.name());
