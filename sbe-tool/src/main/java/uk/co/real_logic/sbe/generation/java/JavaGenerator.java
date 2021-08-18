@@ -2585,7 +2585,7 @@ public class JavaGenerator implements CodeGenerator
             "        final int currentLimit = limit();\n" +
             "        sbeSkip();\n" +
             "        final int decodedLength = encodedLength();\n" +
-            "        limit(currentLimit);\n" +
+            "        limit(currentLimit);\n\n" +
             "        return decodedLength;\n" +
             "    }\n\n";
 
@@ -3673,13 +3673,16 @@ public class JavaGenerator implements CodeGenerator
     {
         final String methodIndent = baseIndent + INDENT;
         final String bodyIndent = methodIndent + INDENT;
+
         append(sb, methodIndent, "");
         append(sb, methodIndent, "public " + className + " sbeSkip()");
         append(sb, methodIndent, "{");
+
         if (isParent)
         {
             append(sb, bodyIndent, "sbeRewind();");
         }
+
         for (int i = 0, size = groups.size(); i < size; i++)
         {
             final Token groupToken = groups.get(i);
@@ -3717,6 +3720,7 @@ public class JavaGenerator implements CodeGenerator
             i += varDataToken.componentTokenCount();
         }
 
+        sb.append('\n');
         append(sb, bodyIndent, "return this;");
         append(sb, methodIndent, "}");
     }

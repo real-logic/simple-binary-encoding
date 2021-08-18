@@ -115,6 +115,7 @@ public final class TokenCodecDecoder
         sbeSkip();
         final int decodedLength = encodedLength();
         limit(currentLimit);
+
         return decodedLength;
     }
 
@@ -1914,6 +1915,7 @@ public final class TokenCodecDecoder
         skipSemanticType();
         skipDescription();
         skipReferencedName();
+
         return this;
     }
 }

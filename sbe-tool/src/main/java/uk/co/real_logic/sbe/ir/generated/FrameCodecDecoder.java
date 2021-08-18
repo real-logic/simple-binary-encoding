@@ -115,6 +115,7 @@ public final class FrameCodecDecoder
         sbeSkip();
         final int decodedLength = encodedLength();
         limit(currentLimit);
+
         return decodedLength;
     }
 
@@ -680,6 +681,7 @@ public final class FrameCodecDecoder
         skipPackageName();
         skipNamespaceName();
         skipSemanticVersion();
+
         return this;
     }
 }
