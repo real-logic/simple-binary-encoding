@@ -215,6 +215,8 @@ subprojects {
                 testLogging.events = ["FAILED", "STANDARD_OUT", "STANDARD_ERROR"]
             }
         }
+
+        javaLauncher.set(toolchainLauncher)
     }
 }
 
