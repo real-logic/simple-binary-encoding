@@ -77,7 +77,7 @@ class SubGroup implements RustGenerator.ParentDef
         // define impl...
         indent(sb, level - 1, "impl<'a, P> %s<P> where P: Encoder<'a> + Default {\n", name);
 
-        final int headerSize = blockLengthPrimitiveType.size() + numInGroupPrimitiveType.size();
+        final int dimensionHeaderSize = tokens.get(index).encodedLength();
 
         // define wrap...
         indent(sb, level, "#[inline]\n");
@@ -87,11 +87,11 @@ class SubGroup implements RustGenerator.ParentDef
         indent(sb, level + 1, "count: %s,\n", rustTypeName(numInGroupPrimitiveType));
         indent(sb, level, ") -> Self {\n");
         indent(sb, level + 1, "let initial_limit = parent.get_limit();\n");
-        indent(sb, level + 1, "parent.set_limit(initial_limit + %d);\n", headerSize);
-        indent(sb, level + 1, "parent.get_buf_mut().put_%s_at(initial_limit, %d);\n",
-            rustTypeName(blockLengthPrimitiveType), this.groupToken.encodedLength());
+        indent(sb, level + 1, "parent.set_limit(initial_limit + %d);\n", dimensionHeaderSize);
+        indent(sb, level + 1, "parent.get_buf_mut().put_%s_at(initial_limit, Self::block_length());\n",
+            rustTypeName(blockLengthPrimitiveType));
         indent(sb, level + 1, "parent.get_buf_mut().put_%s_at(initial_limit + %d, count);\n",
-            rustTypeName(numInGroupPrimitiveType), blockLengthPrimitiveType.size());
+            rustTypeName(numInGroupPrimitiveType), numInGroupToken.offset());
 
         indent(sb, level + 1, "self.parent = Some(parent);\n");
         indent(sb, level + 1, "self.count = count;\n");
@@ -168,6 +168,8 @@ class SubGroup implements RustGenerator.ParentDef
         // define impl...
         indent(sb, level - 1, "impl<'a, P> %s<P> where P: Decoder<'a> + Default {\n", name);
 
+        final int dimensionHeaderSize = tokens.get(index).encodedLength();
+
         // define wrap...
         indent(sb, level, "pub fn wrap(\n");
         indent(sb, level + 1, "mut self,\n");
@@ -178,9 +180,9 @@ class SubGroup implements RustGenerator.ParentDef
         indent(sb, level + 1, "let block_length = parent.get_buf().get_%s_at(initial_offset) as usize;\n",
             rustTypeName(blockLengthPrimitiveType));
         indent(sb, level + 1, "let count = parent.get_buf().get_%s_at(initial_offset + %d);\n",
-            rustTypeName(numInGroupPrimitiveType), blockLengthPrimitiveType.size());
+            rustTypeName(numInGroupPrimitiveType), numInGroupToken.offset());
         indent(sb, level + 1, "parent.set_limit(initial_offset + %d);\n",
-            blockLengthPrimitiveType.size() + numInGroupPrimitiveType.size());
+            dimensionHeaderSize);
 
         indent(sb, level + 1, "self.parent = Some(parent);\n");
         indent(sb, level + 1, "self.block_length = block_length;\n");
