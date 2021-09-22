@@ -539,6 +539,66 @@ project(':sbe-benchmarks') {
 }
 
 /*
+ * Rust codec targets used for testing
+ */
+task generateRustExamples(type: JavaExec) {
+    mainClass = 'uk.co.real_logic.sbe.SbeTool'
+    classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
+    systemProperties(
+            'sbe.output.dir': 'generated/rust',
+            'sbe.xinclude.aware': 'true',
+            'sbe.target.language': 'Rust',
+            'sbe.target.namespace': 'examples')
+    args = ['sbe-samples/src/main/resources/example-schema.xml',
+            'sbe-samples/src/main/resources/example-extension-schema.xml',
+            'sbe-benchmarks/src/main/resources/car.xml',
+            'sbe-benchmarks/src/main/resources/fix-message-samples.xml'
+    ]
+}
+
+task generateRustTestCodecs(type: JavaExec) {
+    mainClass = 'uk.co.real_logic.sbe.SbeTool'
+    classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
+    systemProperties(
+            'sbe.output.dir': 'generated/rust',
+            'sbe.xinclude.aware': 'true',
+            'sbe.target.language': 'Rust',
+            'sbe.validation.xsd': validationXsdPath)
+    args = ['sbe-tool/src/test/resources/issue435.xml',
+            'sbe-tool/src/test/resources/example-bigendian-test-schema.xml',
+    ]
+}
+
+task generateCarExampleDataFile(type: JavaExec) {
+    mainClass = 'uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStub'
+    classpath = project(':sbe-samples').sourceSets.main.runtimeClasspath
+    systemProperties('sbe.encoding.filename': 'rust/car_example_baseline_data.sbe')
+    args = []
+    standardOutput = new ByteArrayOutputStream()
+}
+
+task generateCarExampleExtensionDataFile(type: JavaExec) {
+    mainClass = 'uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStubExtension'
+    classpath = project(':sbe-samples').sourceSets.main.runtimeClasspath
+    systemProperties('sbe.encoding.filename': 'rust/car_example_extension_data.sbe')
+    args = []
+    standardOutput = new ByteArrayOutputStream()
+}
+
+task generateRustCodecs {
+    description = 'Generate rust test codecs'
+    dependsOn 'generateRustExamples', 'generateRustTestCodecs',
+            'generateCarExampleDataFile', 'generateCarExampleExtensionDataFile'
+}
+
+task runRustTests(type: Exec) {
+    workingDir = './rust'
+    executable = 'cargo'
+    args = ['test']
+    dependsOn 'generateRustCodecs'
+}
+
+/*
  * Golang codec targets used for testing, benchmarking etc. We have
  * multiple targets as:
  *  *) some of the test files generate warnings from the xsd so we don't

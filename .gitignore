@@ -106,6 +106,10 @@ csharp/sbe-generated/uk_co_real_logic_sbe_benchmarks_fix
 csharp/sbe-tests/*.sbe
 csharp/nuget/
 
+# rust
+rust/target
+rust/Cargo.lock
+
 # Mac
 .DS_Store
 /sbe-tool/src/main/golang/uk_co_real_logic_sbe_ir_generated/

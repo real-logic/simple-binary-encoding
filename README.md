@@ -16,7 +16,7 @@ Simple Binary Encoding (SBE)
 
 [SBE](https://github.com/FIXTradingCommunity/fix-simple-binary-encoding) is an OSI layer 6 presentation for 
 encoding and decoding binary application messages for low-latency financial applications. This repository contains 
-the reference implementations in Java, C++, Golang, and C#.
+the reference implementations in Java, C++, Golang, C#, and Rust.
 
 More details on the design and usage of SBE can be found on the [Wiki](https://github.com/real-logic/simple-binary-encoding/wiki).
 
@@ -115,6 +115,25 @@ C# Build
 Users of CSharp generated code should see the [user documentation](https://github.com/real-logic/simple-binary-encoding/wiki/Csharp-User-Guide).
 
 Developers wishing to enhance the CSharp generator should see the [developer documentation](https://github.com/real-logic/simple-binary-encoding/blob/master/csharp/README.md)
+
+Rust Build
+------------
+The SBE Rust generator will produce 100% safe rust crates (no `unsafe` code will be generated).  Generated crates do
+not have any dependencies on any libraries (including no SBE libraries). If you don't yet have Rust installed 
+see [Rust: Getting Started](https://www.rust-lang.org/learn/get-started)
+
+Generate the Rust codecs
+
+    $ ./gradlew generateRustCodecs
+
+Run the Rust test from Gradle
+
+    $ ./gradlew runRustTests
+
+Or run test directly with `Cargo`
+
+    $ cd rust
+    $ cargo test
 
 License (See LICENSE file for full license)
 -------------------------------------------
