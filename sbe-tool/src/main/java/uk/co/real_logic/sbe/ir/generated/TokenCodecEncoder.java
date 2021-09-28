@@ -96,12 +96,22 @@ public final class TokenCodecEncoder
 
     public int limit()
     {
-        return limit;
+        return sbeLimit();
     }
 
     public void limit(final int limit)
     {
+        sbeLimit(limit);
+    }
+
+    public void sbeLimit(final int limit)
+    {
         this.limit = limit;
+    }
+
+    public int sbeLimit()
+    {
+        return limit;
     }
 
     public static int tokenOffsetId()

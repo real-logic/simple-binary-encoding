@@ -126,12 +126,22 @@ public final class FrameCodecDecoder
 
     public int limit()
     {
-        return limit;
+        return sbeLimit();
     }
 
     public void limit(final int limit)
     {
+        sbeLimit(limit);
+    }
+
+    public void sbeLimit(final int limit)
+    {
         this.limit = limit;
+    }
+
+    public int sbeLimit()
+    {
+        return limit;
     }
 
     public static int irIdId()

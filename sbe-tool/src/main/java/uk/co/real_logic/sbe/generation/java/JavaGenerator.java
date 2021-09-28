@@ -2666,11 +2666,19 @@ public class JavaGenerator implements CodeGenerator
             "    }\n\n" +
             "    public int limit()\n" +
             "    {\n" +
-            "        return limit;\n" +
+            "        return sbeLimit();\n" +
             "    }\n\n" +
             "    public void limit(final int limit)\n" +
             "    {\n" +
+            "        sbeLimit(limit);\n" +
+            "    }\n\n" +
+            "    public void sbeLimit(final int limit)\n" +
+            "    {\n" +
             "        this.limit = limit;\n" +
+            "    }\n\n" +
+            "    public int sbeLimit()\n" +
+            "    {\n" +
+            "        return limit;\n" +
             "    }\n",
             blockLengthType,
             generateLiteral(headerStructure.blockLengthType(), Integer.toString(token.encodedLength())),
