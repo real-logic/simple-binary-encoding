@@ -225,7 +225,7 @@ class LibRsDef
             indent(writer, 0, "\n");
             indent(writer, 1, "#[inline]\n");
             indent(writer, 1, "pub fn get_%1$s_at(&self, index: usize) -> %1$s {\n", primitiveType);
-            indent(writer, 2, "%s::from_%s_bytes(Self::get_bytes_at(&self.data, index))\n", primitiveType, endianness);
+            indent(writer, 2, "%s::from_%s_bytes(Self::get_bytes_at(self.data, index))\n", primitiveType, endianness);
             indent(writer, 1, "}\n");
         }
 
