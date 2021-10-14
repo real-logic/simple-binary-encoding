@@ -406,7 +406,7 @@ project(':sbe-samples') {
     compileGeneratedJava.dependsOn 'generateCodecs'
 
     task generateCodecs(type: JavaExec) {
-        mainClass = 'uk.co.real_logic.sbe.SbeTool'
+        mainClass.set('uk.co.real_logic.sbe.SbeTool')
         classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
         systemProperties(
             'sbe.output.dir': generatedDir,
@@ -420,19 +420,19 @@ project(':sbe-samples') {
     }
 
     task runExampleUsingGeneratedStub(dependsOn: 'compileJava', type: JavaExec) {
-        mainClass = 'uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStub'
+        mainClass.set('uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStub')
         classpath = sourceSets.main.runtimeClasspath
         systemProperties System.getProperties()
     }
 
     task runExampleUsingGeneratedStubExtension(dependsOn: 'compileJava', type: JavaExec) {
-        mainClass = 'uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStubExtension'
+        mainClass.set('uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStubExtension')
         classpath = sourceSets.main.runtimeClasspath
         systemProperties System.getProperties()
     }
 
     task runOtfExample(dependsOn: 'compileJava', type: JavaExec) {
-        mainClass = 'uk.co.real_logic.sbe.examples.OtfExample'
+        mainClass.set('uk.co.real_logic.sbe.examples.OtfExample')
         classpath = sourceSets.main.runtimeClasspath
         workingDir = 'src/main/resources'
     }
@@ -516,7 +516,7 @@ project(':sbe-benchmarks') {
     compileJava.dependsOn 'compileGeneratedJava'
 
     task generateCodecs(type: JavaExec) {
-        mainClass = 'uk.co.real_logic.sbe.SbeTool'
+        mainClass.set('uk.co.real_logic.sbe.SbeTool')
         classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
         systemProperties(
             'sbe.output.dir': 'build/generated-src',
@@ -542,7 +542,7 @@ project(':sbe-benchmarks') {
  * Rust codec targets used for testing
  */
 task generateRustExamples(type: JavaExec) {
-    mainClass = 'uk.co.real_logic.sbe.SbeTool'
+    mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
     systemProperties(
             'sbe.output.dir': 'generated/rust',
@@ -557,7 +557,7 @@ task generateRustExamples(type: JavaExec) {
 }
 
 task generateRustTestCodecs(type: JavaExec) {
-    mainClass = 'uk.co.real_logic.sbe.SbeTool'
+    mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
     systemProperties(
             'sbe.output.dir': 'generated/rust',
@@ -570,7 +570,7 @@ task generateRustTestCodecs(type: JavaExec) {
 }
 
 task generateCarExampleDataFile(type: JavaExec) {
-    mainClass = 'uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStub'
+    mainClass.set('uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStub')
     classpath = project(':sbe-samples').sourceSets.main.runtimeClasspath
     systemProperties('sbe.encoding.filename': 'rust/car_example_baseline_data.sbe')
     args = []
@@ -578,7 +578,7 @@ task generateCarExampleDataFile(type: JavaExec) {
 }
 
 task generateCarExampleExtensionDataFile(type: JavaExec) {
-    mainClass = 'uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStubExtension'
+    mainClass.set('uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStubExtension')
     classpath = project(':sbe-samples').sourceSets.main.runtimeClasspath
     systemProperties('sbe.encoding.filename': 'rust/car_example_extension_data.sbe')
     args = []
@@ -608,7 +608,7 @@ task runRustTests(type: Exec) {
  *  *) Some examples need to fiddle with WorkingDir to deal with XInclude
  */
 task generateGolangCodecTestComposite(type: JavaExec) {
-    mainClass = 'uk.co.real_logic.sbe.SbeTool'
+    mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
     systemProperties(
         'sbe.output.dir': 'gocode/src',
@@ -617,7 +617,7 @@ task generateGolangCodecTestComposite(type: JavaExec) {
 }
 
 task generateGolangCodecTestBasic(type: JavaExec) {
-    mainClass = 'uk.co.real_logic.sbe.SbeTool'
+    mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
     systemProperties(
         'sbe.output.dir': 'gocode/src/basic',
@@ -626,7 +626,7 @@ task generateGolangCodecTestBasic(type: JavaExec) {
 }
 
 task generateGolangCodecTestGroup(type: JavaExec) {
-    mainClass = 'uk.co.real_logic.sbe.SbeTool'
+    mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
     systemProperties(
         'sbe.output.dir': 'gocode/src/group',
@@ -635,7 +635,7 @@ task generateGolangCodecTestGroup(type: JavaExec) {
 }
 
 task generateGolangCodecTestVarData(type: JavaExec) {
-    mainClass = 'uk.co.real_logic.sbe.SbeTool'
+    mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
     systemProperties(
         'sbe.output.dir': 'gocode/src/vardata',
@@ -644,7 +644,7 @@ task generateGolangCodecTestVarData(type: JavaExec) {
 }
 
 task generateGolangCodecsWithXIncludes(type: JavaExec) {
-    mainClass = 'uk.co.real_logic.sbe.SbeTool'
+    mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
     systemProperties(
         'sbe.output.dir': 'gocode/src',
@@ -656,7 +656,7 @@ task generateGolangCodecsWithXIncludes(type: JavaExec) {
 }
 
 task generateGolangCodecsWithXSD(type: JavaExec) {
-    mainClass = 'uk.co.real_logic.sbe.SbeTool'
+    mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
     systemProperties(
         'sbe.output.dir': 'gocode/src',
@@ -696,7 +696,7 @@ task generateGolangCodecs {
  * multiple targets as XInclude forces us to change working dir
  */
 task generateCSharpCodecsWithXIncludes(type: JavaExec) {
-    mainClass = 'uk.co.real_logic.sbe.SbeTool'
+    mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
     systemProperties(
         'sbe.output.dir': 'csharp/sbe-generated',
@@ -708,7 +708,7 @@ task generateCSharpCodecsWithXIncludes(type: JavaExec) {
 }
 
 task generateCSharpCodecsTests(type: JavaExec) {
-    mainClass = 'uk.co.real_logic.sbe.SbeTool'
+    mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
     systemProperties(
         'sbe.output.dir': 'csharp/sbe-generated',
@@ -731,7 +731,7 @@ task generateCSharpCodecs {
 }
 
 task generateJavaIrCodecs(type: JavaExec, dependsOn: 'computeOriginalIrHash') {
-    mainClass = 'uk.co.real_logic.sbe.SbeTool'
+    mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
     systemProperties(
         'sbe.output.dir': 'sbe-tool/src/main/java',
@@ -741,7 +741,7 @@ task generateJavaIrCodecs(type: JavaExec, dependsOn: 'computeOriginalIrHash') {
 }
 
 task generateCppIrCodecs(type: JavaExec) {
-    mainClass = 'uk.co.real_logic.sbe.SbeTool'
+    mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
     systemProperties(
         'sbe.output.dir': 'sbe-tool/src/main/cpp',
@@ -751,7 +751,7 @@ task generateCppIrCodecs(type: JavaExec) {
 }
 
 task generateGolangIrCodecs(type: JavaExec) {
-    mainClass = 'uk.co.real_logic.sbe.SbeTool'
+    mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
     systemProperties(
         'sbe.output.dir': 'sbe-tool/src/main/golang',
@@ -820,15 +820,15 @@ tasks.named('dependencyUpdates').configure {
 tasks.findByName('build').dependsOn verifyJavaIrCodecsInSync
 
 wrapper {
-    gradleVersion = '7.1.1'
+    gradleVersion = '7.2'
     distributionType = 'ALL'
 }
 
 class ChecksumTask extends DefaultTask
 {
-    private static final MessageDigest SHA_256 = MessageDigest.getInstance("SHA-256");
-    private static final byte CR = (byte) ('\r' as char)
-    private static final byte LF = (byte) ('\n' as char)
+    private static final MessageDigest SHA_256 = MessageDigest.getInstance("SHA-256")
+    private static final byte CR = (byte)('\r' as char)
+    private static final byte LF = (byte)('\n' as char)
 
     @InputDirectory
     File inputDirectory
@@ -837,14 +837,15 @@ class ChecksumTask extends DefaultTask
     File outputFile
 
     @TaskAction
-    def checksum() {
+    def checksum()
+    {
         SHA_256.reset()
 
-        final File[] files = inputDirectory.listFiles();
+        final File[] files = inputDirectory.listFiles()
         for (final File f : files)
         {
             final byte[] raw = Files.readAllBytes(f.toPath())
-            final byte[] normalized = normalizeEOL(raw);
+            final byte[] normalized = normaliseEol(raw)
             SHA_256.update(normalized)
         }
 
@@ -858,18 +859,21 @@ class ChecksumTask extends DefaultTask
             StandardOpenOption.TRUNCATE_EXISTING)
     }
 
-    private byte[] normalizeEOL(final byte[] raw)
+    private static byte[] normaliseEol(final byte[] raw)
     {
         final byte[] result = new byte[raw.length]
         int i = 0
+
         for (int j = 0, size = raw.length; j < size; j++)
         {
             if (CR == raw[j] && (j == size - 1 || LF == raw[j + 1]))
             {
                 continue;
             }
+
             result[i++] = raw[j]
         }
-        return raw.length == i ? result : Arrays.copyOf(result, i);
+
+        return raw.length == i ? result : Arrays.copyOf(result, i)
     }
 }
