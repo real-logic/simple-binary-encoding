@@ -115,6 +115,17 @@ public class Ir
         messagesByIdMap.put(messageId, new ArrayList<>(messageTokens));
     }
 
+    public void addComposite(final String name, final List<Token> tokens)
+    {
+        if (typesByNameMap.containsKey(name)) {
+            return;
+        }
+
+        Verify.notNull(tokens, "tokens");
+        captureTypes(tokens, 0, tokens.size() - 1);
+        updateComponentTokenCounts(tokens);
+    }
+
     /**
      * Get the getMessage for a given identifier.
      *

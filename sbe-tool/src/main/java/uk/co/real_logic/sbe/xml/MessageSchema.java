@@ -59,7 +59,6 @@ public class MessageSchema
         final String headerType = getAttributeValueOrNull(schemaNode, "headerType");
         this.headerType = null == headerType ? HEADER_TYPE_DEFAULT : headerType;
         Verify.present(typeByNameMap, this.headerType, "Message header");
-
         ((CompositeType)typeByNameMap.get(this.headerType)).checkForWellFormedMessageHeader(schemaNode);
     }
 
@@ -143,6 +142,11 @@ public class MessageSchema
     public Type getType(final String typeName)
     {
         return typeByNameMap.get(typeName);
+    }
+
+    public Collection<String> types()
+    {
+        return typeByNameMap.keySet();
     }
 
     /**

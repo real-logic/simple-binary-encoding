@@ -46,6 +46,7 @@ public class IrGenerator
         this.schema = schema;
 
         final List<Token> headerTokens = generateForHeader(schema);
+
         final Ir ir = new Ir(
             schema.packageName(),
             namespace,
@@ -60,6 +61,14 @@ public class IrGenerator
         {
             final long msgId = message.id();
             ir.addMessage(msgId, generateForMessage(schema, msgId));
+        }
+
+
+        for (String name : schema.types()) {
+            Type obj = schema.getType(name);
+            if(obj instanceof CompositeType) {
+                ir.addComposite(name, generateForComposite((CompositeType)obj));
+            }
         }
 
         return ir;
@@ -94,6 +103,15 @@ public class IrGenerator
         tokenList.clear();
 
         add(schema.messageHeader(), 0, null);
+
+        return tokenList;
+    }
+
+    private List<Token> generateForComposite(final CompositeType composite)
+    {
+        tokenList.clear();
+
+        add(composite, 0, null);
 
         return tokenList;
     }
