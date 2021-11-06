@@ -841,8 +841,7 @@ class ChecksumTask extends DefaultTask
     {
         SHA_256.reset()
 
-        final File[] files = inputDirectory.listFiles()
-        for (final File f : files)
+        for (final File f : inputDirectory.listFiles())
         {
             final byte[] raw = Files.readAllBytes(f.toPath())
             final byte[] normalized = normaliseEol(raw)
