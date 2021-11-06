@@ -778,7 +778,7 @@ public class CppGenerator implements CodeGenerator
 
         try (Writer out = outputManager.createOutput(enumName))
         {
-            out.append(generateFileHeader(ir.namespaces(), enumName, null));
+            out.append(generateEnumFileHeader(ir.namespaces(), enumName));
             out.append(generateEnumDeclaration(enumName));
 
             out.append(generateEnumValues(tokens.subList(1, tokens.size() - 1), enumToken));
@@ -1160,6 +1160,47 @@ public class CppGenerator implements CodeGenerator
                 sb.append(String.format("#include \"%1$s.h\"\n", toUpperFirstChar(incName)));
             }
         }
+
+        sb.append("\nnamespace ");
+        sb.append(String.join(" {\nnamespace ", namespaces));
+        sb.append(" {\n\n");
+
+        return sb;
+    }
+
+    private static CharSequence generateEnumFileHeader(final CharSequence[] namespaces, final String className)
+    {
+        final StringBuilder sb = new StringBuilder();
+
+        sb.append("/* Generated SBE (Simple Binary Encoding) message codec */\n");
+
+        sb.append(String.format(
+            "#ifndef _%1$s_%2$s_H_\n" +
+            "#define _%1$s_%2$s_H_\n\n" +
+
+            "#if !defined(__STDC_LIMIT_MACROS)\n" +
+            "#  define __STDC_LIMIT_MACROS 1\n" +
+            "#endif\n\n" +
+
+            "#include <cstdint>\n" +
+            "#include <iomanip>\n" +
+            "#include <limits>\n" +
+            "#include <ostream>\n" +
+            "#include <stdexcept>\n" +
+            "#include <sstream>\n" +
+            "#include <string>\n" +
+            "\n" +
+
+            "#define SBE_NULLVALUE_INT8 (std::numeric_limits<std::int8_t>::min)()\n" +
+            "#define SBE_NULLVALUE_INT16 (std::numeric_limits<std::int16_t>::min)()\n" +
+            "#define SBE_NULLVALUE_INT32 (std::numeric_limits<std::int32_t>::min)()\n" +
+            "#define SBE_NULLVALUE_INT64 (std::numeric_limits<std::int64_t>::min)()\n" +
+            "#define SBE_NULLVALUE_UINT8 (std::numeric_limits<std::uint8_t>::max)()\n" +
+            "#define SBE_NULLVALUE_UINT16 (std::numeric_limits<std::uint16_t>::max)()\n" +
+            "#define SBE_NULLVALUE_UINT32 (std::numeric_limits<std::uint32_t>::max)()\n" +
+            "#define SBE_NULLVALUE_UINT64 (std::numeric_limits<std::uint64_t>::max)()\n",
+            String.join("_", namespaces).toUpperCase(),
+            className.toUpperCase()));
 
         sb.append("\nnamespace ");
         sb.append(String.join(" {\nnamespace ", namespaces));
