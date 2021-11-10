@@ -458,6 +458,29 @@ public class JavaGeneratorTest
         assertEquals(65534, maxValue.invoke(null));
     }
 
+    @Test
+    public void shouldMarkDeprecatedClasses() throws Exception
+    {
+        final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
+        final MessageSchema schema = parse(Tests.getLocalResource("since-deprecated-test-schema.xml"), options);
+        final IrGenerator irg = new IrGenerator();
+        ir = irg.generate(schema);
+
+        outputManager.clear();
+        outputManager.setPackageName(ir.applicableNamespace());
+
+        generator().generate();
+        final String encoderFqcn = ir.applicableNamespace() + ".DeprecatedMessageEncoder";
+        final Class<?> encoderClazz = compile(encoderFqcn);
+        assertNotNull(encoderClazz);
+        assertTrue(encoderClazz.isAnnotationPresent(Deprecated.class));
+
+        final String decoderFqcn = ir.applicableNamespace() + ".DeprecatedMessageDecoder";
+        final Class<?> decoderClazz = compile(decoderFqcn);
+        assertNotNull(decoderClazz);
+        assertTrue(decoderClazz.isAnnotationPresent(Deprecated.class));
+    }
+
     private Class<?> getModelClass(final Object encoder) throws ClassNotFoundException
     {
         final String className = "Model";

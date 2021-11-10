@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <sbe:messageSchema xmlns:sbe="http://fixprotocol.io/2016/sbe"
-                   package="since-deprecated"
+                   package="since.deprecated"
                    id="108"
                    version="4"
                    semanticVersion="5.2"
@@ -23,5 +23,10 @@
         <field name="v1"     id="1"  type="uint64" />
         <field name="v2"     id="2"  type="uint64" sinceVersion="2"/>
         <field name="v3"     id="3"  type="uint64" sinceVersion="3" deprecated="4"/>
+    </sbe:message>
+    <sbe:message name="DeprecatedMessage" id="2" semanticType="n/a" description="Message deprecated since version 3" deprecated="3">
+        <field name="v1"     id="1"  type="uint64" />
+        <field name="v2"     id="2"  type="uint64" />
+        <field name="v3"     id="3"  type="uint64" />
     </sbe:message>
 </sbe:messageSchema>
