@@ -462,7 +462,7 @@ public class JavaGeneratorTest
     public void shouldMarkDeprecatedClasses() throws Exception
     {
         final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
-        final MessageSchema schema = parse(Tests.getLocalResource("since-deprecated-test-schema.xml"), options);
+        final MessageSchema schema = parse(Tests.getLocalResource("deprecated-msg-test-schema.xml"), options);
         final IrGenerator irg = new IrGenerator();
         ir = irg.generate(schema);
 
