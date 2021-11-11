@@ -1657,6 +1657,10 @@ public class JavaGenerator implements CodeGenerator
         final StringBuilder sb = new StringBuilder();
 
         generateTypeJavadoc(sb, BASE_INDENT, typeToken);
+        if (typeToken.deprecated() > 0)
+        {
+            sb.append("@Deprecated\n");
+        }
         sb.append("@SuppressWarnings(\"all\")\n")
             .append("public final class ").append(className).append(implementsString).append('\n')
             .append("{\n");
