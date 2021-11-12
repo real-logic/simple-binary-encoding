@@ -147,7 +147,7 @@ class MessageCoderDef implements RustGenerator.ParentDef
         indent(out, 3, "let acting_version = header.version();\n\n");
         indent(out, 3, "self.wrap(\n");
         indent(out, 4, "header.parent().unwrap(),\n");
-        indent(out, 4, "message_header::ENCODED_LENGTH,\n");
+        indent(out, 4, "message_header_codec::ENCODED_LENGTH,\n");
         indent(out, 4, "acting_block_length,\n");
         indent(out, 4, "acting_version,\n");
         indent(out, 3, ")\n");

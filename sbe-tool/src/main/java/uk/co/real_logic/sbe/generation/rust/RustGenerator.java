@@ -126,17 +126,14 @@ public class RustGenerator implements CodeGenerator
         // lib.rs
         final LibRsDef libRsDef = new LibRsDef(outputManager, ir.byteOrder());
 
-        generateEnums(ir, libRsDef);
-        generateBitSets(ir, libRsDef);
-        generateComposites(ir, libRsDef, outputManager);
+        generateEnums(ir, outputManager);
+        generateBitSets(ir, outputManager);
+        generateComposites(ir, outputManager);
 
         for (final List<Token> tokens : ir.messages())
         {
             final Token msgToken = tokens.get(0);
-
-            libRsDef.addMod(msgToken.name(), Encoder);
-            libRsDef.addMod(msgToken.name(), Decoder);
-
+            final String codecModName = codecModName(msgToken.name());
             final List<Token> messageBody = getMessageBody(tokens);
 
             int i = 0;
@@ -149,9 +146,11 @@ public class RustGenerator implements CodeGenerator
             final List<Token> varData = new ArrayList<>();
             collectVarData(messageBody, i, varData);
 
-            try (Writer out = outputManager.createOutput(msgToken.name()))
+            try (Writer out = outputManager.createOutput(codecModName))
             {
                 indent(out, 0, "use crate::*;\n\n");
+                indent(out, 0, "pub use encoder::*;\n");
+                indent(out, 0, "pub use decoder::*;\n\n");
                 final String blockLengthType = blockLengthType();
                 final String templateIdType = rustTypeName(ir.headerStructure().templateIdType());
                 final String schemaIdType = rustTypeName(ir.headerStructure().schemaIdType());
@@ -981,32 +980,36 @@ public class RustGenerator implements CodeGenerator
 
     private static void generateBitSets(
         final Ir ir,
-        final LibRsDef libRsDef) throws IOException
+        final RustOutputManager outputManager) throws IOException
     {
         for (final List<Token> tokens : ir.types())
         {
             if (!tokens.isEmpty() && tokens.get(0).signal() == BEGIN_SET)
             {
-                final StringBuilder sb = new StringBuilder();
-                generateSingleBitSet(tokens, sb);
-                libRsDef.addBitSet(sb.toString());
+                final Token beginToken = tokens.get(0);
+                final String bitSetType = formatStructName(beginToken.applicableTypeName());
+
+                try (Writer out = outputManager.createOutput(bitSetType))
+                {
+                    generateSingleBitSet(bitSetType, tokens, out);
+                }
             }
         }
     }
 
     private static void generateSingleBitSet(
+        final String bitSetType,
         final List<Token> tokens,
         final Appendable writer) throws IOException
     {
         final Token beginToken = tokens.get(0);
-        final String setType = formatStructName(beginToken.applicableTypeName());
         final String rustPrimitiveType = rustTypeName(beginToken.encoding().primitiveType());
         indent(writer, 0, "#[derive(Default, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]\n");
-        indent(writer, 0, "pub struct %s(pub %s);\n", setType, rustPrimitiveType);
-        indent(writer, 0, "impl %s {\n", setType);
+        indent(writer, 0, "pub struct %s(pub %s);\n", bitSetType, rustPrimitiveType);
+        indent(writer, 0, "impl %s {\n", bitSetType);
         indent(writer, 1, "#[inline]\n");
         indent(writer, 1, "pub fn new(value: %s) -> Self {\n", rustPrimitiveType);
-        indent(writer, 2, "%s(value)\n", setType);
+        indent(writer, 2, "%s(value)\n", bitSetType);
         indent(writer, 1, "}\n\n");
 
         indent(writer, 1, "#[inline]\n");
@@ -1044,10 +1047,10 @@ public class RustGenerator implements CodeGenerator
         }
         indent(writer, 0, "}\n");
 
-        indent(writer, 0, "impl core::fmt::Debug for %s {\n", setType);
+        indent(writer, 0, "impl core::fmt::Debug for %s {\n", bitSetType);
         indent(writer, 1, "#[inline]\n");
         indent(writer, 1, "fn fmt(&self, fmt: &mut core::fmt::Formatter) -> core::fmt::Result {\n");
-        indent(writer, 2, "write!(fmt, \"%s[", setType);
+        indent(writer, 2, "write!(fmt, \"%s[", bitSetType);
 
         final StringBuilder builder = new StringBuilder();
         final StringBuilder arguments = new StringBuilder();
@@ -1128,7 +1131,7 @@ public class RustGenerator implements CodeGenerator
 
     private static void generateEnums(
         final Ir ir,
-        final LibRsDef libRsDef) throws IOException
+        final RustOutputManager outputManager) throws IOException
     {
         final Set<String> enumTypeNames = new HashSet<>();
         for (final List<Token> tokens : ir.types())
@@ -1145,16 +1148,15 @@ public class RustGenerator implements CodeGenerator
             }
 
             final String typeName = beginToken.applicableTypeName();
-            if (enumTypeNames.contains(typeName))
+            if (!enumTypeNames.add(typeName))
             {
                 continue;
             }
 
-            final StringBuilder sb = new StringBuilder();
-            generateEnum(tokens, sb);
-            enumTypeNames.add(typeName);
-
-            libRsDef.addEnum(sb.toString());
+            try (Writer out = outputManager.createOutput(typeName))
+            {
+                generateEnum(tokens, out);
+            }
         }
     }
 
@@ -1219,29 +1221,31 @@ public class RustGenerator implements CodeGenerator
 
     private static void generateComposites(
         final Ir ir,
-        final LibRsDef libRsDef,
-        final OutputManager outputManager) throws IOException
+        final RustOutputManager outputManager) throws IOException
     {
         for (final List<Token> tokens : ir.types())
         {
             if (!tokens.isEmpty() && tokens.get(0).signal() == Signal.BEGIN_COMPOSITE)
             {
-                generateComposite(tokens, libRsDef, outputManager);
+                generateComposite(tokens, outputManager);
             }
         }
     }
 
     private static void generateComposite(
         final List<Token> tokens,
-        final LibRsDef libRsDef,
-        final OutputManager outputManager) throws IOException
+        final RustOutputManager outputManager) throws IOException
     {
         final Token token = tokens.get(0);
         final String compositeName = token.applicableTypeName();
+        final String compositeModName = codecModName(compositeName);
 
-        try (Writer out = outputManager.createOutput(compositeName))
+        try (Writer out = outputManager.createOutput(compositeModName))
         {
             indent(out, 0, "use crate::*;\n\n");
+
+            indent(out, 0, "pub use encoder::*;\n");
+            indent(out, 0, "pub use decoder::*;\n\n");
 
             final int encodedLength = tokens.get(0).encodedLength();
             if (encodedLength > 0)
@@ -1249,9 +1253,9 @@ public class RustGenerator implements CodeGenerator
                 indent(out, 0, "pub const ENCODED_LENGTH: usize = %d;\n\n", encodedLength);
             }
 
-            generateCompositeEncoder(tokens, libRsDef, compositeName, encoderName(compositeName), out);
+            generateCompositeEncoder(tokens, encoderName(compositeName), out);
             indent(out, 0, "\n");
-            generateCompositeDecoder(tokens, libRsDef, compositeName, decoderName(compositeName), out);
+            generateCompositeDecoder(tokens, decoderName(compositeName), out);
         }
     }
 
@@ -1331,13 +1335,9 @@ public class RustGenerator implements CodeGenerator
 
     private static void generateCompositeEncoder(
         final List<Token> tokens,
-        final LibRsDef libRsDef,
-        final String compositeName,
         final String encoderName,
         final Writer out) throws IOException
     {
-        libRsDef.addMod(compositeName, Encoder);
-
         indent(out, 0, "pub mod encoder {\n");
         indent(out, 1, "use super::*;\n\n");
 
@@ -1395,15 +1395,11 @@ public class RustGenerator implements CodeGenerator
 
     private static void generateCompositeDecoder(
         final List<Token> tokens,
-        final LibRsDef libRsDef,
-        final String compositeName,
         final String decoderName,
         final Writer out) throws IOException
     {
         indent(out, 0, "pub mod decoder {\n");
         indent(out, 1, "use super::*;\n\n");
-
-        libRsDef.addMod(compositeName, Decoder);
 
         indent(out, 1, "#[derive(Debug, Default)]\n");
         indent(out, 1, "pub struct %s<P> {\n", decoderName);

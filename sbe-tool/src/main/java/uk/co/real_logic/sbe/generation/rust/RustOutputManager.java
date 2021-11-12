@@ -21,10 +21,11 @@ import org.agrona.generation.OutputManager;
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 import static java.io.File.separatorChar;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static uk.co.real_logic.sbe.generation.rust.RustUtil.toLowerSnakeCase;
 
 /**
@@ -36,8 +37,19 @@ public class RustOutputManager implements OutputManager
     private final File rootDir;
     private final File srcDir;
 
+    static File createDir(final String dirName)
+    {
+        final File dir = new File(dirName);
+        if (!dir.exists() && !dir.mkdirs())
+        {
+            throw new IllegalStateException("Unable to create directory: " + dirName);
+        }
+        return dir;
+    }
+
     /**
      * Create a new {@link OutputManager} for generating rust source files into a given module.
+     *
      * @param baseDirName for the generated source code.
      * @param packageName for the generated source code relative to the baseDirName.
      */
@@ -52,12 +64,7 @@ public class RustOutputManager implements OutputManager
         rootDir = new File(libDirName);
 
         final String srcDirName = libDirName + separatorChar + "src";
-
-        srcDir = new File(srcDirName);
-        if (!srcDir.exists() && !srcDir.mkdirs())
-        {
-            throw new IllegalStateException("Unable to create directory: " + srcDirName);
-        }
+        srcDir = createDir(srcDirName);
     }
 
     /**
@@ -70,15 +77,17 @@ public class RustOutputManager implements OutputManager
      * @return a {@link java.io.Writer} to which the source code should be written.
      * @throws IOException if an issue occurs when creating the file.
      */
-    @Override public Writer createOutput(final String name) throws IOException
+    @Override
+    public Writer createOutput(final String name) throws IOException
     {
         final String fileName = toLowerSnakeCase(name) + ".rs";
         final File targetFile = new File(srcDir, fileName);
-        return Files.newBufferedWriter(targetFile.toPath(), StandardCharsets.UTF_8);
+        return Files.newBufferedWriter(targetFile.toPath(), UTF_8);
     }
 
     /**
-     *
+     * Creates a new Cargo.toml file
+     * <p>
      * @return a {@link java.io.Writer} to which the crate definition should be written.
      * @throws IOException if an issue occurs when creating the file.
      */
@@ -86,7 +95,12 @@ public class RustOutputManager implements OutputManager
     {
         final String fileName = "Cargo.toml";
         final File targetFile = new File(rootDir, fileName);
-        return Files.newBufferedWriter(targetFile.toPath(), StandardCharsets.UTF_8);
+        return Files.newBufferedWriter(targetFile.toPath(), UTF_8);
+    }
+
+    Path getSrcDirPath()
+    {
+        return srcDir.toPath();
     }
 
 }
