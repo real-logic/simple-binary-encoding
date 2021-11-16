@@ -30,7 +30,7 @@ fn decode_car_and_assert_expected_content(buffer: &[u8]) -> SbeResult<()> {
 
     let buf = ReadBuf::new(buffer);
     let header = MessageHeaderDecoder::default().wrap(buf, 0);
-    assert_eq!(car::SBE_TEMPLATE_ID, header.template_id());
+    assert_eq!(car_codec::SBE_TEMPLATE_ID, header.template_id());
     car = car.header(header);
 
     // Car...
@@ -161,7 +161,7 @@ fn encode_car_from_scratch() -> SbeResult<(usize, Vec<u8>)> {
 
     car = car.wrap(
         WriteBuf::new(buffer.as_mut_slice()),
-        message_header::ENCODED_LENGTH,
+        message_header_codec::ENCODED_LENGTH,
     );
     car = car.header(0).parent()?;
 

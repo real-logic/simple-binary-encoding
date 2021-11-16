@@ -122,6 +122,11 @@ public class RustUtil
         return Generators.toUpperFirstChar(structName);
     }
 
+    static String codecModName(final String prefix)
+    {
+        return toLowerSnakeCase(prefix + "Codec");
+    }
+
     static String codecName(final String structName, final CodecType codecType)
     {
         return formatStructName(structName + codecType.name());

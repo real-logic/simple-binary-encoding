@@ -15,17 +15,12 @@
  */
 package uk.co.real_logic.sbe.generation.rust;
 
-import org.agrona.generation.OutputManager;
-import uk.co.real_logic.sbe.generation.rust.RustGenerator.CodecType;
-
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.ByteOrder;
+import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.Map;
 
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.co.real_logic.sbe.generation.rust.RustGenerator.*;
@@ -36,11 +31,7 @@ import static uk.co.real_logic.sbe.generation.rust.RustUtil.*;
  */
 class LibRsDef
 {
-    private final LinkedHashMap<String, HashSet<CodecType>> modules = new LinkedHashMap<>();
-    private final ArrayList<String> enumDefs = new ArrayList<>();
-    private final ArrayList<String> bitSetDefs = new ArrayList<>();
-
-    private final OutputManager outputManager;
+    private final RustOutputManager outputManager;
     private final ByteOrder byteOrder;
 
     /**
@@ -50,26 +41,11 @@ class LibRsDef
      * @param byteOrder for the Encoding.
      */
     LibRsDef(
-        final OutputManager outputManager,
+        final RustOutputManager outputManager,
         final ByteOrder byteOrder)
     {
         this.outputManager = outputManager;
         this.byteOrder = byteOrder;
-    }
-
-    void addMod(final String modName, final CodecType codecType)
-    {
-        modules.computeIfAbsent(modName, __ -> new HashSet<>()).add(codecType);
-    }
-
-    void addEnum(final String enumDef)
-    {
-        enumDefs.add(enumDef);
-    }
-
-    void addBitSet(final String bitSetDef)
-    {
-        bitSetDefs.add(bitSetDef);
     }
 
     void generate() throws IOException
@@ -79,31 +55,28 @@ class LibRsDef
             indent(libRs, 0, "#![forbid(unsafe_code)]\n");
             indent(libRs, 0, "#![allow(clippy::upper_case_acronyms)]\n");
             indent(libRs, 0, "#![allow(non_camel_case_types)]\n");
-            indent(libRs, 0, "use core::{convert::TryInto};\n\n");
+            indent(libRs, 0, "use ::core::{convert::TryInto};\n\n");
+
+            final ArrayList<String> modules = new ArrayList<>();
+            Files.walk(outputManager.getSrcDirPath())
+                .filter(Files::isRegularFile)
+                .map(path -> path.getFileName().toString())
+                .filter(fileName -> fileName.endsWith(".rs"))
+                .filter(fileName -> !fileName.equals("lib.rs"))
+                .map(fileName -> fileName.substring(0, fileName.length() - 3))
+                .forEach(modules::add);
 
             // add modules
-            for (final String mod : modules.keySet())
+            for (final String mod : modules)
             {
                 indent(libRs, 0, "pub mod %s;\n", toLowerSnakeCase(mod));
             }
             indent(libRs, 0, "\n");
 
             // add re-export of modules
-            for (final Map.Entry<String, HashSet<CodecType>> entry : modules.entrySet())
+            for (final String module : modules)
             {
-                final String mod = entry.getKey();
-                final HashSet<CodecType> codecTypes = entry.getValue();
-
-                if (codecTypes.size() == 1)
-                {
-                    indent(libRs, 0, "pub use %s::%s::*;\n",
-                        toLowerSnakeCase(mod),
-                        toLowerSnakeCase(codecTypes.toArray()[0].toString()));
-                }
-                else
-                {
-                    indent(libRs, 0, "pub use %s::{decoder::*, encoder::*};\n", toLowerSnakeCase(mod));
-                }
+                indent(libRs, 0, "pub use %s::*;\n", toLowerSnakeCase(module));
             }
             indent(libRs, 0, "\n");
 
@@ -115,20 +88,6 @@ class LibRsDef
 
             generateReadBuf(libRs, byteOrder);
             generateWriteBuf(libRs, byteOrder);
-
-            // append generated enums
-            for (final String code : enumDefs)
-            {
-                libRs.append(code);
-                indent(libRs, 0, "\n");
-            }
-
-            // append generated bitSets
-            for (final String code : bitSetDefs)
-            {
-                libRs.append(code);
-                indent(libRs, 0, "\n");
-            }
         }
     }
 

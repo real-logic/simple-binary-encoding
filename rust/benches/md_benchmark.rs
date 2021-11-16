@@ -22,7 +22,7 @@ fn encode_md(state: &mut State) -> SbeResult<usize> {
     let mut market_data = MarketDataIncrementalRefreshTradesEncoder::default();
     let mut md_inc_grp = MdIncGrpEncoder::default();
 
-    market_data = market_data.wrap(WriteBuf::new(buffer), message_header::ENCODED_LENGTH);
+    market_data = market_data.wrap(WriteBuf::new(buffer), message_header_codec::ENCODED_LENGTH);
     market_data = market_data.header(0).parent()?;
 
     market_data.transact_time(1234);

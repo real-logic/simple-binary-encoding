@@ -164,7 +164,7 @@ public class SbeTool
      * Specifies token that should be appended to keywords to avoid compilation errors.
      * <p>
      * If none is supplied then use of keywords results in an error during schema parsing. The
-     * underscore character is a good example fo a token to use.
+     * underscore character is a good example of a token to use.
      */
     public static final String KEYWORD_APPEND_TOKEN = "sbe.keyword.append.token";
 

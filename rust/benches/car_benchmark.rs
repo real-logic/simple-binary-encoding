@@ -28,7 +28,7 @@ fn encode(state: &mut State) -> SbeResult<usize> {
     let mut acceleration = AccelerationEncoder::default();
     let mut extras = OptionalExtras::default();
 
-    car = car.wrap(WriteBuf::new(buffer), message_header::ENCODED_LENGTH);
+    car = car.wrap(WriteBuf::new(buffer), message_header_codec::ENCODED_LENGTH);
     car = car.header(0).parent()?;
 
     car.code(Model::A);
