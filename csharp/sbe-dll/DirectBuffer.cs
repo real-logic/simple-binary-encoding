@@ -64,6 +64,25 @@ namespace Org.SbeTool.Sbe.Dll
             Wrap(pBuffer, bufferLength);
         }
 
+                /// <summary>
+        /// Attach a view to an unmanaged buffer owned by external code
+        /// </summary>
+        /// <param name="buffer">Unmanaged byte buffer</param>
+        public DirectBuffer(ArraySegment<byte> buffer) : this(buffer, null)
+        {
+        }
+
+        /// <summary>
+        /// Attach a view to an unmanaged buffer owned by external code
+        /// </summary>
+        /// <param name="buffer">Unmanaged byte buffer</param>
+        /// <param name="bufferOverflow">delegate to allow reallocation of buffer</param>
+        public DirectBuffer(ArraySegment<byte> buffer, BufferOverflowDelegate bufferOverflow)
+        {
+            this.bufferOverflow = bufferOverflow;
+            Wrap(buffer);
+        }
+
         /// <summary>
         /// Creates a DirectBuffer that can later be wrapped
         /// </summary>
@@ -112,6 +131,24 @@ namespace Org.SbeTool.Sbe.Dll
             _pBuffer = pBuffer;
             _capacity = bufferLength;
             _needToFreeGCHandle = false;
+        }
+
+        /// <summary>
+        /// Recycles an existing <see cref="DirectBuffer"/> from a byte buffer owned by external code
+        /// </summary>
+        /// <param name="buffer">buffer of bytes</param>
+        public void Wrap(ArraySegment<byte> buffer)
+        {
+            if (buffer == null) throw new ArgumentNullException(nameof(buffer));
+
+            FreeGCHandle();
+
+            // pin the buffer so it does not get moved around by GC, this is required since we use pointers
+            _pinnedGCHandle = GCHandle.Alloc(buffer.Array, GCHandleType.Pinned);
+            _needToFreeGCHandle = true;
+
+            _pBuffer = ((byte*)_pinnedGCHandle.AddrOfPinnedObject().ToPointer()) + buffer.Offset;
+            _capacity = buffer.Count;
         }
 
         /// <summary>
