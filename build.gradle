@@ -47,8 +47,8 @@ def hamcrestVersion = '2.2'
 def mockitoVersion = '4.0.0'
 def junitVersion = '5.8.1'
 def jmhVersion = '1.33'
-def agronaVersion = '1.12.0'
-def agronaVersionRange = '[1.12,1.13[' // allow any patch release of 1.12.x
+def agronaVersion = '1.13.0'
+def agronaVersionRange = '[1.13,1.14[' // allow any patch release of 1.13.x
 
 def sbeGroup = 'uk.co.real-logic'
 def sbeVersion = file('version.txt').text.trim()
