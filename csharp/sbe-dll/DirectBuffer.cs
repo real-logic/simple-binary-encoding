@@ -64,18 +64,18 @@ namespace Org.SbeTool.Sbe.Dll
             Wrap(pBuffer, bufferLength);
         }
 
-                /// <summary>
-        /// Attach a view to an unmanaged buffer owned by external code
+        /// <summary>
+        /// Attach a view to a buffer owned by external code
         /// </summary>
-        /// <param name="buffer">Unmanaged byte buffer</param>
+        /// <param name="buffer">byte buffer</param>
         public DirectBuffer(ArraySegment<byte> buffer) : this(buffer, null)
         {
         }
 
         /// <summary>
-        /// Attach a view to an unmanaged buffer owned by external code
+        /// Attach a view to a buffer owned by external code
         /// </summary>
-        /// <param name="buffer">Unmanaged byte buffer</param>
+        /// <param name="buffer">byte buffer</param>
         /// <param name="bufferOverflow">delegate to allow reallocation of buffer</param>
         public DirectBuffer(ArraySegment<byte> buffer, BufferOverflowDelegate bufferOverflow)
         {
