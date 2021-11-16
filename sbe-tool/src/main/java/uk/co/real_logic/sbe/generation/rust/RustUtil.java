@@ -32,13 +32,12 @@ import static uk.co.real_logic.sbe.generation.rust.RustGenerator.CodecType.Decod
 import static uk.co.real_logic.sbe.generation.rust.RustGenerator.CodecType.Encoder;
 
 /**
- *
+ * Utility method for Rust codec generation.
  */
 public class RustUtil
 {
     static final String INDENT = "    ";
-    public static final Map<PrimitiveType, String> TYPE_NAME_BY_PRIMITIVE_TYPE_MAP =
-        new EnumMap<>(PrimitiveType.class);
+    static final Map<PrimitiveType, String> TYPE_NAME_BY_PRIMITIVE_TYPE_MAP = new EnumMap<>(PrimitiveType.class);
 
     static
     {

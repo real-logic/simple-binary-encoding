@@ -60,10 +60,10 @@ class LibRsDef
             final ArrayList<String> modules = new ArrayList<>();
             Files.walk(outputManager.getSrcDirPath())
                 .filter(Files::isRegularFile)
-                .map(path -> path.getFileName().toString())
-                .filter(fileName -> fileName.endsWith(".rs"))
-                .filter(fileName -> !fileName.equals("lib.rs"))
-                .map(fileName -> fileName.substring(0, fileName.length() - 3))
+                .map((path) -> path.getFileName().toString())
+                .filter((fileName) -> fileName.endsWith(".rs"))
+                .filter((fileName) -> !fileName.equals("lib.rs"))
+                .map((fileName) -> fileName.substring(0, fileName.length() - 3))
                 .forEach(modules::add);
 
             // add modules

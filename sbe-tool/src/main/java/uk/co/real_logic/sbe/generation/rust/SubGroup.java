@@ -41,7 +41,6 @@ class SubGroup implements RustGenerator.ParentDef
         this.groupToken = groupToken;
     }
 
-    @Override
     public SubGroup addSubGroup(final String name, final int level, final Token groupToken)
     {
         final SubGroup subGroup = new SubGroup(name, level, groupToken);

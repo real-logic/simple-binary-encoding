@@ -119,7 +119,6 @@ class MessageCoderDef implements RustGenerator.ParentDef
         dest.append(sb);
     }
 
-    @Override
     public SubGroup addSubGroup(final String name, final int level, final Token groupToken)
     {
         final SubGroup subGroup = new SubGroup(name, level, groupToken);

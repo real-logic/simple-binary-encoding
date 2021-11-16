@@ -33,10 +33,11 @@ import java.util.List;
 import java.util.Set;
 
 import static java.lang.String.format;
-import static uk.co.real_logic.sbe.generation.rust.RustGenerator.CodecType.Decoder;
-import static uk.co.real_logic.sbe.generation.rust.RustGenerator.CodecType.Encoder;
 import static uk.co.real_logic.sbe.generation.rust.RustUtil.*;
-import static uk.co.real_logic.sbe.ir.GenerationUtil.*;
+import static uk.co.real_logic.sbe.ir.GenerationUtil.collectFields;
+import static uk.co.real_logic.sbe.ir.GenerationUtil.collectGroups;
+import static uk.co.real_logic.sbe.ir.GenerationUtil.collectVarData;
+import static uk.co.real_logic.sbe.ir.GenerationUtil.getMessageBody;
 import static uk.co.real_logic.sbe.ir.Signal.BEGIN_ENUM;
 import static uk.co.real_logic.sbe.ir.Signal.BEGIN_SET;
 
@@ -53,7 +54,7 @@ public class RustGenerator implements CodeGenerator
     {
         Decoder
         {
-            @Override String bufType()
+            String bufType()
             {
                 return READ_BUF_TYPE;
             }
@@ -61,7 +62,7 @@ public class RustGenerator implements CodeGenerator
 
         Encoder
         {
-            @Override String bufType()
+            String bufType()
             {
                 return WRITE_BUF_TYPE;
             }
@@ -81,8 +82,8 @@ public class RustGenerator implements CodeGenerator
     /**
      * Create a new Rust language {@link CodeGenerator}.
      *
-     * @param ir                for the messages and types.
-     * @param outputManager     for generating the codecs to.
+     * @param ir            for the messages and types.
+     * @param outputManager for generating the codecs to.
      */
     public RustGenerator(
         final Ir ir,
@@ -227,9 +228,9 @@ public class RustGenerator implements CodeGenerator
                         break;
                 }
             }
-            catch (final IOException e)
+            catch (final IOException ex)
             {
-                throw new RuntimeException(e);
+                throw new RuntimeException(ex);
             }
         });
     }
@@ -1465,6 +1466,4 @@ public class RustGenerator implements CodeGenerator
         indent(writer, level + 1, rustExpression + "\n");
         indent(writer, level, "}\n\n");
     }
-
-
 }
