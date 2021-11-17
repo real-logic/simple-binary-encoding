@@ -67,6 +67,40 @@ namespace Org.SbeTool.Sbe.Tests
         }
 
         [TestMethod]
+        public void ConstructFromByteArray()
+        {
+            var buffer = new byte[16];
+
+            const int value = 5;
+            const int index = 0;
+            
+            using (var directBuffer = new DirectBuffer(buffer))
+            {
+                directBuffer.Int64PutLittleEndian(index, value);
+                Assert.AreEqual(value, buffer[index]);
+            }
+        }
+
+        [TestMethod]
+        public void ConstructFromArraySegment()
+        {
+            const int value = 5;
+            const int index = 0;
+            const int offset = 512;
+            const int size = 1024;
+
+            var bigBuffer = new byte[size];
+            var buffer = new ArraySegment<byte>(bigBuffer, offset, size - offset);
+            
+            using (var directBuffer = new DirectBuffer(buffer))
+            {
+                directBuffer.Int64PutLittleEndian(index, value);
+                Assert.AreEqual(value, bigBuffer[offset + index]);
+                Assert.AreEqual(value, buffer.AsSpan<byte>()[index]);
+            }
+        }
+
+        [TestMethod]
         public void Recycle()
         {
             var directBuffer = new DirectBuffer();
