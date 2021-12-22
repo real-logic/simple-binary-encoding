@@ -27,6 +27,9 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
  */
 public class Field
 {
+    /**
+     * Value to indicate a {@link Field} is invalid or not yet set.
+     */
     public static final int INVALID_ID = Integer.MAX_VALUE;  // schemaId must be a short, so this is way out of range.
 
     private final String name;                 // required for field/data & group
