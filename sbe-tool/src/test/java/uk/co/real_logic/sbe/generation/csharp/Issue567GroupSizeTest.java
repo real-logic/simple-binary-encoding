@@ -19,14 +19,15 @@ import org.agrona.generation.StringWriterOutputManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledForJreRange;
-import org.junit.jupiter.api.condition.JRE;
+import org.xml.sax.InputSource;
 import uk.co.real_logic.sbe.Tests;
 import uk.co.real_logic.sbe.ir.Ir;
 import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
 import uk.co.real_logic.sbe.xml.ParserOptions;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -34,7 +35,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
-@EnabledForJreRange(min = JRE.JAVA_8, max = JRE.JAVA_17)
 public class Issue567GroupSizeTest
 {
     public static final String ERR_MSG =
@@ -58,18 +58,25 @@ public class Issue567GroupSizeTest
     }
 
     @Test
-    public void shouldThrowWhenUsingATypeThatIsNotConstrainedToFitInAnIntAsTheGroupSize()
+    public void shouldThrowWhenUsingATypeThatIsNotConstrainedToFitInAnIntAsTheGroupSize() throws IOException
     {
         final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
-        assertThrows(IllegalArgumentException.class,
-            () -> parse(Tests.getLocalResource("issue567-invalid.xml"), options));
+        final InputStream in = Tests.getLocalResource("issue567-invalid.xml");
+        final InputSource is = new InputSource(in);
+        is.setEncoding("UTF-8");
+
+        assertThrows(IllegalArgumentException.class, () -> parse(is, options));
     }
 
     @Test
     public void shouldGenerateWhenUsingATypeThatIsConstrainedToFitInAnIntAsTheGroupSize() throws Exception
     {
         final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
-        final MessageSchema schema = parse(Tests.getLocalResource("issue567-valid.xml"), options);
+        final InputStream in = Tests.getLocalResource("issue567-valid.xml");
+        final InputSource is = new InputSource(in);
+        is.setEncoding("UTF-8");
+
+        final MessageSchema schema = parse(is, options);
         final IrGenerator irg = new IrGenerator();
         final Ir ir = irg.generate(schema);
 
