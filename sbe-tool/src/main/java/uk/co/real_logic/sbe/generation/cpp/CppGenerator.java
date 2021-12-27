@@ -378,7 +378,7 @@ public class CppGenerator implements CodeGenerator
             .append(indent).append("    }\n");
 
         sb.append("\n")
-            .append(indent).append("#if __cplusplus < 201103L\n")
+            .append(indent).append("#if !_MSC_VER && __cplusplus < 201103L\n")
             .append(indent).append("    template<class Func> inline void forEach(Func &func)\n")
             .append(indent).append("    {\n")
             .append(indent).append("        while (hasNext())\n")
