@@ -17,7 +17,6 @@ package uk.co.real_logic.sbe.generation.csharp;
 
 import org.agrona.generation.StringWriterOutputManager;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
@@ -53,26 +52,20 @@ public class Issue567GroupSizeTest
         "                }";
 
     private final PrintStream mockErr = mock(PrintStream.class);
-    private PrintStream err;
-
-    @BeforeEach
-    public void before()
-    {
-        err = System.err;
-        System.setErr(mockErr);
-    }
 
     @AfterEach
     public void after()
     {
-        System.setErr(err);
         verify(mockErr).println(ERR_MSG);
     }
 
     @Test
     public void shouldThrowWhenUsingATypeThatIsNotConstrainedToFitInAnIntAsTheGroupSize() throws IOException
     {
-        final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
+        final ParserOptions options = ParserOptions.builder()
+            .errorPrintStream(mockErr)
+            .stopOnError(true)
+            .build();
         final InputStream in = Tests.getLocalResource("issue567-invalid.xml");
         final InputSource is = new InputSource(new InputStreamReader(in, StandardCharsets.UTF_8));
 
@@ -82,7 +75,10 @@ public class Issue567GroupSizeTest
     @Test
     public void shouldGenerateWhenUsingATypeThatIsConstrainedToFitInAnIntAsTheGroupSize() throws Exception
     {
-        final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
+        final ParserOptions options = ParserOptions.builder()
+            .errorPrintStream(mockErr)
+            .stopOnError(true)
+            .build();
         final InputStream in = Tests.getLocalResource("issue567-valid.xml");
         final InputSource is = new InputSource(new InputStreamReader(in, StandardCharsets.UTF_8));
 

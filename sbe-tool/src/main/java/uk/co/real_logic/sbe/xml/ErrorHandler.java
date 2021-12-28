@@ -30,7 +30,8 @@ public class ErrorHandler
     private int warnings = 0;
 
     /**
-     * Construct a new {@link ErrorHandler} that outputs to a provided {@link PrintStream}.
+     * Construct a new {@link ErrorHandler} that outputs to a provided {@link PrintStream} which overrides the value
+     * set in {@link ParserOptions#errorPrintStream()}.
      *
      * @param stream  to which output should be sent.
      * @param options the parsing options.
@@ -44,13 +45,14 @@ public class ErrorHandler
     }
 
     /**
-     * Default {@link ErrorHandler} that outputs to {@link System#err}.
+     * Default {@link ErrorHandler} that outputs to {@link System#err} if {@link ParserOptions#errorPrintStream()} is
+     * not set.
      *
      * @param options the parsing options.
      */
     public ErrorHandler(final ParserOptions options)
     {
-        this(System.err, options);
+        this(options.errorPrintStream() != null ? options.errorPrintStream() : System.err, options);
     }
 
     /**

@@ -15,40 +15,49 @@
  */
 package uk.co.real_logic.sbe.xml;
 
+import java.io.PrintStream;
+
 /**
  * Class to hold the values of the parsing options.
  */
 public final class ParserOptions
 {
-    public static final ParserOptions DEFAULT = new ParserOptions(false, false, false, true, null);
+    /**
+     * Default parser options which can be used for convenience.
+     */
+    public static final ParserOptions DEFAULT = new ParserOptions(false, false, false, true, null, null);
 
     private final boolean stopOnError;
     private final boolean warningsFatal;
     private final boolean suppressOutput;
     private final boolean xIncludeAware;
     private final String xsdFilename;
+    private final PrintStream errorPrintStream;
 
     /**
      * Sets up the parsing options.
      *
-     * @param stopOnError    specifies whether the parsing should stop on error.
-     * @param warningsFatal  specifies whether the warnings should be handled as fatal errors.
-     * @param suppressOutput specifies whether to suppress the output of errors and warnings.
-     * @param xIncludeAware  should parse expect XInclude references.
-     * @param xsdFilename    the name of the schema file.
+     * @param stopOnError      specifies whether the parsing should stop on error.
+     * @param warningsFatal    specifies whether the warnings should be handled as fatal errors.
+     * @param suppressOutput   specifies whether to suppress the output of errors and warnings.
+     * @param xIncludeAware    should parse expect XInclude references.
+     * @param xsdFilename      the name of the schema file.
+     * @param errorPrintStream the {@link PrintStream} to which parsing errors and warnings are printed.
      */
     private ParserOptions(
         final boolean stopOnError,
         final boolean warningsFatal,
         final boolean suppressOutput,
         final boolean xIncludeAware,
-        final String xsdFilename)
+        final String xsdFilename,
+        final PrintStream errorPrintStream)
     {
         this.stopOnError = stopOnError;
         this.warningsFatal = warningsFatal;
         this.suppressOutput = suppressOutput;
         this.xIncludeAware = xIncludeAware;
         this.xsdFilename = xsdFilename;
+        this.errorPrintStream = errorPrintStream;
     }
 
     /**
@@ -102,6 +111,16 @@ public final class ParserOptions
     }
 
     /**
+     * The {@link PrintStream} to which errors and warnings are printed when parsing.
+     *
+     * @return the {@link PrintStream} to which errors and warnings are printed when parsing.
+     */
+    public PrintStream errorPrintStream()
+    {
+        return errorPrintStream;
+    }
+
+    /**
      * Creates a builder.
      *
      * @return a new builder instance.
@@ -121,6 +140,7 @@ public final class ParserOptions
         private boolean suppressOutput;
         private boolean xIncludeAware;
         private String xsdFilename;
+        private PrintStream errorPrintStream;
 
         /**
          * The value of the stopOnError parameter.
@@ -233,13 +253,26 @@ public final class ParserOptions
         }
 
         /**
+         * Set the {@link PrintStream} to which parsing errors and warnings are printed.
+         *
+         * @param errorPrintStream to which parsing errors and warnings are printed.
+         * @return this instance
+         */
+        public Builder errorPrintStream(final PrintStream errorPrintStream)
+        {
+            this.errorPrintStream = errorPrintStream;
+            return this;
+        }
+
+        /**
          * Creates an instance of {@link ParserOptions} with all the values set.
          *
          * @return an instance of {@link ParserOptions} with all the values set.
          */
         public ParserOptions build()
         {
-            return new ParserOptions(stopOnError, warningsFatal, suppressOutput, xIncludeAware, xsdFilename);
+            return new ParserOptions(
+                stopOnError, warningsFatal, suppressOutput, xIncludeAware, xsdFilename, errorPrintStream);
         }
     }
 }
