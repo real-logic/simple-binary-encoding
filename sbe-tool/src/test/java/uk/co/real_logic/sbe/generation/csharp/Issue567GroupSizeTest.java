@@ -39,7 +39,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
-@EnabledForJreRange(min = JRE.JAVA_8, max = JRE.JAVA_17)
+@EnabledForJreRange(min = JRE.JAVA_8, max = JRE.JAVA_18)
 public class Issue567GroupSizeTest
 {
     private static final String ERR_MSG =
