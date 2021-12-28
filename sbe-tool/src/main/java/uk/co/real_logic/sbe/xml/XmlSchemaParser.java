@@ -289,12 +289,6 @@ public class XmlSchemaParser
         }
 
         final NamedNodeMap attributes = elementNode.getAttributes();
-        if (null == attributes)
-        {
-            throw new IllegalStateException(
-                "element '" + elementNode.getNodeName() + "' has empty or missing attribute: " + attrName);
-        }
-
         final Node attrNode = attributes.getNamedItemNS(null, attrName);
         if (null == attrNode || "".equals(attrNode.getNodeValue()))
         {
@@ -322,11 +316,6 @@ public class XmlSchemaParser
         }
 
         final NamedNodeMap attributes = elementNode.getAttributes();
-        if (null == attributes)
-        {
-            return defValue;
-        }
-
         final Node attrNode = attributes.getNamedItemNS(null, attrName);
         if (null == attrNode)
         {
@@ -345,7 +334,7 @@ public class XmlSchemaParser
      */
     public static String getAttributeValueOrNull(final Node elementNode, final String attrName)
     {
-        if (null == elementNode || null == elementNode.getAttributes())
+        if (null == elementNode)
         {
             return null;
         }
