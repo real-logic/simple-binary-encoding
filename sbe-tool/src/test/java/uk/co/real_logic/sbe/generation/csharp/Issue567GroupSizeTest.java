@@ -18,8 +18,6 @@ package uk.co.real_logic.sbe.generation.csharp;
 import org.agrona.generation.StringWriterOutputManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledForJreRange;
-import org.junit.jupiter.api.condition.JRE;
 import org.xml.sax.InputSource;
 import uk.co.real_logic.sbe.Tests;
 import uk.co.real_logic.sbe.ir.Ir;
@@ -39,7 +37,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
-@EnabledForJreRange(min = JRE.JAVA_8, max = JRE.JAVA_18)
 public class Issue567GroupSizeTest
 {
     private static final String ERR_MSG =
