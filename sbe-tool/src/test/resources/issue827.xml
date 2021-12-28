@@ -19,6 +19,6 @@
         </composite>
     </types>
     <sbe:message name="test" id="1" description="issue 827 test">
-	<field name="set0" type="FlagsSet" id="1"/>
+	    <field name="set0" type="FlagsSet" id="1"/>
     </sbe:message>
 </sbe:messageSchema>
