@@ -28,12 +28,12 @@
     </types>
     <types>
         <composite name="issue567Element" description="element for group exposing issue 567">
-            <type name="id" primitiveType="int32" />
+            <type name="id" primitiveType="int32"/>
         </composite>
     </types>
     <sbe:message name="issue567" id="1" description="issue 567 test">
         <group name="group" id="1">
-            <field name="groupField" id="2" type="issue567Element" />
+            <field name="groupField" id="2" type="issue567Element"/>
         </group>
     </sbe:message>
 </sbe:messageSchema>
