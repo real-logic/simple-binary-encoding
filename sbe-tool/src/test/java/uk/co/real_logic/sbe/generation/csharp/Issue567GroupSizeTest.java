@@ -35,6 +35,7 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
@@ -42,8 +43,14 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 @EnabledForJreRange(min = JRE.JAVA_8, max = JRE.JAVA_17)
 public class Issue567GroupSizeTest
 {
-    public static final String ERR_MSG =
+    private static final String ERR_MSG =
         "WARNING: at <sbe:message name=\"issue567\"> <group name=\"group\"> \"numInGroup\" should be UINT8 or UINT16";
+
+    private static final String EXPECTED_COUNT_CHECK =
+        "                if ((uint) count > 2147483647)\n" +
+        "                {\n" +
+        "                    ThrowHelper.ThrowCountOutOfRangeException(count);\n" +
+        "                }";
 
     private final PrintStream mockErr = mock(PrintStream.class);
     private PrintStream err;
@@ -87,7 +94,9 @@ public class Issue567GroupSizeTest
         outputManager.setPackageName(ir.applicableNamespace());
         final CSharpGenerator generator = new CSharpGenerator(ir, outputManager);
 
-        // Act + Assert (no exception)
         generator.generate();
+
+        final String source = outputManager.getSource("tests.Issue567").toString();
+        assertTrue(source.contains(EXPECTED_COUNT_CHECK));
     }
 }
