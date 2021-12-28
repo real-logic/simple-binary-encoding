@@ -30,14 +30,16 @@ import uk.co.real_logic.sbe.xml.ParserOptions;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
-@EnabledForJreRange(min = JRE.JAVA_8, max = JRE.JAVA_17)
+@EnabledForJreRange(min = JRE.JAVA_8, max = JRE.JAVA_18)
 public class Issue567GroupSizeTest
 {
     public static final String ERR_MSG =
@@ -65,8 +67,7 @@ public class Issue567GroupSizeTest
     {
         final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
         final InputStream in = Tests.getLocalResource("issue567-invalid.xml");
-        final InputSource is = new InputSource(in);
-        is.setEncoding("UTF-8");
+        final InputSource is = new InputSource(new InputStreamReader(in, StandardCharsets.UTF_8));
 
         assertThrows(IllegalArgumentException.class, () -> parse(is, options));
     }
@@ -76,8 +77,7 @@ public class Issue567GroupSizeTest
     {
         final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
         final InputStream in = Tests.getLocalResource("issue567-valid.xml");
-        final InputSource is = new InputSource(in);
-        is.setEncoding("UTF-8");
+        final InputSource is = new InputSource(new InputStreamReader(in, StandardCharsets.UTF_8));
 
         final MessageSchema schema = parse(is, options);
         final IrGenerator irg = new IrGenerator();

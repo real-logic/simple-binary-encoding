@@ -129,11 +129,10 @@ public class XmlSchemaParser
         }
 
         final Document document = factory.newDocumentBuilder().parse(is);
-        final XPath xPath = XPathFactory.newInstance().newXPath();
-
         final ErrorHandler errorHandler = new ErrorHandler(options);
         document.setUserData(ERROR_HANDLER_KEY, errorHandler, null);
 
+        final XPath xPath = XPathFactory.newInstance().newXPath();
         final Map<String, Type> typeByNameMap = findTypes(document, xPath);
         errorHandler.checkIfShouldExit();
 
