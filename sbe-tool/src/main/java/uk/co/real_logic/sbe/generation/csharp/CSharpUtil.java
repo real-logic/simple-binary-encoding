@@ -21,17 +21,12 @@ import uk.co.real_logic.sbe.PrimitiveType;
 import java.util.EnumMap;
 import java.util.Map;
 
-
 /**
  * Utilities for mapping between IR and the C# language.
  */
 public class CSharpUtil
 {
-
-    /**
-     * Useful separator constants for code generation
-     */
-    public enum Separators
+    enum Separators
     {
         BEGIN_GROUP('['),
         END_GROUP(']'),
@@ -52,20 +47,14 @@ public class CSharpUtil
             this.symbol = symbol;
         }
 
-        /**
-         * Add separator to a generated append to a {@link StringBuilder}.
-         *
-         * @param builder     the code generation builder to which information should be added
-         * @param indent      the current generated code indentation
-         * @param builderName the generated StringBuilder to which separator should be added
-         */
-        public void appendToGeneratedBuilder(final StringBuilder builder, final String indent, final String builderName)
+        void appendToGeneratedBuilder(final StringBuilder builder, final String indent)
         {
-            builder.append(indent).append(builderName).append(".Append('").append(symbol).append("');").append('\n');
+            builder.append(indent).append("builder.Append('").append(symbol).append("');").append('\n');
         }
 
         /**
          * Returns the string value of this separator.
+         *
          * @return  the string value of this separator
          */
         public String toString()
@@ -182,5 +171,4 @@ public class CSharpUtil
     {
         builder.append(indent).append(line).append('\n');
     }
-
 }

@@ -1572,9 +1572,9 @@ public class CSharpGenerator implements CodeGenerator
         append(sb, indent, "        return;");
         append(sb, indent, "    }");
         sb.append('\n');
-        Separators.BEGIN_COMPOSITE.appendToGeneratedBuilder(sb, indent + INDENT, "builder");
+        Separators.BEGIN_COMPOSITE.appendToGeneratedBuilder(sb, indent + INDENT);
         appendDisplay(sb, fields, groups, varData, indent + INDENT);
-        Separators.END_COMPOSITE.appendToGeneratedBuilder(sb, indent + INDENT, "builder");
+        Separators.END_COMPOSITE.appendToGeneratedBuilder(sb, indent + INDENT);
         sb.append('\n');
         append(sb, indent, "}");
     }
@@ -1635,7 +1635,7 @@ public class CSharpGenerator implements CodeGenerator
             append(sb, indent, "builder.Append(\"" + Separators.END_GROUP + "\");");
 
             lengthBeforeLastGeneratedSeparator = sb.length();
-            Separators.FIELD.appendToGeneratedBuilder(sb, indent, "builder");
+            Separators.FIELD.appendToGeneratedBuilder(sb, indent);
 
             i = findEndSignal(groups, i, Signal.END_GROUP, groupToken.name());
         }
@@ -1667,7 +1667,7 @@ public class CSharpGenerator implements CodeGenerator
             }
 
             lengthBeforeLastGeneratedSeparator = sb.length();
-            Separators.FIELD.appendToGeneratedBuilder(sb, indent, "builder");
+            Separators.FIELD.appendToGeneratedBuilder(sb, indent);
 
             i += varDataToken.componentTokenCount();
         }
@@ -1712,7 +1712,7 @@ public class CSharpGenerator implements CodeGenerator
                         }
                         else
                         {
-                            Separators.BEGIN_ARRAY.appendToGeneratedBuilder(sb, indent, "builder");
+                            Separators.BEGIN_ARRAY.appendToGeneratedBuilder(sb, indent);
                             append(sb, indent, "for (int i = 0; i < " + fieldName + "Length; ++i)");
                             append(sb, indent, "{");
                             append(sb, indent, "    if (i > 0)");
@@ -1721,7 +1721,7 @@ public class CSharpGenerator implements CodeGenerator
                             append(sb, indent, "    }");
                             append(sb, indent, "    builder.Append(Get" + fieldName + "(i));");
                             append(sb, indent, "}");
-                            Separators.END_ARRAY.appendToGeneratedBuilder(sb, indent, "builder");
+                            Separators.END_ARRAY.appendToGeneratedBuilder(sb, indent);
                         }
                     }
                     else
@@ -1754,7 +1754,7 @@ public class CSharpGenerator implements CodeGenerator
         }
 
         final int lengthBeforeFieldSeparator = sb.length();
-        Separators.FIELD.appendToGeneratedBuilder(sb, indent, "builder");
+        Separators.FIELD.appendToGeneratedBuilder(sb, indent);
 
         return lengthBeforeFieldSeparator;
     }
@@ -1779,9 +1779,9 @@ public class CSharpGenerator implements CodeGenerator
         append(sb, INDENT, "{");
         append(sb, TWO_INDENT, "internal static void BuildString(this " + enumName + " val, StringBuilder builder)");
         append(sb, TWO_INDENT, "{");
-        Separators.BEGIN_SET.appendToGeneratedBuilder(sb, THREE_INDENT, "builder");
+        Separators.BEGIN_SET.appendToGeneratedBuilder(sb, THREE_INDENT);
         append(sb, THREE_INDENT, "builder.Append(val.ToString());");
-        Separators.END_SET.appendToGeneratedBuilder(sb, THREE_INDENT, "builder");
+        Separators.END_SET.appendToGeneratedBuilder(sb, THREE_INDENT);
         append(sb, TWO_INDENT, "}");
         append(sb, INDENT, "}");
         return sb;
@@ -1847,7 +1847,7 @@ public class CSharpGenerator implements CodeGenerator
         append(sb, TWO_INDENT, "        return;");
         append(sb, TWO_INDENT, "    }");
         sb.append('\n');
-        Separators.BEGIN_COMPOSITE.appendToGeneratedBuilder(sb, THREE_INDENT, "builder");
+        Separators.BEGIN_COMPOSITE.appendToGeneratedBuilder(sb, THREE_INDENT);
 
         int lengthBeforeLastGeneratedSeparator = -1;
 
@@ -1864,7 +1864,7 @@ public class CSharpGenerator implements CodeGenerator
             sb.setLength(lengthBeforeLastGeneratedSeparator);
         }
 
-        Separators.END_COMPOSITE.appendToGeneratedBuilder(sb, THREE_INDENT, "builder");
+        Separators.END_COMPOSITE.appendToGeneratedBuilder(sb, THREE_INDENT);
         sb.append('\n');
         append(sb, TWO_INDENT, "}");
 

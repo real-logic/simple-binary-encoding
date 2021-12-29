@@ -3331,7 +3331,7 @@ public class JavaGenerator implements CodeGenerator
         append(sb, INDENT, "        return builder;");
         append(sb, INDENT, "    }");
         sb.append('\n');
-        Separator.BEGIN_COMPOSITE.appendToGeneratedBuilder(sb, INDENT + INDENT, "builder");
+        Separator.BEGIN_COMPOSITE.appendToGeneratedBuilder(sb, INDENT + INDENT);
 
         int lengthBeforeLastGeneratedSeparator = -1;
 
@@ -3348,7 +3348,7 @@ public class JavaGenerator implements CodeGenerator
             sb.setLength(lengthBeforeLastGeneratedSeparator);
         }
 
-        Separator.END_COMPOSITE.appendToGeneratedBuilder(sb, INDENT + INDENT, "builder");
+        Separator.END_COMPOSITE.appendToGeneratedBuilder(sb, INDENT + INDENT);
         sb.append('\n');
         append(sb, INDENT, "    return builder;");
         append(sb, INDENT, "}");
@@ -3364,7 +3364,7 @@ public class JavaGenerator implements CodeGenerator
         sb.append('\n');
         append(sb, INDENT, "public StringBuilder appendTo(final StringBuilder builder)");
         append(sb, INDENT, "{");
-        Separator.BEGIN_SET.appendToGeneratedBuilder(sb, INDENT + INDENT, "builder");
+        Separator.BEGIN_SET.appendToGeneratedBuilder(sb, INDENT + INDENT);
         append(sb, INDENT, "    boolean atLeastOne = false;");
 
         for (final Token token : tokens)
@@ -3376,7 +3376,7 @@ public class JavaGenerator implements CodeGenerator
                 append(sb, INDENT, "    {");
                 append(sb, INDENT, "        if (atLeastOne)");
                 append(sb, INDENT, "        {");
-                Separator.ENTRY.appendToGeneratedBuilder(sb, INDENT + INDENT + INDENT + INDENT, "builder");
+                Separator.ENTRY.appendToGeneratedBuilder(sb, INDENT + INDENT + INDENT + INDENT);
                 append(sb, INDENT, "        }");
                 append(sb, INDENT, "        builder.append(\"" + choiceName + "\");");
                 append(sb, INDENT, "        atLeastOne = true;");
@@ -3384,7 +3384,7 @@ public class JavaGenerator implements CodeGenerator
             }
         }
 
-        Separator.END_SET.appendToGeneratedBuilder(sb, INDENT + INDENT, "builder");
+        Separator.END_SET.appendToGeneratedBuilder(sb, INDENT + INDENT);
         sb.append('\n');
         append(sb, INDENT, "    return builder;");
         append(sb, INDENT, "}");
@@ -3454,9 +3454,9 @@ public class JavaGenerator implements CodeGenerator
         append(sb, indent, "        return builder;");
         append(sb, indent, "    }");
         sb.append('\n');
-        Separator.BEGIN_COMPOSITE.appendToGeneratedBuilder(sb, indent + INDENT, "builder");
+        Separator.BEGIN_COMPOSITE.appendToGeneratedBuilder(sb, indent + INDENT);
         appendDecoderDisplay(sb, fields, groups, varData, indent + INDENT);
-        Separator.END_COMPOSITE.appendToGeneratedBuilder(sb, indent + INDENT, "builder");
+        Separator.END_COMPOSITE.appendToGeneratedBuilder(sb, indent + INDENT);
         sb.append('\n');
         append(sb, indent, "    return builder;");
         append(sb, indent, "}");
@@ -3507,14 +3507,14 @@ public class JavaGenerator implements CodeGenerator
             append(sb, indent, "    while (" + groupName + ".hasNext())");
             append(sb, indent, "    {");
             append(sb, indent, "        " + groupName + ".next().appendTo(builder);");
-            Separator.ENTRY.appendToGeneratedBuilder(sb, indent + INDENT + INDENT, "builder");
+            Separator.ENTRY.appendToGeneratedBuilder(sb, indent + INDENT + INDENT);
             append(sb, indent, "    }");
             append(sb, indent, "    builder.setLength(builder.length() - 1);");
             append(sb, indent, "}");
-            Separator.END_GROUP.appendToGeneratedBuilder(sb, indent, "builder");
+            Separator.END_GROUP.appendToGeneratedBuilder(sb, indent);
 
             lengthBeforeLastGeneratedSeparator = sb.length();
-            Separator.FIELD.appendToGeneratedBuilder(sb, indent, "builder");
+            Separator.FIELD.appendToGeneratedBuilder(sb, indent);
 
             i = findEndSignal(groups, i, Signal.END_GROUP, groupToken.name());
         }
@@ -3550,7 +3550,7 @@ public class JavaGenerator implements CodeGenerator
             }
 
             lengthBeforeLastGeneratedSeparator = sb.length();
-            Separator.FIELD.appendToGeneratedBuilder(sb, indent, "builder");
+            Separator.FIELD.appendToGeneratedBuilder(sb, indent);
 
             i += varDataToken.componentTokenCount();
         }
@@ -3586,17 +3586,17 @@ public class JavaGenerator implements CodeGenerator
                     }
                     else
                     {
-                        Separator.BEGIN_ARRAY.appendToGeneratedBuilder(sb, indent, "builder");
+                        Separator.BEGIN_ARRAY.appendToGeneratedBuilder(sb, indent);
                         append(sb, indent, "if (" + fieldName + "Length() > 0)");
                         append(sb, indent, "{");
                         append(sb, indent, "    for (int i = 0; i < " + fieldName + "Length(); i++)");
                         append(sb, indent, "    {");
                         append(sb, indent, "        builder.append(" + fieldName + "(i));");
-                        Separator.ENTRY.appendToGeneratedBuilder(sb, indent + INDENT + INDENT, "builder");
+                        Separator.ENTRY.appendToGeneratedBuilder(sb, indent + INDENT + INDENT);
                         append(sb, indent, "    }");
                         append(sb, indent, "    builder.setLength(builder.length() - 1);");
                         append(sb, indent, "}");
-                        Separator.END_ARRAY.appendToGeneratedBuilder(sb, indent, "builder");
+                        Separator.END_ARRAY.appendToGeneratedBuilder(sb, indent);
                     }
                 }
                 else
@@ -3631,7 +3631,7 @@ public class JavaGenerator implements CodeGenerator
         }
 
         final int lengthBeforeFieldSeparator = sb.length();
-        Separator.FIELD.appendToGeneratedBuilder(sb, indent, "builder");
+        Separator.FIELD.appendToGeneratedBuilder(sb, indent);
 
         return lengthBeforeFieldSeparator;
     }
