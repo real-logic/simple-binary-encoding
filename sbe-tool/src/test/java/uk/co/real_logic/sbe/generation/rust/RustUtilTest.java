@@ -39,22 +39,19 @@ public class RustUtilTest
     @Test
     public void nullParamToEightBitCharacterThrowsNPE()
     {
-        assertThrows(NullPointerException.class, () ->
-            RustUtil.eightBitCharacter(null));
+        assertThrows(NullPointerException.class, () -> RustUtil.eightBitCharacter(null));
     }
 
     @Test
     public void emptyParamToEightBitCharacterThrowsIAE()
     {
-        assertThrows(IllegalArgumentException.class, () ->
-            RustUtil.eightBitCharacter(""));
+        assertThrows(IllegalArgumentException.class, () -> RustUtil.eightBitCharacter(""));
     }
 
     @Test
     public void tooManyCharactersParamToEightBitCharacterThrowsIAE()
     {
-        assertThrows(IllegalArgumentException.class, () ->
-            RustUtil.eightBitCharacter("ABC"));
+        assertThrows(IllegalArgumentException.class, () -> RustUtil.eightBitCharacter("ABC"));
     }
 
     @Test

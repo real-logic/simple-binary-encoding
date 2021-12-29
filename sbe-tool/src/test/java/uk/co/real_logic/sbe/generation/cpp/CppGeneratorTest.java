@@ -23,8 +23,9 @@ import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
 import uk.co.real_logic.sbe.xml.ParserOptions;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 public class CppGeneratorTest
@@ -43,7 +44,7 @@ public class CppGeneratorTest
         generator.generate();
 
         final String source = outputManager.getSource("issue827.FlagsSet").toString();
-        assertFalse(source.contains("1u << "));
-        assertTrue(source.contains("UINT64_C(0x1) << "));
+        assertThat(source, not(containsString("1u << ")));
+        assertThat(source, containsString("UINT64_C(0x1) << "));
     }
 }

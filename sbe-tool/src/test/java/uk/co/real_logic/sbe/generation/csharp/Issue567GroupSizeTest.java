@@ -31,8 +31,9 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -86,6 +87,6 @@ public class Issue567GroupSizeTest
         generator.generate();
 
         final String source = outputManager.getSource("tests.Issue567").toString();
-        assertTrue(source.contains(EXPECTED_COUNT_CHECK));
+        assertThat(source, containsString(EXPECTED_COUNT_CHECK));
     }
 }
