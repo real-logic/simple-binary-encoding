@@ -180,6 +180,7 @@ subprojects {
     tasks.withType(JavaCompile) {
         options.encoding = 'UTF-8'
         options.deprecation = true
+        options.compilerArgs.addAll(['-Xlint:all', '-Werror']) // Enable all warnings and treat them as errors
     }
 
     javadoc {

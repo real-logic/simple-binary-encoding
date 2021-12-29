@@ -104,18 +104,12 @@ public class RustUtil
         if (bytes.length != 1)
         {
             throw new IllegalArgumentException(
-                format("String value %s did not fit into a single 8-bit character", asciiCharacter));
+                "String value `" + asciiCharacter + "` did not fit into a single 8-bit character");
         }
 
         return bytes[0];
     }
 
-    /**
-     * Format a struct name for the generated code.
-     *
-     * @param structName to be formatted.
-     * @return the formatted struct name.
-     */
     static String formatStructName(final String structName)
     {
         return Generators.toUpperFirstChar(structName);
@@ -300,7 +294,7 @@ public class RustUtil
         return indent(appendable, level).append(format(f, args));
     }
 
-    private enum ReservedKeyword
+    enum ReservedKeyword
     {
         Abstract, AlignOf, As, Async, Become, Box, Break, Const, Continue,
         Crate, Do, Else, Enum, Extern, False, Final, Fn, For, If, Impl, In,
@@ -313,13 +307,13 @@ public class RustUtil
 
         static
         {
-            Arrays.stream(ReservedKeyword.values())
-                .map(java.lang.Enum::name)
-                .map(String::toLowerCase)
-                .forEach(LOWER_CASE_NAMES::add);
+            for (final ReservedKeyword value : ReservedKeyword.values())
+            {
+                LOWER_CASE_NAMES.add(value.name());
+            }
         }
 
-        private static boolean anyMatch(final String v)
+        static boolean anyMatch(final String v)
         {
             return LOWER_CASE_NAMES.contains(v.toLowerCase());
         }
