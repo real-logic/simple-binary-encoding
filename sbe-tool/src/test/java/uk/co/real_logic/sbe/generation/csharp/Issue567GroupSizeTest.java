@@ -16,7 +16,6 @@
 package uk.co.real_logic.sbe.generation.csharp;
 
 import org.agrona.generation.StringWriterOutputManager;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.xml.sax.InputSource;
 import uk.co.real_logic.sbe.Tests;
@@ -24,6 +23,7 @@ import uk.co.real_logic.sbe.ir.Ir;
 import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
 import uk.co.real_logic.sbe.xml.ParserOptions;
+import uk.co.real_logic.sbe.xml.XmlSchemaParser;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,7 +35,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 public class Issue567GroupSizeTest
 {
@@ -50,12 +49,6 @@ public class Issue567GroupSizeTest
 
     private final PrintStream mockErr = mock(PrintStream.class);
 
-    @AfterEach
-    public void after()
-    {
-        verify(mockErr).println(ERR_MSG);
-    }
-
     @Test
     public void shouldThrowWhenUsingATypeThatIsNotConstrainedToFitInAnIntAsTheGroupSize() throws IOException
     {
@@ -66,7 +59,8 @@ public class Issue567GroupSizeTest
         final InputStream in = Tests.getLocalResource("issue567-invalid.xml");
         final InputSource is = new InputSource(new InputStreamReader(in, StandardCharsets.UTF_8));
 
-        assertThrows(IllegalArgumentException.class, () -> parse(is, options));
+        assertThrows(IllegalArgumentException.class, () -> XmlSchemaParser.parse(is, options));
+        verify(mockErr).println(ERR_MSG);
     }
 
     @Test
@@ -79,7 +73,9 @@ public class Issue567GroupSizeTest
         final InputStream in = Tests.getLocalResource("issue567-valid.xml");
         final InputSource is = new InputSource(new InputStreamReader(in, StandardCharsets.UTF_8));
 
-        final MessageSchema schema = parse(is, options);
+        final MessageSchema schema = XmlSchemaParser.parse(is, options);
+        verify(mockErr).println(ERR_MSG);
+
         final IrGenerator irg = new IrGenerator();
         final Ir ir = irg.generate(schema);
 
