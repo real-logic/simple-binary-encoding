@@ -6,7 +6,7 @@ import org.agrona.DirectBuffer;
 
 
 /**
- * Frame Header for start of encoding IR
+ * Frame Header for start of encoding IR.
  */
 @SuppressWarnings("all")
 public final class FrameCodecDecoder

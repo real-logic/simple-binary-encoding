@@ -5,7 +5,7 @@ import org.agrona.MutableDirectBuffer;
 
 
 /**
- * Message identifiers and length of message root
+ * Message identifiers and length of message root.
  */
 @SuppressWarnings("all")
 public final class MessageHeaderEncoder

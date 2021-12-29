@@ -3,14 +3,26 @@ package uk.co.real_logic.sbe.ir.generated;
 
 
 /**
- * Field presence declaration
+ * Field presence declaration.
  */
 public enum PresenceCodec
 {
+
+    /**
+     * A field is required.
+     */
     SBE_REQUIRED((short)0),
 
+
+    /**
+     * A field is optional.
+     */
     SBE_OPTIONAL((short)1),
 
+
+    /**
+     * A field is a constant value.
+     */
     SBE_CONSTANT((short)2),
 
     /**

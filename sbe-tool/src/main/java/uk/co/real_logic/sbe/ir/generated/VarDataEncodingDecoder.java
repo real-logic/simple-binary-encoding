@@ -5,7 +5,7 @@ import org.agrona.DirectBuffer;
 
 
 /**
- * Header for var data fields
+ * Header for var data fields.
  */
 @SuppressWarnings("all")
 public final class VarDataEncodingDecoder

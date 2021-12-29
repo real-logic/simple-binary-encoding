@@ -3,12 +3,20 @@ package uk.co.real_logic.sbe.ir.generated;
 
 
 /**
- * Number encoding byte order
+ * Number encoding byte order.
  */
 public enum ByteOrderCodec
 {
+
+    /**
+     * Little Endian byte encoding.
+     */
     SBE_LITTLE_ENDIAN((short)0),
 
+
+    /**
+     * Big Endian byte encoding.
+     */
     SBE_BIG_ENDIAN((short)1),
 
     /**

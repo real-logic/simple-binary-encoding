@@ -6,7 +6,7 @@ import org.agrona.DirectBuffer;
 
 
 /**
- * Codec for an IR Token
+ * Codec for an IR Token.
  */
 @SuppressWarnings("all")
 public final class TokenCodecDecoder

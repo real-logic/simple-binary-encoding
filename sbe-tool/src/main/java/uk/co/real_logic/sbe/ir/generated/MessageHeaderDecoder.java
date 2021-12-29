@@ -5,7 +5,7 @@ import org.agrona.DirectBuffer;
 
 
 /**
- * Message identifiers and length of message root
+ * Message identifiers and length of message root.
  */
 @SuppressWarnings("all")
 public final class MessageHeaderDecoder

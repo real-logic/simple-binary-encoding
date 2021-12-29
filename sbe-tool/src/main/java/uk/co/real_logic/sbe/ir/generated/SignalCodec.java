@@ -3,42 +3,110 @@ package uk.co.real_logic.sbe.ir.generated;
 
 
 /**
- * Token signal type in IR
+ * Token signal type in IR.
  */
 public enum SignalCodec
 {
+
+    /**
+     * Signal the beginning of a message.
+     */
     BEGIN_MESSAGE((short)1),
 
+
+    /**
+     * Signal the end of a message.
+     */
     END_MESSAGE((short)2),
 
+
+    /**
+     * Signal the beginning of a composite.
+     */
     BEGIN_COMPOSITE((short)3),
 
+
+    /**
+     * Signal the end of a composite.
+     */
     END_COMPOSITE((short)4),
 
+
+    /**
+     * Signal the beginning of a field.
+     */
     BEGIN_FIELD((short)5),
 
+
+    /**
+     * Signal end beginning of a field.
+     */
     END_FIELD((short)6),
 
+
+    /**
+     * Signal the beginning of a group.
+     */
     BEGIN_GROUP((short)7),
 
+
+    /**
+     * Signal the end of a group.
+     */
     END_GROUP((short)8),
 
+
+    /**
+     * Signal the beginning of a enum.
+     */
     BEGIN_ENUM((short)9),
 
+
+    /**
+     * Signal a value of an enum.
+     */
     VALID_VALUE((short)10),
 
+
+    /**
+     * Signal the end of a enum.
+     */
     END_ENUM((short)11),
 
+
+    /**
+     * Signal the beginning of a set.
+     */
     BEGIN_SET((short)12),
 
+
+    /**
+     * Signal the a choice in a set.
+     */
     CHOICE((short)13),
 
+
+    /**
+     * Signal the end of a set.
+     */
     END_SET((short)14),
 
+
+    /**
+     * Signal the beginning of variable data.
+     */
     BEGIN_VAR_DATA((short)15),
 
+
+    /**
+     * Signal the end of variable data.
+     */
     END_VAR_DATA((short)16),
 
+
+    /**
+     * Signal the encoding of a field.
+     */
     ENCODING((short)17),
 
     /**
