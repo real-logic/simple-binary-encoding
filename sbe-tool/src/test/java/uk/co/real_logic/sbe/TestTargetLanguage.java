@@ -23,9 +23,9 @@ import static org.mockito.Mockito.mock;
 
 public class TestTargetLanguage implements TargetCodeGenerator
 {
-    public static final CodeGenerator SINGLETON = mock(CodeGenerator.class);
-    public static Ir ir = null;
-    public static String outputDir = "";
+    static final CodeGenerator SINGLETON = mock(CodeGenerator.class);
+    static Ir ir = null;
+    static String outputDir = "";
 
     public CodeGenerator newInstance(final Ir ir, final String outputDir)
     {

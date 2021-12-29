@@ -46,9 +46,9 @@ import static uk.co.real_logic.sbe.ir.Signal.BEGIN_SET;
  */
 public class RustGenerator implements CodeGenerator
 {
-    public static final String WRITE_BUF_TYPE = "WriteBuf";
-    public static final String READ_BUF_TYPE = "ReadBuf";
-    public static final String BUF_LIFETIME = "'a";
+    static final String WRITE_BUF_TYPE = "WriteBuf";
+    static final String READ_BUF_TYPE = "ReadBuf";
+    static final String BUF_LIFETIME = "'a";
 
     enum CodecType
     {
