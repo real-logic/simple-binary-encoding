@@ -136,7 +136,9 @@ public class CharacterEncodingTest
         verifyCharacterEncodingMethods(encoderSources);
         verifyCharacterEncodingMethods(decoderSources);
         assertThat(encoderSources, not(containsString("java.io.UnsupportedEncodingException")));
+        assertThat(encoderSources, not(containsString("new byte[0]")));
         assertThat(decoderSources, not(containsString("java.io.UnsupportedEncodingException")));
+        assertThat(decoderSources, not(containsString("new byte[0]")));
     }
 
     private void verifyCharacterEncodingMethods(final String code)

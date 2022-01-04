@@ -2275,7 +2275,8 @@ public class JavaGenerator implements CodeGenerator
                 indent + "    public %s %s(final String src)\n" +
                 indent + "    {\n" +
                 indent + "        final int length = %d;\n" +
-                indent + "        final byte[] bytes = null == src ? new byte[0] : src.getBytes(%s);\n" +
+                indent + "        final byte[] bytes = (null == src || src.isEmpty()) ?" +
+                " org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : src.getBytes(%s);\n" +
                 indent + "        if (bytes.length > length)\n" +
                 indent + "        {\n" +
                 indent + "            throw new IndexOutOfBoundsException(" +
