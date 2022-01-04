@@ -2274,15 +2274,10 @@ public class JavaGenerator implements CodeGenerator
                 indent + "            throw new IndexOutOfBoundsException(" +
                 "\"CharSequence too large for copy: byte length=\" + srcLength);\n" +
                 indent + "        }\n\n" +
-                indent + "        for (int i = 0; i < srcLength; ++i)\n" +
+                indent + "        buffer.putStringWithoutLengthAscii(offset + %4$d, src);\n\n" +
+                indent + "        for (int start = srcLength; start < length; ++start)\n" +
                 indent + "        {\n" +
-                indent + "            final char charValue = src.charAt(i);\n" +
-                indent + "            final byte byteValue = charValue > 127 ? (byte)'?' : (byte)charValue;\n" +
-                indent + "            buffer.putByte(offset + %4$d + i, byteValue);\n" +
-                indent + "        }\n\n" +
-                indent + "        for (int i = srcLength; i < length; ++i)\n" +
-                indent + "        {\n" +
-                indent + "            buffer.putByte(offset + %4$d + i, (byte)0);\n" +
+                indent + "            buffer.putByte(offset + %4$d + start, (byte)0);\n" +
                 indent + "        }\n\n" +
                 indent + "        return this;\n" +
                 indent + "    }\n",
