@@ -83,6 +83,9 @@ public class CharacterEncodingTest
             .append("            <type name=\"length\" primitiveType=\"uint32\" maxValue=\"1073741824\"/>\n")
             .append("            <type name=\"varData\" primitiveType=\"uint8\" length=\"0\"")
             .append(" characterEncoding=\"custom-encoding\"/>\n        </composite>\n");
+        buffer.append("        <type name=\"type_fixed_alias\" primitiveType=\"char\" semanticType=\"String\"")
+            .append(" length=\"5\"")
+            .append(" characterEncoding=\"lAtIn1\"/>\n");
 
         buffer.append("    </types>\n")
             .append("    <sbe:message name=\"EncodingTest\" id=\"1\" description=\"Multiple encodings\">\n");
@@ -94,6 +97,7 @@ public class CharacterEncodingTest
             i++;
         }
         buffer.append("<field name=\"f_custom\" id=\"").append(i++).append("\" type=\"type_fixed_custom\"/>");
+        buffer.append("<field name=\"f_alias\" id=\"").append(i++).append("\" type=\"type_fixed_alias\"/>");
 
         for (int j = 0, size = STD_CHARSETS.size(); j < size; j++)
         {
@@ -126,7 +130,6 @@ public class CharacterEncodingTest
         final Map<String, CharSequence> sources = outputManager.getSources();
         final String encoderSources = sources.get("code.generation.test.EncodingTestEncoder").toString();
         final String decoderSources = sources.get("code.generation.test.EncodingTestDecoder").toString();
-        System.out.println(decoderSources);
 
         verifyCharacterEncodingMethods(encoderSources);
         verifyCharacterEncodingMethods(decoderSources);
@@ -142,7 +145,13 @@ public class CharacterEncodingTest
             }
         }
         assertThat(encoderSources, containsString("getBytes(java.nio.charset.Charset.forName(\"CUSTOM-ENCODING\"))"));
-
+        final int encodeFromStringStartIndex = encoderSources.indexOf("f_alias(final String src)");
+        final int encodeFromStringEndIndex = encoderSources.indexOf("return this", encodeFromStringStartIndex);
+        assertThat(
+            encoderSources.substring(encodeFromStringStartIndex, encodeFromStringEndIndex),
+            containsString("final byte[] bytes = (null == src || src.isEmpty()) ?" +
+            " org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY :" +
+            " src.getBytes(java.nio.charset.StandardCharsets.ISO_8859_1);"));
         assertThat(decoderSources, not(containsString("java.io.UnsupportedEncodingException")));
         assertThat(decoderSources, not(containsString("new byte[0]")));
         for (final String charset : STD_CHARSETS.values())
@@ -161,6 +170,7 @@ public class CharacterEncodingTest
                 "f_" + (i++), "java.nio.charset.StandardCharsets." + charset + ".name()", code);
         }
         assertContainsCharacterEncodingMethod("f_custom", "\"CUSTOM-ENCODING\"", code);
+        assertContainsCharacterEncodingMethod("f_alias", "java.nio.charset.StandardCharsets.ISO_8859_1.name()", code);
     }
 
     private static void assertContainsCharacterEncodingMethod(
