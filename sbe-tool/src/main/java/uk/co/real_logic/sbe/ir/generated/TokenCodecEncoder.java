@@ -567,7 +567,7 @@ public final class TokenCodecEncoder
 
     public static String nameCharacterEncoding()
     {
-        return "UTF-8";
+        return java.nio.charset.StandardCharsets.UTF_8.name();
     }
 
     public static String nameMetaAttribute(final MetaAttribute metaAttribute)
@@ -651,7 +651,7 @@ public final class TokenCodecEncoder
 
     public static String constValueCharacterEncoding()
     {
-        return "UTF-8";
+        return java.nio.charset.StandardCharsets.UTF_8.name();
     }
 
     public static String constValueMetaAttribute(final MetaAttribute metaAttribute)
@@ -735,7 +735,7 @@ public final class TokenCodecEncoder
 
     public static String minValueCharacterEncoding()
     {
-        return "UTF-8";
+        return java.nio.charset.StandardCharsets.UTF_8.name();
     }
 
     public static String minValueMetaAttribute(final MetaAttribute metaAttribute)
@@ -819,7 +819,7 @@ public final class TokenCodecEncoder
 
     public static String maxValueCharacterEncoding()
     {
-        return "UTF-8";
+        return java.nio.charset.StandardCharsets.UTF_8.name();
     }
 
     public static String maxValueMetaAttribute(final MetaAttribute metaAttribute)
@@ -903,7 +903,7 @@ public final class TokenCodecEncoder
 
     public static String nullValueCharacterEncoding()
     {
-        return "UTF-8";
+        return java.nio.charset.StandardCharsets.UTF_8.name();
     }
 
     public static String nullValueMetaAttribute(final MetaAttribute metaAttribute)
@@ -987,7 +987,7 @@ public final class TokenCodecEncoder
 
     public static String characterEncodingCharacterEncoding()
     {
-        return "UTF-8";
+        return java.nio.charset.StandardCharsets.UTF_8.name();
     }
 
     public static String characterEncodingMetaAttribute(final MetaAttribute metaAttribute)
@@ -1071,7 +1071,7 @@ public final class TokenCodecEncoder
 
     public static String epochCharacterEncoding()
     {
-        return "UTF-8";
+        return java.nio.charset.StandardCharsets.UTF_8.name();
     }
 
     public static String epochMetaAttribute(final MetaAttribute metaAttribute)
@@ -1155,7 +1155,7 @@ public final class TokenCodecEncoder
 
     public static String timeUnitCharacterEncoding()
     {
-        return "UTF-8";
+        return java.nio.charset.StandardCharsets.UTF_8.name();
     }
 
     public static String timeUnitMetaAttribute(final MetaAttribute metaAttribute)
@@ -1239,7 +1239,7 @@ public final class TokenCodecEncoder
 
     public static String semanticTypeCharacterEncoding()
     {
-        return "UTF-8";
+        return java.nio.charset.StandardCharsets.UTF_8.name();
     }
 
     public static String semanticTypeMetaAttribute(final MetaAttribute metaAttribute)
@@ -1323,7 +1323,7 @@ public final class TokenCodecEncoder
 
     public static String descriptionCharacterEncoding()
     {
-        return "UTF-8";
+        return java.nio.charset.StandardCharsets.UTF_8.name();
     }
 
     public static String descriptionMetaAttribute(final MetaAttribute metaAttribute)
@@ -1407,7 +1407,7 @@ public final class TokenCodecEncoder
 
     public static String referencedNameCharacterEncoding()
     {
-        return "UTF-8";
+        return java.nio.charset.StandardCharsets.UTF_8.name();
     }
 
     public static String referencedNameMetaAttribute(final MetaAttribute metaAttribute)

@@ -939,7 +939,7 @@ public class JavaGenerator implements CodeGenerator
                 generateGet(lengthType, "limit", byteOrderStr),
                 characterEncoding);
 
-            if (characterEncoding.contains("ASCII"))
+            if (isAsciiEncoding(characterEncoding))
             {
                 new Formatter(sb).format("\n" +
                     indent + "    public int get%1$s(final Appendable appendable)\n" +
@@ -1050,7 +1050,7 @@ public class JavaGenerator implements CodeGenerator
     {
         final PrimitiveType lengthPutType = PrimitiveType.UINT32 == lengthType ? PrimitiveType.INT32 : lengthType;
 
-        if (characterEncoding.contains("ASCII"))
+        if (isAsciiEncoding(characterEncoding))
         {
             new Formatter(sb).format("\n" +
                 indent + "    public %1$s %2$s(final String value)\n" +
@@ -2042,7 +2042,7 @@ public class JavaGenerator implements CodeGenerator
                 fieldLength,
                 charset(encoding.characterEncoding()));
 
-            if (encoding.characterEncoding().contains("ASCII"))
+            if (isAsciiEncoding(encoding.characterEncoding()))
             {
                 new Formatter(sb).format("\n" +
                     indent + "    public int get%1$s(final Appendable value)\n" +
@@ -2240,7 +2240,7 @@ public class JavaGenerator implements CodeGenerator
             fieldLength,
             offset);
 
-        if (encoding.characterEncoding().contains("ASCII"))
+        if (isAsciiEncoding(encoding.characterEncoding()))
         {
             new Formatter(sb).format("\n" +
                 indent + "    public %1$s %2$s(final String src)\n" +
@@ -2387,7 +2387,7 @@ public class JavaGenerator implements CodeGenerator
             sb.append("\n")
                 .append(indent).append("    public static String ").append(propName).append("CharacterEncoding()\n")
                 .append(indent).append("    {\n")
-                .append(indent).append("        return \"").append(characterEncoding).append("\";\n")
+                .append(indent).append("        return ").append(charsetName(characterEncoding)).append(";\n")
                 .append(indent).append("    }\n");
         }
     }
@@ -3537,7 +3537,7 @@ public class JavaGenerator implements CodeGenerator
             }
             else
             {
-                if (characterEncoding.contains("ASCII") || characterEncoding.contains("ascii"))
+                if (isAsciiEncoding(characterEncoding))
                 {
                     append(sb, indent, "builder.append('\\'');");
                     append(sb, indent, formatGetterName(varDataToken.name()) + "(builder);");

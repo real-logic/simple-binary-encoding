@@ -299,7 +299,7 @@ public final class FrameCodecDecoder
 
     public static String packageNameCharacterEncoding()
     {
-        return "UTF-8";
+        return java.nio.charset.StandardCharsets.UTF_8.name();
     }
 
     public static String packageNameMetaAttribute(final MetaAttribute metaAttribute)
@@ -407,7 +407,7 @@ public final class FrameCodecDecoder
 
     public static String namespaceNameCharacterEncoding()
     {
-        return "UTF-8";
+        return java.nio.charset.StandardCharsets.UTF_8.name();
     }
 
     public static String namespaceNameMetaAttribute(final MetaAttribute metaAttribute)
@@ -515,7 +515,7 @@ public final class FrameCodecDecoder
 
     public static String semanticVersionCharacterEncoding()
     {
-        return "UTF-8";
+        return java.nio.charset.StandardCharsets.UTF_8.name();
     }
 
     public static String semanticVersionMetaAttribute(final MetaAttribute metaAttribute)
