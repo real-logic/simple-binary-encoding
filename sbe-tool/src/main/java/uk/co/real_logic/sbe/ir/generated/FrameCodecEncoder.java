@@ -319,15 +319,7 @@ public final class FrameCodecEncoder
 
     public FrameCodecEncoder packageName(final String value)
     {
-        final byte[] bytes;
-        try
-        {
-            bytes = null == value || value.isEmpty() ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes("UTF-8");
-        }
-        catch (final java.io.UnsupportedEncodingException ex)
-        {
-            throw new RuntimeException(ex);
-        }
+        final byte[] bytes = (null == value || value.isEmpty()) ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes(java.nio.charset.StandardCharsets.UTF_8);
 
         final int length = bytes.length;
         if (length > 65534)
@@ -403,15 +395,7 @@ public final class FrameCodecEncoder
 
     public FrameCodecEncoder namespaceName(final String value)
     {
-        final byte[] bytes;
-        try
-        {
-            bytes = null == value || value.isEmpty() ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes("UTF-8");
-        }
-        catch (final java.io.UnsupportedEncodingException ex)
-        {
-            throw new RuntimeException(ex);
-        }
+        final byte[] bytes = (null == value || value.isEmpty()) ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes(java.nio.charset.StandardCharsets.UTF_8);
 
         final int length = bytes.length;
         if (length > 65534)
@@ -487,15 +471,7 @@ public final class FrameCodecEncoder
 
     public FrameCodecEncoder semanticVersion(final String value)
     {
-        final byte[] bytes;
-        try
-        {
-            bytes = null == value || value.isEmpty() ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes("UTF-8");
-        }
-        catch (final java.io.UnsupportedEncodingException ex)
-        {
-            throw new RuntimeException(ex);
-        }
+        final byte[] bytes = (null == value || value.isEmpty()) ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes(java.nio.charset.StandardCharsets.UTF_8);
 
         final int length = bytes.length;
         if (length > 65534)

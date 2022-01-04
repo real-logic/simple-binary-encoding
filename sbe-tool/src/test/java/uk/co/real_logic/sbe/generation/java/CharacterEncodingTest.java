@@ -30,6 +30,7 @@ import java.util.Map;
 
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.StringContains.containsString;
 import static uk.co.real_logic.sbe.generation.java.JavaUtil.STD_CHARSETS;
@@ -131,8 +132,11 @@ public class CharacterEncodingTest
         final Map<String, CharSequence> sources = outputManager.getSources();
         final String encoderSources = sources.get("code.generation.test.EncodingTestEncoder").toString();
         final String decoderSources = sources.get("code.generation.test.EncodingTestDecoder").toString();
+
         verifyCharacterEncodingMethods(encoderSources);
         verifyCharacterEncodingMethods(decoderSources);
+        assertThat(encoderSources, not(containsString("java.io.UnsupportedEncodingException")));
+        assertThat(decoderSources, not(containsString("java.io.UnsupportedEncodingException")));
     }
 
     private void verifyCharacterEncodingMethods(final String code)

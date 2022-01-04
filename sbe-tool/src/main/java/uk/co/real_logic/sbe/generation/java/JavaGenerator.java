@@ -921,23 +921,14 @@ public class JavaGenerator implements CodeGenerator
                 indent + "        }\n\n" +
                 indent + "        final byte[] tmp = new byte[dataLength];\n" +
                 indent + "        buffer.getBytes(limit + headerLength, tmp, 0, dataLength);\n\n" +
-                indent + "        final String value;\n" +
-                indent + "        try\n" +
-                indent + "        {\n" +
-                indent + "            value = new String(tmp, \"%6$s\");\n" +
-                indent + "        }\n" +
-                indent + "        catch (final java.io.UnsupportedEncodingException ex)\n" +
-                indent + "        {\n" +
-                indent + "            throw new RuntimeException(ex);\n" +
-                indent + "        }\n\n" +
-                indent + "        return value;\n" +
+                indent + "        return new String(tmp, %6$s);\n" +
                 indent + "    }\n",
                 formatPropertyName(propertyName),
                 generateStringNotPresentCondition(token.version(), indent),
                 sizeOfLengthField,
                 PrimitiveType.UINT32 == lengthType ? "(int)" : "",
                 generateGet(lengthType, "limit", byteOrderStr),
-                characterEncoding);
+                charset(characterEncoding));
 
             if (isAsciiEncoding(characterEncoding))
             {
@@ -1099,16 +1090,8 @@ public class JavaGenerator implements CodeGenerator
             new Formatter(sb).format("\n" +
                 indent + "    public %1$s %2$s(final String value)\n" +
                 indent + "    {\n" +
-                indent + "        final byte[] bytes;\n" +
-                indent + "        try\n" +
-                indent + "        {\n" +
-                indent + "            bytes = null == value || value.isEmpty() ?" +
-                " org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes(\"%3$s\");\n" +
-                indent + "        }\n" +
-                indent + "        catch (final java.io.UnsupportedEncodingException ex)\n" +
-                indent + "        {\n" +
-                indent + "            throw new RuntimeException(ex);\n" +
-                indent + "        }\n\n" +
+                indent + "        final byte[] bytes = (null == value || value.isEmpty()) ?" +
+                " org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes(%3$s);\n\n" +
                 indent + "        final int length = bytes.length;\n" +
                 indent + "        if (length > %4$d)\n" +
                 indent + "        {\n" +
@@ -1123,7 +1106,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "    }\n",
                 className,
                 formatPropertyName(propertyName),
-                characterEncoding,
+                charset(characterEncoding),
                 maxLengthValue,
                 sizeOfLengthField,
                 generatePut(lengthPutType, "limit", "length", byteOrderStr));
