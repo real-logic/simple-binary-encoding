@@ -25,15 +25,13 @@ import uk.co.real_logic.sbe.xml.MessageSchema;
 import uk.co.real_logic.sbe.xml.ParserOptions;
 
 import java.io.ByteArrayInputStream;
-import java.util.HashSet;
 import java.util.Map;
 
-import static java.nio.charset.StandardCharsets.US_ASCII;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.StringContains.containsString;
-import static uk.co.real_logic.sbe.generation.java.JavaUtil.STD_CHARSETS;
+import static uk.co.real_logic.sbe.generation.java.JavaUtil.*;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 public class CharacterEncodingTest
@@ -59,10 +57,6 @@ public class CharacterEncodingTest
             .append("            <type name=\"schemaId\" primitiveType=\"uint16\"/>\n")
             .append("            <type name=\"version\" primitiveType=\"uint16\"/>\n")
             .append("        </composite>\n");
-
-        final HashSet<String> asciiCharsetNames = new HashSet<>();
-        asciiCharsetNames.add(US_ASCII.name());
-        asciiCharsetNames.addAll(US_ASCII.aliases());
 
         int i = 0;
         for (final String alias : STD_CHARSETS.keySet())
@@ -132,13 +126,30 @@ public class CharacterEncodingTest
         final Map<String, CharSequence> sources = outputManager.getSources();
         final String encoderSources = sources.get("code.generation.test.EncodingTestEncoder").toString();
         final String decoderSources = sources.get("code.generation.test.EncodingTestDecoder").toString();
+        System.out.println(decoderSources);
 
         verifyCharacterEncodingMethods(encoderSources);
         verifyCharacterEncodingMethods(decoderSources);
+
         assertThat(encoderSources, not(containsString("java.io.UnsupportedEncodingException")));
         assertThat(encoderSources, not(containsString("new byte[0]")));
+        for (final String charset : STD_CHARSETS.values())
+        {
+            if (!"US_ASCII".equals(charset))
+            {
+                assertThat(
+                    encoderSources, containsString("getBytes(java.nio.charset.StandardCharsets." + charset + ")"));
+            }
+        }
+        assertThat(encoderSources, containsString("getBytes(java.nio.charset.Charset.forName(\"CUSTOM-ENCODING\"))"));
+
         assertThat(decoderSources, not(containsString("java.io.UnsupportedEncodingException")));
         assertThat(decoderSources, not(containsString("new byte[0]")));
+        for (final String charset : STD_CHARSETS.values())
+        {
+            assertThat(decoderSources, containsString("end, java.nio.charset.StandardCharsets." + charset + ")"));
+        }
+        assertThat(decoderSources, containsString("end, java.nio.charset.Charset.forName(\"CUSTOM-ENCODING\"))"));
     }
 
     private void verifyCharacterEncodingMethods(final String code)
