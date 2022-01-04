@@ -220,7 +220,8 @@ public class JavaUtil
         }
         else
         {
-            return "java.nio.charset.Charset.forName(\"" + encoding + "\")";
+            final String canonicalName = Charset.isSupported(encoding) ? Charset.forName(encoding).name() : encoding;
+            return "java.nio.charset.Charset.forName(\"" + canonicalName + "\")";
         }
     }
 
@@ -239,7 +240,7 @@ public class JavaUtil
         }
         else
         {
-            return "\"" + encoding + "\"";
+            return "\"" + (Charset.isSupported(encoding) ? Charset.forName(encoding).name() : encoding) + "\"";
         }
     }
 

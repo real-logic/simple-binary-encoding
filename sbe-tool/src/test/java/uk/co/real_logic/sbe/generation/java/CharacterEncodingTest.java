@@ -28,6 +28,7 @@ import java.io.ByteArrayInputStream;
 import java.util.Map;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.StringContains.containsString;
@@ -83,9 +84,12 @@ public class CharacterEncodingTest
             .append("            <type name=\"length\" primitiveType=\"uint32\" maxValue=\"1073741824\"/>\n")
             .append("            <type name=\"varData\" primitiveType=\"uint8\" length=\"0\"")
             .append(" characterEncoding=\"custom-encoding\"/>\n        </composite>\n");
-        buffer.append("        <type name=\"type_fixed_alias\" primitiveType=\"char\" semanticType=\"String\"")
+        buffer.append("        <type name=\"type_std_alias\" primitiveType=\"char\" semanticType=\"String\"")
             .append(" length=\"5\"")
             .append(" characterEncoding=\"lAtIn1\"/>\n");
+        buffer.append("        <type name=\"type_non_std_alias\" primitiveType=\"char\" semanticType=\"String\"")
+            .append(" length=\"5\"")
+            .append(" characterEncoding=\"cp912\"/>\n");
 
         buffer.append("    </types>\n")
             .append("    <sbe:message name=\"EncodingTest\" id=\"1\" description=\"Multiple encodings\">\n");
@@ -97,7 +101,8 @@ public class CharacterEncodingTest
             i++;
         }
         buffer.append("<field name=\"f_custom\" id=\"").append(i++).append("\" type=\"type_fixed_custom\"/>");
-        buffer.append("<field name=\"f_alias\" id=\"").append(i++).append("\" type=\"type_fixed_alias\"/>");
+        buffer.append("<field name=\"f_std_alias\" id=\"").append(i++).append("\" type=\"type_std_alias\"/>");
+        buffer.append("<field name=\"f_non_std_alias\" id=\"").append(i++).append("\" type=\"type_non_std_alias\"/>");
 
         for (int j = 0, size = STD_CHARSETS.size(); j < size; j++)
         {
@@ -145,7 +150,9 @@ public class CharacterEncodingTest
             }
         }
         assertThat(encoderSources, containsString("getBytes(java.nio.charset.Charset.forName(\"CUSTOM-ENCODING\"))"));
-        final int encodeFromStringStartIndex = encoderSources.indexOf("f_alias(final String src)");
+        assertThat(encoderSources, containsString("getBytes(java.nio.charset.Charset.forName(\"ISO-8859-2\"))"));
+        assertThat(encoderSources, allOf(not(containsString("\"cp912\"")), not(containsString("\"CP912\""))));
+        final int encodeFromStringStartIndex = encoderSources.indexOf("f_std_alias(final String src)");
         final int encodeFromStringEndIndex = encoderSources.indexOf("return this", encodeFromStringStartIndex);
         assertThat(
             encoderSources.substring(encodeFromStringStartIndex, encodeFromStringEndIndex),
@@ -159,6 +166,8 @@ public class CharacterEncodingTest
             assertThat(decoderSources, containsString("end, java.nio.charset.StandardCharsets." + charset + ")"));
         }
         assertThat(decoderSources, containsString("end, java.nio.charset.Charset.forName(\"CUSTOM-ENCODING\"))"));
+        assertThat(decoderSources, containsString("end, java.nio.charset.Charset.forName(\"ISO-8859-2\"))"));
+        assertThat(decoderSources, allOf(not(containsString("\"cp912\"")), not(containsString("\"CP912\""))));
     }
 
     private void verifyCharacterEncodingMethods(final String code)
@@ -170,7 +179,9 @@ public class CharacterEncodingTest
                 "f_" + (i++), "java.nio.charset.StandardCharsets." + charset + ".name()", code);
         }
         assertContainsCharacterEncodingMethod("f_custom", "\"CUSTOM-ENCODING\"", code);
-        assertContainsCharacterEncodingMethod("f_alias", "java.nio.charset.StandardCharsets.ISO_8859_1.name()", code);
+        assertContainsCharacterEncodingMethod(
+            "f_std_alias", "java.nio.charset.StandardCharsets.ISO_8859_1.name()", code);
+        assertContainsCharacterEncodingMethod("f_non_std_alias", "\"ISO-8859-2\"", code);
     }
 
     private static void assertContainsCharacterEncodingMethod(
