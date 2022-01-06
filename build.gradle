@@ -21,7 +21,7 @@ import java.security.MessageDigest
 plugins {
     id 'java-library'
     id 'com.github.johnrengelman.shadow' version '7.1.2' apply false
-    id "com.github.ben-manes.versions" version "0.40.0"
+    id "com.github.ben-manes.versions" version "0.41.0"
 }
 
 defaultTasks 'clean', 'build'
