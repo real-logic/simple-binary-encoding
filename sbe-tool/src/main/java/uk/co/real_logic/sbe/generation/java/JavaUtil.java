@@ -28,8 +28,8 @@ import java.lang.reflect.Modifier;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * Utilities for mapping between {@link uk.co.real_logic.sbe.ir.Ir} and the Java language.
@@ -95,7 +95,7 @@ public class JavaUtil
     /**
      * Indexes known charset aliases to the name of the instance in {@link StandardCharsets}.
      */
-    static final TreeMap<String, String> STD_CHARSETS = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+    static final HashMap<String, String> STD_CHARSETS = new HashMap<>();
 
     static
     {
@@ -253,6 +253,17 @@ public class JavaUtil
     public static boolean isAsciiEncoding(final String encoding)
     {
         return "US_ASCII".equals(STD_CHARSETS.get(encoding));
+    }
+
+    /**
+     * Checks if the given encoding represents a UTF-8 charset.
+     *
+     * @param encoding as a string name (e.g. unicode-1-1-utf-8).
+     * @return {@code true} if the encoding denotes a UTF-8 charset.
+     */
+    public static boolean isUtf8Encoding(final String encoding)
+    {
+        return "UTF_8".equals(STD_CHARSETS.get(encoding));
     }
 
     /**

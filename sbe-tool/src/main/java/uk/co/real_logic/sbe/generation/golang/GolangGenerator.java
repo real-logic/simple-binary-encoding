@@ -20,6 +20,7 @@ import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.generation.CodeGenerator;
 import org.agrona.generation.OutputManager;
 import uk.co.real_logic.sbe.generation.Generators;
+import uk.co.real_logic.sbe.generation.java.JavaUtil;
 import uk.co.real_logic.sbe.ir.*;
 import org.agrona.Verify;
 
@@ -244,29 +245,31 @@ public class GolangGenerator implements CodeGenerator
 
         if (null != characterEncoding)
         {
-            switch (token.encoding().characterEncoding())
+            if (JavaUtil.isAsciiEncoding(characterEncoding))
             {
-                case "ASCII":
-                    imports.peek().add("fmt");
-                    sb.append(String.format(
-                        "\tfor idx, ch := range %1$s {\n" +
-                        "\t\tif ch > 127 {\n" +
-                        "\t\t\treturn fmt.Errorf(\"%1$s[%%d]=%%d" +
-                        " failed ASCII validation\", idx, ch)\n" +
-                        "\t\t}\n" +
-                        "\t}\n",
-                        varName));
-                    break;
-
-                case "UTF-8":
-                    imports.peek().add("errors");
-                    imports.peek().add("unicode/utf8");
-                    sb.append(String.format(
-                        "\tif !utf8.Valid(%1$s[:]) {\n" +
-                        "\t\treturn errors.New(\"%1$s failed UTF-8 validation\")\n" +
-                        "\t}\n",
-                        varName));
-                    break;
+                imports.peek().add("fmt");
+                sb.append(String.format(
+                    "\tfor idx, ch := range %1$s {\n" +
+                    "\t\tif ch > 127 {\n" +
+                    "\t\t\treturn fmt.Errorf(\"%1$s[%%d]=%%d" +
+                    " failed ASCII validation\", idx, ch)\n" +
+                    "\t\t}\n" +
+                    "\t}\n",
+                    varName));
+            }
+            else if (JavaUtil.isUtf8Encoding(characterEncoding))
+            {
+                imports.peek().add("errors");
+                imports.peek().add("unicode/utf8");
+                sb.append(String.format(
+                    "\tif !utf8.Valid(%1$s[:]) {\n" +
+                    "\t\treturn errors.New(\"%1$s failed UTF-8 validation\")\n" +
+                    "\t}\n",
+                    varName));
+            }
+            else
+            {
+                throw new IllegalArgumentException("Unsupported encoding: " + characterEncoding);
             }
         }
     }
@@ -1836,7 +1839,7 @@ public class GolangGenerator implements CodeGenerator
         final String containingTypeName,
         final List<Token> tokens)
     {
-        for (int i = 0; i < tokens.size();)
+        for (int i = 0; i < tokens.size(); )
         {
             final Token token = tokens.get(i);
             final String propertyName = formatPropertyName(token.name());

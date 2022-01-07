@@ -94,12 +94,12 @@ public class EncodedDataType extends Type
 
         if (PrimitiveType.CHAR == primitiveType)
         {
-            characterEncoding = getAttributeValue(node, "characterEncoding", "US-ASCII").trim().toUpperCase();
+            characterEncoding = getAttributeValue(node, "characterEncoding", "US-ASCII").trim();
         }
         else
         {
             final String characterEncoding = getAttributeValueOrNull(node, "characterEncoding");
-            this.characterEncoding = characterEncoding == null ? null : characterEncoding.trim().toUpperCase();
+            this.characterEncoding = characterEncoding == null ? null : characterEncoding.trim();
         }
 
         if (presence() == CONSTANT)

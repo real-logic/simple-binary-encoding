@@ -86,10 +86,10 @@ public class CharacterEncodingTest
             .append(" characterEncoding=\"custom-encoding\"/>\n        </composite>\n");
         buffer.append("        <type name=\"type_std_alias\" primitiveType=\"char\" semanticType=\"String\"")
             .append(" length=\"5\"")
-            .append(" characterEncoding=\"lAtIn1\"/>\n");
+            .append(" characterEncoding=\"latin1\"/>\n");
         buffer.append("        <type name=\"type_non_std_alias\" primitiveType=\"char\" semanticType=\"String\"")
             .append(" length=\"5\"")
-            .append(" characterEncoding=\"cp912\"/>\n");
+            .append(" characterEncoding=\"csISOLatin2\"/>\n");
 
         buffer.append("    </types>\n")
             .append("    <sbe:message name=\"EncodingTest\" id=\"1\" description=\"Multiple encodings\">\n");
@@ -149,7 +149,7 @@ public class CharacterEncodingTest
                     encoderSources, containsString("getBytes(java.nio.charset.StandardCharsets." + charset + ")"));
             }
         }
-        assertThat(encoderSources, containsString("getBytes(java.nio.charset.Charset.forName(\"CUSTOM-ENCODING\"))"));
+        assertThat(encoderSources, containsString("getBytes(java.nio.charset.Charset.forName(\"custom-encoding\"))"));
         assertThat(encoderSources, containsString("getBytes(java.nio.charset.Charset.forName(\"ISO-8859-2\"))"));
         assertThat(encoderSources, allOf(not(containsString("\"cp912\"")), not(containsString("\"CP912\""))));
         final int encodeFromStringStartIndex = encoderSources.indexOf("f_std_alias(final String src)");
@@ -165,7 +165,7 @@ public class CharacterEncodingTest
         {
             assertThat(decoderSources, containsString("end, java.nio.charset.StandardCharsets." + charset + ")"));
         }
-        assertThat(decoderSources, containsString("end, java.nio.charset.Charset.forName(\"CUSTOM-ENCODING\"))"));
+        assertThat(decoderSources, containsString("end, java.nio.charset.Charset.forName(\"custom-encoding\"))"));
         assertThat(decoderSources, containsString("end, java.nio.charset.Charset.forName(\"ISO-8859-2\"))"));
         assertThat(decoderSources, allOf(not(containsString("\"cp912\"")), not(containsString("\"CP912\""))));
     }
@@ -178,7 +178,7 @@ public class CharacterEncodingTest
             assertContainsCharacterEncodingMethod(
                 "f_" + (i++), "java.nio.charset.StandardCharsets." + charset + ".name()", code);
         }
-        assertContainsCharacterEncodingMethod("f_custom", "\"CUSTOM-ENCODING\"", code);
+        assertContainsCharacterEncodingMethod("f_custom", "\"custom-encoding\"", code);
         assertContainsCharacterEncodingMethod(
             "f_std_alias", "java.nio.charset.StandardCharsets.ISO_8859_1.name()", code);
         assertContainsCharacterEncodingMethod("f_non_std_alias", "\"ISO-8859-2\"", code);
