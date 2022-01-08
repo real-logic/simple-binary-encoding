@@ -109,17 +109,19 @@ public class JavaUtil
                     final Charset charset = (Charset)field.get(null);
                     final String name = field.getName();
                     String oldName = STD_CHARSETS.put(charset.name(), name);
+
                     if (null != oldName)
                     {
                         throw new IllegalStateException("Duplicate charset alias: old=" + oldName + ", new=" + name);
                     }
+
                     for (final String alias : charset.aliases())
                     {
                         oldName = STD_CHARSETS.put(alias, name);
                         if (null != oldName)
                         {
-                            throw new IllegalStateException("Duplicate charset alias: old=" + oldName + ", new=" +
-                                alias);
+                            throw new IllegalStateException(
+                                "Duplicate charset alias: old=" + oldName + ", new=" + alias);
                         }
                     }
                 }
@@ -214,7 +216,7 @@ public class JavaUtil
     public static String charset(final String encoding)
     {
         final String charsetName = STD_CHARSETS.get(encoding);
-        if (charsetName != null)
+        if (null != charsetName)
         {
             return "java.nio.charset.StandardCharsets." + charsetName;
         }
@@ -234,7 +236,7 @@ public class JavaUtil
     public static String charsetName(final String encoding)
     {
         final String charsetName = STD_CHARSETS.get(encoding);
-        if (charsetName != null)
+        if (null != charsetName)
         {
             return "java.nio.charset.StandardCharsets." + charsetName + ".name()";
         }
@@ -323,8 +325,7 @@ public class JavaUtil
      * @param indent    level for the comment.
      * @param typeToken for the type.
      */
-    public static void generateTypeJavadoc(
-        final StringBuilder sb, final String indent, final Token typeToken)
+    public static void generateTypeJavadoc(final StringBuilder sb, final String indent, final Token typeToken)
     {
         final String description = typeToken.description();
         if (Strings.isEmpty(description))
@@ -350,8 +351,7 @@ public class JavaUtil
      * @param optionToken for the type.
      * @throws IOException on failing to write to output.
      */
-    public static void generateOptionDecodeJavadoc(
-        final Appendable out, final String indent, final Token optionToken)
+    public static void generateOptionDecodeJavadoc(final Appendable out, final String indent, final Token optionToken)
         throws IOException
     {
         final String description = optionToken.description();
@@ -379,8 +379,7 @@ public class JavaUtil
      * @param optionToken for the type.
      * @throws IOException on failing to write to output.
      */
-    public static void generateOptionEncodeJavadoc(
-        final Appendable out, final String indent, final Token optionToken)
+    public static void generateOptionEncodeJavadoc(final Appendable out, final String indent, final Token optionToken)
         throws IOException
     {
         final String description = optionToken.description();

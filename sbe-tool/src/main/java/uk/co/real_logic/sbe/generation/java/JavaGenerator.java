@@ -15,7 +15,10 @@
  */
 package uk.co.real_logic.sbe.generation.java;
 
-import org.agrona.*;
+import org.agrona.DirectBuffer;
+import org.agrona.MutableDirectBuffer;
+import org.agrona.Strings;
+import org.agrona.Verify;
 import org.agrona.generation.OutputManager;
 import org.agrona.sbe.*;
 import uk.co.real_logic.sbe.PrimitiveType;
@@ -31,8 +34,6 @@ import java.util.List;
 import java.util.function.Function;
 
 import static uk.co.real_logic.sbe.SbeTool.JAVA_INTERFACE_PACKAGE;
-import static uk.co.real_logic.sbe.generation.cpp.CppUtil.formatClassName;
-import static uk.co.real_logic.sbe.generation.cpp.CppUtil.formatPropertyName;
 import static uk.co.real_logic.sbe.generation.java.JavaGenerator.CodecType.DECODER;
 import static uk.co.real_logic.sbe.generation.java.JavaGenerator.CodecType.ENCODER;
 import static uk.co.real_logic.sbe.generation.java.JavaUtil.*;
