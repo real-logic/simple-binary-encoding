@@ -921,25 +921,16 @@ public class JavaGenerator implements CodeGenerator
                 indent + "        }\n\n" +
                 indent + "        final byte[] tmp = new byte[dataLength];\n" +
                 indent + "        buffer.getBytes(limit + headerLength, tmp, 0, dataLength);\n\n" +
-                indent + "        final String value;\n" +
-                indent + "        try\n" +
-                indent + "        {\n" +
-                indent + "            value = new String(tmp, \"%6$s\");\n" +
-                indent + "        }\n" +
-                indent + "        catch (final java.io.UnsupportedEncodingException ex)\n" +
-                indent + "        {\n" +
-                indent + "            throw new RuntimeException(ex);\n" +
-                indent + "        }\n\n" +
-                indent + "        return value;\n" +
+                indent + "        return new String(tmp, %6$s);\n" +
                 indent + "    }\n",
                 formatPropertyName(propertyName),
                 generateStringNotPresentCondition(token.version(), indent),
                 sizeOfLengthField,
                 PrimitiveType.UINT32 == lengthType ? "(int)" : "",
                 generateGet(lengthType, "limit", byteOrderStr),
-                characterEncoding);
+                charset(characterEncoding));
 
-            if (characterEncoding.contains("ASCII"))
+            if (isAsciiEncoding(characterEncoding))
             {
                 new Formatter(sb).format("\n" +
                     indent + "    public int get%1$s(final Appendable appendable)\n" +
@@ -1050,7 +1041,7 @@ public class JavaGenerator implements CodeGenerator
     {
         final PrimitiveType lengthPutType = PrimitiveType.UINT32 == lengthType ? PrimitiveType.INT32 : lengthType;
 
-        if (characterEncoding.contains("ASCII"))
+        if (isAsciiEncoding(characterEncoding))
         {
             new Formatter(sb).format("\n" +
                 indent + "    public %1$s %2$s(final String value)\n" +
@@ -1099,16 +1090,8 @@ public class JavaGenerator implements CodeGenerator
             new Formatter(sb).format("\n" +
                 indent + "    public %1$s %2$s(final String value)\n" +
                 indent + "    {\n" +
-                indent + "        final byte[] bytes;\n" +
-                indent + "        try\n" +
-                indent + "        {\n" +
-                indent + "            bytes = null == value || value.isEmpty() ?" +
-                " org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes(\"%3$s\");\n" +
-                indent + "        }\n" +
-                indent + "        catch (final java.io.UnsupportedEncodingException ex)\n" +
-                indent + "        {\n" +
-                indent + "            throw new RuntimeException(ex);\n" +
-                indent + "        }\n\n" +
+                indent + "        final byte[] bytes = (null == value || value.isEmpty()) ?" +
+                " org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes(%3$s);\n\n" +
                 indent + "        final int length = bytes.length;\n" +
                 indent + "        if (length > %4$d)\n" +
                 indent + "        {\n" +
@@ -1123,7 +1106,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "    }\n",
                 className,
                 formatPropertyName(propertyName),
-                characterEncoding,
+                charset(characterEncoding),
                 maxLengthValue,
                 sizeOfLengthField,
                 generatePut(lengthPutType, "limit", "length", byteOrderStr));
@@ -2042,7 +2025,7 @@ public class JavaGenerator implements CodeGenerator
                 fieldLength,
                 charset(encoding.characterEncoding()));
 
-            if (encoding.characterEncoding().contains("ASCII"))
+            if (isAsciiEncoding(encoding.characterEncoding()))
             {
                 new Formatter(sb).format("\n" +
                     indent + "    public int get%1$s(final Appendable value)\n" +
@@ -2240,7 +2223,7 @@ public class JavaGenerator implements CodeGenerator
             fieldLength,
             offset);
 
-        if (encoding.characterEncoding().contains("ASCII"))
+        if (isAsciiEncoding(encoding.characterEncoding()))
         {
             new Formatter(sb).format("\n" +
                 indent + "    public %1$s %2$s(final String src)\n" +
@@ -2274,15 +2257,10 @@ public class JavaGenerator implements CodeGenerator
                 indent + "            throw new IndexOutOfBoundsException(" +
                 "\"CharSequence too large for copy: byte length=\" + srcLength);\n" +
                 indent + "        }\n\n" +
-                indent + "        for (int i = 0; i < srcLength; ++i)\n" +
+                indent + "        buffer.putStringWithoutLengthAscii(offset + %4$d, src);\n\n" +
+                indent + "        for (int start = srcLength; start < length; ++start)\n" +
                 indent + "        {\n" +
-                indent + "            final char charValue = src.charAt(i);\n" +
-                indent + "            final byte byteValue = charValue > 127 ? (byte)'?' : (byte)charValue;\n" +
-                indent + "            buffer.putByte(offset + %4$d + i, byteValue);\n" +
-                indent + "        }\n\n" +
-                indent + "        for (int i = srcLength; i < length; ++i)\n" +
-                indent + "        {\n" +
-                indent + "            buffer.putByte(offset + %4$d + i, (byte)0);\n" +
+                indent + "            buffer.putByte(offset + %4$d + start, (byte)0);\n" +
                 indent + "        }\n\n" +
                 indent + "        return this;\n" +
                 indent + "    }\n",
@@ -2297,7 +2275,8 @@ public class JavaGenerator implements CodeGenerator
                 indent + "    public %s %s(final String src)\n" +
                 indent + "    {\n" +
                 indent + "        final int length = %d;\n" +
-                indent + "        final byte[] bytes = null == src ? new byte[0] : src.getBytes(%s);\n" +
+                indent + "        final byte[] bytes = (null == src || src.isEmpty()) ?" +
+                " org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : src.getBytes(%s);\n" +
                 indent + "        if (bytes.length > length)\n" +
                 indent + "        {\n" +
                 indent + "            throw new IndexOutOfBoundsException(" +
@@ -2387,7 +2366,7 @@ public class JavaGenerator implements CodeGenerator
             sb.append("\n")
                 .append(indent).append("    public static String ").append(propName).append("CharacterEncoding()\n")
                 .append(indent).append("    {\n")
-                .append(indent).append("        return \"").append(characterEncoding).append("\";\n")
+                .append(indent).append("        return ").append(charsetName(characterEncoding)).append(";\n")
                 .append(indent).append("    }\n");
         }
     }
@@ -3537,7 +3516,7 @@ public class JavaGenerator implements CodeGenerator
             }
             else
             {
-                if (characterEncoding.contains("ASCII") || characterEncoding.contains("ascii"))
+                if (isAsciiEncoding(characterEncoding))
                 {
                     append(sb, indent, "builder.append('\\'');");
                     append(sb, indent, formatGetterName(varDataToken.name()) + "(builder);");

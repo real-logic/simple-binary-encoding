@@ -299,7 +299,7 @@ public final class FrameCodecDecoder
 
     public static String packageNameCharacterEncoding()
     {
-        return "UTF-8";
+        return java.nio.charset.StandardCharsets.UTF_8.name();
     }
 
     public static String packageNameMetaAttribute(final MetaAttribute metaAttribute)
@@ -382,17 +382,7 @@ public final class FrameCodecDecoder
         final byte[] tmp = new byte[dataLength];
         buffer.getBytes(limit + headerLength, tmp, 0, dataLength);
 
-        final String value;
-        try
-        {
-            value = new String(tmp, "UTF-8");
-        }
-        catch (final java.io.UnsupportedEncodingException ex)
-        {
-            throw new RuntimeException(ex);
-        }
-
-        return value;
+        return new String(tmp, java.nio.charset.StandardCharsets.UTF_8);
     }
 
     public static int namespaceNameId()
@@ -407,7 +397,7 @@ public final class FrameCodecDecoder
 
     public static String namespaceNameCharacterEncoding()
     {
-        return "UTF-8";
+        return java.nio.charset.StandardCharsets.UTF_8.name();
     }
 
     public static String namespaceNameMetaAttribute(final MetaAttribute metaAttribute)
@@ -490,17 +480,7 @@ public final class FrameCodecDecoder
         final byte[] tmp = new byte[dataLength];
         buffer.getBytes(limit + headerLength, tmp, 0, dataLength);
 
-        final String value;
-        try
-        {
-            value = new String(tmp, "UTF-8");
-        }
-        catch (final java.io.UnsupportedEncodingException ex)
-        {
-            throw new RuntimeException(ex);
-        }
-
-        return value;
+        return new String(tmp, java.nio.charset.StandardCharsets.UTF_8);
     }
 
     public static int semanticVersionId()
@@ -515,7 +495,7 @@ public final class FrameCodecDecoder
 
     public static String semanticVersionCharacterEncoding()
     {
-        return "UTF-8";
+        return java.nio.charset.StandardCharsets.UTF_8.name();
     }
 
     public static String semanticVersionMetaAttribute(final MetaAttribute metaAttribute)
@@ -598,17 +578,7 @@ public final class FrameCodecDecoder
         final byte[] tmp = new byte[dataLength];
         buffer.getBytes(limit + headerLength, tmp, 0, dataLength);
 
-        final String value;
-        try
-        {
-            value = new String(tmp, "UTF-8");
-        }
-        catch (final java.io.UnsupportedEncodingException ex)
-        {
-            throw new RuntimeException(ex);
-        }
-
-        return value;
+        return new String(tmp, java.nio.charset.StandardCharsets.UTF_8);
     }
 
     public String toString()

@@ -414,6 +414,49 @@ public class EncodedDataTypeTest
             is(parse(nullVal, PrimitiveType.INT8)));
     }
 
+    @Test
+    public void shouldReturnCharacterEncodingWhenSpecified() throws Exception
+    {
+        final String testXmlString =
+            "<types>" +
+            "    <type name=\"testTypeCharacterEncoding\" primitiveType=\"char\" length=\"3\" " +
+            "characterEncoding=\"cp912\"/>" +
+            "</types>";
+
+        final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
+
+        assertThat((((EncodedDataType)map.get("testTypeCharacterEncoding")).characterEncoding()), is("cp912"));
+    }
+
+    @Test
+    public void shouldReturnCharacterEncodingWhenSpecifiedNonCharType() throws Exception
+    {
+        final String testXmlString =
+            "<types>" +
+            "    <type name=\"testTypeCharacterEncodingNonChar\" primitiveType=\"uint8\" " +
+            "characterEncoding=\"  windows-1251\n\r\"/>" +
+            "</types>";
+
+        final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
+
+        assertThat(
+            (((EncodedDataType)map.get("testTypeCharacterEncodingNonChar")).characterEncoding()), is("windows-1251"));
+    }
+
+    @Test
+    public void shouldReturnUsAsciiWhenCharacterEncodingNotSpecifiedForTypeChar() throws Exception
+    {
+        final String testXmlString =
+            "<types>" +
+            "    <type name=\"testCharDefaultCharacterEncoding\" primitiveType=\"char\" length=\"5\"/>" +
+            "</types>";
+
+        final Map<String, Type> map = parseTestXmlWithMap("/types/type", testXmlString);
+
+        assertThat(
+            (((EncodedDataType)map.get("testCharDefaultCharacterEncoding")).characterEncoding()), is("US-ASCII"));
+    }
+
     private static Map<String, Type> parseTestXmlWithMap(final String xPathExpr, final String xml)
         throws ParserConfigurationException, XPathExpressionException, IOException, SAXException
     {

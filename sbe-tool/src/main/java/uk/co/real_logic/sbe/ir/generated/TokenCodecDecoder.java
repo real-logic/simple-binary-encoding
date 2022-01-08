@@ -616,7 +616,7 @@ public final class TokenCodecDecoder
 
     public static String nameCharacterEncoding()
     {
-        return "UTF-8";
+        return java.nio.charset.StandardCharsets.UTF_8.name();
     }
 
     public static String nameMetaAttribute(final MetaAttribute metaAttribute)
@@ -699,17 +699,7 @@ public final class TokenCodecDecoder
         final byte[] tmp = new byte[dataLength];
         buffer.getBytes(limit + headerLength, tmp, 0, dataLength);
 
-        final String value;
-        try
-        {
-            value = new String(tmp, "UTF-8");
-        }
-        catch (final java.io.UnsupportedEncodingException ex)
-        {
-            throw new RuntimeException(ex);
-        }
-
-        return value;
+        return new String(tmp, java.nio.charset.StandardCharsets.UTF_8);
     }
 
     public static int constValueId()
@@ -724,7 +714,7 @@ public final class TokenCodecDecoder
 
     public static String constValueCharacterEncoding()
     {
-        return "UTF-8";
+        return java.nio.charset.StandardCharsets.UTF_8.name();
     }
 
     public static String constValueMetaAttribute(final MetaAttribute metaAttribute)
@@ -807,17 +797,7 @@ public final class TokenCodecDecoder
         final byte[] tmp = new byte[dataLength];
         buffer.getBytes(limit + headerLength, tmp, 0, dataLength);
 
-        final String value;
-        try
-        {
-            value = new String(tmp, "UTF-8");
-        }
-        catch (final java.io.UnsupportedEncodingException ex)
-        {
-            throw new RuntimeException(ex);
-        }
-
-        return value;
+        return new String(tmp, java.nio.charset.StandardCharsets.UTF_8);
     }
 
     public static int minValueId()
@@ -832,7 +812,7 @@ public final class TokenCodecDecoder
 
     public static String minValueCharacterEncoding()
     {
-        return "UTF-8";
+        return java.nio.charset.StandardCharsets.UTF_8.name();
     }
 
     public static String minValueMetaAttribute(final MetaAttribute metaAttribute)
@@ -915,17 +895,7 @@ public final class TokenCodecDecoder
         final byte[] tmp = new byte[dataLength];
         buffer.getBytes(limit + headerLength, tmp, 0, dataLength);
 
-        final String value;
-        try
-        {
-            value = new String(tmp, "UTF-8");
-        }
-        catch (final java.io.UnsupportedEncodingException ex)
-        {
-            throw new RuntimeException(ex);
-        }
-
-        return value;
+        return new String(tmp, java.nio.charset.StandardCharsets.UTF_8);
     }
 
     public static int maxValueId()
@@ -940,7 +910,7 @@ public final class TokenCodecDecoder
 
     public static String maxValueCharacterEncoding()
     {
-        return "UTF-8";
+        return java.nio.charset.StandardCharsets.UTF_8.name();
     }
 
     public static String maxValueMetaAttribute(final MetaAttribute metaAttribute)
@@ -1023,17 +993,7 @@ public final class TokenCodecDecoder
         final byte[] tmp = new byte[dataLength];
         buffer.getBytes(limit + headerLength, tmp, 0, dataLength);
 
-        final String value;
-        try
-        {
-            value = new String(tmp, "UTF-8");
-        }
-        catch (final java.io.UnsupportedEncodingException ex)
-        {
-            throw new RuntimeException(ex);
-        }
-
-        return value;
+        return new String(tmp, java.nio.charset.StandardCharsets.UTF_8);
     }
 
     public static int nullValueId()
@@ -1048,7 +1008,7 @@ public final class TokenCodecDecoder
 
     public static String nullValueCharacterEncoding()
     {
-        return "UTF-8";
+        return java.nio.charset.StandardCharsets.UTF_8.name();
     }
 
     public static String nullValueMetaAttribute(final MetaAttribute metaAttribute)
@@ -1131,17 +1091,7 @@ public final class TokenCodecDecoder
         final byte[] tmp = new byte[dataLength];
         buffer.getBytes(limit + headerLength, tmp, 0, dataLength);
 
-        final String value;
-        try
-        {
-            value = new String(tmp, "UTF-8");
-        }
-        catch (final java.io.UnsupportedEncodingException ex)
-        {
-            throw new RuntimeException(ex);
-        }
-
-        return value;
+        return new String(tmp, java.nio.charset.StandardCharsets.UTF_8);
     }
 
     public static int characterEncodingId()
@@ -1156,7 +1106,7 @@ public final class TokenCodecDecoder
 
     public static String characterEncodingCharacterEncoding()
     {
-        return "UTF-8";
+        return java.nio.charset.StandardCharsets.UTF_8.name();
     }
 
     public static String characterEncodingMetaAttribute(final MetaAttribute metaAttribute)
@@ -1239,17 +1189,7 @@ public final class TokenCodecDecoder
         final byte[] tmp = new byte[dataLength];
         buffer.getBytes(limit + headerLength, tmp, 0, dataLength);
 
-        final String value;
-        try
-        {
-            value = new String(tmp, "UTF-8");
-        }
-        catch (final java.io.UnsupportedEncodingException ex)
-        {
-            throw new RuntimeException(ex);
-        }
-
-        return value;
+        return new String(tmp, java.nio.charset.StandardCharsets.UTF_8);
     }
 
     public static int epochId()
@@ -1264,7 +1204,7 @@ public final class TokenCodecDecoder
 
     public static String epochCharacterEncoding()
     {
-        return "UTF-8";
+        return java.nio.charset.StandardCharsets.UTF_8.name();
     }
 
     public static String epochMetaAttribute(final MetaAttribute metaAttribute)
@@ -1347,17 +1287,7 @@ public final class TokenCodecDecoder
         final byte[] tmp = new byte[dataLength];
         buffer.getBytes(limit + headerLength, tmp, 0, dataLength);
 
-        final String value;
-        try
-        {
-            value = new String(tmp, "UTF-8");
-        }
-        catch (final java.io.UnsupportedEncodingException ex)
-        {
-            throw new RuntimeException(ex);
-        }
-
-        return value;
+        return new String(tmp, java.nio.charset.StandardCharsets.UTF_8);
     }
 
     public static int timeUnitId()
@@ -1372,7 +1302,7 @@ public final class TokenCodecDecoder
 
     public static String timeUnitCharacterEncoding()
     {
-        return "UTF-8";
+        return java.nio.charset.StandardCharsets.UTF_8.name();
     }
 
     public static String timeUnitMetaAttribute(final MetaAttribute metaAttribute)
@@ -1455,17 +1385,7 @@ public final class TokenCodecDecoder
         final byte[] tmp = new byte[dataLength];
         buffer.getBytes(limit + headerLength, tmp, 0, dataLength);
 
-        final String value;
-        try
-        {
-            value = new String(tmp, "UTF-8");
-        }
-        catch (final java.io.UnsupportedEncodingException ex)
-        {
-            throw new RuntimeException(ex);
-        }
-
-        return value;
+        return new String(tmp, java.nio.charset.StandardCharsets.UTF_8);
     }
 
     public static int semanticTypeId()
@@ -1480,7 +1400,7 @@ public final class TokenCodecDecoder
 
     public static String semanticTypeCharacterEncoding()
     {
-        return "UTF-8";
+        return java.nio.charset.StandardCharsets.UTF_8.name();
     }
 
     public static String semanticTypeMetaAttribute(final MetaAttribute metaAttribute)
@@ -1563,17 +1483,7 @@ public final class TokenCodecDecoder
         final byte[] tmp = new byte[dataLength];
         buffer.getBytes(limit + headerLength, tmp, 0, dataLength);
 
-        final String value;
-        try
-        {
-            value = new String(tmp, "UTF-8");
-        }
-        catch (final java.io.UnsupportedEncodingException ex)
-        {
-            throw new RuntimeException(ex);
-        }
-
-        return value;
+        return new String(tmp, java.nio.charset.StandardCharsets.UTF_8);
     }
 
     public static int descriptionId()
@@ -1588,7 +1498,7 @@ public final class TokenCodecDecoder
 
     public static String descriptionCharacterEncoding()
     {
-        return "UTF-8";
+        return java.nio.charset.StandardCharsets.UTF_8.name();
     }
 
     public static String descriptionMetaAttribute(final MetaAttribute metaAttribute)
@@ -1671,17 +1581,7 @@ public final class TokenCodecDecoder
         final byte[] tmp = new byte[dataLength];
         buffer.getBytes(limit + headerLength, tmp, 0, dataLength);
 
-        final String value;
-        try
-        {
-            value = new String(tmp, "UTF-8");
-        }
-        catch (final java.io.UnsupportedEncodingException ex)
-        {
-            throw new RuntimeException(ex);
-        }
-
-        return value;
+        return new String(tmp, java.nio.charset.StandardCharsets.UTF_8);
     }
 
     public static int referencedNameId()
@@ -1696,7 +1596,7 @@ public final class TokenCodecDecoder
 
     public static String referencedNameCharacterEncoding()
     {
-        return "UTF-8";
+        return java.nio.charset.StandardCharsets.UTF_8.name();
     }
 
     public static String referencedNameMetaAttribute(final MetaAttribute metaAttribute)
@@ -1779,17 +1679,7 @@ public final class TokenCodecDecoder
         final byte[] tmp = new byte[dataLength];
         buffer.getBytes(limit + headerLength, tmp, 0, dataLength);
 
-        final String value;
-        try
-        {
-            value = new String(tmp, "UTF-8");
-        }
-        catch (final java.io.UnsupportedEncodingException ex)
-        {
-            throw new RuntimeException(ex);
-        }
-
-        return value;
+        return new String(tmp, java.nio.charset.StandardCharsets.UTF_8);
     }
 
     public String toString()

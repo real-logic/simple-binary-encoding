@@ -267,7 +267,7 @@ public final class FrameCodecEncoder
 
     public static String packageNameCharacterEncoding()
     {
-        return "UTF-8";
+        return java.nio.charset.StandardCharsets.UTF_8.name();
     }
 
     public static String packageNameMetaAttribute(final MetaAttribute metaAttribute)
@@ -319,15 +319,7 @@ public final class FrameCodecEncoder
 
     public FrameCodecEncoder packageName(final String value)
     {
-        final byte[] bytes;
-        try
-        {
-            bytes = null == value || value.isEmpty() ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes("UTF-8");
-        }
-        catch (final java.io.UnsupportedEncodingException ex)
-        {
-            throw new RuntimeException(ex);
-        }
+        final byte[] bytes = (null == value || value.isEmpty()) ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes(java.nio.charset.StandardCharsets.UTF_8);
 
         final int length = bytes.length;
         if (length > 65534)
@@ -351,7 +343,7 @@ public final class FrameCodecEncoder
 
     public static String namespaceNameCharacterEncoding()
     {
-        return "UTF-8";
+        return java.nio.charset.StandardCharsets.UTF_8.name();
     }
 
     public static String namespaceNameMetaAttribute(final MetaAttribute metaAttribute)
@@ -403,15 +395,7 @@ public final class FrameCodecEncoder
 
     public FrameCodecEncoder namespaceName(final String value)
     {
-        final byte[] bytes;
-        try
-        {
-            bytes = null == value || value.isEmpty() ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes("UTF-8");
-        }
-        catch (final java.io.UnsupportedEncodingException ex)
-        {
-            throw new RuntimeException(ex);
-        }
+        final byte[] bytes = (null == value || value.isEmpty()) ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes(java.nio.charset.StandardCharsets.UTF_8);
 
         final int length = bytes.length;
         if (length > 65534)
@@ -435,7 +419,7 @@ public final class FrameCodecEncoder
 
     public static String semanticVersionCharacterEncoding()
     {
-        return "UTF-8";
+        return java.nio.charset.StandardCharsets.UTF_8.name();
     }
 
     public static String semanticVersionMetaAttribute(final MetaAttribute metaAttribute)
@@ -487,15 +471,7 @@ public final class FrameCodecEncoder
 
     public FrameCodecEncoder semanticVersion(final String value)
     {
-        final byte[] bytes;
-        try
-        {
-            bytes = null == value || value.isEmpty() ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes("UTF-8");
-        }
-        catch (final java.io.UnsupportedEncodingException ex)
-        {
-            throw new RuntimeException(ex);
-        }
+        final byte[] bytes = (null == value || value.isEmpty()) ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes(java.nio.charset.StandardCharsets.UTF_8);
 
         final int length = bytes.length;
         if (length > 65534)

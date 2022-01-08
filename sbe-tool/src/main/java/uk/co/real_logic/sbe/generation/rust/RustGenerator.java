@@ -20,6 +20,7 @@ import org.agrona.generation.OutputManager;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.generation.CodeGenerator;
 import uk.co.real_logic.sbe.generation.Generators;
+import uk.co.real_logic.sbe.generation.java.JavaUtil;
 import uk.co.real_logic.sbe.ir.Encoding;
 import uk.co.real_logic.sbe.ir.Ir;
 import uk.co.real_logic.sbe.ir.Signal;
@@ -304,20 +305,15 @@ public class RustGenerator implements CodeGenerator
 
             final String varDataType;
             final String toBytesFn;
-            switch (characterEncoding)
+            if (JavaUtil.isUtf8Encoding(characterEncoding))
             {
-                case "UTF-8":
-                {
-                    varDataType = "&str";
-                    toBytesFn = ".as_bytes()";
-                    break;
-                }
-                default:
-                {
-                    varDataType = "&[u8]";
-                    toBytesFn = "";
-                    break;
-                }
+                varDataType = "&str";
+                toBytesFn = ".as_bytes()";
+            }
+            else
+            {
+                varDataType = "&[u8]";
+                toBytesFn = "";
             }
 
             // function to write slice ... todo - handle character encoding ?
@@ -681,23 +677,20 @@ public class RustGenerator implements CodeGenerator
             indent(sb, level, "/// characterEncoding: '%s'\n", characterEncoding);
             indent(sb, level, "#[inline]\n");
 
-            switch (characterEncoding)
+            if (JavaUtil.isAsciiEncoding(characterEncoding))
             {
-                case "US-ASCII":
-                {
-                    indent(sb, level, "pub fn %s(&self) -> &'static [u8] {\n",
-                        formatFunctionName(name));
-                    indent(sb, level + 1, "b\"%s\"\n", rawConstValue);
-                    break;
-                }
-                case "UTF-8":
-                {
-                    indent(sb, level, "pub fn %s(&self) -> &'static str {\n", formatFunctionName(name));
-                    indent(sb, level + 1, "\"%s\"\n", rawConstValue);
-                    break;
-                }
-                default:
-                    throw new RuntimeException("Unable to handle " + characterEncoding);
+                indent(sb, level, "pub fn %s(&self) -> &'static [u8] {\n",
+                    formatFunctionName(name));
+                indent(sb, level + 1, "b\"%s\"\n", rawConstValue);
+            }
+            else if (JavaUtil.isUtf8Encoding(characterEncoding))
+            {
+                indent(sb, level, "pub fn %s(&self) -> &'static str {\n", formatFunctionName(name));
+                indent(sb, level + 1, "\"%s\"\n", rawConstValue);
+            }
+            else
+            {
+                throw new IllegalArgumentException("Unsupported encoding: " + characterEncoding);
             }
 
             indent(sb, level, "}\n\n");

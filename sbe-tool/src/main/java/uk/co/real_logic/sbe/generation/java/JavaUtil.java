@@ -18,19 +18,18 @@ package uk.co.real_logic.sbe.generation.java;
 import org.agrona.Strings;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.SbeTool;
+import uk.co.real_logic.sbe.ValidationUtil;
 import uk.co.real_logic.sbe.generation.Generators;
 import uk.co.real_logic.sbe.ir.Token;
-import uk.co.real_logic.sbe.ValidationUtil;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
-
-import static java.lang.reflect.Modifier.STATIC;
 
 /**
  * Utilities for mapping between {@link uk.co.real_logic.sbe.ir.Ir} and the Java language.
@@ -96,7 +95,7 @@ public class JavaUtil
     /**
      * Indexes known charset aliases to the name of the instance in {@link StandardCharsets}.
      */
-    private static final Map<String, String> STD_CHARSETS = new HashMap<>();
+    static final HashMap<String, String> STD_CHARSETS = new HashMap<>();
 
     static
     {
@@ -104,11 +103,25 @@ public class JavaUtil
         {
             for (final Field field : StandardCharsets.class.getDeclaredFields())
             {
-                if (Charset.class.isAssignableFrom(field.getType()) && ((field.getModifiers() & STATIC) == STATIC))
+                if (Charset.class.isAssignableFrom(field.getType()) && Modifier.isStatic(field.getModifiers()) &&
+                    Modifier.isPublic(field.getModifiers()))
                 {
                     final Charset charset = (Charset)field.get(null);
-                    STD_CHARSETS.put(charset.name(), field.getName());
-                    charset.aliases().forEach((alias) -> STD_CHARSETS.put(alias, field.getName()));
+                    final String name = field.getName();
+                    String oldName = STD_CHARSETS.put(charset.name(), name);
+                    if (null != oldName)
+                    {
+                        throw new IllegalStateException("Duplicate charset alias: old=" + oldName + ", new=" + name);
+                    }
+                    for (final String alias : charset.aliases())
+                    {
+                        oldName = STD_CHARSETS.put(alias, name);
+                        if (null != oldName)
+                        {
+                            throw new IllegalStateException("Duplicate charset alias: old=" + oldName + ", new=" +
+                                alias);
+                        }
+                    }
                 }
             }
         }
@@ -207,8 +220,50 @@ public class JavaUtil
         }
         else
         {
-            return "java.nio.charset.Charset.forName(\"" + encoding + "\")";
+            final String canonicalName = Charset.isSupported(encoding) ? Charset.forName(encoding).name() : encoding;
+            return "java.nio.charset.Charset.forName(\"" + canonicalName + "\")";
         }
+    }
+
+    /**
+     * Code to fetch the name of the {@link Charset} given the encoding.
+     *
+     * @param encoding as a string name (eg. UTF-8).
+     * @return the code to fetch the associated Charset name.
+     */
+    public static String charsetName(final String encoding)
+    {
+        final String charsetName = STD_CHARSETS.get(encoding);
+        if (charsetName != null)
+        {
+            return "java.nio.charset.StandardCharsets." + charsetName + ".name()";
+        }
+        else
+        {
+            return "\"" + (Charset.isSupported(encoding) ? Charset.forName(encoding).name() : encoding) + "\"";
+        }
+    }
+
+    /**
+     * Checks if the given encoding represents an ASCII charset.
+     *
+     * @param encoding as a string name (e.g. ASCII).
+     * @return {@code true} if the encoding denotes an ASCII charset.
+     */
+    public static boolean isAsciiEncoding(final String encoding)
+    {
+        return "US_ASCII".equals(STD_CHARSETS.get(encoding));
+    }
+
+    /**
+     * Checks if the given encoding represents a UTF-8 charset.
+     *
+     * @param encoding as a string name (e.g. unicode-1-1-utf-8).
+     * @return {@code true} if the encoding denotes a UTF-8 charset.
+     */
+    public static boolean isUtf8Encoding(final String encoding)
+    {
+        return "UTF_8".equals(STD_CHARSETS.get(encoding));
     }
 
     /**
