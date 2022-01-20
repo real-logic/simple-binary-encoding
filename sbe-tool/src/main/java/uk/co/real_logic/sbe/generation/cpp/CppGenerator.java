@@ -2746,7 +2746,24 @@ public class CppGenerator implements CodeGenerator
 
             case BEGIN_SET:
             case BEGIN_COMPOSITE:
-                sb.append(indent).append("builder << ").append(fieldName).append("();\n");
+                if (0 == typeToken.version())
+                {
+                    sb.append(indent).append("builder << ").append(fieldName).append("();\n");
+                }
+                else
+                {
+                    new Formatter(sb).format(
+                        indent + "if (%1$sInActingVersion())\n" +
+                        indent + "{\n" +
+                        indent + "    builder << %1$s();\n" +
+                        indent + "}\n" +
+                        indent + "else\n" +
+                        indent + "{\n" +
+                        indent + "    builder << %2$s;\n" +
+                        indent + "}\n",
+                        fieldName,
+                        typeToken.signal() == Signal.BEGIN_SET ? "\"[]\"" : "\"{}\"");
+                }
                 break;
         }
 
