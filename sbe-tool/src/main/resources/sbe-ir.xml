@@ -47,7 +47,7 @@
             <validValue name="VALID_VALUE" description="Signal a value of an enum.">10</validValue>
             <validValue name="END_ENUM" description="Signal the end of a enum.">11</validValue>
             <validValue name="BEGIN_SET" description="Signal the beginning of a set.">12</validValue>
-            <validValue name="CHOICE" description="Signal the a choice in a set.">13</validValue>
+            <validValue name="CHOICE" description="Signal the choice in a set.">13</validValue>
             <validValue name="END_SET" description="Signal the end of a set.">14</validValue>
             <validValue name="BEGIN_VAR_DATA" description="Signal the beginning of variable data.">15</validValue>
             <validValue name="END_VAR_DATA" description="Signal the end of variable data.">16</validValue>

@@ -88,7 +88,7 @@ public class ErrorHandlerTest
         parseTestXmlAddToMap(map, "/types/enum", testXmlString, handler);
         parseTestXmlAddToMap(map, "/types/set", testXmlString, handler);
 
-        assertThat(handler.errorCount(), is(3));
+        assertThat(handler.errorCount(), is(2));
         assertThat(handler.warningCount(), is(33));
     }
 

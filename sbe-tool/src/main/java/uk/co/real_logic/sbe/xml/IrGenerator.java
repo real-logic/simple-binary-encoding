@@ -263,12 +263,8 @@ public class IrGenerator
         final Encoding.Builder encodingBuilder = new Encoding.Builder()
             .primitiveType(encodingType)
             .semanticType(semanticTypeOf(type, field))
+            .nullValue(type.nullValue())
             .byteOrder(schema.byteOrder());
-
-        if (type.presence() == Presence.OPTIONAL)
-        {
-            encodingBuilder.nullValue(encodingType.nullValue());
-        }
 
         final Token.Builder builder = new Token.Builder()
             .signal(Signal.BEGIN_ENUM)

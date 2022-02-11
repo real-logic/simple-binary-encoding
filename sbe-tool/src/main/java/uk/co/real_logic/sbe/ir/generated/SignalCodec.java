@@ -81,7 +81,7 @@ public enum SignalCodec
 
 
     /**
-     * Signal the a choice in a set.
+     * Signal the choice in a set.
      */
     CHOICE((short)13),
 

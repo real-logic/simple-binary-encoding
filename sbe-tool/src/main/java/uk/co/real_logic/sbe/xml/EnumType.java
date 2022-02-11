@@ -105,28 +105,20 @@ public class EnumType extends Type
         final String nullValueStr = getAttributeValueOrNull(node, "nullValue");
         if (null != nullValueStr)
         {
-            if (presence() != OPTIONAL)
-            {
-                handleError(node, "nullValue set, but presence is not optional");
-            }
-
             nullValue = PrimitiveValue.parse(nullValueStr, encodingType);
         }
-        else if (presence() == OPTIONAL)
+        else if (null != encodedDataType && null != encodedDataType.nullValue())
         {
-            if (null != encodedDataType && null != encodedDataType.nullValue())
-            {
-                nullValue = encodedDataType.nullValue();
-            }
-            else
-            {
-                handleError(node, "presence optional but no null value found");
-                nullValue = null;
-            }
+            nullValue = encodedDataType.nullValue();
         }
         else
         {
-            nullValue = null;
+            nullValue = encodingType.nullValue();
+        }
+
+        if (presence() == OPTIONAL && null == nullValue)
+        {
+            handleError(node, "presence optional but no null value found");
         }
 
         final NodeList list = (NodeList)xPath.compile("validValue").evaluate(node, XPathConstants.NODESET);
@@ -152,15 +144,11 @@ public class EnumType extends Type
                     encodedDataType.minValue().longValue() : encodingType.minValue().longValue();
                 final long maxValue = null != encodedDataType && null != encodedDataType.maxValue() ?
                     encodedDataType.maxValue().longValue() : encodingType.maxValue().longValue();
-                final long nullLongValue = null != nullValue ? nullValue.longValue() :
-                    encodingType.nullValue().longValue();
+                final long nullLongValue = nullValue.longValue();
 
                 if (nullLongValue == value)
                 {
-                    handleError(
-                        node,
-                        "validValue " + v.name() + " uses nullValue: " +
-                        (null != nullValue ? nullValue : encodingType.nullValue()));
+                    handleError(node, "validValue " + v.name() + " uses nullValue: " + nullLongValue);
                 }
                 else if (value < minValue || value > maxValue)
                 {
@@ -223,9 +211,9 @@ public class EnumType extends Type
     }
 
     /**
-     * The nullValue of the type
+     * The nullValue of the type.
      *
-     * @return value of the nullValue
+     * @return value of the nullValue.
      */
     public PrimitiveValue nullValue()
     {

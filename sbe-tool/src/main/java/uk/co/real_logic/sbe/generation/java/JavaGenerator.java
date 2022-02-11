@@ -1236,16 +1236,18 @@ public class JavaGenerator implements CodeGenerator
     {
         final Token enumToken = tokens.get(0);
         final String enumName = formatClassName(enumToken.applicableTypeName());
+        final Encoding encoding = enumToken.encoding();
+        final String nullVal = encoding.applicableNullValue().toString();
 
         try (Writer out = outputManager.createOutput(enumName))
         {
             out.append(generateEnumFileHeader(ir.applicableNamespace()));
             out.append(generateEnumDeclaration(enumName, enumToken));
 
-            out.append(generateEnumValues(getMessageBody(tokens)));
+            out.append(generateEnumValues(getMessageBody(tokens), generateLiteral(encoding.primitiveType(), nullVal)));
             out.append(generateEnumBody(enumToken, enumName));
 
-            out.append(generateEnumLookupMethod(getMessageBody(tokens), enumName));
+            out.append(generateEnumLookupMethod(getMessageBody(tokens), enumName, nullVal));
 
             out.append("}\n");
         }
@@ -1451,7 +1453,7 @@ public class JavaGenerator implements CodeGenerator
         }
     }
 
-    private CharSequence generateEnumValues(final List<Token> tokens)
+    private CharSequence generateEnumValues(final List<Token> tokens, final String nullVal)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -1462,11 +1464,6 @@ public class JavaGenerator implements CodeGenerator
             generateTypeJavadoc(sb, INDENT, token);
             sb.append(INDENT).append(token.name()).append('(').append(constVal).append("),\n\n");
         }
-
-        final Token token = tokens.get(0);
-        final Encoding encoding = token.encoding();
-        final CharSequence nullVal = generateLiteral(
-            encoding.primitiveType(), encoding.applicableNullValue().toString());
 
         if (shouldDecodeUnknownEnumValues)
         {
@@ -1505,7 +1502,7 @@ public class JavaGenerator implements CodeGenerator
             "    }\n";
     }
 
-    private CharSequence generateEnumLookupMethod(final List<Token> tokens, final String enumName)
+    private CharSequence generateEnumLookupMethod(final List<Token> tokens, final String enumName, final String nullVal)
     {
         final StringBuilder sb = new StringBuilder();
         final PrimitiveType primitiveType = tokens.get(0).encoding().primitiveType();
@@ -1528,8 +1525,7 @@ public class JavaGenerator implements CodeGenerator
             sb.append("            case ").append(constStr).append(": return ").append(name).append(";\n");
         }
 
-        final String nullValue = tokens.get(0).encoding().applicableNullValue().toString();
-        sb.append("            case ").append(nullValue).append(": return NULL_VAL").append(";\n");
+        sb.append("            case ").append(nullVal).append(": return NULL_VAL").append(";\n");
 
         final String handleUnknownLogic = shouldDecodeUnknownEnumValues ?
             INDENT + INDENT + "return SBE_UNKNOWN;\n" :
