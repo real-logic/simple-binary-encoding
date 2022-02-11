@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
-public class GenerateIlinkBinaryTest
+class GenerateIlinkBinaryTest
 {
     private static final Class<?> BUFFER_CLASS = MutableDirectBuffer.class;
     private static final String BUFFER_NAME = BUFFER_CLASS.getName();
@@ -42,7 +42,7 @@ public class GenerateIlinkBinaryTest
     private final StringWriterOutputManager outputManager = new StringWriterOutputManager();
 
     @Test
-    public void shouldGenerateValidJava() throws Exception
+    void shouldGenerateValidJava() throws Exception
     {
         System.setProperty(SbeTool.KEYWORD_APPEND_TOKEN, "_");
 
@@ -76,7 +76,7 @@ public class GenerateIlinkBinaryTest
     }
 
     @Test
-    public void shouldGenerateAndEncodeIr() throws Exception
+    void shouldGenerateAndEncodeIr() throws Exception
     {
         System.setProperty(SbeTool.KEYWORD_APPEND_TOKEN, "_");
 

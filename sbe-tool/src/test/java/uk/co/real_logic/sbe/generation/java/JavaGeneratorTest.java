@@ -42,7 +42,7 @@ import static uk.co.real_logic.sbe.generation.java.JavaGenerator.MESSAGE_HEADER_
 import static uk.co.real_logic.sbe.generation.java.ReflectionUtil.*;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
-public class JavaGeneratorTest
+class JavaGeneratorTest
 {
     private static final Class<?> BUFFER_CLASS = MutableDirectBuffer.class;
     private static final String BUFFER_NAME = BUFFER_CLASS.getName();
@@ -56,7 +56,7 @@ public class JavaGeneratorTest
     private Ir ir;
 
     @BeforeEach
-    public void setUp() throws Exception
+    void setUp() throws Exception
     {
         final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
         final MessageSchema schema = parse(Tests.getLocalResource("code-generation-schema.xml"), options);
@@ -68,7 +68,7 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldGenerateMessageHeaderStub() throws Exception
+    void shouldGenerateMessageHeaderStub() throws Exception
     {
         final int bufferOffset = 64;
         final int templateIdOffset = 2;
@@ -95,7 +95,7 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldGenerateMessageHeaderDecoderStub() throws Exception
+    void shouldGenerateMessageHeaderDecoderStub() throws Exception
     {
         final int bufferOffset = 64;
         final int templateIdOffset = 2;
@@ -120,7 +120,7 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldGenerateUint8EnumStub() throws Exception
+    void shouldGenerateUint8EnumStub() throws Exception
     {
         final String className = "BooleanType";
         final String fqClassName = ir.applicableNamespace() + "." + className;
@@ -136,7 +136,7 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldGenerateCharEnumStub() throws Exception
+    void shouldGenerateCharEnumStub() throws Exception
     {
         generateTypeStubs();
 
@@ -148,7 +148,7 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldGenerateChoiceSetStub() throws Exception
+    void shouldGenerateChoiceSetStub() throws Exception
     {
         final int bufferOffset = 8;
         final byte bitset = (byte)0b0000_0100;
@@ -172,7 +172,7 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldGenerateCompositeEncoder() throws Exception
+    void shouldGenerateCompositeEncoder() throws Exception
     {
         final int bufferOffset = 64;
         final int capacityFieldOffset = bufferOffset;
@@ -205,7 +205,7 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldGenerateCompositeDecoder() throws Exception
+    void shouldGenerateCompositeDecoder() throws Exception
     {
         final int bufferOffset = 64;
         final int capacityFieldOffset = bufferOffset;
@@ -233,7 +233,7 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldGenerateBasicMessage() throws Exception
+    void shouldGenerateBasicMessage() throws Exception
     {
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
         generator().generate();
@@ -248,7 +248,7 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldGenerateRepeatingGroupDecoder() throws Exception
+    void shouldGenerateRepeatingGroupDecoder() throws Exception
     {
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
         generator().generate();
@@ -269,7 +269,7 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldGenerateReadOnlyMessage() throws Exception
+    void shouldGenerateReadOnlyMessage() throws Exception
     {
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
         generator().generate();
@@ -284,7 +284,7 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldGenerateVarDataCodecs() throws Exception
+    void shouldGenerateVarDataCodecs() throws Exception
     {
         final String expectedManufacturer = "Ford";
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
@@ -302,7 +302,7 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldGenerateCompositeDecoding() throws Exception
+    void shouldGenerateCompositeDecoding() throws Exception
     {
         final int expectedEngineCapacity = 2000;
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
@@ -320,7 +320,7 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldGenerateBitSetCodecs() throws Exception
+    void shouldGenerateBitSetCodecs() throws Exception
     {
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
 
@@ -338,7 +338,7 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldGenerateEnumCodecs() throws Exception
+    void shouldGenerateEnumCodecs() throws Exception
     {
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
         generator().generate();
@@ -355,7 +355,7 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldGenerateGetString() throws Exception
+    void shouldGenerateGetString() throws Exception
     {
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
         generator().generate();
@@ -374,7 +374,7 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldGenerateGetFixedLengthStringUsingAppendable() throws Exception
+    void shouldGenerateGetFixedLengthStringUsingAppendable() throws Exception
     {
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
         final StringBuilder result = new StringBuilder();
@@ -399,7 +399,7 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldGenerateGetVariableStringUsingAppendable() throws Exception
+    void shouldGenerateGetVariableStringUsingAppendable() throws Exception
     {
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
         final StringBuilder result = new StringBuilder();
@@ -423,7 +423,7 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldGeneratePutCharSequence() throws Exception
+    void shouldGeneratePutCharSequence() throws Exception
     {
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
         generator().generate();
@@ -442,7 +442,7 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldGenerateRepeatingGroupCountLimits() throws Exception
+    void shouldGenerateRepeatingGroupCountLimits() throws Exception
     {
         generator().generate();
 
@@ -459,7 +459,7 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldMarkDeprecatedClasses() throws Exception
+    void shouldMarkDeprecatedClasses() throws Exception
     {
         final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
         final MessageSchema schema = parse(Tests.getLocalResource("deprecated-msg-test-schema.xml"), options);
@@ -518,7 +518,7 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldValidateMissingMutableBufferClass()
+    void shouldValidateMissingMutableBufferClass()
     {
         assertThrows(
             IllegalArgumentException.class,
@@ -526,7 +526,7 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldValidateNotImplementedMutableBufferClass()
+    void shouldValidateNotImplementedMutableBufferClass()
     {
         assertThrows(
             IllegalArgumentException.class,
@@ -534,7 +534,7 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldValidateMissingReadOnlyBufferClass()
+    void shouldValidateMissingReadOnlyBufferClass()
     {
         assertThrows(
             IllegalArgumentException.class,
@@ -542,7 +542,7 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldValidateNotImplementedReadOnlyBufferClass()
+    void shouldValidateNotImplementedReadOnlyBufferClass()
     {
         assertThrows(
             IllegalArgumentException.class,

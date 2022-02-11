@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-public class RewindTest extends EncodedCarTestBase
+class RewindTest extends EncodedCarTestBase
 {
     private static final int MSG_BUFFER_CAPACITY = 4 * 1024;
 
@@ -57,5 +57,4 @@ public class RewindTest extends EncodedCarTestBase
         final ArrayList<Object> passThree = CarDecodeTestUtil.getValues(carDecoder);
         assertEquals(passOne, passThree);
     }
-
 }

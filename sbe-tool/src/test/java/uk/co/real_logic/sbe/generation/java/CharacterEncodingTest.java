@@ -35,7 +35,7 @@ import static org.hamcrest.core.StringContains.containsString;
 import static uk.co.real_logic.sbe.generation.java.JavaUtil.*;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
-public class CharacterEncodingTest
+class CharacterEncodingTest
 {
     private static final String XML_SCHEMA;
 
@@ -118,7 +118,7 @@ public class CharacterEncodingTest
     }
 
     @Test
-    public void shouldUseStandardCharsetsForWellKnowEncodings() throws Exception
+    void shouldUseStandardCharsetsForWellKnowEncodings() throws Exception
     {
         final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
         final MessageSchema schema =

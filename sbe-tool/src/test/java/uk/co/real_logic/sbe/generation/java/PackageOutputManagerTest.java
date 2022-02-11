@@ -26,12 +26,12 @@ import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class PackageOutputManagerTest
+class PackageOutputManagerTest
 {
     private final String tempDirName = System.getProperty("java.io.tmpdir");
 
     @Test
-    public void shouldCreateFileWithinPackage() throws Exception
+    void shouldCreateFileWithinPackage() throws Exception
     {
         final String packageName = "uk.co.real_logic.test";
         final String exampleClassName = "ExampleClassName";

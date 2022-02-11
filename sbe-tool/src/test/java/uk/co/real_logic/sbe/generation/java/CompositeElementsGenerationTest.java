@@ -49,7 +49,7 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.*;
 
-public class CompositeElementsGenerationTest
+class CompositeElementsGenerationTest
 {
     private static final MessageHeaderEncoder MESSAGE_HEADER = new MessageHeaderEncoder();
     private static final MsgEncoder MSG_ENCODER = new MsgEncoder();
@@ -57,7 +57,7 @@ public class CompositeElementsGenerationTest
     private static final int SCHEMA_BUFFER_CAPACITY = 16 * 1024;
 
     @Test
-    public void shouldEncode()
+    void shouldEncode()
     {
         final ByteBuffer encodedMsgBuffer = ByteBuffer.allocate(MSG_BUFFER_CAPACITY);
         encodeTestMessage(encodedMsgBuffer);
@@ -93,7 +93,7 @@ public class CompositeElementsGenerationTest
     }
 
     @Test
-    public void shouldDecode()
+    void shouldDecode()
     {
         final ByteBuffer encodedMsgBuffer = ByteBuffer.allocate(MSG_BUFFER_CAPACITY);
         encodeTestMessage(encodedMsgBuffer);
@@ -124,7 +124,7 @@ public class CompositeElementsGenerationTest
     }
 
     @Test
-    public void shouldDisplay()
+    void shouldDisplay()
     {
         final ByteBuffer encodedMsgBuffer = ByteBuffer.allocate(MSG_BUFFER_CAPACITY);
         encodeTestMessage(encodedMsgBuffer);
@@ -137,14 +137,13 @@ public class CompositeElementsGenerationTest
     }
 
     @Test
-    public void shouldOtfDecode() throws Exception
+    void shouldOtfDecode() throws Exception
     {
         final ByteBuffer encodedSchemaBuffer = ByteBuffer.allocate(SCHEMA_BUFFER_CAPACITY);
         encodeSchema(encodedSchemaBuffer);
 
         final ByteBuffer encodedMsgBuffer = ByteBuffer.allocate(MSG_BUFFER_CAPACITY);
         encodeTestMessage(encodedMsgBuffer);
-
 
         encodedSchemaBuffer.flip();
         final Ir ir = decodeIr(encodedSchemaBuffer);

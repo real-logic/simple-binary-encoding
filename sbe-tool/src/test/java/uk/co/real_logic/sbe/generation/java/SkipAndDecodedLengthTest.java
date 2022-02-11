@@ -25,7 +25,7 @@ import java.nio.ByteBuffer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class SkipAndDecodedLengthTest extends EncodedCarTestBase
+class SkipAndDecodedLengthTest extends EncodedCarTestBase
 {
     private static final int MSG_BUFFER_CAPACITY = 4 * 1024;
 

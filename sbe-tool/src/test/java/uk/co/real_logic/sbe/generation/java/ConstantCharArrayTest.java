@@ -29,7 +29,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.StringContains.containsString;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
-public class ConstantCharArrayTest
+class ConstantCharArrayTest
 {
     private static final Class<?> BUFFER_CLASS = MutableDirectBuffer.class;
     private static final String BUFFER_NAME = BUFFER_CLASS.getName();
@@ -37,7 +37,7 @@ public class ConstantCharArrayTest
     private static final String READ_ONLY_BUFFER_NAME = READ_ONLY_BUFFER_CLASS.getName();
 
     @Test
-    public void shouldGenerateConstCharArrayMethods() throws Exception
+    void shouldGenerateConstCharArrayMethods() throws Exception
     {
         final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
         final MessageSchema schema = parse(Tests.getLocalResource("issue505.xml"), options);

@@ -36,7 +36,7 @@ import static org.hamcrest.Matchers.*;
 import static uk.co.real_logic.sbe.generation.java.ReflectionUtil.*;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
-public class FixedSizeDataGeneratorTest
+class FixedSizeDataGeneratorTest
 {
     private static final Class<?> BUFFER_CLASS = MutableDirectBuffer.class;
     private static final String BUFFER_NAME = BUFFER_CLASS.getName();
@@ -48,7 +48,7 @@ public class FixedSizeDataGeneratorTest
     private Ir ir;
 
     @BeforeEach
-    public void setUp() throws Exception
+    void setUp() throws Exception
     {
         final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
         final MessageSchema schema = parse(Tests.getLocalResource("extension-schema.xml"), options);
@@ -62,7 +62,7 @@ public class FixedSizeDataGeneratorTest
     }
 
     @Test
-    public void shouldGeneratePutAndGetByteArrayForFixedLengthBlob() throws Exception
+    void shouldGeneratePutAndGetByteArrayForFixedLengthBlob() throws Exception
     {
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
 
@@ -96,7 +96,7 @@ public class FixedSizeDataGeneratorTest
     }
 
     @Test
-    public void shouldGeneratePutAndGetDirectBufferForFixedLengthBlob() throws Exception
+    void shouldGeneratePutAndGetDirectBufferForFixedLengthBlob() throws Exception
     {
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
 
@@ -130,7 +130,7 @@ public class FixedSizeDataGeneratorTest
     }
 
     @Test
-    public void shouldGenerateWrapForFixedLengthBlob() throws Exception
+    void shouldGenerateWrapForFixedLengthBlob() throws Exception
     {
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
 

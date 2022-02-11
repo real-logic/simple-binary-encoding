@@ -21,7 +21,7 @@ import baseline.OptionalExtrasDecoder;
 
 import java.util.ArrayList;
 
-public class CarDecodeTestUtil
+class CarDecodeTestUtil
 {
     static ArrayList<Object> getValues(final CarDecoder carDecoder)
     {

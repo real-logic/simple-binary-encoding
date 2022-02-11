@@ -39,7 +39,7 @@ import static uk.co.real_logic.sbe.generation.java.ReflectionUtil.*;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 @SuppressWarnings("MethodLength")
-public class SchemaExtensionTest
+class SchemaExtensionTest
 {
     private static final Class<?> BUFFER_CLASS = MutableDirectBuffer.class;
     private static final String BUFFER_NAME = BUFFER_CLASS.getName();
@@ -51,7 +51,7 @@ public class SchemaExtensionTest
     private Ir ir;
 
     @BeforeEach
-    public void setup() throws Exception
+    void setup() throws Exception
     {
         final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
         final MessageSchema schema = parse(Tests.getLocalResource("extension-schema.xml"), options);
@@ -65,7 +65,7 @@ public class SchemaExtensionTest
     }
 
     @Test
-    public void testMessage1() throws Exception
+    void testMessage1() throws Exception
     {
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
 
@@ -186,7 +186,7 @@ public class SchemaExtensionTest
     }
 
     @Test
-    public void testMessage2() throws Exception
+    void testMessage2() throws Exception
     {
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
 
