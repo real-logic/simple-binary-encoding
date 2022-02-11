@@ -16,9 +16,7 @@
 
 #include <gtest/gtest.h>
 
-#include "issue889/LotType.h"
-
-using namespace issue889;
+#include "issue889/lotType.h"
 
 class Issue889Test : public testing::Test
 {
@@ -26,5 +24,8 @@ class Issue889Test : public testing::Test
 
 TEST_F(Issue889Test, shouldGenerateSpecalisedNullValue)
 {
-    EXPECT_EQ(LotType::get(0), LotType::NULL_VALUE);
+    issue889_lotType lot_type;
+
+    EXPECT_TRUE(issue889_lotType_get(0, &lot_type));
+    EXPECT_EQ(lot_type, issue889_lotType::issue889_lotType_NULL_VALUE);
 }
