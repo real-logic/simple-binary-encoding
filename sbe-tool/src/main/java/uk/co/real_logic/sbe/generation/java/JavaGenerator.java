@@ -3474,7 +3474,7 @@ public class JavaGenerator implements CodeGenerator
 
             final String groupName = formatPropertyName(groupToken.name());
             final String groupDecoderName = decoderName(groupToken.name());
-            
+
             append(sb, indent, "int " + groupName + "OriginalOffset = " + groupName + ".offset;");
             append(sb, indent, "int " + groupName + "OriginalIndex = " + groupName + ".index;");
 
