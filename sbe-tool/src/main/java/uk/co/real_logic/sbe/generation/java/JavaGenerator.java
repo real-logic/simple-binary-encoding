@@ -3475,12 +3475,12 @@ public class JavaGenerator implements CodeGenerator
             final String groupName = formatPropertyName(groupToken.name());
             final String groupDecoderName = decoderName(groupToken.name());
 
-            append(sb, indent, "int " + groupName + "OriginalOffset = " + groupName + ".offset;");
-            append(sb, indent, "int " + groupName + "OriginalIndex = " + groupName + ".index;");
-
             append(
                 sb, indent, "builder.append(\"" + groupName + Separator.KEY_VALUE + Separator.BEGIN_GROUP + "\");");
-            append(sb, indent, groupDecoderName + " " + groupName + " = " + groupName + "();");
+            append(sb, indent, "final int " + groupName + "OriginalOffset = " + groupName + ".offset;");
+            append(sb, indent, "final int " + groupName + "OriginalIndex = " + groupName + ".index;");
+            append(sb, indent, "final " + groupDecoderName + " " + groupName + " = " + groupName + "();");
+
             append(sb, indent, "if (" + groupName + ".count() > 0)");
             append(sb, indent, "{");
             append(sb, indent, "    while (" + groupName + ".hasNext())");
@@ -3490,10 +3490,11 @@ public class JavaGenerator implements CodeGenerator
             append(sb, indent, "    }");
             append(sb, indent, "    builder.setLength(builder.length() - 1);");
             append(sb, indent, "}");
-            Separator.END_GROUP.appendToGeneratedBuilder(sb, indent);
 
             append(sb, indent, groupName + ".offset = " + groupName + "OriginalOffset;");
             append(sb, indent, groupName + ".index = " + groupName + "OriginalIndex;");
+            Separator.END_GROUP.appendToGeneratedBuilder(sb, indent);
+
 
             lengthBeforeLastGeneratedSeparator = sb.length();
             Separator.FIELD.appendToGeneratedBuilder(sb, indent);
