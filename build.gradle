@@ -774,9 +774,9 @@ task runJavaBenchmarks(type: Exec, dependsOn: 'sbe-benchmarks:jar') {
 }
 
 task testReport(type: TestReport) {
-    destinationDir = file("$buildDir/reports/allTests")
+    destinationDirectory = file("$buildDir/reports/allTests")
     // Include the results from the `test` task in all sub-projects
-    reportOn subprojects*.test
+    testResults.setFrom(subprojects*.test)
 }
 
 final codecsDir = project.file('sbe-tool/src/main/java/uk/co/real_logic/sbe/ir/generated')
@@ -821,7 +821,7 @@ tasks.named('dependencyUpdates').configure {
 tasks.findByName('build').dependsOn verifyJavaIrCodecsInSync
 
 wrapper {
-    gradleVersion = '7.3.3'
+    gradleVersion = '7.4.1'
     distributionType = 'ALL'
 }
 
