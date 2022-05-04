@@ -1673,6 +1673,7 @@ public class JavaGenerator implements CodeGenerator
                 "/**\n" +
                 " * Meta attribute enum for selecting a particular meta attribute value.\n" +
                 " */\n" +
+                " @SuppressWarnings(\"all\")\n" +
                 "public enum MetaAttribute\n" +
                 "{\n" +
                 "    /**\n" +
@@ -1700,7 +1701,7 @@ public class JavaGenerator implements CodeGenerator
         final StringBuilder sb = new StringBuilder();
 
         generateTypeJavadoc(sb, BASE_INDENT, typeToken);
-        sb.append("public enum ").append(name).append("\n{\n");
+        sb.append("@SuppressWarnings(\"all\")\n").append("public enum ").append(name).append("\n{\n");
 
         return sb;
     }

@@ -5,6 +5,7 @@ package uk.co.real_logic.sbe.ir.generated;
 /**
  * Primitive types in type system.
  */
+@SuppressWarnings("all")
 public enum PrimitiveTypeCodec
 {
 

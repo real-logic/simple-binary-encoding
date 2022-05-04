@@ -5,6 +5,7 @@ package uk.co.real_logic.sbe.ir.generated;
 /**
  * Token signal type in IR.
  */
+@SuppressWarnings("all")
 public enum SignalCodec
 {
 

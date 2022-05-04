@@ -4,6 +4,7 @@ package uk.co.real_logic.sbe.ir.generated;
 /**
  * Meta attribute enum for selecting a particular meta attribute value.
  */
+ @SuppressWarnings("all")
 public enum MetaAttribute
 {
     /**

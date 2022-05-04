@@ -5,6 +5,7 @@ package uk.co.real_logic.sbe.ir.generated;
 /**
  * Field presence declaration.
  */
+@SuppressWarnings("all")
 public enum PresenceCodec
 {
 

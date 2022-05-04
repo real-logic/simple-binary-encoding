@@ -5,6 +5,7 @@ package uk.co.real_logic.sbe.ir.generated;
 /**
  * Number encoding byte order.
  */
+@SuppressWarnings("all")
 public enum ByteOrderCodec
 {
 
