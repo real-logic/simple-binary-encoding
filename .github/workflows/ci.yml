@@ -13,8 +13,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.java.installations.auto-detect=false -Dorg.gradle.warning.mode=fail"
-  CMAKE_VERSION: "3.6.1"
+  GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.java.installations.auto-detect=false -Dorg.gradle.warning.mode=fail'
+  CMAKE_VERSION: '3.14.7'
 
 jobs:
   java-build:
@@ -142,7 +142,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: [ '6.0', '7', '8', '9', '10', '11', '12', '13' ]
+        version: [ '6.0', '7', '8', '9', '10', '11', '12', '13', '14' ]
     env:
       CC: clang-${{ matrix.version }}
       CXX: clang++-${{ matrix.version }}
