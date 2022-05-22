@@ -48,7 +48,7 @@ def mockitoVersion = '4.5.1'
 def junitVersion = '5.8.2'
 def jmhVersion = '1.35'
 def agronaVersion = '1.15.2'
-def agronaVersionRange = '[1.15,2.0[' // allow any release >= 1.15.0 and < 2.0.0
+def agronaVersionRange = '[1.15.2,2.0[' // allow any release >= 1.15.2 and < 2.0.0
 
 def sbeGroup = 'uk.co.real-logic'
 def sbeVersion = file('version.txt').text.trim()
