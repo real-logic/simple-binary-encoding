@@ -86,7 +86,7 @@ public class RustOutputManager implements OutputManager
     }
 
     /**
-     * Creates a new Cargo.toml file
+     * Creates a new Cargo.toml file.
      * <p>
      * @return a {@link java.io.Writer} to which the crate definition should be written.
      * @throws IOException if an issue occurs when creating the file.

@@ -19,8 +19,10 @@ import java.io.IOException;
 import java.io.Writer;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.stream.Stream;
 
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.co.real_logic.sbe.generation.rust.RustGenerator.*;
@@ -58,13 +60,16 @@ class LibRsDef
             indent(libRs, 0, "use ::core::{convert::TryInto};\n\n");
 
             final ArrayList<String> modules = new ArrayList<>();
-            Files.walk(outputManager.getSrcDirPath())
-                .filter(Files::isRegularFile)
-                .map((path) -> path.getFileName().toString())
-                .filter((fileName) -> fileName.endsWith(".rs"))
-                .filter((fileName) -> !fileName.equals("lib.rs"))
-                .map((fileName) -> fileName.substring(0, fileName.length() - 3))
-                .forEach(modules::add);
+            try (Stream<Path> walk = Files.walk(outputManager.getSrcDirPath()))
+            {
+                walk
+                    .filter(Files::isRegularFile)
+                    .map((path) -> path.getFileName().toString())
+                    .filter((fileName) -> fileName.endsWith(".rs"))
+                    .filter((fileName) -> !fileName.equals("lib.rs"))
+                    .map((fileName) -> fileName.substring(0, fileName.length() - 3))
+                    .forEach(modules::add);
+            }
 
             // add modules
             for (final String mod : modules)

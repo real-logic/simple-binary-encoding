@@ -27,6 +27,7 @@ import uk.co.real_logic.sbe.ir.Signal;
 import uk.co.real_logic.sbe.ir.Token;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -208,32 +209,34 @@ public class RustGenerator implements CodeGenerator
         final List<Token> tokens,
         final int level)
     {
-        Generators.forEachField(tokens, (fieldToken, typeToken) ->
-        {
-            try
+        Generators.forEachField(
+            tokens,
+            (fieldToken, typeToken) ->
             {
-                final String name = fieldToken.name();
-                switch (typeToken.signal())
+                try
                 {
-                    case ENCODING:
-                        generatePrimitiveEncoder(sb, level, typeToken, name);
-                        break;
-                    case BEGIN_ENUM:
-                        generateEnumEncoder(sb, level, fieldToken, typeToken, name);
-                        break;
-                    case BEGIN_SET:
-                        generateBitSetEncoder(sb, level, typeToken, name);
-                        break;
-                    case BEGIN_COMPOSITE:
-                        generateCompositeEncoder(sb, level, typeToken, name);
-                        break;
+                    final String name = fieldToken.name();
+                    switch (typeToken.signal())
+                    {
+                        case ENCODING:
+                            generatePrimitiveEncoder(sb, level, typeToken, name);
+                            break;
+                        case BEGIN_ENUM:
+                            generateEnumEncoder(sb, level, fieldToken, typeToken, name);
+                            break;
+                        case BEGIN_SET:
+                            generateBitSetEncoder(sb, level, typeToken, name);
+                            break;
+                        case BEGIN_COMPOSITE:
+                            generateCompositeEncoder(sb, level, typeToken, name);
+                            break;
+                    }
                 }
-            }
-            catch (final IOException ex)
-            {
-                throw new RuntimeException(ex);
-            }
-        });
+                catch (final IOException ex)
+                {
+                    throw new UncheckedIOException(ex);
+                }
+            });
     }
 
     static void generateEncoderGroups(
@@ -489,36 +492,38 @@ public class RustGenerator implements CodeGenerator
         final List<Token> tokens,
         final int level)
     {
-        Generators.forEachField(tokens, (fieldToken, typeToken) ->
-        {
-            try
+        Generators.forEachField(
+            tokens,
+            (fieldToken, typeToken) ->
             {
-                final String name = fieldToken.name();
-                final Encoding encoding = typeToken.encoding();
-
-                switch (typeToken.signal())
+                try
                 {
-                    case ENCODING:
-                        generatePrimitiveDecoder(sb, level, fieldToken, typeToken, name, encoding);
-                        break;
-                    case BEGIN_ENUM:
-                        generateEnumDecoder(sb, level, fieldToken, typeToken, name);
-                        break;
-                    case BEGIN_SET:
-                        generateBitSetDecoder(sb, level, typeToken, name);
-                        break;
-                    case BEGIN_COMPOSITE:
-                        generateCompositeDecoder(sb, level, fieldToken, typeToken, name);
-                        break;
-                    default:
-                        throw new UnsupportedOperationException("Unable to handle: " + typeToken);
+                    final String name = fieldToken.name();
+                    final Encoding encoding = typeToken.encoding();
+
+                    switch (typeToken.signal())
+                    {
+                        case ENCODING:
+                            generatePrimitiveDecoder(sb, level, fieldToken, typeToken, name, encoding);
+                            break;
+                        case BEGIN_ENUM:
+                            generateEnumDecoder(sb, level, fieldToken, typeToken, name);
+                            break;
+                        case BEGIN_SET:
+                            generateBitSetDecoder(sb, level, typeToken, name);
+                            break;
+                        case BEGIN_COMPOSITE:
+                            generateCompositeDecoder(sb, level, fieldToken, typeToken, name);
+                            break;
+                        default:
+                            throw new UnsupportedOperationException("Unable to handle: " + typeToken);
+                    }
                 }
-            }
-            catch (final IOException e)
-            {
-                throw new RuntimeException(e);
-            }
-        });
+                catch (final IOException ex)
+                {
+                    throw new UncheckedIOException(ex);
+                }
+            });
     }
 
     private static void generateCompositeDecoder(

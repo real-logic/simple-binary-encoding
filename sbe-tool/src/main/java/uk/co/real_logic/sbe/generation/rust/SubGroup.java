@@ -45,6 +45,7 @@ class SubGroup implements RustGenerator.ParentDef
     {
         final SubGroup subGroup = new SubGroup(name, level, groupToken);
         subGroups.add(subGroup);
+
         return subGroup;
     }
 

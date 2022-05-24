@@ -157,6 +157,7 @@ public class RustUtil
                     final int index = i - 1;
                     return value.substring(0, index).toLowerCase() + value.substring(index);
                 }
+
                 return value;
             }
         }
