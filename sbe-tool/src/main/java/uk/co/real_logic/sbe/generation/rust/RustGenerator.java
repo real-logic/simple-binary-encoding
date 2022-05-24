@@ -746,8 +746,18 @@ public class RustGenerator implements CodeGenerator
         indent(sb, level + 1, "let value = self.get_buf().get_%s_at(self.%s);\n",
             rustPrimitiveType,
             getBufOffset(fieldToken));
-        indent(sb, level + 1, "if value == %s {\n",
-            generateRustLiteral(primitiveType, encoding.applicableNullValue().toString()));
+
+
+        final String literal = generateRustLiteral(primitiveType, encoding.applicableNullValue().toString());
+        if (literal.endsWith("::NAN"))
+        {
+            indent(sb, level + 1, "if value.is_nan() {\n");
+        }
+        else
+        {
+            indent(sb, level + 1, "if value == %s {\n", literal);
+        }
+
         indent(sb, level + 2, "None\n");
         indent(sb, level + 1, "} else {\n");
         indent(sb, level + 2, "Some(value)\n");
