@@ -566,6 +566,7 @@ task generateRustTestCodecs(type: JavaExec) {
             'sbe.target.language': 'Rust',
             'sbe.validation.xsd': validationXsdPath)
     args = ['sbe-tool/src/test/resources/issue435.xml',
+            'sbe-tool/src/test/resources/issue895.xml',
             'sbe-tool/src/test/resources/example-bigendian-test-schema.xml',
     ]
 }
