@@ -13,8 +13,8 @@ fn create_encoder(buffer: &mut Vec<u8>) -> Issue435Encoder {
 #[test]
 fn issue_435_ref_test() -> SbeResult<()> {
     assert_eq!(9, message_header_codec::ENCODED_LENGTH);
-    assert_eq!(1, issue_435_codec::SBE_BLOCK_LENGTH);
-    assert_eq!(0, issue_435_codec::SBE_SCHEMA_VERSION);
+    assert_eq!(1, SBE_BLOCK_LENGTH);
+    assert_eq!(0, SBE_SCHEMA_VERSION);
 
     // encode...
     let mut buffer = vec![0u8; 256];
@@ -24,10 +24,10 @@ fn issue_435_ref_test() -> SbeResult<()> {
     // decode...
     let buf = ReadBuf::new(buffer.as_slice());
     let header = MessageHeaderDecoder::default().wrap(buf, 0);
-    assert_eq!(issue_435_codec::SBE_BLOCK_LENGTH, header.block_length());
-    assert_eq!(issue_435_codec::SBE_SCHEMA_VERSION, header.version());
-    assert_eq!(issue_435_codec::SBE_TEMPLATE_ID, header.template_id());
-    assert_eq!(issue_435_codec::SBE_SCHEMA_ID, header.schema_id());
+    assert_eq!(SBE_BLOCK_LENGTH, header.block_length());
+    assert_eq!(SBE_SCHEMA_VERSION, header.version());
+    assert_eq!(SBE_TEMPLATE_ID, header.template_id());
+    assert_eq!(SBE_SCHEMA_ID, header.schema_id());
     assert_eq!(*SetRef::default().set_one(true), header.s());
 
     let decoder = Issue435Decoder::default().header(header);
