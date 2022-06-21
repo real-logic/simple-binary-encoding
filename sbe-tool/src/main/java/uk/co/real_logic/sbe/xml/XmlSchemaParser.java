@@ -146,6 +146,8 @@ public class XmlSchemaParser
         }
 
         final MessageSchema messageSchema = new MessageSchema(schemaNode, typeByNameMap, messageByIdMap);
+
+        messageSchema.validate(errorHandler);
         errorHandler.checkIfShouldExit();
 
         return messageSchema;

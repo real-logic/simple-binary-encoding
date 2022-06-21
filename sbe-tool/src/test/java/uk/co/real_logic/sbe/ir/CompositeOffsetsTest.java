@@ -27,10 +27,10 @@ import static org.hamcrest.Matchers.is;
 import static uk.co.real_logic.sbe.Tests.getLocalResource;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
-public class CompositeOffsetsTest
+class CompositeOffsetsTest
 {
     @Test
-    public void shouldGenerateOffsetsForFieldsWithEmbeddedComposite() throws Exception
+    void shouldGenerateOffsetsForFieldsWithEmbeddedComposite() throws Exception
     {
         final MessageSchema schema = parse(getLocalResource("composite-offsets-schema.xml"), ParserOptions.DEFAULT);
         final IrGenerator irg = new IrGenerator();

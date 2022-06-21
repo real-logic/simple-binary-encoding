@@ -28,12 +28,12 @@ public abstract class Type
     private final String name;
     private final Presence presence;
     private final String description;
-    private final int sinceVersion;
     private final int deprecated;
     private final String semanticType;
     private final String referencedName;
 
     private int offsetAttribute;
+    private int sinceVersion;
 
     /**
      * Construct a new Type from XML Schema. Called by subclasses to mostly set common fields
@@ -148,6 +148,16 @@ public abstract class Type
     public int sinceVersion()
     {
         return sinceVersion;
+    }
+
+    /**
+     * Set the sinceVersion for the type.
+     *
+     * @param version to be set.
+     */
+    public void sinceVersion(final int version)
+    {
+        sinceVersion = version;
     }
 
     /**

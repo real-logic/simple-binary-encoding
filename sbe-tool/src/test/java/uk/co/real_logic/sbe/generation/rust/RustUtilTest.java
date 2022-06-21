@@ -34,28 +34,28 @@ import static uk.co.real_logic.sbe.generation.rust.RustUtil.cleanUpperAcronyms;
 import static uk.co.real_logic.sbe.generation.rust.RustUtil.formatFunctionName;
 import static uk.co.real_logic.sbe.generation.rust.RustUtil.generateRustLiteral;
 
-public class RustUtilTest
+class RustUtilTest
 {
     @Test
-    public void nullParamToEightBitCharacterThrowsNPE()
+    void nullParamToEightBitCharacterThrowsNPE()
     {
         assertThrows(NullPointerException.class, () -> RustUtil.eightBitCharacter(null));
     }
 
     @Test
-    public void emptyParamToEightBitCharacterThrowsIAE()
+    void emptyParamToEightBitCharacterThrowsIAE()
     {
         assertThrows(IllegalArgumentException.class, () -> RustUtil.eightBitCharacter(""));
     }
 
     @Test
-    public void tooManyCharactersParamToEightBitCharacterThrowsIAE()
+    void tooManyCharactersParamToEightBitCharacterThrowsIAE()
     {
         assertThrows(IllegalArgumentException.class, () -> RustUtil.eightBitCharacter("ABC"));
     }
 
     @Test
-    public void happyPathEightBitCharacter()
+    void happyPathEightBitCharacter()
     {
         final byte aByte = RustUtil.eightBitCharacter("a");
         assertEquals('a', (char)aByte);
@@ -63,7 +63,7 @@ public class RustUtilTest
     }
 
     @Test
-    public void generateRustLiteralsHappyPaths()
+    void generateRustLiteralsHappyPaths()
     {
         assertEquals("65_u8", generateRustLiteral(CHAR, "65"));
         assertEquals("64.1_f64", generateRustLiteral(DOUBLE, "64.1"));
@@ -83,7 +83,7 @@ public class RustUtilTest
     }
 
     @Test
-    public void generateRustLiteralsForUnsignedPrimitiveNulls()
+    void generateRustLiteralsForUnsignedPrimitiveNulls()
     {
         assertEquals("0xff_u8", generateRustLiteral(UINT8, UINT8.nullValue().toString()));
         assertEquals("0xffff_u16", generateRustLiteral(UINT16, UINT16.nullValue().toString()));
@@ -92,19 +92,19 @@ public class RustUtilTest
     }
 
     @Test
-    public void generateRustLiteralNullPrimitiveTypeParam()
+    void generateRustLiteralNullPrimitiveTypeParam()
     {
         assertThrows(NullPointerException.class, () -> generateRustLiteral(null, "65"));
     }
 
     @Test
-    public void generateRustLiteralNullValueParam()
+    void generateRustLiteralNullValueParam()
     {
         assertThrows(NullPointerException.class, () -> generateRustLiteral(INT8, null));
     }
 
     @Test
-    public void testCleanUpperAcronyms()
+    void testCleanUpperAcronyms()
     {
         assertEquals("ABee", cleanUpperAcronyms("ABee"));
         assertEquals("mdEntryTypeBook", cleanUpperAcronyms("MDEntryTypeBook"));
@@ -113,7 +113,7 @@ public class RustUtilTest
     }
 
     @Test
-    public void functionNameCasing()
+    void functionNameCasing()
     {
         assertEquals("", formatFunctionName(""));
         assertEquals("a", formatFunctionName("a"));

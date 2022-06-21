@@ -25,10 +25,10 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
-public class GroupWithDataTest
+class GroupWithDataTest
 {
     @Test
-    public void shouldParseSchemaSuccessfully() throws Exception
+    void shouldParseSchemaSuccessfully() throws Exception
     {
         final MessageSchema schema = parse(Tests.getLocalResource(
             "group-with-data-schema.xml"), ParserOptions.DEFAULT);

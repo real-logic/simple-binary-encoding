@@ -24,10 +24,10 @@ import java.net.URL;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
-public class RelativeXIncludeTest
+class RelativeXIncludeTest
 {
     @Test
-    public void shouldParseFileInSubDir() throws Exception
+    void shouldParseFileInSubDir() throws Exception
     {
         final URL testResource = getClass().getClassLoader().getResource("sub/basic-schema.xml");
         assertNotNull(testResource);

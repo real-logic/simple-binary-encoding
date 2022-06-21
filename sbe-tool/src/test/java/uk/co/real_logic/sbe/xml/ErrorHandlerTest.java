@@ -41,10 +41,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
-public class ErrorHandlerTest
+class ErrorHandlerTest
 {
     @Test
-    public void shouldNotExitOnTypeErrorsAndWarnings() throws Exception
+    void shouldNotExitOnTypeErrorsAndWarnings() throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -93,7 +93,7 @@ public class ErrorHandlerTest
     }
 
     @Test
-    public void shouldExitAfterTypes() throws Exception
+    void shouldExitAfterTypes() throws Exception
     {
         try
         {
@@ -110,7 +110,7 @@ public class ErrorHandlerTest
     }
 
     @Test
-    public void shouldExitAfterTypesWhenDupTypesDefined() throws Exception
+    void shouldExitAfterTypesWhenDupTypesDefined() throws Exception
     {
         try
         {
@@ -119,7 +119,7 @@ public class ErrorHandlerTest
         }
         catch (final IllegalStateException ex)
         {
-            assertEquals("had 1 warnings", ex.getMessage());
+            assertEquals("had 1 warning", ex.getMessage());
             return;
         }
 
@@ -127,7 +127,7 @@ public class ErrorHandlerTest
     }
 
     @Test
-    public void shouldExitAfterMessageWhenDupMessageIdsDefined() throws Exception
+    void shouldExitAfterMessageWhenDupMessageIdsDefined() throws Exception
     {
         try
         {
@@ -136,7 +136,7 @@ public class ErrorHandlerTest
         }
         catch (final IllegalStateException ex)
         {
-            assertEquals("had 1 errors", ex.getMessage());
+            assertEquals("had 1 error", ex.getMessage());
             return;
         }
 
@@ -144,7 +144,7 @@ public class ErrorHandlerTest
     }
 
     @Test
-    public void shouldExitAfterMessage() throws Exception
+    void shouldExitAfterMessage() throws Exception
     {
         try
         {
@@ -161,7 +161,7 @@ public class ErrorHandlerTest
     }
 
     @Test
-    public void shouldExitAfterMessageWhenGroupDimensionsNotComposite() throws Exception
+    void shouldExitAfterMessageWhenGroupDimensionsNotComposite() throws Exception
     {
         try
         {
@@ -170,7 +170,7 @@ public class ErrorHandlerTest
         }
         catch (final IllegalStateException ex)
         {
-            assertEquals("had 1 errors", ex.getMessage());
+            assertEquals("had 1 error", ex.getMessage());
             return;
         }
 
@@ -178,7 +178,7 @@ public class ErrorHandlerTest
     }
 
     @Test
-    public void shouldExitAfterTypesWhenCompositeOffsetsIncorrect() throws Exception
+    void shouldExitAfterTypesWhenCompositeOffsetsIncorrect() throws Exception
     {
         try
         {
@@ -195,7 +195,7 @@ public class ErrorHandlerTest
     }
 
     @Test
-    public void shouldExitAfterTypesWhenCompositeHasInvalidTypes() throws Exception
+    void shouldExitAfterTypesWhenCompositeHasInvalidTypes() throws Exception
     {
         try
         {
@@ -212,7 +212,7 @@ public class ErrorHandlerTest
     }
 
     @Test
-    public void shouldExitInvalidFieldNames() throws Exception
+    void shouldExitInvalidFieldNames() throws Exception
     {
         try
         {

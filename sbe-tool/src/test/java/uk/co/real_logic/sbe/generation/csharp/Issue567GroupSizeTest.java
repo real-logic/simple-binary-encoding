@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-public class Issue567GroupSizeTest
+class Issue567GroupSizeTest
 {
     private static final String ERR_MSG =
         "WARNING: at <sbe:message name=\"issue567\"> <group name=\"group\"> \"numInGroup\" should be UINT8 or UINT16";
@@ -51,7 +51,7 @@ public class Issue567GroupSizeTest
     private final PrintStream mockErr = mock(PrintStream.class);
 
     @Test
-    public void shouldThrowWhenUsingATypeThatIsNotConstrainedToFitInAnIntAsTheGroupSize() throws IOException
+    void shouldThrowWhenUsingATypeThatIsNotConstrainedToFitInAnIntAsTheGroupSize() throws IOException
     {
         final ParserOptions options = ParserOptions.builder()
             .errorPrintStream(mockErr)
@@ -65,7 +65,7 @@ public class Issue567GroupSizeTest
     }
 
     @Test
-    public void shouldGenerateWhenUsingATypeThatIsConstrainedToFitInAnIntAsTheGroupSize() throws Exception
+    void shouldGenerateWhenUsingATypeThatIsConstrainedToFitInAnIntAsTheGroupSize() throws Exception
     {
         final ParserOptions options = ParserOptions.builder()
             .errorPrintStream(mockErr)

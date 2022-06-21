@@ -25,10 +25,10 @@ import static org.hamcrest.core.Is.is;
 import static uk.co.real_logic.sbe.Tests.getLocalResource;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
-public class ValueRefsTest
+class ValueRefsTest
 {
     @Test
-    public void shouldGenerateValueRefToEnum() throws Exception
+    void shouldGenerateValueRefToEnum() throws Exception
     {
         final MessageSchema schema = parse(getLocalResource("value-ref-schema.xml"), ParserOptions.DEFAULT);
         final IrGenerator irg = new IrGenerator();

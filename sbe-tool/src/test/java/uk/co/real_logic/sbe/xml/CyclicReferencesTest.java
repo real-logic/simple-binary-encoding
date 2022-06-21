@@ -22,10 +22,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
-public class CyclicReferencesTest
+class CyclicReferencesTest
 {
     @Test
-    public void shouldTestForCyclicRefs() throws Exception
+    void shouldTestForCyclicRefs() throws Exception
     {
         try
         {

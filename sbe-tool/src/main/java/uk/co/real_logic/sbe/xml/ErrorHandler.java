@@ -104,11 +104,11 @@ public class ErrorHandler
     {
         if (errors > 0)
         {
-            throw new IllegalStateException("had " + errors + " errors");
+            throw new IllegalStateException("had " + errors + (errors > 1 ? " errors" : " error"));
         }
         else if (warnings > 0 && warningsFatal)
         {
-            throw new IllegalStateException("had " + warnings + " warnings");
+            throw new IllegalStateException("had " + warnings + (warnings > 1 ? " warnings" : " warning"));
         }
     }
 

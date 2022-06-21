@@ -28,10 +28,10 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
-public class CppGeneratorTest
+class CppGeneratorTest
 {
     @Test
-    public void shouldUseGeneratedLiteralForConstantOneWhenGeneratingBitsetCode() throws Exception
+    void shouldUseGeneratedLiteralForConstantOneWhenGeneratingBitsetCode() throws Exception
     {
         final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
         final MessageSchema schema = parse(Tests.getLocalResource("issue827.xml"), options);

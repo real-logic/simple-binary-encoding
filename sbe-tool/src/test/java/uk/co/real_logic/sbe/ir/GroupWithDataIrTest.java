@@ -28,10 +28,10 @@ import static org.hamcrest.core.Is.is;
 import static uk.co.real_logic.sbe.Tests.getLocalResource;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
-public class GroupWithDataIrTest
+class GroupWithDataIrTest
 {
     @Test
-    public void shouldGenerateIrForSingleVarDataInRepeatingGroup() throws Exception
+    void shouldGenerateIrForSingleVarDataInRepeatingGroup() throws Exception
     {
         final MessageSchema schema = parse(getLocalResource("group-with-data-schema.xml"), ParserOptions.DEFAULT);
         final IrGenerator irg = new IrGenerator();
@@ -72,7 +72,7 @@ public class GroupWithDataIrTest
     }
 
     @Test
-    public void shouldGenerateIrForMultipleVarDataInRepeatingGroup() throws Exception
+    void shouldGenerateIrForMultipleVarDataInRepeatingGroup() throws Exception
     {
         final MessageSchema schema = parse(getLocalResource("group-with-data-schema.xml"), ParserOptions.DEFAULT);
         final IrGenerator irg = new IrGenerator();
@@ -100,7 +100,7 @@ public class GroupWithDataIrTest
     }
 
     @Test
-    public void shouldGenerateIrForVarDataInNestedRepeatingGroup() throws Exception
+    void shouldGenerateIrForVarDataInNestedRepeatingGroup() throws Exception
     {
         final MessageSchema schema = parse(getLocalResource("group-with-data-schema.xml"), ParserOptions.DEFAULT);
         final IrGenerator irg = new IrGenerator();
@@ -132,7 +132,7 @@ public class GroupWithDataIrTest
     }
 
     @Test
-    public void shouldGenerateIrForOnlyMultipleVarDataInRepeatingGroup() throws Exception
+    void shouldGenerateIrForOnlyMultipleVarDataInRepeatingGroup() throws Exception
     {
         final MessageSchema schema = parse(getLocalResource("group-with-data-schema.xml"), ParserOptions.DEFAULT);
         final IrGenerator irg = new IrGenerator();

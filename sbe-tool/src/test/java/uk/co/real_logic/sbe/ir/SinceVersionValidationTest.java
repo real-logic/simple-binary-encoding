@@ -16,25 +16,29 @@
 package uk.co.real_logic.sbe.ir;
 
 import org.junit.jupiter.api.Test;
-import uk.co.real_logic.sbe.xml.IrGenerator;
-import uk.co.real_logic.sbe.xml.MessageSchema;
 import uk.co.real_logic.sbe.xml.ParserOptions;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static uk.co.real_logic.sbe.Tests.getLocalResource;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
-class CompositeRefsTest
+class SinceVersionValidationTest
 {
     @Test
-    void shouldGenerateIrForCompositeRefs() throws Exception
+    void shouldErrorOnTypeWithGreaterSinceVersion() throws Exception
     {
-        final MessageSchema schema = parse(getLocalResource("issue496.xml"), ParserOptions.DEFAULT);
-        final IrGenerator irg = new IrGenerator();
-        final Ir ir = irg.generate(schema);
+        try
+        {
+            final ParserOptions options = ParserOptions.builder().suppressOutput(true).build();
+            parse(getLocalResource("error-handler-since-version.xml"), options);
+        }
+        catch (final IllegalStateException ex)
+        {
+            assertEquals("had 5 errors", ex.getMessage());
+            return;
+        }
 
-        assertNotNull(ir.getType("compositeOne"));
-        assertNotNull(ir.getType("compositeTwo"));
-        assertNotNull(ir.getType("compositeThree"));
+        fail("expected IllegalStateException");
     }
 }

@@ -23,17 +23,17 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-public class TargetCodeGeneratorTest
+class TargetCodeGeneratorTest
 {
     @Test
-    public void shouldThrowOnNoTargetLanguage()
+    void shouldThrowOnNoTargetLanguage()
     {
         assertThrows(IllegalArgumentException.class, () ->
             SbeTool.generate(mock(Ir.class), ".", "none"));
     }
 
     @Test
-    public void shouldLoadAndInstantiateNonStandardTargetLanguage() throws Exception
+    void shouldLoadAndInstantiateNonStandardTargetLanguage() throws Exception
     {
         final Ir ir = mock(Ir.class);
         final String outputDir = ".";

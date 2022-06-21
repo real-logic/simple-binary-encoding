@@ -25,10 +25,10 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
-public class EmbeddedLengthAndCountFileTest
+class EmbeddedLengthAndCountFileTest
 {
     @Test
-    public void shouldHandleEmbeddedCountForGroup() throws Exception
+    void shouldHandleEmbeddedCountForGroup() throws Exception
     {
         final MessageSchema schema = parse(
             Tests.getLocalResource("embedded-length-and-count-schema.xml"), ParserOptions.DEFAULT);
@@ -43,7 +43,7 @@ public class EmbeddedLengthAndCountFileTest
     }
 
     @Test
-    public void shouldHandleEmbeddedLengthForData() throws Exception
+    void shouldHandleEmbeddedLengthForData() throws Exception
     {
         parse(Tests.getLocalResource("embedded-length-and-count-schema.xml"), ParserOptions.DEFAULT);
     }

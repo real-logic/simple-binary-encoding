@@ -15,48 +15,43 @@
  */
 package uk.co.real_logic.sbe.xml;
 
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import uk.co.real_logic.sbe.Tests;
+
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
-public class BasicSchemaFileTest
+class BasicSchemaFileTest
 {
     @Test
-    public void shouldHandleBasicFile()
-        throws Exception
+    void shouldHandleBasicFile() throws Exception
     {
         parse(Tests.getLocalResource("basic-schema.xml"), ParserOptions.DEFAULT);
     }
 
     @Test
-    public void shouldHandleConstantHeaderField()
-        throws Exception
+    void shouldHandleConstantHeaderField() throws Exception
     {
         parse(Tests.getLocalResource("basic-schema-constant-header-field.xml"), ParserOptions.DEFAULT);
     }
 
     @Test
-    public void shouldHandleBasicFileWithGroup()
-        throws Exception
+    void shouldHandleBasicFileWithGroup() throws Exception
     {
         parse(Tests.getLocalResource("basic-group-schema.xml"), ParserOptions.DEFAULT);
     }
 
     @Test
-    public void shouldHandleBasicFileWithVariableLengthData()
-        throws Exception
+    void shouldHandleBasicFileWithVariableLengthData() throws Exception
     {
         parse(Tests.getLocalResource("basic-variable-length-schema.xml"), ParserOptions.DEFAULT);
     }
 
     @Test
-    public void shouldHandleBasicAllTypes()
-        throws Exception
+    void shouldHandleBasicAllTypes() throws Exception
     {
         final MessageSchema schema = parse(Tests.getLocalResource("basic-types-schema.xml"), ParserOptions.DEFAULT);
         final List<Field> fields = schema.getMessage(1).fields();

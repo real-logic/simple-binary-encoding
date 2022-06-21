@@ -43,10 +43,10 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.*;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
-public class EnumTypeTest
+class EnumTypeTest
 {
     @Test
-    public void shouldHandleBinaryEnumType() throws Exception
+    void shouldHandleBinaryEnumType() throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -67,7 +67,7 @@ public class EnumTypeTest
     }
 
     @Test
-    public void shouldHandleBooleanEnumType() throws Exception
+    void shouldHandleBooleanEnumType() throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -88,7 +88,7 @@ public class EnumTypeTest
     }
 
     @Test
-    public void shouldHandleOptionalBooleanEnumType() throws Exception
+    void shouldHandleOptionalBooleanEnumType() throws Exception
     {
         final String nullValueStr = "255";
         final String testXmlString =
@@ -112,7 +112,7 @@ public class EnumTypeTest
     }
 
     @Test
-    public void shouldHandleEnumTypeList() throws Exception
+    void shouldHandleEnumTypeList() throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -156,7 +156,7 @@ public class EnumTypeTest
     }
 
     @Test
-    public void shouldHandleCharEnumEncodingType() throws Exception
+    void shouldHandleCharEnumEncodingType() throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -179,7 +179,7 @@ public class EnumTypeTest
     }
 
     @Test
-    public void shouldThrowExceptionWhenIllegalEncodingTypeSpecified()
+    void shouldThrowExceptionWhenIllegalEncodingTypeSpecified()
     {
         final String testXmlString =
             "<types>" +
@@ -194,7 +194,7 @@ public class EnumTypeTest
     }
 
     @Test
-    public void shouldThrowExceptionWhenDuplicateValueSpecified()
+    void shouldThrowExceptionWhenDuplicateValueSpecified()
     {
         final String testXmlString =
             "<types>" +
@@ -210,7 +210,7 @@ public class EnumTypeTest
     }
 
     @Test
-    public void shouldThrowExceptionWhenDuplicateNameSpecified()
+    void shouldThrowExceptionWhenDuplicateNameSpecified()
     {
         final String testXmlString =
             "<types>" +
@@ -226,7 +226,7 @@ public class EnumTypeTest
     }
 
     @Test
-    public void shouldThrowExceptionWhenImplicitNullValueIsUsed()
+    void shouldThrowExceptionWhenImplicitNullValueIsUsed()
     {
         final String testXmlString =
             "<types>" +
@@ -241,7 +241,7 @@ public class EnumTypeTest
     }
 
     @Test
-    public void shouldThrowExceptionWhenExplicitNullValueIsUsed()
+    void shouldThrowExceptionWhenExplicitNullValueIsUsed()
     {
         final String testXmlString =
             "<types>" +
@@ -257,7 +257,7 @@ public class EnumTypeTest
 
     @ParameterizedTest
     @ValueSource(longs = { (long)Integer.MIN_VALUE - 1, (long)Integer.MAX_VALUE + 1 })
-    public void shouldThrowExceptionWhenIntValueIsOutOfRange(final long value)
+    void shouldThrowExceptionWhenIntValueIsOutOfRange(final long value)
     {
         final String testXmlString =
             "<types>" +
@@ -272,7 +272,7 @@ public class EnumTypeTest
     }
 
     @Test
-    public void shouldThrowExceptionIfEnumValueIsOutOfCustomValueRange() throws IOException
+    void shouldThrowExceptionIfEnumValueIsOutOfCustomValueRange() throws IOException
     {
         final InputStream file = Tests.getLocalResource("error-handler-enum-violates-min-max-value-range.xml");
         final IllegalStateException exception = assertThrows(IllegalStateException.class,
@@ -281,7 +281,7 @@ public class EnumTypeTest
     }
 
     @Test
-    public void shouldHandleEncodingTypesWithNamedTypes() throws Exception
+    void shouldHandleEncodingTypesWithNamedTypes() throws Exception
     {
         final MessageSchema schema = parse(Tests.getLocalResource(
             "encoding-types-schema.xml"), ParserOptions.DEFAULT);

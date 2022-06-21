@@ -28,10 +28,10 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 /*
  * Tests associated with offset and blockLength calculation and validation
  */
-public class OffsetFileTest
+class OffsetFileTest
 {
     @Test
-    public void shouldHandleAllTypeOffsets() throws Exception
+    void shouldHandleAllTypeOffsets() throws Exception
     {
         final MessageSchema schema = parse(Tests.getLocalResource(
             "basic-types-schema.xml"), ParserOptions.DEFAULT);
@@ -50,7 +50,7 @@ public class OffsetFileTest
     }
 
     @Test
-    public void shouldHandleAllTypeOffsetsSetByXml() throws Exception
+    void shouldHandleAllTypeOffsetsSetByXml() throws Exception
     {
         final MessageSchema schema = parse(Tests.getLocalResource(
             "basic-types-schema.xml"), ParserOptions.DEFAULT);
@@ -69,7 +69,7 @@ public class OffsetFileTest
     }
 
     @Test
-    public void shouldCalculateGroupOffsetWithNoPaddingFromBlockLength() throws Exception
+    void shouldCalculateGroupOffsetWithNoPaddingFromBlockLength() throws Exception
     {
         final MessageSchema schema = parse(Tests.getLocalResource(
             "block-length-schema.xml"), ParserOptions.DEFAULT);
@@ -92,7 +92,7 @@ public class OffsetFileTest
     }
 
     @Test
-    public void shouldCalculateGroupOffsetWithPaddingFromBlockLength() throws Exception
+    void shouldCalculateGroupOffsetWithPaddingFromBlockLength() throws Exception
     {
         final MessageSchema schema = parse(Tests.getLocalResource(
             "block-length-schema.xml"), ParserOptions.DEFAULT);
@@ -114,7 +114,7 @@ public class OffsetFileTest
     }
 
     @Test
-    public void shouldCalculateGroupOffsetWithPaddingFromBlockLengthAndGroupBlockLength() throws Exception
+    void shouldCalculateGroupOffsetWithPaddingFromBlockLengthAndGroupBlockLength() throws Exception
     {
         final MessageSchema schema = parse(Tests.getLocalResource(
             "block-length-schema.xml"), ParserOptions.DEFAULT);
@@ -136,7 +136,7 @@ public class OffsetFileTest
     }
 
     @Test
-    public void shouldCalculateDataOffsetWithPaddingFromBlockLength() throws Exception
+    void shouldCalculateDataOffsetWithPaddingFromBlockLength() throws Exception
     {
         final MessageSchema schema = parse(Tests.getLocalResource(
             "block-length-schema.xml"), ParserOptions.DEFAULT);
@@ -149,7 +149,7 @@ public class OffsetFileTest
     }
 
     @Test
-    public void shouldCalculateCompositeSizeWithOffsetsSpecified() throws Exception
+    void shouldCalculateCompositeSizeWithOffsetsSpecified() throws Exception
     {
         final MessageSchema schema = parse(Tests.getLocalResource(
             "composite-offsets-schema.xml"), ParserOptions.DEFAULT);
@@ -159,7 +159,7 @@ public class OffsetFileTest
     }
 
     @Test
-    public void shouldCalculateDimensionSizeWithOffsetsSpecified() throws Exception
+    void shouldCalculateDimensionSizeWithOffsetsSpecified() throws Exception
     {
         final MessageSchema schema = parse(Tests.getLocalResource(
             "composite-offsets-schema.xml"), ParserOptions.DEFAULT);

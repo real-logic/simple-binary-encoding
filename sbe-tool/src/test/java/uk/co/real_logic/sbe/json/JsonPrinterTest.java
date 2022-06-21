@@ -34,13 +34,13 @@ import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class JsonPrinterTest extends EncodedCarTestBase
+class JsonPrinterTest extends EncodedCarTestBase
 {
     private static final int SCHEMA_BUFFER_CAPACITY = 16 * 1024;
     private static final int MSG_BUFFER_CAPACITY = 4 * 1024;
 
     @Test
-    public void exampleMessagePrintedAsJson() throws Exception
+    void exampleMessagePrintedAsJson() throws Exception
     {
         final ByteBuffer encodedSchemaBuffer = ByteBuffer.allocate(SCHEMA_BUFFER_CAPACITY);
         encodeSchema(encodedSchemaBuffer);

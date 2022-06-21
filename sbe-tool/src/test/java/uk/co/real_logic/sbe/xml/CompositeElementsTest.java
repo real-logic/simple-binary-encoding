@@ -24,10 +24,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
-public class CompositeElementsTest
+class CompositeElementsTest
 {
     @Test
-    public void shouldParseSchemaSuccessfully() throws Exception
+    void shouldParseSchemaSuccessfully() throws Exception
     {
         final MessageSchema schema = parse(Tests.getLocalResource(
             "composite-elements-schema.xml"), ParserOptions.DEFAULT);

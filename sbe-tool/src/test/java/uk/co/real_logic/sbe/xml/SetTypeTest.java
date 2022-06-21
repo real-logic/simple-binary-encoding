@@ -41,10 +41,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
-public class SetTypeTest
+class SetTypeTest
 {
     @Test
-    public void shouldHandleBinarySetType() throws Exception
+    void shouldHandleBinarySetType() throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -65,7 +65,7 @@ public class SetTypeTest
     }
 
     @Test
-    public void shouldHandleSetTypeList() throws Exception
+    void shouldHandleSetTypeList() throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -115,7 +115,7 @@ public class SetTypeTest
     }
 
     @Test
-    public void shouldThrowExceptionWhenIllegalEncodingTypeSpecified()
+    void shouldThrowExceptionWhenIllegalEncodingTypeSpecified()
     {
         final String testXmlString =
             "<types>" +
@@ -130,7 +130,7 @@ public class SetTypeTest
     }
 
     @Test
-    public void shouldThrowExceptionWhenDuplicateValueSpecified()
+    void shouldThrowExceptionWhenDuplicateValueSpecified()
     {
         final String testXmlString =
             "<types>" +
@@ -145,7 +145,7 @@ public class SetTypeTest
     }
 
     @Test
-    public void shouldThrowExceptionWhenDuplicateNameSpecified()
+    void shouldThrowExceptionWhenDuplicateNameSpecified()
     {
         final String testXmlString =
             "<types>" +
@@ -160,7 +160,7 @@ public class SetTypeTest
     }
 
     @Test
-    public void shouldThrowExceptionWhenValueOutOfBoundsSpecified()
+    void shouldThrowExceptionWhenValueOutOfBoundsSpecified()
     {
         final String testXmlString =
             "<types>" +
@@ -175,7 +175,7 @@ public class SetTypeTest
     }
 
     @Test
-    public void shouldHandleEncodingTypesWithNamedTypes() throws Exception
+    void shouldHandleEncodingTypesWithNamedTypes() throws Exception
     {
         final MessageSchema schema = parse(Tests.getLocalResource(
             "encoding-types-schema.xml"), ParserOptions.DEFAULT);

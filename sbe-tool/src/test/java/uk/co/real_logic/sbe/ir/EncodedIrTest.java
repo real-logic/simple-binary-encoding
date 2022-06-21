@@ -28,12 +28,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
-public class EncodedIrTest
+class EncodedIrTest
 {
     private static final int CAPACITY = 1024 * 16;
 
     @Test
-    public void shouldEncodeIr() throws Exception
+    void shouldEncodeIr() throws Exception
     {
         final MessageSchema schema = parse(Tests.getLocalResource("basic-schema.xml"), ParserOptions.DEFAULT);
         final IrGenerator irg = new IrGenerator();
@@ -45,7 +45,7 @@ public class EncodedIrTest
     }
 
     @Test
-    public void shouldEncodeThenDecodeIr() throws Exception
+    void shouldEncodeThenDecodeIr() throws Exception
     {
         final MessageSchema schema = parse(Tests.getLocalResource("basic-schema.xml"), ParserOptions.DEFAULT);
         final IrGenerator irg = new IrGenerator();
@@ -61,7 +61,7 @@ public class EncodedIrTest
     }
 
     @Test
-    public void shouldHandleRightSizedBuffer() throws Exception
+    void shouldHandleRightSizedBuffer() throws Exception
     {
         final MessageSchema schema = parse(Tests.getLocalResource("basic-schema.xml"), ParserOptions.DEFAULT);
         final IrGenerator irg = new IrGenerator();
@@ -81,7 +81,7 @@ public class EncodedIrTest
     }
 
     @Test
-    public void shouldDecodeFrame() throws Exception
+    void shouldDecodeFrame() throws Exception
     {
         final MessageSchema schema = parse(Tests.getLocalResource(
             "code-generation-schema.xml"), ParserOptions.DEFAULT);
@@ -104,7 +104,7 @@ public class EncodedIrTest
     }
 
     @Test
-    public void shouldDecodeHeader() throws Exception
+    void shouldDecodeHeader() throws Exception
     {
         final MessageSchema schema = parse(Tests.getLocalResource(
             "code-generation-schema.xml"), ParserOptions.DEFAULT);
@@ -128,7 +128,7 @@ public class EncodedIrTest
     }
 
     @Test
-    public void shouldDecodeMessagesAndTypes() throws Exception
+    void shouldDecodeMessagesAndTypes() throws Exception
     {
         final MessageSchema schema = parse(Tests.getLocalResource(
             "code-generation-schema.xml"), ParserOptions.DEFAULT);

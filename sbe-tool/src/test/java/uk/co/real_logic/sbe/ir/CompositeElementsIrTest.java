@@ -28,10 +28,10 @@ import static org.hamcrest.core.Is.is;
 import static uk.co.real_logic.sbe.Tests.getLocalResource;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
-public class CompositeElementsIrTest
+class CompositeElementsIrTest
 {
     @Test
-    public void shouldGenerateIrForCompositeElementsSchema() throws Exception
+    void shouldGenerateIrForCompositeElementsSchema() throws Exception
     {
         final MessageSchema schema = parse(getLocalResource(
             "composite-elements-schema.xml"), ParserOptions.DEFAULT);
@@ -94,7 +94,7 @@ public class CompositeElementsIrTest
     }
 
     @Test
-    public void shouldGenerateIrForCompositeElementsWithOffsetsSchemaRc4() throws Exception
+    void shouldGenerateIrForCompositeElementsWithOffsetsSchemaRc4() throws Exception
     {
         final MessageSchema schema = parse(getLocalResource(
             "composite-elements-schema-rc4.xml"), ParserOptions.DEFAULT);
@@ -149,7 +149,7 @@ public class CompositeElementsIrTest
     }
 
     @Test
-    public void shouldGenerateIrForCompositeWithRefSchema() throws Exception
+    void shouldGenerateIrForCompositeWithRefSchema() throws Exception
     {
         final MessageSchema schema = parse(getLocalResource(
             "composite-elements-schema-rc4.xml"), ParserOptions.DEFAULT);

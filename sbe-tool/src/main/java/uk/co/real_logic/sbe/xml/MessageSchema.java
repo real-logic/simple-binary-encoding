@@ -19,8 +19,7 @@ import org.w3c.dom.Node;
 import org.agrona.Verify;
 
 import java.nio.ByteOrder;
-import java.util.Collection;
-import java.util.Map;
+import java.util.*;
 
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
 
@@ -163,5 +162,163 @@ public class MessageSchema
     public ByteOrder byteOrder()
     {
         return byteOrder;
+    }
+
+    /**
+     * Validate the message schema and delegate warnings and errors to the supplied {@link ErrorHandler}.
+     *
+     * @param errorHandler for delegating warnings and errors.
+     */
+    public void validate(final ErrorHandler errorHandler)
+    {
+        final Deque<String> path = new ArrayDeque<>();
+
+        for (final Type type : typeByNameMap.values())
+        {
+            validateType(errorHandler, path, type);
+        }
+
+        for (final Message message : messageByIdMap.values())
+        {
+            if (message.sinceVersion() > version)
+            {
+                errorHandler.error(message.name() + ".sinceVersion=" + message.sinceVersion() +
+                    " > messageSchema.version=" + version);
+            }
+
+            path.addLast(message.name());
+
+            for (final Field field : message.fields())
+            {
+                validateField(errorHandler, path, field);
+            }
+
+            path.removeLast();
+        }
+    }
+
+    private void validateType(final ErrorHandler errorHandler, final Deque<String> path, final Type type)
+    {
+        if (type instanceof EncodedDataType)
+        {
+            validateEncodedType(errorHandler, path, (EncodedDataType)type);
+        }
+        else if (type instanceof EnumType)
+        {
+            validateEnumType(errorHandler, path, (EnumType)type);
+        }
+        else if (type instanceof SetType)
+        {
+            validateSetType(errorHandler, path, (SetType)type);
+        }
+        else if (type instanceof CompositeType)
+        {
+            validateCompositeType(errorHandler, path, (CompositeType)type);
+        }
+    }
+
+    private void validateEncodedType(
+        final ErrorHandler errorHandler, final Deque<String> path, final EncodedDataType type)
+    {
+        if (type.sinceVersion() > version)
+        {
+            reportError(errorHandler, path, type.name(), type.sinceVersion());
+        }
+    }
+
+    private void validateEnumType(final ErrorHandler errorHandler, final Deque<String> path, final EnumType type)
+    {
+        if (type.sinceVersion() > version)
+        {
+            reportError(errorHandler, path, type.name(), type.sinceVersion());
+        }
+
+        path.addLast(type.name());
+
+        for (final EnumType.ValidValue validValue : type.validValues())
+        {
+            if (validValue.sinceVersion() > version)
+            {
+                reportError(errorHandler, path, validValue.name(), validValue.sinceVersion());
+            }
+        }
+
+        path.removeLast();
+    }
+
+    private void validateSetType(final ErrorHandler errorHandler, final Deque<String> path, final SetType type)
+    {
+        if (type.sinceVersion() > version)
+        {
+            reportError(errorHandler, path, type.name(), type.sinceVersion());
+        }
+
+        path.addLast(type.name());
+
+        for (final SetType.Choice choice : type.choices())
+        {
+            if (choice.sinceVersion() > version)
+            {
+                reportError(errorHandler, path, choice.name(), choice.sinceVersion());
+            }
+        }
+
+        path.removeLast();
+    }
+
+    private void validateCompositeType(
+        final ErrorHandler errorHandler, final Deque<String> path, final CompositeType type)
+    {
+        if (type.sinceVersion() > version)
+        {
+            reportError(errorHandler, path, type.name(), type.sinceVersion());
+        }
+
+        path.addLast(type.name());
+
+        for (final Type subType : type.getTypeList())
+        {
+            validateType(errorHandler, path, subType);
+        }
+
+        path.removeLast();
+    }
+
+    private void validateField(final ErrorHandler errorHandler, final Deque<String> path, final Field field)
+    {
+        if (field.sinceVersion() > version)
+        {
+            reportError(errorHandler, path, field.name(), field.sinceVersion());
+        }
+
+        final List<Field> groupFields = field.groupFields();
+        if (null != groupFields)
+        {
+            path.addLast(field.name());
+
+            for (final Field groupField : groupFields)
+            {
+                validateField(errorHandler, path, groupField);
+            }
+
+            path.removeLast();
+        }
+    }
+
+    private void reportError(
+        final ErrorHandler errorHandler, final Deque<String> path, final String name, final int sinceVersion)
+    {
+        final StringBuilder sb = new StringBuilder();
+
+        for (final String step : path)
+        {
+            sb.append(step).append('.');
+        }
+
+        sb.append(name)
+            .append(".sinceVersion=").append(sinceVersion)
+            .append(" > messageSchema.version=").append(version);
+
+        errorHandler.error(sb.toString());
     }
 }
