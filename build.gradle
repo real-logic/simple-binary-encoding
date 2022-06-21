@@ -869,7 +869,7 @@ class ChecksumTask extends DefaultTask
         {
             if (CR == raw[j] && (j == size - 1 || LF == raw[j + 1]))
             {
-                continue;
+                continue
             }
 
             result[i++] = raw[j]
