@@ -2642,19 +2642,20 @@ public class CppGenerator implements CodeGenerator
             new Formatter(sb).format(
                 indent + "{\n" +
                 indent + "    bool atLeastOne = false;\n" +
-                indent + "    builder << R\"(\"%2$s\": [)\";\n" +
-                indent + "    writer.%1$s().forEach(\n" +
-                indent + "        [&](auto &&%1$s)\n" +
+                indent + "    builder << R\"(\"%3$s\": [)\";\n" +
+                indent + "    writer.%2$s().forEach(\n" +
+                indent + "        [&](%1$s &%2$s)\n" +
                 indent + "        {\n" +
                 indent + "            if (atLeastOne)\n" +
                 indent + "            {\n" +
                 indent + "                builder << \", \";\n" +
                 indent + "            }\n" +
                 indent + "            atLeastOne = true;\n" +
-                indent + "            builder << %1$s;\n" +
+                indent + "            builder << %2$s;\n" +
                 indent + "        });\n" +
                 indent + "    builder << ']';\n" +
                 indent + "}\n\n",
+                formatClassName(groupToken.name()),
                 formatPropertyName(groupToken.name()),
                 groupToken.name());
 
@@ -3108,7 +3109,8 @@ public class CppGenerator implements CodeGenerator
             }
 
             new Formatter(sbSkip).format(
-                indent + "    %1$s().forEach([](auto &&e){ e.skip(); });\n",
+                indent + "    %2$s().forEach([](%1$s &e){ e.skip(); });\n",
+                formatClassName(groupToken.name()),
                 formatPropertyName(groupToken.name()));
 
             i = endSignal;
