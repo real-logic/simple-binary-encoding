@@ -69,4 +69,15 @@ TEST_F(Issue835Test, shouldCompileWithSkipper)
         BUFFER_LEN);
 
     EXPECT_EQ(decoder.decodeLength(), encoder.encodedLength());
+
+    MDIncrementalRefreshOrderBook47 decoder2;
+    decoder2.wrapForDecode(
+        buffer,
+        offset,
+        MDIncrementalRefreshOrderBook47::sbeBlockLength(),
+        MDIncrementalRefreshOrderBook47::sbeSchemaVersion(),
+        BUFFER_LEN);
+
+    decoder2.skip();
+    EXPECT_EQ(decoder2.encodedLength(), encoder.encodedLength());
 }

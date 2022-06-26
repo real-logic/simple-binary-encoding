@@ -378,17 +378,6 @@ public class CppGenerator implements CodeGenerator
             .append(indent).append("    }\n");
 
         sb.append("\n")
-            .append(indent).append("#if __cplusplus < 201103L\n")
-            .append(indent).append("    template<class Func> inline void forEach(Func &func)\n")
-            .append(indent).append("    {\n")
-            .append(indent).append("        while (hasNext())\n")
-            .append(indent).append("        {\n")
-            .append(indent).append("            next();\n")
-            .append(indent).append("            func(*this);\n")
-            .append(indent).append("        }\n")
-            .append(indent).append("    }\n\n")
-
-            .append(indent).append("#else\n")
             .append(indent).append("    template<class Func> inline void forEach(Func &&func)\n")
             .append(indent).append("    {\n")
             .append(indent).append("        while (hasNext())\n")
@@ -396,9 +385,7 @@ public class CppGenerator implements CodeGenerator
             .append(indent).append("            next();\n")
             .append(indent).append("            func(*this);\n")
             .append(indent).append("        }\n")
-            .append(indent).append("    }\n\n")
-
-            .append(indent).append("#endif\n");
+            .append(indent).append("    }\n\n");
     }
 
     private static void generateGroupProperty(
@@ -2655,20 +2642,19 @@ public class CppGenerator implements CodeGenerator
             new Formatter(sb).format(
                 indent + "{\n" +
                 indent + "    bool atLeastOne = false;\n" +
-                indent + "    builder << R\"(\"%3$s\": [)\";\n" +
-                indent + "    writer.%2$s().forEach(\n" +
-                indent + "        [&](%1$s &%2$s)\n" +
+                indent + "    builder << R\"(\"%2$s\": [)\";\n" +
+                indent + "    writer.%1$s().forEach(\n" +
+                indent + "        [&](auto &&%1$s)\n" +
                 indent + "        {\n" +
                 indent + "            if (atLeastOne)\n" +
                 indent + "            {\n" +
                 indent + "                builder << \", \";\n" +
                 indent + "            }\n" +
                 indent + "            atLeastOne = true;\n" +
-                indent + "            builder << %2$s;\n" +
+                indent + "            builder << %1$s;\n" +
                 indent + "        });\n" +
                 indent + "    builder << ']';\n" +
                 indent + "}\n\n",
-                formatClassName(groupToken.name()),
                 formatPropertyName(groupToken.name()),
                 groupToken.name());
 
@@ -3122,8 +3108,7 @@ public class CppGenerator implements CodeGenerator
             }
 
             new Formatter(sbSkip).format(
-                indent + "    %2$s().forEach([](%1$s &e){ e.skip(); });\n",
-                formatClassName(groupToken.name()),
+                indent + "    %1$s().forEach([](auto &&e){ e.skip(); });\n",
                 formatPropertyName(groupToken.name()));
 
             i = endSignal;
