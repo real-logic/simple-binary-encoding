@@ -3109,8 +3109,11 @@ public class CppGenerator implements CodeGenerator
             }
 
             new Formatter(sbSkip).format(
-                indent + "    %2$s().forEach([](%1$s &e){ e.skip(); });\n",
-                formatClassName(groupToken.name()),
+                indent + ("    auto &%1$sGroup { %1$s() };\n") +
+                indent + ("    while (%1$sGroup.hasNext())\n") +
+                indent + ("    {\n") +
+                indent + ("        %1$sGroup.next().skip();\n") +
+                indent + ("    }\n"),
                 formatPropertyName(groupToken.name()));
 
             i = endSignal;
