@@ -24,7 +24,7 @@ class Issue889Test : public testing::Test
 {
 };
 
-TEST_F(Issue889Test, shouldGenerateSpecalisedNullValue)
+TEST_F(Issue889Test, shouldGenerateSpecialisedNullValue)
 {
     EXPECT_EQ(LotType::get(0), LotType::NULL_VALUE);
 }
