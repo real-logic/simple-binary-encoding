@@ -491,8 +491,8 @@ class JavaGeneratorTest
         outputManager.clear();
         outputManager.setPackageName(ir.applicableNamespace());
 
-        JavaGenerator generator = new JavaGenerator(ir, BUFFER_NAME, READ_ONLY_BUFFER_NAME, false, false, false, true,
-            outputManager);
+        final JavaGenerator generator = new JavaGenerator(ir, BUFFER_NAME, READ_ONLY_BUFFER_NAME, false, false, false,
+            true, outputManager);
 
         generator.generate();
         final String encoderFqcn = ir.applicableNamespace() + ".TestMessageEncoder";
@@ -523,8 +523,8 @@ class JavaGeneratorTest
         outputManager.clear();
         outputManager.setPackageName(ir.applicableNamespace());
 
-        JavaGenerator generator = new JavaGenerator(ir, BUFFER_NAME, READ_ONLY_BUFFER_NAME, false, false, false, false,
-            outputManager);
+        final JavaGenerator generator = new JavaGenerator(ir, BUFFER_NAME, READ_ONLY_BUFFER_NAME, false, false, false,
+            false, outputManager);
 
         generator.generate();
         final String encoderFqcn = ir.applicableNamespace() + ".TestMessageEncoder";

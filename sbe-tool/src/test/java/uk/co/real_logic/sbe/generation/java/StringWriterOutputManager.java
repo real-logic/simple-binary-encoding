@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2022 Real Logic Limited.
+ * Copyright 2013-2022 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,8 @@ public class StringWriterOutputManager implements MultiPackageOutputManager
         final StringWriter stringWriter = new StringWriter();
         sourceFileByName.put(packageName + "." + name, stringWriter);
 
-        return new FilterWriter(stringWriter) {
+        return new FilterWriter(stringWriter)
+        {
             @Override
             public void close() throws IOException
             {
