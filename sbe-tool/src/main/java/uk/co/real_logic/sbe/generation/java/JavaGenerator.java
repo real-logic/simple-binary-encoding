@@ -19,7 +19,6 @@ import org.agrona.DirectBuffer;
 import org.agrona.MutableDirectBuffer;
 import org.agrona.Strings;
 import org.agrona.Verify;
-import org.agrona.generation.OutputManager;
 import org.agrona.sbe.*;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.generation.CodeGenerator;
@@ -30,7 +29,9 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Formatter;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 
 import static uk.co.real_logic.sbe.SbeTool.JAVA_INTERFACE_PACKAGE;
@@ -38,6 +39,7 @@ import static uk.co.real_logic.sbe.generation.java.JavaGenerator.CodecType.DECOD
 import static uk.co.real_logic.sbe.generation.java.JavaGenerator.CodecType.ENCODER;
 import static uk.co.real_logic.sbe.generation.java.JavaUtil.*;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.*;
+import uk.co.real_logic.sbe.generation.MultiPackageOutputManager;
 
 /**
  * Generate codecs for the Java 8 programming language.
@@ -60,7 +62,7 @@ public class JavaGenerator implements CodeGenerator
     private static final String INDENT = "    ";
 
     private final Ir ir;
-    private final OutputManager outputManager;
+    private final MultiPackageOutputManager outputManager;
     private final String fqMutableBuffer;
     private final String mutableBuffer;
     private final String fqReadOnlyBuffer;
@@ -68,9 +70,11 @@ public class JavaGenerator implements CodeGenerator
     private final boolean shouldGenerateGroupOrderAnnotation;
     private final boolean shouldGenerateInterfaces;
     private final boolean shouldDecodeUnknownEnumValues;
+    private final boolean shouldSupportTypePackages;
+    private final Set<String> typePackages = new HashSet<>();
 
     /**
-     * Create a new Java language {@link CodeGenerator}.
+     * Create a new Java language {@link CodeGenerator}. Generator support for types in their own package is disabled.
      *
      * @param ir                                 for the messages and types.
      * @param mutableBuffer                      implementation used for mutating underlying buffers.
@@ -87,12 +91,39 @@ public class JavaGenerator implements CodeGenerator
         final boolean shouldGenerateGroupOrderAnnotation,
         final boolean shouldGenerateInterfaces,
         final boolean shouldDecodeUnknownEnumValues,
-        final OutputManager outputManager)
+        final MultiPackageOutputManager outputManager)
+    {
+        this(ir, mutableBuffer, readOnlyBuffer, shouldGenerateGroupOrderAnnotation, shouldGenerateInterfaces,
+            shouldDecodeUnknownEnumValues, false, outputManager);
+    }
+
+    /**
+     * Create a new Java language {@link CodeGenerator}.
+     *
+     * @param ir                                 for the messages and types.
+     * @param mutableBuffer                      implementation used for mutating underlying buffers.
+     * @param readOnlyBuffer                     implementation used for reading underlying buffers.
+     * @param shouldGenerateGroupOrderAnnotation in the codecs.
+     * @param shouldGenerateInterfaces           for common methods.
+     * @param shouldDecodeUnknownEnumValues      generate support for unknown enum values when decoding.
+     * @param shouldSupportTypePackages          generator support for types in their own package
+     * @param outputManager                      for generating the codecs to.
+     */
+    public JavaGenerator(
+        final Ir ir,
+        final String mutableBuffer,
+        final String readOnlyBuffer,
+        final boolean shouldGenerateGroupOrderAnnotation,
+        final boolean shouldGenerateInterfaces,
+        final boolean shouldDecodeUnknownEnumValues,
+        final boolean shouldSupportTypePackages,
+        final MultiPackageOutputManager outputManager)
     {
         Verify.notNull(ir, "ir");
         Verify.notNull(outputManager, "outputManager");
 
         this.ir = ir;
+        this.shouldSupportTypePackages = shouldSupportTypePackages;
         this.outputManager = outputManager;
 
         this.mutableBuffer = validateBufferImplementation(mutableBuffer, MutableDirectBuffer.class);
@@ -145,10 +176,29 @@ public class JavaGenerator implements CodeGenerator
     }
 
     /**
+     * Register the the type's explicit package - if it's set and should be supported.
+     *
+     * @param token the 0-th token of the type
+     * @param ir the intermediate representation
+     * @return the overriden package name of the type if set and supported, or {@link Ir#applicableNamespace() }
+     */
+    private String registerTypePackage(final Token token, final Ir ir)
+    {
+        if (shouldSupportTypePackages && token.packageName() != null)
+        {
+            typePackages.add(token.packageName());
+            outputManager.setPackageName(token.packageName());
+            return token.packageName();
+        }
+        return ir.applicableNamespace();
+    }
+
+    /**
      * {@inheritDoc}
      */
     public void generate() throws IOException
     {
+        typePackages.clear();
         generatePackageInfo();
         generateTypeStubs();
         generateMessageHeaderStub();
@@ -1188,6 +1238,7 @@ public class JavaGenerator implements CodeGenerator
         final List<Token> messageBody = getMessageBody(tokens);
         final String implementsString = implementsInterface(Flyweight.class.getSimpleName());
 
+        registerTypePackage(token, ir);
         try (Writer out = outputManager.createOutput(decoderName))
         {
             generateFixedFlyweightHeader(out, token, decoderName, implementsString, readOnlyBuffer, fqReadOnlyBuffer);
@@ -1197,6 +1248,7 @@ public class JavaGenerator implements CodeGenerator
             out.append("}\n");
         }
 
+        registerTypePackage(token, ir);
         try (Writer out = outputManager.createOutput(encoderName))
         {
             generateFixedFlyweightHeader(out, token, encoderName, implementsString, mutableBuffer, fqMutableBuffer);
@@ -1214,7 +1266,8 @@ public class JavaGenerator implements CodeGenerator
         final String buffer,
         final String fqBuffer) throws IOException
     {
-        out.append(generateFileHeader(ir.applicableNamespace(), fqBuffer));
+        final String packageName = registerTypePackage(token, ir);
+        out.append(generateFileHeader(packageName, fqBuffer));
         out.append(generateDeclaration(typeName, implementsString, token));
         out.append(generateFixedFlyweightCode(typeName, token.encodedLength(), buffer));
     }
@@ -1227,7 +1280,8 @@ public class JavaGenerator implements CodeGenerator
         final String fqBuffer,
         final String implementsString) throws IOException
     {
-        out.append(generateFileHeader(ir.applicableNamespace(), fqBuffer));
+        final String packageName = registerTypePackage(token, ir);
+        out.append(generateFileHeader(packageName, fqBuffer));
         out.append(generateDeclaration(typeName, implementsString, token));
         out.append(generateFixedFlyweightCode(typeName, token.encodedLength(), buffer));
     }
@@ -1239,9 +1293,10 @@ public class JavaGenerator implements CodeGenerator
         final Encoding encoding = enumToken.encoding();
         final String nullVal = encoding.applicableNullValue().toString();
 
+        final String packageName = registerTypePackage(enumToken, ir);
         try (Writer out = outputManager.createOutput(enumName))
         {
-            out.append(generateEnumFileHeader(ir.applicableNamespace()));
+            out.append(generateEnumFileHeader(packageName));
             out.append(generateEnumDeclaration(enumName, enumToken));
 
             out.append(generateEnumValues(getMessageBody(tokens), generateLiteral(encoding.primitiveType(), nullVal)));
@@ -1260,6 +1315,7 @@ public class JavaGenerator implements CodeGenerator
         final String decoderName = decoderName(compositeName);
         final String encoderName = encoderName(compositeName);
 
+        registerTypePackage(token, ir);
         try (Writer out = outputManager.createOutput(decoderName))
         {
             final String implementsString = implementsInterface(CompositeDecoderFlyweight.class.getSimpleName());
@@ -1308,6 +1364,7 @@ public class JavaGenerator implements CodeGenerator
             out.append("}\n");
         }
 
+        registerTypePackage(token, ir);
         try (Writer out = outputManager.createOutput(encoderName))
         {
             final String implementsString = implementsInterface(CompositeEncoderFlyweight.class.getSimpleName());
@@ -1560,13 +1617,22 @@ public class JavaGenerator implements CodeGenerator
     private CharSequence generateMainHeader(
         final String packageName, final CodecType codecType, final boolean hasVarData)
     {
+        final StringBuffer packageImports = new StringBuffer();
+        for (final String typePackage : typePackages)
+        {
+            packageImports.append("import ");
+            packageImports.append(typePackage);
+            packageImports.append(".*;\n");
+        }
+
         if (fqMutableBuffer.equals(fqReadOnlyBuffer))
         {
             return
                 "/* Generated SBE (Simple Binary Encoding) message codec. */\n" +
                 "package " + packageName + ";\n\n" +
                 "import " + fqMutableBuffer + ";\n" +
-                interfaceImportLine();
+                interfaceImportLine() +
+                packageImports.toString();
         }
         else
         {
@@ -1578,7 +1644,8 @@ public class JavaGenerator implements CodeGenerator
                 "package " + packageName + ";\n\n" +
                 (hasMutableBuffer ? "import " + fqMutableBuffer + ";\n" : "") +
                 (hasReadOnlyBuffer ? "import " + fqReadOnlyBuffer + ";\n" : "") +
-                interfaceImportLine();
+                interfaceImportLine() +
+                packageImports.toString();
         }
     }
 

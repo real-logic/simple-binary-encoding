@@ -15,7 +15,7 @@
  */
 package uk.co.real_logic.sbe.generation;
 
-import org.agrona.generation.PackageOutputManager;
+import uk.co.real_logic.sbe.generation.java.JavaOutputManager;
 import uk.co.real_logic.sbe.generation.c.CGenerator;
 import uk.co.real_logic.sbe.generation.c.COutputManager;
 import uk.co.real_logic.sbe.generation.cpp.CppGenerator;
@@ -52,7 +52,8 @@ public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
                 "true".equals(System.getProperty(JAVA_GROUP_ORDER_ANNOTATION)),
                 "true".equals(System.getProperty(JAVA_GENERATE_INTERFACES)),
                 "true".equals(System.getProperty(DECODE_UNKNOWN_ENUM_VALUES)),
-                new PackageOutputManager(outputDir, ir.applicableNamespace()));
+                "true".equals(System.getProperty(TYPE_PACKAGE_OVERRIDE)),
+                new JavaOutputManager(outputDir, ir.applicableNamespace()));
         }
     },
 

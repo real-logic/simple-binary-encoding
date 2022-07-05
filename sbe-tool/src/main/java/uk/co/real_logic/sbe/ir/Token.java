@@ -77,6 +77,7 @@ public class Token
 
     private final Signal signal;
     private final String name;
+    private final String packageName;
     private final String referencedName;
     private final String description;
     private final int id;
@@ -92,6 +93,7 @@ public class Token
      *
      * @param signal              for the token role.
      * @param name                of the token in the message.
+     * @param packageName         of the token in the message.
      * @param referencedName      of the type when created from a ref in a composite.
      * @param description         of what the token is for.
      * @param id                  as the identifier in the message declaration.
@@ -105,6 +107,7 @@ public class Token
     public Token(
         final Signal signal,
         final String name,
+        final String packageName,
         final String referencedName,
         final String description,
         final int id,
@@ -130,6 +133,7 @@ public class Token
         this.offset = offset;
         this.componentTokenCount = componentTokenCount;
         this.encoding = encoding;
+        this.packageName = packageName;
     }
 
     /**
@@ -150,6 +154,16 @@ public class Token
     public String name()
     {
         return name;
+    }
+
+    /**
+     * Return the packageName of the token
+     *
+     * @return packageName of the token
+     */
+    public String packageName()
+    {
+        return packageName;
     }
 
     /**
@@ -361,6 +375,7 @@ public class Token
     {
         private Signal signal;
         private String name;
+        private String packageName;
         private String referencedName;
         private String description;
         private int id = INVALID_ID;
@@ -392,6 +407,18 @@ public class Token
         public Builder name(final String name)
         {
             this.name = name;
+            return this;
+        }
+
+        /**
+         * Name for the Token.
+         *
+         * @param packageName for the Token.
+         * @return this for a fluent API.
+         */
+        public Builder packageName(final String packageName)
+        {
+            this.packageName = packageName;
             return this;
         }
 
@@ -513,6 +540,7 @@ public class Token
             return new Token(
                 signal,
                 name,
+                packageName,
                 referencedName,
                 description,
                 id,

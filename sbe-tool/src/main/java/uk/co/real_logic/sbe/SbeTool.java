@@ -60,6 +60,8 @@ import java.nio.file.*;
  * <li><b>sbe.keyword.append.token</b>: Token to be appended to keywords.</li>
  * <li><b>sbe.decode.unknown.enum.values</b>: Support unknown decoded enum values. Defaults to false.</li>
  * <li><b>sbe.xinclude.aware</b>: Is XInclude supported for the schema. Defaults to false.</li>
+ * <li><b>sbe.type.package.override</b>: Is a package attribute for types element supported (only for JAVA). Defaults to
+ * false.</li>
  * </ul>
  */
 public class SbeTool
@@ -108,6 +110,12 @@ public class SbeTool
      * Boolean system property to control is XInclude is supported. Defaults to false.
      */
     public static final String XINCLUDE_AWARE = "sbe.xinclude.aware";
+
+    /**
+     * Boolean system property to control the support of package names in {@code <types>} elements.
+     * Part of SBE v2-rc2. Defaults to false.
+     */
+    public static final String TYPE_PACKAGE_OVERRIDE = "sbe.type.package.override";
 
     /**
      * Target language for generated code.
