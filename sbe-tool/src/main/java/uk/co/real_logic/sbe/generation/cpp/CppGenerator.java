@@ -706,14 +706,16 @@ public class CppGenerator implements CodeGenerator
 
     private void generateChoiceSet(final List<Token> tokens) throws IOException
     {
-        final String bitSetName = formatClassName(tokens.get(0).applicableTypeName());
+        final Token token = tokens.get(0);
+        final String bitSetName = formatClassName(token.applicableTypeName());
 
         try (Writer out = outputManager.createOutput(bitSetName))
         {
             out.append(generateFileHeader(ir.namespaces(), bitSetName, null));
             out.append(generateClassDeclaration(bitSetName));
-            out.append(generateFixedFlyweightCode(bitSetName, tokens.get(0).encodedLength()));
+            out.append(generateFixedFlyweightCode(bitSetName, token.encodedLength()));
 
+            final Encoding encoding = token.encoding();
             new Formatter(out).format("\n" +
                 "    %1$s &clear()\n" +
                 "    {\n" +
@@ -722,7 +724,7 @@ public class CppGenerator implements CodeGenerator
                 "        return *this;\n" +
                 "    }\n",
                 bitSetName,
-                cppTypeName(tokens.get(0).encoding().primitiveType()));
+                cppTypeName(encoding.primitiveType()));
 
             new Formatter(out).format("\n" +
                 "    SBE_NODISCARD bool isEmpty() const\n" +
@@ -731,7 +733,7 @@ public class CppGenerator implements CodeGenerator
                 "        std::memcpy(&val, m_buffer + m_offset, sizeof(%1$s));\n" +
                 "        return 0 == val;\n" +
                 "    }\n",
-                cppTypeName(tokens.get(0).encoding().primitiveType()));
+                cppTypeName(encoding.primitiveType()));
 
             new Formatter(out).format("\n" +
                 "    SBE_NODISCARD %1$s rawValue() const\n" +
@@ -740,7 +742,7 @@ public class CppGenerator implements CodeGenerator
                 "        std::memcpy(&val, m_buffer + m_offset, sizeof(%1$s));\n" +
                 "        return val;\n" +
                 "    }\n",
-                cppTypeName(tokens.get(0).encoding().primitiveType()));
+                cppTypeName(encoding.primitiveType()));
 
             new Formatter(out).format("\n" +
                 "    %1$s &rawValue(%2$s value)\n" +
@@ -749,7 +751,7 @@ public class CppGenerator implements CodeGenerator
                 "        return *this;\n" +
                 "    }\n",
                 bitSetName,
-                cppTypeName(tokens.get(0).encoding().primitiveType()));
+                cppTypeName(encoding.primitiveType()));
 
             out.append(generateChoices(bitSetName, tokens.subList(1, tokens.size() - 1)));
             out.append(generateChoicesDisplay(bitSetName, tokens.subList(1, tokens.size() - 1)));
