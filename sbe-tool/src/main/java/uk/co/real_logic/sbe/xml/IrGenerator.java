@@ -404,6 +404,7 @@ public class IrGenerator
                 break;
 
             case CONSTANT:
+                tokenBuilder.size(0);
                 encodingBuilder
                     .presence(Encoding.Presence.CONSTANT)
                     .constValue(type.constVal());
