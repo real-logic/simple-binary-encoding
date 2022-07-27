@@ -45,16 +45,21 @@
             <field name="whatever" type="uint64" id="1"/>
         </group>
     </sbe:message>
-    <sbe:message name="issue910Enum" id="4" description="issue 910 enum test">
+    <sbe:message name="issue910GroupField" id="4" description="issue 910 group field test">
+        <group name="whatever" id="1" dimensionType="groupSizeEncoding">
+            <field name="yield" type="uint64" id="1"/>
+        </group>
+    </sbe:message>
+    <sbe:message name="issue910Enum" id="5" description="issue 910 enum test">
         <field name="yield" type="Enum" id="1"/>
     </sbe:message>
-    <sbe:message name="issue910Set" id="5" description="issue 910 set test">
+    <sbe:message name="issue910Set" id="6" description="issue 910 set test">
         <field name="yield" type="Set" id="1"/>
     </sbe:message>
-    <sbe:message name="issue910Array" id="6" description="issue 910 array test">
+    <sbe:message name="issue910Array" id="7" description="issue 910 array test">
         <field name="yield" type="Array" id="1"/>
     </sbe:message>
-    <sbe:message name="issue910CharArray" id="7" description="issue 910 char array test">
+    <sbe:message name="issue910CharArray" id="8" description="issue 910 char array test">
         <field name="yield" type="CharArray" id="1"/>
     </sbe:message>
 </sbe:messageSchema>
