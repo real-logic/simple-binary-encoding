@@ -21,6 +21,18 @@
             <type name="blockLength" primitiveType="uint16"/>
             <type name="numInGroup" primitiveType="uint16"/>
         </composite>
+        <enum name="Enum" encodingType="char">
+            <validValue name="A">A</validValue>
+            <validValue name="B">B</validValue>
+            <validValue name="C">C</validValue>
+        </enum>
+        <set name="Set" encodingType="uint8">
+            <choice name="A">0</choice>
+            <choice name="B">1</choice>
+            <choice name="C">2</choice>
+        </set>
+        <type name="Array" primitiveType="int32" length="5"/>
+        <type name="CharArray" primitiveType="char" length="5"/>
     </types>
     <sbe:message name="issue910Field" id="1" description="issue 910 field test">
         <field name="yield" type="uint64" id="1"/>
@@ -32,5 +44,17 @@
         <group name="yield" id="1" dimensionType="groupSizeEncoding">
             <field name="whatever" type="uint64" id="1"/>
         </group>
+    </sbe:message>
+    <sbe:message name="issue910Enum" id="4" description="issue 910 enum test">
+        <field name="yield" type="Enum" id="1"/>
+    </sbe:message>
+    <sbe:message name="issue910Set" id="5" description="issue 910 set test">
+        <field name="yield" type="Set" id="1"/>
+    </sbe:message>
+    <sbe:message name="issue910Array" id="6" description="issue 910 array test">
+        <field name="yield" type="Array" id="1"/>
+    </sbe:message>
+    <sbe:message name="issue910CharArray" id="7" description="issue 910 char array test">
+        <field name="yield" type="CharArray" id="1"/>
     </sbe:message>
 </sbe:messageSchema>

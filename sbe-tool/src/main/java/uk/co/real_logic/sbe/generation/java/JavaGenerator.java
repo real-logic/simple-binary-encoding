@@ -3575,9 +3575,9 @@ public class JavaGenerator implements CodeGenerator
                     if (typeToken.encoding().primitiveType() == PrimitiveType.CHAR)
                     {
                         append(sb, indent,
-                            "for (int i = 0; i < " + fieldName + "Length() && " + fieldName + "(i) > 0; i++)");
+                            "for (int i = 0; i < " + fieldName + "Length() && this." + fieldName + "(i) > 0; i++)");
                         append(sb, indent, "{");
-                        append(sb, indent, "    builder.append((char)" + fieldName + "(i));");
+                        append(sb, indent, "    builder.append((char)this." + fieldName + "(i));");
                         append(sb, indent, "}");
                     }
                     else
@@ -3587,7 +3587,7 @@ public class JavaGenerator implements CodeGenerator
                         append(sb, indent, "{");
                         append(sb, indent, "    for (int i = 0; i < " + fieldName + "Length(); i++)");
                         append(sb, indent, "    {");
-                        append(sb, indent, "        builder.append(" + fieldName + "(i));");
+                        append(sb, indent, "        builder.append(this." + fieldName + "(i));");
                         Separator.ENTRY.appendToGeneratedBuilder(sb, indent + INDENT + INDENT);
                         append(sb, indent, "    }");
                         append(sb, indent, "    builder.setLength(builder.length() - 1);");
@@ -3603,11 +3603,11 @@ public class JavaGenerator implements CodeGenerator
                 break;
 
             case BEGIN_ENUM:
-                append(sb, indent, "builder.append(" + fieldName + "());");
+                append(sb, indent, "builder.append(this." + fieldName + "());");
                 break;
 
             case BEGIN_SET:
-                append(sb, indent, fieldName + "().appendTo(builder);");
+                append(sb, indent, "this." + fieldName + "().appendTo(builder);");
                 break;
 
             case BEGIN_COMPOSITE:
