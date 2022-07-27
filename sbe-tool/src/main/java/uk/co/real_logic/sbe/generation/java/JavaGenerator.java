@@ -3492,7 +3492,7 @@ public class JavaGenerator implements CodeGenerator
                 sb, indent, "builder.append(\"" + groupName + Separator.KEY_VALUE + Separator.BEGIN_GROUP + "\");");
             append(sb, indent, "final int " + groupName + "OriginalOffset = " + groupName + ".offset;");
             append(sb, indent, "final int " + groupName + "OriginalIndex = " + groupName + ".index;");
-            append(sb, indent, "final " + groupDecoderName + " " + groupName + " = " + groupName + "();");
+            append(sb, indent, "final " + groupDecoderName + " " + groupName + " = this." + groupName + "();");
 
             append(sb, indent, "if (" + groupName + ".count() > 0)");
             append(sb, indent, "{");
@@ -3598,7 +3598,7 @@ public class JavaGenerator implements CodeGenerator
                 else
                 {
                     // have to duplicate because of checkstyle :/
-                    append(sb, indent, "builder.append(" + fieldName + "());");
+                    append(sb, indent, "builder.append(this." + fieldName + "());");
                 }
                 break;
 
@@ -3613,7 +3613,7 @@ public class JavaGenerator implements CodeGenerator
             case BEGIN_COMPOSITE:
             {
                 final String typeName = formatClassName(decoderName(typeToken.applicableTypeName()));
-                append(sb, indent, "final " + typeName + " " + fieldName + " = " + fieldName + "();");
+                append(sb, indent, "final " + typeName + " " + fieldName + " = this." + fieldName + "();");
                 append(sb, indent, "if (" + fieldName + " != null)");
                 append(sb, indent, "{");
                 append(sb, indent, "    " + fieldName + ".appendTo(builder);");
@@ -3694,7 +3694,7 @@ public class JavaGenerator implements CodeGenerator
             final String groupName = formatPropertyName(groupToken.name());
             final String groupDecoderName = decoderName(groupToken.name());
 
-            append(sb, bodyIndent, groupDecoderName + " " + groupName + " = " + groupName + "();");
+            append(sb, bodyIndent, groupDecoderName + " " + groupName + " = this." + groupName + "();");
             append(sb, bodyIndent, "if (" + groupName + ".count() > 0)");
             append(sb, bodyIndent, "{");
             append(sb, bodyIndent, "    while (" + groupName + ".hasNext())");
