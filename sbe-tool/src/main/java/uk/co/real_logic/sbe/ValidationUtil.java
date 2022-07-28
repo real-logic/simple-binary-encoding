@@ -43,7 +43,7 @@ public class ValidationUtil
      * must have all elements be a letter or digit or '_'. The first character must not be a digit.
      * And must not be a C keyword.
      * <p>
-     * http://en.cppreference.com/w/c/keyword
+     * <a href="http://en.cppreference.com/w/c/keyword">C keywords</a>
      *
      * @param value to check
      * @return true for validity as a C name. false if not.
@@ -141,7 +141,7 @@ public class ValidationUtil
      * must have all elements be a letter or digit or '_'. The first character must not be a digit.
      * And must not be a C++ keyword.
      * <p>
-     * http://en.cppreference.com/w/cpp/keyword
+     * <a href="http://en.cppreference.com/w/cpp/keyword">C++ keywords</a>
      *
      * @param value to check
      * @return true for validity as a C++ name. false if not.
@@ -228,7 +228,7 @@ public class ValidationUtil
     /**
      * Check string for validity of usage as a Java identifier. Avoiding keywords.
      * <p>
-     * http://docs.oracle.com/javase/specs/jls/se8/html/jls-3.html#jls-3.9
+     * <a href="http://docs.oracle.com/javase/specs/jls/se8/html/jls-3.html#jls-3.9">Java JLS</a>
      *
      * @param value to check
      * @return true for validity as a Java name. false if not.
@@ -314,13 +314,13 @@ public class ValidationUtil
 
     /**
      * "Check" value for validity of usage as a golang identifier. From:
-     * https://golang.org/ref/spec#Identifiers
+     * <a href="https://golang.org/ref/spec#Identifiers">Golang identifiers</a>
      * <p>
      * identifier = letter { letter | unicode_digit }
      * letter        = unicode_letter | "_" .
      * <p>
      * unicode_letter and unicode_digit are defined in section 4.5 of the unicode
-     * standard at http://www.unicode.org/versions/Unicode8.0.0/ and
+     * standard at <a href="http://www.unicode.org/versions/Unicode8.0.0/">Unicode 8.0.0</a> and
      * the Java Character and Digit functions are unicode friendly
      *
      * @param value to check
@@ -393,7 +393,8 @@ public class ValidationUtil
     }
 
     /**
-     * https://docs.microsoft.com/en-gb/dotnet/articles/csharp/language-reference/keywords/index
+     * <a href="https://docs.microsoft.com/en-gb/dotnet/articles/csharp/language-reference/keywords/index">
+     *     C# keywords</a>
      * Note this does not include the contextual keywords
      * Note "virtual" is no longer but was in early versions of C#
      */
@@ -417,7 +418,7 @@ public class ValidationUtil
 
     /**
      * "Check" value for validity of usage as a csharp identifier.
-     * https://msdn.microsoft.com/en-us/library/aa664670(v=vs.71).aspx
+     * <a href="https://msdn.microsoft.com/en-us/library/aa664670(v=vs.71).aspx">C# identifiers</a>
      * Which basically boils down to
      * <p>
      * first subsequent*
