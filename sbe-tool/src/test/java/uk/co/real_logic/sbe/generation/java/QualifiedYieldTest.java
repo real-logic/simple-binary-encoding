@@ -28,7 +28,6 @@ import org.junit.jupiter.api.condition.JRE;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 
-import uk.co.real_logic.sbe.SbeTool;
 import uk.co.real_logic.sbe.Tests;
 import uk.co.real_logic.sbe.ir.Ir;
 import uk.co.real_logic.sbe.xml.IrGenerator;
