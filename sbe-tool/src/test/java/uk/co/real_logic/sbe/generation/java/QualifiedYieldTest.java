@@ -50,8 +50,6 @@ public class QualifiedYieldTest
     @EnabledForJreRange(min = JRE.JAVA_17)
     void shouldGenerateValidJava() throws Exception
     {
-        System.setProperty(SbeTool.KEYWORD_APPEND_TOKEN, "_");
-
         final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
         final MessageSchema schema = parse(Tests.getLocalResource("issue910.xml"), options);
         final IrGenerator irg = new IrGenerator();
