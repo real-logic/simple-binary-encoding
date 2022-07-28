@@ -139,7 +139,7 @@ public final class VarDataEncodingDecoder
 
         builder.append('(');
         builder.append("length=");
-        builder.append(length());
+        builder.append(this.length());
         builder.append('|');
         builder.append(')');
 
