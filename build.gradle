@@ -45,7 +45,7 @@ def toolchainLauncher = javaToolchains.launcherFor {
 def checkstyleVersion = '9.3'
 def hamcrestVersion = '2.2'
 def mockitoVersion = '4.6.1'
-def junitVersion = '5.8.2'
+def junitVersion = '5.9.0'
 def jmhVersion = '1.35'
 def agronaVersion = '1.16.0'
 def agronaVersionRange = '[1.15.2,2.0[' // allow any release >= 1.15.2 and < 2.0.0
