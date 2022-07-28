@@ -7,8 +7,8 @@ import org.agrona.MutableDirectBuffer;
 import org.agrona.generation.CompilerUtil;
 import org.agrona.generation.StringWriterOutputManager;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -32,6 +32,7 @@ public class QualifiedYieldTest
     private final StringWriterOutputManager outputManager = new StringWriterOutputManager();
 
     @Test
+    @EnabledForJreRange(min = JRE.JAVA_17)
     void shouldGenerateValidJava() throws Exception
     {
         System.setProperty(SbeTool.KEYWORD_APPEND_TOKEN, "_");

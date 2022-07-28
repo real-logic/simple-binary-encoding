@@ -623,13 +623,13 @@ public final class FrameCodecDecoder
         builder.append(BLOCK_LENGTH);
         builder.append("):");
         builder.append("irId=");
-        builder.append(irId());
+        builder.append(this.irId());
         builder.append('|');
         builder.append("irVersion=");
-        builder.append(irVersion());
+        builder.append(this.irVersion());
         builder.append('|');
         builder.append("schemaVersion=");
-        builder.append(schemaVersion());
+        builder.append(this.schemaVersion());
         builder.append('|');
         builder.append("packageName=");
         builder.append('\'').append(packageName()).append('\'');

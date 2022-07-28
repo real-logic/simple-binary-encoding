@@ -217,16 +217,16 @@ public final class MessageHeaderDecoder
 
         builder.append('(');
         builder.append("blockLength=");
-        builder.append(blockLength());
+        builder.append(this.blockLength());
         builder.append('|');
         builder.append("templateId=");
-        builder.append(templateId());
+        builder.append(this.templateId());
         builder.append('|');
         builder.append("schemaId=");
-        builder.append(schemaId());
+        builder.append(this.schemaId());
         builder.append('|');
         builder.append("version=");
-        builder.append(version());
+        builder.append(this.version());
         builder.append(')');
 
         return builder;
