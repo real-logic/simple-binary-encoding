@@ -28,10 +28,9 @@ import uk.co.real_logic.sbe.generation.MultiPackageOutputManager;
  */
 public class JavaOutputManager implements MultiPackageOutputManager
 {
-
     private final String baseDirName;
-    private final PackageOutputManager global;
-    private PackageOutputManager acting;
+    private final PackageOutputManager basePackageOutputManager;
+    private PackageOutputManager actingPackageOutputManager;
     private final Object2ObjectHashMap<String, PackageOutputManager> outputManagerCache
         = new Object2NullableObjectHashMap<>();
 
@@ -42,33 +41,32 @@ public class JavaOutputManager implements MultiPackageOutputManager
      */
     public JavaOutputManager(final String baseDirName, final String packageName)
     {
-        global = new PackageOutputManager(baseDirName, packageName);
-        acting = global;
+        basePackageOutputManager = new PackageOutputManager(baseDirName, packageName);
+        actingPackageOutputManager = basePackageOutputManager;
         this.baseDirName = baseDirName;
     }
 
     @Override
     public void setPackageName(final String packageName)
     {
-        acting = outputManagerCache.get(packageName);
-        if (acting == null)
+        actingPackageOutputManager = outputManagerCache.get(packageName);
+        if (actingPackageOutputManager == null)
         {
-            acting = new PackageOutputManager(baseDirName, packageName);
-            outputManagerCache.put(packageName, acting);
+            actingPackageOutputManager = new PackageOutputManager(baseDirName, packageName);
+            outputManagerCache.put(packageName, actingPackageOutputManager);
         }
     }
 
     private void resetPackage()
     {
-        acting = global;
+        actingPackageOutputManager = basePackageOutputManager;
     }
 
     @Override
     public Writer createOutput(final String name) throws IOException
     {
-        return new FilterWriter(acting.createOutput(name))
+        return new FilterWriter(actingPackageOutputManager.createOutput(name))
         {
-            @Override
             public void close() throws IOException
             {
                 super.close();
