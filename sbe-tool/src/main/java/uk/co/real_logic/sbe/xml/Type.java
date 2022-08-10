@@ -38,7 +38,7 @@ public abstract class Type
     private int sinceVersion;
 
     /**
-     * Construct a new Type from XML Schema.Called by subclasses to mostly set common fields
+     * Construct a new Type from XML Schema. Called by subclasses to mostly set common fields
      *
      * @param node           from the XML Schema Parsing
      * @param givenName      of this node, if null then the attributed name will be used.
