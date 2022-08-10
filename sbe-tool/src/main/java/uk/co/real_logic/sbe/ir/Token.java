@@ -77,9 +77,9 @@ public class Token
 
     private final Signal signal;
     private final String name;
-    private final String packageName;
     private final String referencedName;
     private final String description;
+    private final String packageName;
     private final int id;
     private final int version;
     private final int deprecated;
@@ -93,9 +93,10 @@ public class Token
      *
      * @param signal              for the token role.
      * @param name                of the token in the message.
-     * @param packageName         of the token in the message.
      * @param referencedName      of the type when created from a ref in a composite.
      * @param description         of what the token is for.
+     * @param packageName         of the token in the message. Use null, except for BEGIN_MESSAGE tokens for types that
+     *                            require an explicit package.
      * @param id                  as the identifier in the message declaration.
      * @param version             application within the template.
      * @param deprecated          as of this version.
@@ -107,9 +108,9 @@ public class Token
     public Token(
         final Signal signal,
         final String name,
-        final String packageName,
         final String referencedName,
         final String description,
+        final String packageName,
         final int id,
         final int version,
         final int deprecated,
@@ -126,6 +127,7 @@ public class Token
         this.name = name;
         this.referencedName = referencedName;
         this.description = description;
+        this.packageName = packageName;
         this.id = id;
         this.version = version;
         this.deprecated = deprecated;
@@ -133,7 +135,6 @@ public class Token
         this.offset = offset;
         this.componentTokenCount = componentTokenCount;
         this.encoding = encoding;
-        this.packageName = packageName;
     }
 
     /**
@@ -159,7 +160,7 @@ public class Token
     /**
      * Return the packageName of the token
      *
-     * @return packageName of the token
+     * @return packageName of the token or null, if it was not set explicitly.
      */
     public String packageName()
     {
@@ -358,6 +359,7 @@ public class Token
             ", name='" + name + '\'' +
             ", referencedName='" + referencedName + '\'' +
             ", description='" + description + '\'' +
+            ", packageName='" + packageName + '\'' +
             ", id=" + id +
             ", version=" + version +
             ", deprecated=" + deprecated +
@@ -375,7 +377,7 @@ public class Token
     {
         private Signal signal;
         private String name;
-        private String packageName;
+        private String packageName = null;
         private String referencedName;
         private String description;
         private int id = INVALID_ID;
@@ -411,7 +413,8 @@ public class Token
         }
 
         /**
-         * Name for the Token.
+         * Package name for the Token. Default is null. Use for BEGIN_MESSAGE tokens for types that require an explicit
+         * package.
          *
          * @param packageName for the Token.
          * @return this for a fluent API.
@@ -540,9 +543,9 @@ public class Token
             return new Token(
                 signal,
                 name,
-                packageName,
                 referencedName,
                 description,
+                packageName,
                 id,
                 version,
                 deprecated,
