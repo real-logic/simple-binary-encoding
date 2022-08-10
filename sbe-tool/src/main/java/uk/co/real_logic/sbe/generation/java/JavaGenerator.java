@@ -1235,16 +1235,27 @@ public class JavaGenerator implements CodeGenerator
         final String bitSetName = token.applicableTypeName();
         final String decoderName = decoderName(bitSetName);
         final String encoderName = encoderName(bitSetName);
-        final List<Token> messageBody = getMessageBody(tokens);
+        final List<Token> choiceList = tokens.subList(1, tokens.size() - 1);
         final String implementsString = implementsInterface(Flyweight.class.getSimpleName());
 
         registerTypePackage(token, ir);
         try (Writer out = outputManager.createOutput(decoderName))
         {
+            final Encoding encoding = token.encoding();
             generateFixedFlyweightHeader(out, token, decoderName, implementsString, readOnlyBuffer, fqReadOnlyBuffer);
-            out.append(generateChoiceIsEmpty(token.encoding().primitiveType()));
-            generateChoiceDecoders(out, messageBody);
-            out.append(generateChoiceDisplay(messageBody));
+            out.append(generateChoiceIsEmpty(encoding.primitiveType()));
+
+            new Formatter(out).format(
+                "\n" +
+                "    public %s getRaw()\n" +
+                "    {\n" +
+                "        return %s;\n" +
+                "    }\n",
+                primitiveTypeName(token),
+                generateGet(encoding.primitiveType(), "offset", byteOrderString(encoding)));
+
+            generateChoiceDecoders(out, choiceList);
+            out.append(generateChoiceDisplay(choiceList));
             out.append("}\n");
         }
 
@@ -1253,7 +1264,7 @@ public class JavaGenerator implements CodeGenerator
         {
             generateFixedFlyweightHeader(out, token, encoderName, implementsString, mutableBuffer, fqMutableBuffer);
             generateChoiceClear(out, encoderName, token);
-            generateChoiceEncoders(out, encoderName, messageBody);
+            generateChoiceEncoders(out, encoderName, choiceList);
             out.append("}\n");
         }
     }
@@ -1299,10 +1310,11 @@ public class JavaGenerator implements CodeGenerator
             out.append(generateEnumFileHeader(packageName));
             out.append(generateEnumDeclaration(enumName, enumToken));
 
-            out.append(generateEnumValues(getMessageBody(tokens), generateLiteral(encoding.primitiveType(), nullVal)));
+            final List<Token> valuesList = tokens.subList(1, tokens.size() - 1);
+            out.append(generateEnumValues(valuesList, generateLiteral(encoding.primitiveType(), nullVal)));
             out.append(generateEnumBody(enumToken, enumName));
 
-            out.append(generateEnumLookupMethod(getMessageBody(tokens), enumName, nullVal));
+            out.append(generateEnumLookupMethod(valuesList, enumName, nullVal));
 
             out.append("}\n");
         }
@@ -3547,7 +3559,7 @@ public class JavaGenerator implements CodeGenerator
                 sb, indent, "builder.append(\"" + groupName + Separator.KEY_VALUE + Separator.BEGIN_GROUP + "\");");
             append(sb, indent, "final int " + groupName + "OriginalOffset = " + groupName + ".offset;");
             append(sb, indent, "final int " + groupName + "OriginalIndex = " + groupName + ".index;");
-            append(sb, indent, "final " + groupDecoderName + " " + groupName + " = " + groupName + "();");
+            append(sb, indent, "final " + groupDecoderName + " " + groupName + " = this." + groupName + "();");
 
             append(sb, indent, "if (" + groupName + ".count() > 0)");
             append(sb, indent, "{");
@@ -3630,9 +3642,9 @@ public class JavaGenerator implements CodeGenerator
                     if (typeToken.encoding().primitiveType() == PrimitiveType.CHAR)
                     {
                         append(sb, indent,
-                            "for (int i = 0; i < " + fieldName + "Length() && " + fieldName + "(i) > 0; i++)");
+                            "for (int i = 0; i < " + fieldName + "Length() && this." + fieldName + "(i) > 0; i++)");
                         append(sb, indent, "{");
-                        append(sb, indent, "    builder.append((char)" + fieldName + "(i));");
+                        append(sb, indent, "    builder.append((char)this." + fieldName + "(i));");
                         append(sb, indent, "}");
                     }
                     else
@@ -3642,7 +3654,7 @@ public class JavaGenerator implements CodeGenerator
                         append(sb, indent, "{");
                         append(sb, indent, "    for (int i = 0; i < " + fieldName + "Length(); i++)");
                         append(sb, indent, "    {");
-                        append(sb, indent, "        builder.append(" + fieldName + "(i));");
+                        append(sb, indent, "        builder.append(this." + fieldName + "(i));");
                         Separator.ENTRY.appendToGeneratedBuilder(sb, indent + INDENT + INDENT);
                         append(sb, indent, "    }");
                         append(sb, indent, "    builder.setLength(builder.length() - 1);");
@@ -3653,22 +3665,22 @@ public class JavaGenerator implements CodeGenerator
                 else
                 {
                     // have to duplicate because of checkstyle :/
-                    append(sb, indent, "builder.append(" + fieldName + "());");
+                    append(sb, indent, "builder.append(this." + fieldName + "());");
                 }
                 break;
 
             case BEGIN_ENUM:
-                append(sb, indent, "builder.append(" + fieldName + "());");
+                append(sb, indent, "builder.append(this." + fieldName + "());");
                 break;
 
             case BEGIN_SET:
-                append(sb, indent, fieldName + "().appendTo(builder);");
+                append(sb, indent, "this." + fieldName + "().appendTo(builder);");
                 break;
 
             case BEGIN_COMPOSITE:
             {
                 final String typeName = formatClassName(decoderName(typeToken.applicableTypeName()));
-                append(sb, indent, "final " + typeName + " " + fieldName + " = " + fieldName + "();");
+                append(sb, indent, "final " + typeName + " " + fieldName + " = this." + fieldName + "();");
                 append(sb, indent, "if (" + fieldName + " != null)");
                 append(sb, indent, "{");
                 append(sb, indent, "    " + fieldName + ".appendTo(builder);");
@@ -3749,7 +3761,7 @@ public class JavaGenerator implements CodeGenerator
             final String groupName = formatPropertyName(groupToken.name());
             final String groupDecoderName = decoderName(groupToken.name());
 
-            append(sb, bodyIndent, groupDecoderName + " " + groupName + " = " + groupName + "();");
+            append(sb, bodyIndent, groupDecoderName + " " + groupName + " = this." + groupName + "();");
             append(sb, bodyIndent, "if (" + groupName + ".count() > 0)");
             append(sb, bodyIndent, "{");
             append(sb, bodyIndent, "    while (" + groupName + ".hasNext())");

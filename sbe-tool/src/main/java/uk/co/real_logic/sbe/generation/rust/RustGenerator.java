@@ -39,7 +39,6 @@ import static uk.co.real_logic.sbe.generation.rust.RustUtil.*;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectFields;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectGroups;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectVarData;
-import static uk.co.real_logic.sbe.ir.GenerationUtil.getMessageBody;
 import static uk.co.real_logic.sbe.ir.Signal.BEGIN_ENUM;
 import static uk.co.real_logic.sbe.ir.Signal.BEGIN_SET;
 
@@ -137,7 +136,7 @@ public class RustGenerator implements CodeGenerator
         {
             final Token msgToken = tokens.get(0);
             final String codecModName = codecModName(msgToken.name());
-            final List<Token> messageBody = getMessageBody(tokens);
+            final List<Token> messageBody = tokens.subList(1, tokens.size() - 1);
 
             int i = 0;
             final List<Token> fields = new ArrayList<>();
@@ -1175,7 +1174,7 @@ public class RustGenerator implements CodeGenerator
     {
         final String originalEnumName = enumTokens.get(0).applicableTypeName();
         final String enumRustName = formatStructName(originalEnumName);
-        final List<Token> messageBody = getMessageBody(enumTokens);
+        final List<Token> messageBody = enumTokens.subList(1, enumTokens.size() - 1);
         if (messageBody.isEmpty())
         {
             throw new IllegalArgumentException("No valid values provided for enum " + originalEnumName);

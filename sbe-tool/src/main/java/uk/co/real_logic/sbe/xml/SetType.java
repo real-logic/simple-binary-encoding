@@ -177,7 +177,7 @@ public class SetType extends Type
 
     /**
      * Always false.
-     *
+     * <p>
      * {@inheritDoc}
      */
     public boolean isVariableLength()

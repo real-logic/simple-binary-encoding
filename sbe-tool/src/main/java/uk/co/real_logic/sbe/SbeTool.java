@@ -213,7 +213,10 @@ public class SbeTool
             }
             else if (fileName.endsWith(".sbeir"))
             {
-                ir = new IrDecoder(fileName).decode();
+                try (IrDecoder irDecoder = new IrDecoder(fileName))
+                {
+                    ir = irDecoder.decode();
+                }
             }
             else
             {

@@ -208,6 +208,8 @@ public class IrGenerator
             .semanticType(semanticTypeOf(type, field))
             .build();
 
+        final int version = null != field ? Math.max(field.sinceVersion(), type.sinceVersion()) : type.sinceVersion();
+
         final Token.Builder builder = new Token.Builder()
             .signal(Signal.BEGIN_COMPOSITE)
             .name(type.name())
@@ -215,15 +217,10 @@ public class IrGenerator
             .referencedName(type.referencedName())
             .offset(currOffset)
             .size(type.encodedLength())
-            .version(type.sinceVersion())
+            .version(version)
             .deprecated(type.deprecated())
             .description(type.description())
             .encoding(encoding);
-
-        if (null != field)
-        {
-            builder.version(Math.max(field.sinceVersion(), type.sinceVersion()));
-        }
 
         tokenList.add(builder.build());
 
@@ -237,19 +234,21 @@ public class IrGenerator
 
             if (elementType instanceof EncodedDataType)
             {
-                add((EncodedDataType)elementType, offset);
+                add((EncodedDataType)elementType,
+                    offset,
+                    null != field ? Math.max(field.sinceVersion(), type.sinceVersion()) : elementType.sinceVersion());
             }
             else if (elementType instanceof EnumType)
             {
-                add((EnumType)elementType, offset, null);
+                add((EnumType)elementType, offset, field);
             }
             else if (elementType instanceof SetType)
             {
-                add((SetType)elementType, offset, null);
+                add((SetType)elementType, offset, field);
             }
             else if (elementType instanceof CompositeType)
             {
-                add((CompositeType)elementType, offset, null);
+                add((CompositeType)elementType, offset, field);
             }
 
             offset += elementType.encodedLength();
@@ -267,6 +266,8 @@ public class IrGenerator
             .nullValue(type.nullValue())
             .byteOrder(schema.byteOrder());
 
+        final int version = null != field ? Math.max(field.sinceVersion(), type.sinceVersion()) : type.sinceVersion();
+
         final Token.Builder builder = new Token.Builder()
             .signal(Signal.BEGIN_ENUM)
             .name(type.name())
@@ -274,15 +275,10 @@ public class IrGenerator
             .referencedName(type.referencedName())
             .size(encodingType.size())
             .offset(offset)
-            .version(type.sinceVersion())
+            .version(version)
             .deprecated(type.deprecated())
             .description(type.description())
             .encoding(encodingBuilder.build());
-
-        if (null != field)
-        {
-            builder.version(Math.max(field.sinceVersion(), type.sinceVersion()));
-        }
 
         tokenList.add(builder.build());
 
@@ -324,6 +320,8 @@ public class IrGenerator
             .primitiveType(encodingType)
             .build();
 
+        final int version = null != field ? Math.max(field.sinceVersion(), type.sinceVersion()) : type.sinceVersion();
+
         final Token.Builder builder = new Token.Builder()
             .signal(Signal.BEGIN_SET)
             .name(type.name())
@@ -331,15 +329,10 @@ public class IrGenerator
             .referencedName(type.referencedName())
             .size(encodingType.size())
             .offset(offset)
-            .version(type.sinceVersion())
+            .version(version)
             .deprecated(type.deprecated())
             .description(type.description())
             .encoding(encoding);
-
-        if (null != field)
-        {
-            builder.version(Math.max(field.sinceVersion(), type.sinceVersion()));
-        }
 
         tokenList.add(builder.build());
 
@@ -372,7 +365,7 @@ public class IrGenerator
         tokenList.add(builder.build());
     }
 
-    private void add(final EncodedDataType type, final int offset)
+    private void add(final EncodedDataType type, final int offset, final int sinceVersion)
     {
         final Encoding.Builder encodingBuilder = new Encoding.Builder()
             .primitiveType(type.primitiveType())
@@ -386,7 +379,7 @@ public class IrGenerator
             .referencedName(type.referencedName())
             .size(type.encodedLength())
             .description(type.description())
-            .version(type.sinceVersion())
+            .version(sinceVersion)
             .deprecated(type.deprecated())
             .offset(offset);
 
@@ -408,6 +401,7 @@ public class IrGenerator
                 break;
 
             case CONSTANT:
+                tokenBuilder.size(0);
                 encodingBuilder
                     .presence(Encoding.Presence.CONSTANT)
                     .constValue(type.constVal());
@@ -429,6 +423,8 @@ public class IrGenerator
             .timeUnit(field.timeUnit())
             .epoch(field.epoch());
 
+        final int version = Math.max(field.sinceVersion(), type.sinceVersion());
+
         final Token.Builder tokenBuilder = new Token.Builder()
             .signal(Signal.ENCODING)
             .name(type.name())
@@ -436,14 +432,9 @@ public class IrGenerator
             .referencedName(type.referencedName())
             .size(type.encodedLength())
             .description(type.description())
-            .version(type.sinceVersion())
+            .version(version)
             .deprecated(type.deprecated())
             .offset(offset);
-
-        if (field.type() instanceof CompositeType)
-        {
-            tokenBuilder.version(Math.max(field.sinceVersion(), type.sinceVersion()));
-        }
 
         switch (field.presence())
         {
