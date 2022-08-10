@@ -20,7 +20,6 @@ import java.util.Map;
 import org.agrona.DirectBuffer;
 import org.agrona.MutableDirectBuffer;
 import org.agrona.generation.CompilerUtil;
-import org.agrona.generation.StringWriterOutputManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
@@ -54,7 +53,7 @@ public class QualifiedYieldTest
         final IrGenerator irg = new IrGenerator();
         final Ir ir = irg.generate(schema);
         final JavaGenerator generator = new JavaGenerator(
-            ir, BUFFER_NAME, READ_ONLY_BUFFER_NAME, false, false, false, outputManager);
+            ir, BUFFER_NAME, READ_ONLY_BUFFER_NAME, false, false, false, false, outputManager);
 
         outputManager.setPackageName(ir.applicableNamespace());
         generator.generateMessageHeaderStub();
