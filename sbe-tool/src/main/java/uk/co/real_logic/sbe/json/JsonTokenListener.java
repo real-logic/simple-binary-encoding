@@ -16,6 +16,7 @@
 package uk.co.real_logic.sbe.json;
 
 import org.agrona.DirectBuffer;
+import org.agrona.PrintBufferUtil;
 import uk.co.real_logic.sbe.PrimitiveValue;
 import uk.co.real_logic.sbe.ir.Encoding;
 import uk.co.real_logic.sbe.ir.Token;
@@ -230,7 +231,10 @@ public class JsonTokenListener implements TokenListener
 
             final byte[] tempBuffer = new byte[length];
             buffer.getBytes(bufferIndex, tempBuffer, 0, length);
-            final String str = new String(tempBuffer, 0, length, typeToken.encoding().characterEncoding());
+
+            final String charsetName = typeToken.encoding().characterEncoding();
+            final String str = charsetName != null ? new String(tempBuffer, 0, length, charsetName) :
+                PrintBufferUtil.hexDump(tempBuffer);
 
             escape(str);
 
