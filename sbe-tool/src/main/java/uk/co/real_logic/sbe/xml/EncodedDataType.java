@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2022 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,12 +94,12 @@ public class EncodedDataType extends Type
 
         if (PrimitiveType.CHAR == primitiveType)
         {
-            characterEncoding = getAttributeValue(node, "characterEncoding", "US-ASCII").trim().toUpperCase();
+            characterEncoding = getAttributeValue(node, "characterEncoding", "US-ASCII").trim();
         }
         else
         {
             final String characterEncoding = getAttributeValueOrNull(node, "characterEncoding");
-            this.characterEncoding = characterEncoding == null ? null : characterEncoding.trim().toUpperCase();
+            this.characterEncoding = characterEncoding == null ? null : characterEncoding.trim();
         }
 
         if (presence() == CONSTANT)
@@ -393,6 +393,9 @@ public class EncodedDataType extends Type
         return primitiveValue;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public String toString()
     {
         return "EncodedDataType{" +

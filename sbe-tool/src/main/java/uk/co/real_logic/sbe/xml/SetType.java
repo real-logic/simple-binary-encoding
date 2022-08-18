@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2022 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,8 +44,8 @@ public class SetType extends Type
     private final Map<PrimitiveValue, Choice> choiceByPrimitiveValueMap = new LinkedHashMap<>();
     private final Map<String, Choice> choiceByNameMap = new LinkedHashMap<>();
 
-    public SetType(final Node node)
-        throws XPathExpressionException, IllegalArgumentException
+    SetType(final Node node)
+        throws XPathExpressionException
     {
         this(node, null, null);
     }
@@ -57,10 +57,9 @@ public class SetType extends Type
      * @param givenName      for the node.
      * @param referencedName of the type when created from a ref in a composite.
      * @throws XPathExpressionException on invalid XPath.
-     * @throws IllegalArgumentException on illegal encoding type.
      */
     public SetType(final Node node, final String givenName, final String referencedName)
-        throws XPathExpressionException, IllegalArgumentException
+        throws XPathExpressionException
     {
         super(node, givenName, referencedName);
 
@@ -77,12 +76,13 @@ public class SetType extends Type
                 break;
 
             default:
-                // might not have ran into this type yet, so look for it
-                final Node encodingTypeNode = (Node)xPath.compile(
-                    String.format("%s[@name=\'%s\']", XmlSchemaParser.TYPE_XPATH_EXPR, encodingTypeStr))
+                // might not have run into this type yet, so look for it
+                final String expression = TYPE_XPATH_EXPR + "[@name='" + encodingTypeStr + "']";
+                final Node encodingTypeNode = (Node)xPath
+                    .compile(expression)
                     .evaluate(node.getOwnerDocument(), XPathConstants.NODE);
 
-                if (encodingTypeNode == null)
+                if (null == encodingTypeNode)
                 {
                     encodingType = null;
                 }
@@ -177,7 +177,7 @@ public class SetType extends Type
 
     /**
      * Always false.
-     *
+     * <p>
      * {@inheritDoc}
      */
     public boolean isVariableLength()
@@ -185,6 +185,9 @@ public class SetType extends Type
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public String toString()
     {
         return "SetType{" +
@@ -220,7 +223,7 @@ public class SetType extends Type
             deprecated = Integer.parseInt(getAttributeValue(node, "deprecated", "0"));
 
             // choice values are bit positions (0, 1, 2, 3, 4, etc.) from LSB to MSB
-            if (value.longValue() >= (encodingType.size() * 8))
+            if (value.longValue() >= (encodingType.size() * 8L))
             {
                 throw new IllegalArgumentException("Choice value out of bounds: " + value.longValue());
             }
@@ -278,6 +281,9 @@ public class SetType extends Type
             return deprecated;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public String toString()
         {
             return "Choice{" +

@@ -1,5 +1,5 @@
 #
-# Copyright 2013-2020 Real Logic Limited.
+# Copyright 2013-2022 Real Logic Limited.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ find_package(Java REQUIRED)
 
 set(CODE_GENERATION_SCHEMA ${CODEC_SCHEMA_DIR}/code-generation-schema.xml)
 set(GROUP_WITH_DATA_SCHEMA ${CODEC_SCHEMA_DIR}/group-with-data-schema.xml)
+set(ISSUE889_SCHEMA ${CODEC_SCHEMA_DIR}/issue889.xml)
 
 set(GENERATED_CODECS
     ${C_CODEC_TARGET_DIR}
@@ -42,7 +43,7 @@ set(GENERATED_CODECS
 
 add_custom_command(
     OUTPUT ${GENERATED_CODECS}
-    DEPENDS sbe-jar ${SBE_JAR} ${CODE_GENERATION_SCHEMA} ${GROUP_WITH_DATA_SCHEMA}
+    DEPENDS sbe-jar ${SBE_JAR} ${CODE_GENERATION_SCHEMA} ${GROUP_WITH_DATA_SCHEMA} ${ISSUE889_SCHEMA}
     COMMAND
         ${Java_JAVA_EXECUTABLE}
             -Dsbe.output.dir=${C_CODEC_TARGET_DIR}
@@ -50,6 +51,7 @@ add_custom_command(
             -jar ${SBE_JAR}
             ${CODE_GENERATION_SCHEMA}
             ${GROUP_WITH_DATA_SCHEMA}
+            ${ISSUE889_SCHEMA}
 )
 
 add_custom_target(c_codecs DEPENDS ${GENERATED_CODECS})
@@ -58,6 +60,7 @@ add_custom_target(c_codecs DEPENDS ${GENERATED_CODECS})
 sbe_test(BoundsCheckTest c_codecs)
 sbe_test(CodeGenTest c_codecs)
 sbe_test(GroupWithDataTest c_codecs)
+sbe_test(Issue889Test c_codecs)
 
 # Compile a dummy C source to test C compliance of generated headers.
 add_executable(CComplianceTest CComplianceTest.c)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2022 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 package uk.co.real_logic.sbe.xml;
 
 import org.junit.jupiter.api.Test;
-import uk.co.real_logic.sbe.TestUtil;
+import uk.co.real_logic.sbe.Tests;
 
 import java.util.List;
 
@@ -25,14 +25,13 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
-public class EmbeddedLengthAndCountFileTest
+class EmbeddedLengthAndCountFileTest
 {
     @Test
-    public void shouldHandleEmbeddedCountForGroup()
-        throws Exception
+    void shouldHandleEmbeddedCountForGroup() throws Exception
     {
         final MessageSchema schema = parse(
-            TestUtil.getLocalResource("embedded-length-and-count-schema.xml"), ParserOptions.DEFAULT);
+            Tests.getLocalResource("embedded-length-and-count-schema.xml"), ParserOptions.DEFAULT);
         final List<Field> fields = schema.getMessage(1).fields();
 
         assertThat(fields.get(1).name(), is("ListOrdGrp"));
@@ -44,9 +43,8 @@ public class EmbeddedLengthAndCountFileTest
     }
 
     @Test
-    public void shouldHandleEmbeddedLengthForData()
-        throws Exception
+    void shouldHandleEmbeddedLengthForData() throws Exception
     {
-        parse(TestUtil.getLocalResource("embedded-length-and-count-schema.xml"), ParserOptions.DEFAULT);
+        parse(Tests.getLocalResource("embedded-length-and-count-schema.xml"), ParserOptions.DEFAULT);
     }
 }

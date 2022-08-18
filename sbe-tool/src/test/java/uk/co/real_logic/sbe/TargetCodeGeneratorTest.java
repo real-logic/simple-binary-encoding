@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2022 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,17 +23,17 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-public class TargetCodeGeneratorTest
+class TargetCodeGeneratorTest
 {
     @Test
-    public void shouldThrowOnNoTargetLanguage() throws Exception
+    void shouldThrowOnNoTargetLanguage()
     {
         assertThrows(IllegalArgumentException.class, () ->
             SbeTool.generate(mock(Ir.class), ".", "none"));
     }
 
     @Test
-    public void shouldLoadAndInstantiateNonStandardTargetLanguage() throws Exception
+    void shouldLoadAndInstantiateNonStandardTargetLanguage() throws Exception
     {
         final Ir ir = mock(Ir.class);
         final String outputDir = ".";

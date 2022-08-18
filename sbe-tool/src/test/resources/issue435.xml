@@ -27,6 +27,6 @@
         </composite>
     </types>
     <sbe:message name="issue435" id="1" description="issue 435 test">
-	<field name="example" type="exampleRef" id="10"/>
+	    <field name="example" type="exampleRef" id="10"/>
     </sbe:message>
 </sbe:messageSchema>

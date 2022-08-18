@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2022 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@
 
 #include <gtest/gtest.h>
 
-#include <code_generation_test/car.h>
-#include <code_generation_test/messageHeader.h>
+#include "code_generation_test/car.h"
+#include "code_generation_test/messageHeader.h"
 
 #define CGT(name) code_generation_test_##name
 
@@ -320,7 +320,7 @@ protected:
 
     std::uint64_t decodeCarFuelFigures()
     {
-        char tmp[256];
+        char tmp[256] = { 0 };
         CGT(car_fuelFigures) fuelFigures;
         if (!CGT(car_get_fuelFigures)(&m_carDecoder, &fuelFigures))
         {
@@ -465,7 +465,7 @@ protected:
 
     std::uint64_t decodeCarManufacturerModelAndActivationCode()
     {
-        char tmp[256];
+        char tmp[256] = { 0 };
         std::uint64_t lengthOfField = CGT(car_get_manufacturer)(&m_carDecoder, tmp, sizeof(tmp));
         if (!lengthOfField)
         {
@@ -496,10 +496,10 @@ protected:
     }
 
 private:
-    CGT(messageHeader) m_hdr;
-    CGT(messageHeader) m_hdrDecoder;
-    CGT(car) m_car;
-    CGT(car) m_carDecoder;
+    CGT(messageHeader) m_hdr = {};
+    CGT(messageHeader) m_hdrDecoder = {};
+    CGT(car) m_car = {};
+    CGT(car) m_carDecoder = {};
 };
 
 class HeaderBoundsCheckTest : public BoundsCheckTest, public ::testing::WithParamInterface<int>
@@ -512,24 +512,26 @@ TEST_P(HeaderBoundsCheckTest, shouldExceptionWhenBufferTooShortForEncodeOfHeader
     std::unique_ptr<char[]> buffer(new char[length]);
 
     EXPECT_THROW(
-    {
-        encodeHdr(buffer.get(), 0, length);
-    }, std::runtime_error);
+        {
+            encodeHdr(buffer.get(), 0, length);
+        },
+        std::runtime_error);
 }
 
 TEST_P(HeaderBoundsCheckTest, shouldExceptionWhenBufferTooShortForDecodeOfHeader)
 {
     const int length = GetParam();
-    char encodeBuffer[8];
+    char encodeBuffer[8] = { 0 };
     std::unique_ptr<char[]> buffer(new char[length]);
 
     encodeHdr(encodeBuffer, 0, sizeof(encodeBuffer));
 
     EXPECT_THROW(
-    {
-        std::memcpy(buffer.get(), encodeBuffer, length);
-        decodeHdr(buffer.get(), 0, length);
-    }, std::runtime_error);
+        {
+            std::memcpy(buffer.get(), encodeBuffer, length);
+            decodeHdr(buffer.get(), 0, length);
+        },
+        std::runtime_error);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -547,18 +549,19 @@ TEST_P(MessageBoundsCheckTest, shouldExceptionWhenBufferTooShortForEncodeOfMessa
     std::unique_ptr<char[]> buffer(new char[length]);
 
     EXPECT_THROW(
-    {
-        encodeCarRoot(buffer.get(), 0, length);
-        encodeCarFuelFigures();
-        encodeCarPerformanceFigures();
-        encodeCarManufacturerModelAndActivationCode();
-    }, std::runtime_error);
+        {
+            encodeCarRoot(buffer.get(), 0, length);
+            encodeCarFuelFigures();
+            encodeCarPerformanceFigures();
+            encodeCarManufacturerModelAndActivationCode();
+        },
+        std::runtime_error);
 }
 
 TEST_P(MessageBoundsCheckTest, shouldExceptionWhenBufferTooShortForDecodeOfMessage)
 {
     const int length = GetParam();
-    char encodeBuffer[191];
+    char encodeBuffer[191] = { 0 };
     std::unique_ptr<char[]> buffer(new char[length]);
 
     encodeCarRoot(encodeBuffer, 0, sizeof(encodeBuffer));
@@ -567,13 +570,14 @@ TEST_P(MessageBoundsCheckTest, shouldExceptionWhenBufferTooShortForDecodeOfMessa
     encodeCarManufacturerModelAndActivationCode();
 
     EXPECT_THROW(
-    {
-        std::memcpy(buffer.get(), encodeBuffer, length);
-        decodeCarRoot(buffer.get(), 0, length);
-        decodeCarFuelFigures();
-        decodeCarPerformanceFigures();
-        decodeCarManufacturerModelAndActivationCode();
-    }, std::runtime_error);
+        {
+            std::memcpy(buffer.get(), encodeBuffer, length);
+            decodeCarRoot(buffer.get(), 0, length);
+            decodeCarFuelFigures();
+            decodeCarPerformanceFigures();
+            decodeCarManufacturerModelAndActivationCode();
+        },
+        std::runtime_error);
 }
 
 INSTANTIATE_TEST_SUITE_P(

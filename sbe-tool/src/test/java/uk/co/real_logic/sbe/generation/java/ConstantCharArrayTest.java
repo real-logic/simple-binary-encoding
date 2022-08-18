@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2022 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ import org.agrona.DirectBuffer;
 import org.agrona.MutableDirectBuffer;
 import org.agrona.generation.StringWriterOutputManager;
 import org.junit.jupiter.api.Test;
-import uk.co.real_logic.sbe.TestUtil;
+import uk.co.real_logic.sbe.Tests;
 import uk.co.real_logic.sbe.ir.Ir;
 import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
@@ -29,7 +29,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.StringContains.containsString;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
-public class ConstantCharArrayTest
+class ConstantCharArrayTest
 {
     private static final Class<?> BUFFER_CLASS = MutableDirectBuffer.class;
     private static final String BUFFER_NAME = BUFFER_CLASS.getName();
@@ -37,10 +37,10 @@ public class ConstantCharArrayTest
     private static final String READ_ONLY_BUFFER_NAME = READ_ONLY_BUFFER_CLASS.getName();
 
     @Test
-    public void shouldGenerateConstCharArrayMethods() throws Exception
+    void shouldGenerateConstCharArrayMethods() throws Exception
     {
         final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
-        final MessageSchema schema = parse(TestUtil.getLocalResource("issue505.xml"), options);
+        final MessageSchema schema = parse(Tests.getLocalResource("issue505.xml"), options);
         final IrGenerator irg = new IrGenerator();
         final Ir ir = irg.generate(schema);
 

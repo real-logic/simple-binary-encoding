@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2022 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,14 +24,13 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static uk.co.real_logic.sbe.TestUtil.getLocalResource;
+import static uk.co.real_logic.sbe.Tests.getLocalResource;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
-public class CompositeOffsetsTest
+class CompositeOffsetsTest
 {
     @Test
-    public void shouldGenerateCorrectOffsetsForFieldsWithEmbeddedComposite()
-        throws Exception
+    void shouldGenerateOffsetsForFieldsWithEmbeddedComposite() throws Exception
     {
         final MessageSchema schema = parse(getLocalResource("composite-offsets-schema.xml"), ParserOptions.DEFAULT);
         final IrGenerator irg = new IrGenerator();

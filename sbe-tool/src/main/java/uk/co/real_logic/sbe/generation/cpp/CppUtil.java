@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2022 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,14 @@ package uk.co.real_logic.sbe.generation.cpp;
 
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.SbeTool;
-import uk.co.real_logic.sbe.util.ValidationUtil;
+import uk.co.real_logic.sbe.ValidationUtil;
 
 import java.nio.ByteOrder;
 import java.util.EnumMap;
 import java.util.Map;
+
+import static uk.co.real_logic.sbe.generation.Generators.toLowerFirstChar;
+import static uk.co.real_logic.sbe.generation.Generators.toUpperFirstChar;
 
 /**
  * Utilities for mapping between IR and the C++ language.
@@ -54,28 +57,6 @@ public class CppUtil
     public static String cppTypeName(final PrimitiveType primitiveType)
     {
         return PRIMITIVE_TYPE_STRING_ENUM_MAP.get(primitiveType);
-    }
-
-    /**
-     * Uppercase the first character of a given String.
-     *
-     * @param str to have the first character upper cased.
-     * @return a new String with the first character in uppercase.
-     */
-    public static String toUpperFirstChar(final String str)
-    {
-        return Character.toUpperCase(str.charAt(0)) + str.substring(1);
-    }
-
-    /**
-     * Lowercase the first character of a given String.
-     *
-     * @param str to have the first character upper cased.
-     * @return a new String with the first character in uppercase.
-     */
-    public static String toLowerFirstChar(final String str)
-    {
-        return Character.toLowerCase(str.charAt(0)) + str.substring(1);
     }
 
     /**
@@ -140,8 +121,20 @@ public class CppUtil
         }
     }
 
+    /**
+     * Generate a count of closing braces, one on each line.
+     *
+     * @param count of closing braces.
+     * @return A string with count of closing braces.
+     */
     public static String closingBraces(final int count)
     {
-        return new String(new char[count]).replace("\0", "}\n");
+        final StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < count; i++)
+        {
+            sb.append("}\n");
+        }
+
+        return sb.toString();
     }
 }

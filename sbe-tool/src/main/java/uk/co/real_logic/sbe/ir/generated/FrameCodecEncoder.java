@@ -1,14 +1,15 @@
-/* Generated SBE (Simple Binary Encoding) message codec */
+/* Generated SBE (Simple Binary Encoding) message codec. */
 package uk.co.real_logic.sbe.ir.generated;
 
 import org.agrona.MutableDirectBuffer;
 import org.agrona.DirectBuffer;
 
+
 /**
- * Frame Header for start of encoding IR
+ * Frame Header for start of encoding IR.
  */
 @SuppressWarnings("all")
-public class FrameCodecEncoder
+public final class FrameCodecEncoder
 {
     public static final int BLOCK_LENGTH = 12;
     public static final int TEMPLATE_ID = 1;
@@ -18,9 +19,9 @@ public class FrameCodecEncoder
 
     private final FrameCodecEncoder parentMessage = this;
     private MutableDirectBuffer buffer;
-    protected int initialOffset;
-    protected int offset;
-    protected int limit;
+    private int initialOffset;
+    private int offset;
+    private int limit;
 
     public int sbeBlockLength()
     {
@@ -266,7 +267,7 @@ public class FrameCodecEncoder
 
     public static String packageNameCharacterEncoding()
     {
-        return "UTF-8";
+        return java.nio.charset.StandardCharsets.UTF_8.name();
     }
 
     public static String packageNameMetaAttribute(final MetaAttribute metaAttribute)
@@ -318,15 +319,7 @@ public class FrameCodecEncoder
 
     public FrameCodecEncoder packageName(final String value)
     {
-        final byte[] bytes;
-        try
-        {
-            bytes = null == value || value.isEmpty() ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes("UTF-8");
-        }
-        catch (final java.io.UnsupportedEncodingException ex)
-        {
-            throw new RuntimeException(ex);
-        }
+        final byte[] bytes = (null == value || value.isEmpty()) ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes(java.nio.charset.StandardCharsets.UTF_8);
 
         final int length = bytes.length;
         if (length > 65534)
@@ -350,7 +343,7 @@ public class FrameCodecEncoder
 
     public static String namespaceNameCharacterEncoding()
     {
-        return "UTF-8";
+        return java.nio.charset.StandardCharsets.UTF_8.name();
     }
 
     public static String namespaceNameMetaAttribute(final MetaAttribute metaAttribute)
@@ -402,15 +395,7 @@ public class FrameCodecEncoder
 
     public FrameCodecEncoder namespaceName(final String value)
     {
-        final byte[] bytes;
-        try
-        {
-            bytes = null == value || value.isEmpty() ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes("UTF-8");
-        }
-        catch (final java.io.UnsupportedEncodingException ex)
-        {
-            throw new RuntimeException(ex);
-        }
+        final byte[] bytes = (null == value || value.isEmpty()) ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes(java.nio.charset.StandardCharsets.UTF_8);
 
         final int length = bytes.length;
         if (length > 65534)
@@ -434,7 +419,7 @@ public class FrameCodecEncoder
 
     public static String semanticVersionCharacterEncoding()
     {
-        return "UTF-8";
+        return java.nio.charset.StandardCharsets.UTF_8.name();
     }
 
     public static String semanticVersionMetaAttribute(final MetaAttribute metaAttribute)
@@ -486,15 +471,7 @@ public class FrameCodecEncoder
 
     public FrameCodecEncoder semanticVersion(final String value)
     {
-        final byte[] bytes;
-        try
-        {
-            bytes = null == value || value.isEmpty() ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes("UTF-8");
-        }
-        catch (final java.io.UnsupportedEncodingException ex)
-        {
-            throw new RuntimeException(ex);
-        }
+        final byte[] bytes = (null == value || value.isEmpty()) ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes(java.nio.charset.StandardCharsets.UTF_8);
 
         final int length = bytes.length;
         if (length > 65534)
@@ -513,14 +490,24 @@ public class FrameCodecEncoder
 
     public String toString()
     {
+        if (null == buffer)
+        {
+            return "";
+        }
+
         return appendTo(new StringBuilder()).toString();
     }
 
     public StringBuilder appendTo(final StringBuilder builder)
     {
-        FrameCodecDecoder writer = new FrameCodecDecoder();
-        writer.wrap(buffer, initialOffset, BLOCK_LENGTH, SCHEMA_VERSION);
+        if (null == buffer)
+        {
+            return builder;
+        }
 
-        return writer.appendTo(builder);
+        final FrameCodecDecoder decoder = new FrameCodecDecoder();
+        decoder.wrap(buffer, initialOffset, BLOCK_LENGTH, SCHEMA_VERSION);
+
+        return decoder.appendTo(builder);
     }
 }

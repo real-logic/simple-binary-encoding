@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2022 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,34 +13,48 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-}
+
+import java.nio.file.Files
+import java.nio.file.StandardOpenOption
+import java.security.MessageDigest
 
 plugins {
     id 'java-library'
-    id 'idea'
-    id 'io.freefair.javadoc-links' version '4.1.6' apply false
-    id 'com.github.johnrengelman.shadow' version '5.2.0' apply false
-    id "com.github.ben-manes.versions" version "0.27.0"
+    id 'com.github.johnrengelman.shadow' version '7.1.2' apply false
+    id "com.github.ben-manes.versions" version "0.42.0"
 }
 
 defaultTasks 'clean', 'build'
 
-def checkstyleVersion = '8.28'
+static def getBuildJavaVersion() {
+    def buildJavaVersion = System.getenv('BUILD_JAVA_VERSION') ?: JavaVersion.current().getMajorVersion()
+    if (buildJavaVersion.indexOf('.') > 0) {
+        buildJavaVersion = buildJavaVersion.substring(0, buildJavaVersion.indexOf('.'))
+    }
+    if (buildJavaVersion.indexOf('-') > 0) {
+        buildJavaVersion = buildJavaVersion.substring(0, buildJavaVersion.indexOf('-'))
+    }
+    Integer.parseInt(buildJavaVersion)
+}
+int buildJavaVersion = getBuildJavaVersion()
+
+def toolchainLauncher = javaToolchains.launcherFor {
+    languageVersion = JavaLanguageVersion.of(buildJavaVersion)
+}
+
+def checkstyleVersion = '9.3'
 def hamcrestVersion = '2.2'
-def mockitoVersion = '3.2.4'
-def junitVersion = '5.6.0'
-def jmhVersion = '1.23'
-def agronaVersion = '1.3.0'
+def mockitoVersion = '4.7.0'
+def junitVersion = '5.9.0'
+def jmhVersion = '1.35'
+def agronaVersion = '1.16.0'
+def agronaVersionRange = '[1.15.2,2.0[' // allow any release >= 1.15.2 and < 2.0.0
 
 def sbeGroup = 'uk.co.real-logic'
 def sbeVersion = file('version.txt').text.trim()
 
 ext {
-    isReleaseVersion = !version.endsWith('-SNAPSHOT')
+    isReleaseVersion = !sbeVersion.endsWith('-SNAPSHOT')
     releasesRepoUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
     snapshotsRepoUrl = 'https://oss.sonatype.org/content/repositories/snapshots/'
 
@@ -55,9 +69,8 @@ ext {
 
 def projectPom = {
     name = 'sbe'
-    packaging = 'pom'
     description = 'FIX/SBE - OSI layer 6 presentation for encoding and decoding application messages' +
-        ' in binary format for low-latency applications'
+        ' in binary format for low-latency applications.'
     url = 'https://github.com/real-logic/simple-binary-encoding'
 
     scm {
@@ -124,6 +137,16 @@ allprojects {
         mavenLocal()
         mavenCentral()
     }
+
+    configurations.all {
+        resolutionStrategy {
+            failOnVersionConflict()
+        }
+    }
+
+    tasks.withType(JavaExec).configureEach {
+        javaLauncher.set(toolchainLauncher)
+    }
 }
 
 jar.enabled = false
@@ -131,11 +154,15 @@ jar.enabled = false
 subprojects {
     apply plugin: 'java-library'
     apply plugin: 'checkstyle'
-    apply plugin: 'eclipse'
-    apply plugin: 'io.freefair.javadoc-links'
 
     group = sbeGroup
     version = sbeVersion
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(buildJavaVersion)
+        }
+    }
 
     checkstyle.toolVersion = "${checkstyleVersion}"
 
@@ -151,39 +178,46 @@ subprojects {
     }
 
     tasks.withType(JavaCompile) {
-        if (JavaVersion.current().isJava9Compatible()) {
-            options.compilerArgs.addAll(['--add-exports', 'java.base/java.lang.reflect=ALL-UNNAMED'])
-            options.compilerArgs.addAll(['--add-exports', 'jdk.unsupported/sun.misc=ALL-UNNAMED'])
-        }
         options.encoding = 'UTF-8'
         options.deprecation = true
+        options.compilerArgs.addAll(['-Xlint:all', '-Werror']) // Enable all warnings and treat them as errors
     }
 
     javadoc {
+        failOnError false
         title = '<h1>Simple Binary Encoding (SBE)</h1>'
-        options.bottom = '<i>Copyright &#169; 2013-2020 Real Logic Limited. All Rights Reserved.</i>'
+        options.bottom = '<i>Copyright &#169; 2013-2022 Real Logic Limited. All Rights Reserved.</i>'
         options.encoding = 'UTF-8'
         options.docEncoding = 'UTF-8'
         options.charSet = 'UTF-8'
-        if (JavaVersion.current().isJava10Compatible()) {
+        options.links("https://www.javadoc.io/doc/org.agrona/agrona/${agronaVersion}/")
+        if (buildJavaVersion >= 19) { // early access JavaDoc location is different
+            options.links("https://download.java.net/java/early_access/jdk${buildJavaVersion}/docs/api/")
+        }
+        else if (buildJavaVersion >= 11) {
+            options.links("https://docs.oracle.com/en/java/javase/${buildJavaVersion}/docs/api/")
+        }
+        else {
+            options.links("https://docs.oracle.com/javase/${buildJavaVersion}/docs/api/")
+        }
+        if (buildJavaVersion >= 10) {
             options.addBooleanOption 'html5', true
         }
     }
 
     test {
-        if (JavaVersion.current().isJava9Compatible()) {
-            jvmArgs('--add-opens', 'java.base/java.lang.reflect=ALL-UNNAMED')
-            jvmArgs('--add-exports', 'jdk.unsupported/sun.misc=ALL-UNNAMED')
-        }
-
         useJUnitPlatform()
 
         testLogging {
-            showStandardStreams = true
-            exceptionFormat = 'full'
+            for (def level : LogLevel.values())
+            {
+                def testLogging = get(level)
+                testLogging.exceptionFormat = 'full'
+                testLogging.events = ["FAILED", "STANDARD_OUT", "STANDARD_ERROR"]
+            }
         }
 
-        reports.html.enabled = false // Disable individual test reports
+        javaLauncher.set(toolchainLauncher)
     }
 }
 
@@ -194,21 +228,28 @@ project(':sbe-tool') {
     apply plugin: 'signing'
 
     dependencies {
-        api "org.agrona:agrona:${agronaVersion}"
+        api("org.agrona:agrona") {
+            version {
+                strictly(agronaVersionRange)
+                prefer(agronaVersion)
+            }
+        }
         testImplementation files('build/classes/java/generated')
         testImplementation "org.hamcrest:hamcrest:${hamcrestVersion}"
-        testImplementation "org.mockito:mockito-junit-jupiter:${mockitoVersion}"
-        testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
+        testImplementation "org.mockito:mockito-core:${mockitoVersion}"
         testImplementation "org.junit.jupiter:junit-jupiter-params:${junitVersion}"
         testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
     }
 
     def generatedDir = 'build/generated-src'
     sourceSets {
-        generated.java.srcDir generatedDir
+        generated {
+            java.srcDir generatedDir
+            compileClasspath += sourceSets.main.runtimeClasspath
+        }
         test {
-            compileClasspath += generated.output
-            runtimeClasspath += generated.output
+            java.srcDir generatedDir
+            compileClasspath += sourceSets.main.runtimeClasspath
         }
     }
 
@@ -217,8 +258,10 @@ project(':sbe-tool') {
         classpath += sourceSets.main.runtimeClasspath
     }
 
+    compileTestJava.dependsOn compileGeneratedJava
+
     task generateTestCodecs(dependsOn: 'compileJava', type: JavaExec) {
-        main = 'uk.co.real_logic.sbe.SbeTool'
+        mainClass.set('uk.co.real_logic.sbe.SbeTool')
         classpath = sourceSets.main.runtimeClasspath
         systemProperties(
             'sbe.output.dir': generatedDir,
@@ -230,26 +273,22 @@ project(':sbe-tool') {
     }
 
     jar {
-        exclude 'golang/templates'
-
         manifest.attributes(
             'Specification-Title': 'Simple Binary Encoding',
             'Specification-Version': '1.0',
             'Implementation-Title': 'SBE',
-            'Implementation-Version': "${sbeVersion}",
+            'Implementation-Version': sbeVersion,
             'Implementation-Vendor': 'Real Logic Limited',
             'Automatic-Module-Name': 'uk.co.real_logic.sbe.tool'
         )
     }
 
     task sourcesJar(type: Jar) {
-        archiveClassifier.set 'sources'
+        archiveClassifier.set('sources')
         from sourceSets.main.allSource
         from ('src/main/cpp/otf') {
             into 'cpp'
-
         }
-        exclude 'golang/templates'
     }
 
     java {
@@ -267,7 +306,7 @@ project(':sbe-tool') {
 
         repositories {
             maven {
-                url = !isReleaseVersion ? snapshotsRepoUrl : releasesRepoUrl
+                url(!isReleaseVersion ? snapshotsRepoUrl : releasesRepoUrl)
                 credentials {
                     username = ossrhUsername
                     password = ossrhPassword
@@ -291,13 +330,13 @@ project(':sbe-all') {
     }
 
     shadowJar {
-        archiveClassifier.set ''
+        archiveClassifier.set('')
         manifest.attributes(
             'Main-Class': 'uk.co.real_logic.sbe.SbeTool',
             'Specification-Title': 'Simple Binary Encoding',
             'Specification-Version': '1.0',
             'Implementation-Title': 'SBE',
-            'Implementation-Version': "${sbeVersion}",
+            'Implementation-Version': sbeVersion,
             'Implementation-Vendor': 'Real Logic Limited',
             'Automatic-Module-Name': 'uk.co.real_logic.sbe.all'
         )
@@ -306,12 +345,11 @@ project(':sbe-all') {
     jar.finalizedBy shadowJar
 
     task sourcesJar(type: Jar) {
-        archiveClassifier.set 'sources'
+        archiveClassifier.set('sources')
         from project(':sbe-tool').sourceSets.main.allSource
         from (project(':sbe-tool').file('src/main/cpp/otf')) {
             into 'cpp'
         }
-        exclude 'golang/templates'
     }
 
     javadoc {
@@ -319,7 +357,7 @@ project(':sbe-all') {
     }
 
     task javadocJar(type: Jar, dependsOn: javadoc) {
-        archiveClassifier.set 'javadoc'
+        archiveClassifier.set('javadoc')
         from javadoc.destinationDir
     }
 
@@ -334,7 +372,7 @@ project(':sbe-all') {
         }
         repositories {
             maven {
-                url = !isReleaseVersion ? snapshotsRepoUrl : releasesRepoUrl
+                url(!isReleaseVersion ? snapshotsRepoUrl : releasesRepoUrl)
                 credentials {
                     username = ossrhUsername
                     password = ossrhPassword
@@ -359,46 +397,44 @@ project(':sbe-samples') {
 
     def generatedDir = 'build/generated-src'
     sourceSets {
-        generated.java.srcDir generatedDir
+        generated {
+            java.srcDir generatedDir
+            compileClasspath += project(':sbe-all').sourceSets.main.runtimeClasspath
+        }
     }
 
-    compileJava {
-        dependsOn 'compileGeneratedJava'
-    }
-
-    compileGeneratedJava {
-        dependsOn 'generateCodecs'
-        classpath += project(':sbe-all').sourceSets.main.runtimeClasspath
-    }
+    compileJava.dependsOn 'compileGeneratedJava'
+    compileGeneratedJava.dependsOn 'generateCodecs'
 
     task generateCodecs(type: JavaExec) {
-        main = 'uk.co.real_logic.sbe.SbeTool'
+        mainClass.set('uk.co.real_logic.sbe.SbeTool')
         classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
         systemProperties(
             'sbe.output.dir': generatedDir,
             'sbe.target.language': 'Java',
             'sbe.java.generate.interfaces': 'true',
             'sbe.validation.stop.on.error': 'true',
+            'sbe.decode.unknown.enum.values': 'true',
             'sbe.xinclude.aware': 'true',
             'sbe.validation.xsd': validationXsdPath)
         args = ['src/main/resources/example-schema.xml', 'src/main/resources/example-extension-schema.xml']
     }
 
     task runExampleUsingGeneratedStub(dependsOn: 'compileJava', type: JavaExec) {
+        mainClass.set('uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStub')
         classpath = sourceSets.main.runtimeClasspath
-        main = 'uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStub'
         systemProperties System.getProperties()
     }
 
     task runExampleUsingGeneratedStubExtension(dependsOn: 'compileJava', type: JavaExec) {
+        mainClass.set('uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStubExtension')
         classpath = sourceSets.main.runtimeClasspath
-        main = 'uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStubExtension'
         systemProperties System.getProperties()
     }
 
     task runOtfExample(dependsOn: 'compileJava', type: JavaExec) {
+        mainClass.set('uk.co.real_logic.sbe.examples.OtfExample')
         classpath = sourceSets.main.runtimeClasspath
-        main = 'uk.co.real_logic.sbe.examples.OtfExample'
         workingDir = 'src/main/resources'
     }
 
@@ -410,24 +446,25 @@ project(':sbe-samples') {
         from sourceSets.generated.output
 
         manifest.attributes(
-                'Main-Class': 'uk.co.real_logic.sbe.SbeTool',
-                'Specification-Title': 'Simple Binary Encoding',
-                'Specification-Version': '1.0',
-                'Implementation-Title': 'SBE',
-                'Implementation-Version': "${sbeVersion}",
-                'Implementation-Vendor': 'Real Logic Limited',
-                'Automatic-Module-Name': 'uk.co.real_logic.sbe.samples'
+            'Main-Class': 'uk.co.real_logic.sbe.SbeTool',
+            'Specification-Title': 'Simple Binary Encoding',
+            'Specification-Version': '1.0',
+            'Implementation-Title': 'SBE',
+            'Implementation-Version': sbeVersion,
+            'Implementation-Vendor': 'Real Logic Limited',
+            'Automatic-Module-Name': 'uk.co.real_logic.sbe.samples'
         )
     }
 
     task sourcesJar(type: Jar) {
-        archiveClassifier.set 'sources'
+        archiveClassifier.set('sources')
         from sourceSets.main.allSource
         from sourceSets.generated.allSource
     }
 
     javadoc {
         source += sourceSets.generated.allJava
+        source += project(':sbe-tool').sourceSets.main.allJava
     }
 
     java {
@@ -445,7 +482,7 @@ project(':sbe-samples') {
 
         repositories {
             maven {
-                url = !isReleaseVersion ? snapshotsRepoUrl : releasesRepoUrl
+                url(!isReleaseVersion ? snapshotsRepoUrl : releasesRepoUrl)
                 credentials {
                     username = ossrhUsername
                     password = ossrhPassword
@@ -470,20 +507,17 @@ project(':sbe-benchmarks') {
     }
 
     sourceSets {
-        generated.java.srcDir 'build/generated-src'
+        generated {
+            java.srcDir 'build/generated-src'
+            compileClasspath += project(':sbe-all').sourceSets.main.runtimeClasspath
+        }
     }
 
-    compileGeneratedJava {
-        dependsOn 'generateCodecs'
-        classpath += project(':sbe-all').sourceSets.main.runtimeClasspath
-    }
-
-    compileJava {
-        dependsOn 'compileGeneratedJava'
-    }
+    compileGeneratedJava.dependsOn 'generateCodecs'
+    compileJava.dependsOn 'compileGeneratedJava'
 
     task generateCodecs(type: JavaExec) {
-        main = 'uk.co.real_logic.sbe.SbeTool'
+        mainClass.set('uk.co.real_logic.sbe.SbeTool')
         classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
         systemProperties(
             'sbe.output.dir': 'build/generated-src',
@@ -497,67 +531,73 @@ project(':sbe-benchmarks') {
 
     shadowJar {
         archiveFileName = 'sbe-benchmarks.jar'
-        archiveClassifier.set 'benchmarks'
+        archiveClassifier.set('benchmarks')
         manifest.attributes('Main-Class': 'org.openjdk.jmh.Main')
     }
 
     jar.finalizedBy shadowJar
+    javadoc.enabled = false
 }
 
 /*
- * Rust codec targets used for testing and demonstration
+ * Rust codec targets used for testing
  */
-task generateRustCarExample(type: JavaExec) {
-    main = 'uk.co.real_logic.sbe.SbeTool'
+task generateRustExamples(type: JavaExec) {
+    mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
     systemProperties(
-        'sbe.output.dir': 'rust/car_example/src',
-        'sbe.xinclude.aware': 'true',
-        'sbe.target.language': 'uk.co.real_logic.sbe.generation.rust.Rust',
-        'sbe.target.namespace': 'car_example_generated_codec')
-    args = ['sbe-samples/src/main/resources/example-schema.xml']
+            'sbe.output.dir': 'generated/rust',
+            'sbe.xinclude.aware': 'true',
+            'sbe.target.language': 'Rust',
+            'sbe.target.namespace': 'examples')
+    args = ['sbe-samples/src/main/resources/example-schema.xml',
+            'sbe-samples/src/main/resources/example-extension-schema.xml',
+            'sbe-benchmarks/src/main/resources/car.xml',
+            'sbe-benchmarks/src/main/resources/fix-message-samples.xml'
+    ]
+}
+
+task generateRustTestCodecs(type: JavaExec) {
+    mainClass.set('uk.co.real_logic.sbe.SbeTool')
+    classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
+    systemProperties(
+            'sbe.output.dir': 'generated/rust',
+            'sbe.xinclude.aware': 'true',
+            'sbe.target.language': 'Rust',
+            'sbe.validation.xsd': validationXsdPath)
+    args = ['sbe-tool/src/test/resources/issue435.xml',
+            'sbe-tool/src/test/resources/issue895.xml',
+            'sbe-tool/src/test/resources/example-bigendian-test-schema.xml',
+    ]
 }
 
 task generateCarExampleDataFile(type: JavaExec) {
-    main = 'uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStub'
+    mainClass.set('uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStub')
     classpath = project(':sbe-samples').sourceSets.main.runtimeClasspath
-    systemProperties('sbe.encoding.filename': 'rust/car_example/car_example_data.sbe')
+    systemProperties('sbe.encoding.filename': 'rust/car_example_baseline_data.sbe')
     args = []
     standardOutput = new ByteArrayOutputStream()
 }
 
-task runRustCarExample(type: Exec) {
-    workingDir = './rust/car_example'
-    executable = 'cargo'
-    args = ['run']
+task generateCarExampleExtensionDataFile(type: JavaExec) {
+    mainClass.set('uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStubExtension')
+    classpath = project(':sbe-samples').sourceSets.main.runtimeClasspath
+    systemProperties('sbe.encoding.filename': 'rust/car_example_extension_data.sbe')
+    args = []
     standardOutput = new ByteArrayOutputStream()
-    errorOutput = new ByteArrayOutputStream()
-    dependsOn 'generateRustCarExample', 'generateCarExampleDataFile'
-}
-
-def cargo_exists() {
-    try {
-        def result = project.exec {
-            executable = 'cargo'
-            args = [ '-V' ]
-            standardOutput = new ByteArrayOutputStream()
-        }
-        return result.exitValue == 0
-    }
-    catch (Exception ignore) {
-        return false
-    }
-}
-
-if (cargo_exists() && !project.hasProperty('sbe.skipRust')) {
-    test.dependsOn('runRustCarExample')
-} else {
-    println 'Skipping Rust integration test due to absent cargo command or sbe.skipRust property'
 }
 
 task generateRustCodecs {
     description = 'Generate rust test codecs'
-    dependsOn 'generateRustCarExample', 'generateCarExampleDataFile'
+    dependsOn 'generateRustExamples', 'generateRustTestCodecs',
+            'generateCarExampleDataFile', 'generateCarExampleExtensionDataFile'
+}
+
+task runRustTests(type: Exec) {
+    workingDir = './rust'
+    executable = 'cargo'
+    args = ['test']
+    dependsOn 'generateRustCodecs'
 }
 
 /*
@@ -570,7 +610,7 @@ task generateRustCodecs {
  *  *) Some examples need to fiddle with WorkingDir to deal with XInclude
  */
 task generateGolangCodecTestComposite(type: JavaExec) {
-    main = 'uk.co.real_logic.sbe.SbeTool'
+    mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
     systemProperties(
         'sbe.output.dir': 'gocode/src',
@@ -579,7 +619,7 @@ task generateGolangCodecTestComposite(type: JavaExec) {
 }
 
 task generateGolangCodecTestBasic(type: JavaExec) {
-    main = 'uk.co.real_logic.sbe.SbeTool'
+    mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
     systemProperties(
         'sbe.output.dir': 'gocode/src/basic',
@@ -588,7 +628,7 @@ task generateGolangCodecTestBasic(type: JavaExec) {
 }
 
 task generateGolangCodecTestGroup(type: JavaExec) {
-    main = 'uk.co.real_logic.sbe.SbeTool'
+    mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
     systemProperties(
         'sbe.output.dir': 'gocode/src/group',
@@ -597,7 +637,7 @@ task generateGolangCodecTestGroup(type: JavaExec) {
 }
 
 task generateGolangCodecTestVarData(type: JavaExec) {
-    main = 'uk.co.real_logic.sbe.SbeTool'
+    mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
     systemProperties(
         'sbe.output.dir': 'gocode/src/vardata',
@@ -606,7 +646,7 @@ task generateGolangCodecTestVarData(type: JavaExec) {
 }
 
 task generateGolangCodecsWithXIncludes(type: JavaExec) {
-    main = 'uk.co.real_logic.sbe.SbeTool'
+    mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
     systemProperties(
         'sbe.output.dir': 'gocode/src',
@@ -618,7 +658,7 @@ task generateGolangCodecsWithXIncludes(type: JavaExec) {
 }
 
 task generateGolangCodecsWithXSD(type: JavaExec) {
-    main = 'uk.co.real_logic.sbe.SbeTool'
+    mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
     systemProperties(
         'sbe.output.dir': 'gocode/src',
@@ -633,6 +673,9 @@ task generateGolangCodecsWithXSD(type: JavaExec) {
             'sbe-tool/src/test/resources/issue488.xml',
             'sbe-tool/src/test/resources/issue560.xml',
             'sbe-tool/src/test/resources/issue661.xml',
+            'sbe-tool/src/test/resources/issue847.xml',
+            'sbe-tool/src/test/resources/issue848.xml',
+            'sbe-tool/src/test/resources/issue849.xml',
             'sbe-tool/src/test/resources/since-deprecated-test-schema.xml',
             'sbe-tool/src/test/resources/example-bigendian-test-schema.xml',
             'gocode/resources/example-composite.xml',
@@ -655,7 +698,7 @@ task generateGolangCodecs {
  * multiple targets as XInclude forces us to change working dir
  */
 task generateCSharpCodecsWithXIncludes(type: JavaExec) {
-    main = 'uk.co.real_logic.sbe.SbeTool'
+    mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
     systemProperties(
         'sbe.output.dir': 'csharp/sbe-generated',
@@ -667,7 +710,7 @@ task generateCSharpCodecsWithXIncludes(type: JavaExec) {
 }
 
 task generateCSharpCodecsTests(type: JavaExec) {
-    main = 'uk.co.real_logic.sbe.SbeTool'
+    mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
     systemProperties(
         'sbe.output.dir': 'csharp/sbe-generated',
@@ -689,8 +732,8 @@ task generateCSharpCodecs {
         'generateCSharpCodecsWithXIncludes'
 }
 
-task generateJavaIrCodecs(type: JavaExec) {
-    main = 'uk.co.real_logic.sbe.SbeTool'
+task generateJavaIrCodecs(type: JavaExec, dependsOn: 'computeOriginalIrHash') {
+    mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
     systemProperties(
         'sbe.output.dir': 'sbe-tool/src/main/java',
@@ -700,7 +743,7 @@ task generateJavaIrCodecs(type: JavaExec) {
 }
 
 task generateCppIrCodecs(type: JavaExec) {
-    main = 'uk.co.real_logic.sbe.SbeTool'
+    mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
     systemProperties(
         'sbe.output.dir': 'sbe-tool/src/main/cpp',
@@ -710,7 +753,7 @@ task generateCppIrCodecs(type: JavaExec) {
 }
 
 task generateGolangIrCodecs(type: JavaExec) {
-    main = 'uk.co.real_logic.sbe.SbeTool'
+    mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
     systemProperties(
         'sbe.output.dir': 'sbe-tool/src/main/golang',
@@ -724,20 +767,114 @@ task generateIrCodecs {
     dependsOn 'generateJavaIrCodecs', 'generateCppIrCodecs', 'generateGolangIrCodecs'
 }
 
-task runJavaBenchmarks(type: Exec) {
-    commandLine 'java',
+task runJavaBenchmarks(type: Exec, dependsOn: 'sbe-benchmarks:jar') {
+    commandLine toolchainLauncher.get().executablePath,
         '-jar', 'sbe-benchmarks/build/libs/sbe-benchmarks.jar',
-        '-jvmArgs', '-Dagrona.disable.bounds.checks=true -XX:+UseParallelOldGC',
+        '-jvmArgs', '-Dagrona.disable.bounds.checks=true -XX:+UseParallelGC',
         '-w', '1s', '-r', '1s','-wi', '3', '-i', '5', '-tu', 'ns', '-f', '5'
 }
 
 task testReport(type: TestReport) {
-    destinationDir = file("$buildDir/reports/allTests")
+    destinationDirectory = file("$buildDir/reports/allTests")
     // Include the results from the `test` task in all sub-projects
-    reportOn subprojects*.test
+    testResults.setFrom(subprojects*.test)
 }
 
+final codecsDir = project.file('sbe-tool/src/main/java/uk/co/real_logic/sbe/ir/generated')
+final outputDir = project.file('sbe-tool/build')
+final oldHashFile = new File(outputDir, 'old.sha256')
+final newHashFile = new File(outputDir, 'new.sha256')
+
+task computeOriginalIrHash(type: ChecksumTask) {
+    inputDirectory = codecsDir
+    outputFile = oldHashFile
+}
+
+task computeUpdatedIrHash(type: ChecksumTask, dependsOn: 'generateJavaIrCodecs') {
+    inputDirectory = codecsDir
+    outputFile = newHashFile
+}
+
+task verifyJavaIrCodecsInSync(dependsOn: 'computeUpdatedIrHash') {
+    doLast {
+        final byte[] oldHash = Files.readAllBytes(oldHashFile.toPath())
+        final byte[] newHash = Files.readAllBytes(newHashFile.toPath())
+        if (!Arrays.equals(oldHash, newHash))
+        {
+            throw new GradleException("Java Ir codecs are out of sync! Please execute the `generateJavaIrCodecs` task and commit the changes.")
+        }
+    }
+}
+
+def isNonStable = { String version ->
+    def stableKeyword = ['RELEASE', 'FINAL', 'GA'].any { it -> version.toUpperCase().contains(it) }
+    def regex = /^[0-9,.v-]+(-r)?$/
+    return !stableKeyword && !(version ==~ regex)
+}
+
+tasks.named('dependencyUpdates').configure {
+    // Reject all non stable versions
+    rejectVersionIf {
+        isNonStable(it.candidate.version)
+    }
+}
+
+tasks.findByName('build').dependsOn verifyJavaIrCodecsInSync
+
 wrapper {
-    gradleVersion = '6.1.1'
+    gradleVersion = '7.5.1'
     distributionType = 'ALL'
+}
+
+class ChecksumTask extends DefaultTask
+{
+    private static final MessageDigest SHA_256 = MessageDigest.getInstance("SHA-256")
+    private static final byte CR = (byte)('\r' as char)
+    private static final byte LF = (byte)('\n' as char)
+
+    @InputDirectory
+    File inputDirectory
+
+    @OutputFile
+    File outputFile
+
+    @TaskAction
+    def checksum()
+    {
+        SHA_256.reset()
+
+        for (final File f : inputDirectory.listFiles())
+        {
+            final byte[] raw = Files.readAllBytes(f.toPath())
+            final byte[] normalized = normaliseEol(raw)
+            SHA_256.update(normalized)
+        }
+
+        final byte[] hash = SHA_256.digest()
+
+        Files.write(
+            outputFile.toPath(),
+            hash,
+            StandardOpenOption.CREATE,
+            StandardOpenOption.WRITE,
+            StandardOpenOption.TRUNCATE_EXISTING)
+    }
+
+    private static byte[] normaliseEol(final byte[] raw)
+    {
+        final byte[] result = new byte[raw.length]
+        int i = 0
+
+        for (int j = 0, size = raw.length; j < size; j++)
+        {
+            if (CR == raw[j] && (j == size - 1 || LF == raw[j + 1]))
+            {
+                continue
+            }
+
+            result[i++] = raw[j]
+        }
+
+        return raw.length == i ? result : Arrays.copyOf(result, i)
+    }
 }

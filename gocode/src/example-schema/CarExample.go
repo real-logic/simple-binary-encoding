@@ -47,7 +47,6 @@ func main() {
 	ExampleDecodeSocket()
 
 	return
-
 }
 
 func ExampleEncodeDecode() bool {
@@ -135,6 +134,7 @@ func ExampleDecodeBuffer() bool {
 		fmt.Println("FIXME: Failed to decode car", err)
 		os.Exit(1)
 	}
+
 	return true
 }
 
@@ -174,6 +174,7 @@ func ExampleDecodePipe() bool {
 		os.Exit(1)
 	}
 	r.Close()
+
 	return true
 }
 

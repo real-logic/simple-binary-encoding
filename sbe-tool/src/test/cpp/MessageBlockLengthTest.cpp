@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2022 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,11 +27,11 @@ using namespace message::block::length::test;
 class MessageBlockLengthIrTest : public testing::Test, public OtfMessageDecoder::BasicTokenListener
 {
 public:
-    char m_buffer[2048];
-    IrDecoder m_irDecoder;
-    int m_eventNumber;
+    char m_buffer[2048] = {};
+    IrDecoder m_irDecoder = {};
+    int m_eventNumber = 0;
 
-    virtual void SetUp()
+    void SetUp() override
     {
         m_eventNumber = 0;
     }
@@ -56,21 +56,21 @@ public:
         MsgName::GrName &grp = msg.grNameCount(2);
 
         grp.next()
-           .grField1(10)
-           .grField2(20);
+            .grField1(10)
+            .grField2(20);
 
         grp.next()
-           .grField1(30)
-           .grField2(40);
+            .grField1(30)
+            .grField2(40);
 
         return hdr.encodedLength() + msg.encodedLength();
     }
 
     void onEncoding(
-        Token& fieldToken,
+        Token &fieldToken,
         const char *buffer,
-        Token& typeToken,
-        std::uint64_t actingVersion)
+        Token &typeToken,
+        std::uint64_t actingVersion) override
     {
         switch (m_eventNumber++)
         {
@@ -80,63 +80,68 @@ public:
                 EXPECT_EQ(typeToken.encoding().getAsUInt(buffer), 187u);
                 break;
             }
+
             case 3:
             {
                 EXPECT_EQ(typeToken.encoding().primitiveType(), PrimitiveType::UINT64);
                 EXPECT_EQ(typeToken.encoding().getAsUInt(buffer), 10u);
                 break;
             }
+
             case 4:
             {
                 EXPECT_EQ(typeToken.encoding().primitiveType(), PrimitiveType::INT64);
                 EXPECT_EQ(typeToken.encoding().getAsInt(buffer), 20);
                 break;
             }
+
             case 5:
             {
                 EXPECT_EQ(typeToken.encoding().primitiveType(), PrimitiveType::UINT64);
                 EXPECT_EQ(typeToken.encoding().getAsUInt(buffer), 30u);
                 break;
             }
+
             case 6:
             {
                 EXPECT_EQ(typeToken.encoding().primitiveType(), PrimitiveType::INT64);
                 EXPECT_EQ(typeToken.encoding().getAsInt(buffer), 40);
                 break;
             }
+
             default:
                 FAIL() << "unknown event number " << m_eventNumber;
         }
-
     }
 
     void onBitSet(
-        Token& fieldToken,
+        Token &fieldToken,
         const char *buffer,
-        std::vector<Token>& tokens,
+        std::vector<Token> &tokens,
         std::size_t fromIndex,
         std::size_t toIndex,
-        std::uint64_t actingVersion)
+        std::uint64_t actingVersion) override
     {
         switch (m_eventNumber++)
         {
             case 1:
             {
-                const Token& typeToken = tokens.at(fromIndex + 1);
-                const Encoding& encoding = typeToken.encoding();
+                const Token &typeToken = tokens.at(fromIndex + 1);
+                const Encoding &encoding = typeToken.encoding();
 
                 EXPECT_EQ(encoding.primitiveType(), PrimitiveType::UINT8);
                 EXPECT_EQ(encoding.getAsUInt(buffer), 0x2u);
                 break;
             }
+
             default:
                 FAIL() << "unknown event number " << m_eventNumber;
         }
     }
 
     void onGroupHeader(
-        Token& token,
-        std::uint64_t numInGroup)
+        Token &token,
+        std::uint64_t numInGroup) override
     {
         switch (m_eventNumber++)
         {
@@ -145,13 +150,14 @@ public:
                 EXPECT_EQ(numInGroup, 2u);
                 break;
             }
+
             default:
                 FAIL() << "unknown event number " << m_eventNumber;
         }
     }
 };
 
-TEST_F(MessageBlockLengthIrTest, shouldHandleAllEventsCorrectltInOrder)
+TEST_F(MessageBlockLengthIrTest, shouldHandleAllEventsCorrectlyInOrder)
 {
     std::uint64_t sz = encodeHdrAndMsg();
     const char *bufferPtr = m_buffer;
@@ -171,10 +177,11 @@ TEST_F(MessageBlockLengthIrTest, shouldHandleAllEventsCorrectltInOrder)
     ASSERT_GE(m_irDecoder.decode("message-block-length-test.sbeir"), 0);
 
     std::shared_ptr<std::vector<Token>> headerTokens = m_irDecoder.header();
-    std::shared_ptr<std::vector<Token>> messageTokens = m_irDecoder.message(MsgName::sbeTemplateId(), MsgName::sbeSchemaVersion());
+    std::shared_ptr<std::vector<Token>> messageTokens = m_irDecoder.message(
+        MsgName::sbeTemplateId(), MsgName::sbeSchemaVersion());
 
     ASSERT_TRUE(headerTokens != nullptr);
-    ASSERT_TRUE(messageTokens!= nullptr);
+    ASSERT_TRUE(messageTokens != nullptr);
 
     OtfHeaderDecoder headerDecoder(headerTokens);
 
@@ -184,8 +191,8 @@ TEST_F(MessageBlockLengthIrTest, shouldHandleAllEventsCorrectltInOrder)
     std::uint64_t actingVersion = headerDecoder.getSchemaVersion(m_buffer);
     std::uint64_t blockLength = headerDecoder.getBlockLength(m_buffer);
 
-    const std::size_t result =
-        OtfMessageDecoder::decode(messageBuffer, length, actingVersion, blockLength, messageTokens, *this);
+    const std::size_t result = OtfMessageDecoder::decode(
+        messageBuffer, length, actingVersion, blockLength, messageTokens, *this);
     EXPECT_EQ(result, static_cast<std::size_t>(54 - MessageHeader::encodedLength()));
 
     EXPECT_EQ(m_eventNumber, 7);

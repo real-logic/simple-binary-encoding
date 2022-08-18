@@ -2,7 +2,7 @@
 <sbe:messageSchema xmlns:sbe="http://fixprotocol.io/2016/sbe"
                    package="baseline"
                    id="1"
-                   version="0"
+                   version="2"
                    semanticVersion="5.2"
                    description="Example schema"
                    byteOrder="littleEndian">
@@ -21,6 +21,8 @@
             <type name="length" primitiveType="uint8"/>
             <type name="varData" primitiveType="uint8" length="0" characterEncoding="UTF-8"/>
         </composite>
+        <type name="uuid_t" primitiveType="int64" length="2"/>
+        <type name="cupHolderCount_t" primitiveType="uint8"/>
     </types>
     <types>
         <type name="ModelYear" primitiveType="uint16"/>
@@ -58,6 +60,8 @@
         <field name="vehicleCode" id="6" type="VehicleCode"/>
         <field name="extras" id="7" type="OptionalExtras"/>
         <field name="engine" id="8" type="Engine"/>
+        <field name="uuid" id="100" type="uuid_t" presence="optional" sinceVersion="2"/>
+        <field name="cupHolderCount" id="101" type="cupHolderCount_t" presence="optional" sinceVersion="2"/>
         <group name="fuelFigures" id="9" dimensionType="groupSizeEncoding">
             <field name="speed" id="10" type="uint16"/>
             <field name="mpg" id="11" type="float"/>

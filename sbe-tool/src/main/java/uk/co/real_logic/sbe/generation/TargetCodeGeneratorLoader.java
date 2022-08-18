@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2022 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,53 +23,102 @@ import uk.co.real_logic.sbe.generation.cpp.NamespaceOutputManager;
 import uk.co.real_logic.sbe.generation.golang.GolangGenerator;
 import uk.co.real_logic.sbe.generation.golang.GolangOutputManager;
 import uk.co.real_logic.sbe.generation.java.JavaGenerator;
+import uk.co.real_logic.sbe.generation.rust.RustGenerator;
+import uk.co.real_logic.sbe.generation.rust.RustOutputManager;
 import uk.co.real_logic.sbe.ir.Ir;
 
 import static uk.co.real_logic.sbe.SbeTool.*;
 
+/**
+ * Loader for {@link CodeGenerator}s which target a language. This provides convenient short names rather than the
+ * fully qualified class name of the generator.
+ */
 public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
 {
+    /**
+     * Generates codecs for the Java 8 programming language.
+     */
     JAVA()
     {
+        /**
+         * {@inheritDoc}
+         */
         public CodeGenerator newInstance(final Ir ir, final String outputDir)
         {
             return new JavaGenerator(
                 ir,
                 System.getProperty(JAVA_ENCODING_BUFFER_TYPE, JAVA_DEFAULT_ENCODING_BUFFER_TYPE),
                 System.getProperty(JAVA_DECODING_BUFFER_TYPE, JAVA_DEFAULT_DECODING_BUFFER_TYPE),
-                Boolean.getBoolean(JAVA_GROUP_ORDER_ANNOTATION),
-                Boolean.getBoolean(JAVA_GENERATE_INTERFACES),
-                Boolean.getBoolean(DECODE_UNKNOWN_ENUM_VALUES),
+                "true".equals(System.getProperty(JAVA_GROUP_ORDER_ANNOTATION)),
+                "true".equals(System.getProperty(JAVA_GENERATE_INTERFACES)),
+                "true".equals(System.getProperty(DECODE_UNKNOWN_ENUM_VALUES)),
                 new PackageOutputManager(outputDir, ir.applicableNamespace()));
         }
     },
 
+    /**
+     * Generates codecs for the C11 programming language.
+     */
     C()
     {
+        /**
+         * {@inheritDoc}
+         */
         public CodeGenerator newInstance(final Ir ir, final String outputDir)
         {
             return new CGenerator(ir, new COutputManager(outputDir, ir.applicableNamespace()));
         }
     },
 
+    /**
+     * Generates codecs for the C++11 programming language with some conditional includes for C++14 and C++17.
+     */
     CPP()
     {
+        /**
+         * {@inheritDoc}
+         */
         public CodeGenerator newInstance(final Ir ir, final String outputDir)
         {
-            return new CppGenerator(ir, new NamespaceOutputManager(outputDir, ir.applicableNamespace()));
+            return new CppGenerator(
+                ir,
+                "true".equals(System.getProperty(DECODE_UNKNOWN_ENUM_VALUES)),
+                new NamespaceOutputManager(outputDir, ir.applicableNamespace()));
         }
     },
 
+    /**
+     * Generates codecs for the Go programming language.
+     */
     GOLANG()
     {
+        /**
+         * {@inheritDoc}
+         */
         public CodeGenerator newInstance(final Ir ir, final String outputDir)
         {
             return new GolangGenerator(ir, new GolangOutputManager(outputDir, ir.applicableNamespace()));
         }
+    },
+
+    /**
+     * Generates codecs for the Rust programming language.
+     */
+    RUST()
+    {
+        /**
+         * {@inheritDoc}
+         */
+        public CodeGenerator newInstance(final Ir ir, final String outputDir)
+        {
+            return new RustGenerator(
+                ir,
+                new RustOutputManager(outputDir, ir.packageName()));
+        }
     };
 
     /**
-     * Do a case insensitive lookup of a target language for code generation.
+     * Do a case-insensitive lookup of a target language for code generation.
      *
      * @param name of the target language to lookup.
      * @return the {@link TargetCodeGenerator} for the given language name.

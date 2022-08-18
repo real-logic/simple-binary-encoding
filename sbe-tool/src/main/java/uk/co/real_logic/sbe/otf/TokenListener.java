@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2022 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,22 +23,21 @@ import java.util.List;
 /**
  * Callback interface to be implemented by code wanting to decode messages on-the-fly.
  * <p>
- * If all methods are not required then consider extending {@link AbstractTokenListener}
- * for potential performance benefits and simpler code.
+ * If all methods are not required then consider extending {@link AbstractTokenListener} for simpler code.
  */
 public interface TokenListener
 {
     /**
      * Called on beginning the decoding of a message.
      *
-     * @param token representing the IR for message including meta data.
+     * @param token representing the IR for message including metadata.
      */
     void onBeginMessage(Token token);
 
     /**
      * Called on end of decoding of a message.
      *
-     * @param token representing the IR for message including meta data.
+     * @param token representing the IR for message including metadata.
      */
     void onEndMessage(Token token);
 

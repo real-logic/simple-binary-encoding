@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2022 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,36 +25,53 @@ import java.nio.ByteBuffer;
 import java.util.List;
 
 /**
- * Pretty Print Json based upon the given Ir.
+ * Pretty Print JSON based upon the given Ir.
  */
 public class JsonPrinter
 {
     private final OtfHeaderDecoder headerDecoder;
     private final Ir ir;
 
+    /**
+     * Create a new JSON printer for a given message Ir.
+     *
+     * @param ir for the message type.
+     */
     public JsonPrinter(final Ir ir)
     {
         this.ir = ir;
         headerDecoder = new OtfHeaderDecoder(ir.headerStructure());
     }
 
+    /**
+     * Print the encoded message to the output.
+     *
+     * @param encodedMessage with header in buffer.
+     * @param output         to write to.
+     */
     public void print(final ByteBuffer encodedMessage, final StringBuilder output)
     {
         final UnsafeBuffer buffer = new UnsafeBuffer(encodedMessage);
         print(output, buffer, 0);
     }
 
-    public void print(final StringBuilder output, final UnsafeBuffer buffer, final int bufferOffset)
+    /**
+     * Print the encoded message to the output.
+     *
+     * @param output to write too.
+     * @param buffer with encoded message and header.
+     * @param offset at which the header begins.
+     */
+    public void print(final StringBuilder output, final UnsafeBuffer buffer, final int offset)
     {
-        final int templateId = headerDecoder.getTemplateId(buffer, bufferOffset);
-        final int schemaId = headerDecoder.getSchemaId(buffer, bufferOffset);
-        final int actingVersion = headerDecoder.getSchemaVersion(buffer, bufferOffset);
-        final int blockLength = headerDecoder.getBlockLength(buffer, bufferOffset);
+        final int blockLength = headerDecoder.getBlockLength(buffer, offset);
+        final int templateId = headerDecoder.getTemplateId(buffer, offset);
+        final int schemaId = headerDecoder.getSchemaId(buffer, offset);
+        final int actingVersion = headerDecoder.getSchemaVersion(buffer, offset);
 
         validateId(schemaId);
-        validateVersion(schemaId, actingVersion);
 
-        final int messageOffset = bufferOffset + headerDecoder.encodedLength();
+        final int messageOffset = offset + headerDecoder.encodedLength();
         final List<Token> msgTokens = ir.getMessage(templateId);
 
         OtfMessageDecoder.decode(
@@ -66,28 +83,25 @@ public class JsonPrinter
             new JsonTokenListener(output));
     }
 
-    private void validateId(final int schemaId)
-    {
-        if (schemaId != ir.id())
-        {
-            throw new IllegalArgumentException("Required schema id " + ir.id() + " but was " + schemaId);
-        }
-    }
-
-    private void validateVersion(final int schemaId, final int actingVersion)
-    {
-        if (actingVersion > ir.version())
-        {
-            throw new IllegalArgumentException(
-                "Required schema version " + actingVersion + " but was " + ir.version() + " for schema id " + schemaId);
-        }
-    }
-
+    /**
+     * Print an encoded message to a String.
+     *
+     * @param encodedMessage with header in buffer.
+     * @return encoded message in JSON format.
+     */
     public String print(final ByteBuffer encodedMessage)
     {
         final StringBuilder sb = new StringBuilder();
         print(encodedMessage, sb);
 
         return sb.toString();
+    }
+
+    private void validateId(final int schemaId)
+    {
+        if (schemaId != ir.id())
+        {
+            throw new IllegalArgumentException("Required schema id " + ir.id() + " but was " + schemaId);
+        }
     }
 }

@@ -1,33 +1,83 @@
-/* Generated SBE (Simple Binary Encoding) message codec */
+/* Generated SBE (Simple Binary Encoding) message codec. */
 package uk.co.real_logic.sbe.ir.generated;
 
+
 /**
- * Primitive types in type system
+ * Primitive types in type system.
  */
+@SuppressWarnings("all")
 public enum PrimitiveTypeCodec
 {
+
+    /**
+     * No type is provided.
+     */
     NONE((short)0),
 
+
+    /**
+     * Single byte character encoding in ASCII.
+     */
     CHAR((short)1),
 
+
+    /**
+     * 8-bit signed integer.
+     */
     INT8((short)2),
 
+
+    /**
+     * 16-bit signed integer.
+     */
     INT16((short)3),
 
+
+    /**
+     * 32-bit signed integer.
+     */
     INT32((short)4),
 
+
+    /**
+     * 64-bit signed integer.
+     */
     INT64((short)5),
 
+
+    /**
+     * 8-bit unsigned integer.
+     */
     UINT8((short)6),
 
+
+    /**
+     * 16-bit unsigned integer.
+     */
     UINT16((short)7),
 
+
+    /**
+     * 32-bit unsigned integer.
+     */
     UINT32((short)8),
 
+
+    /**
+     * 64-bit unsigned integer.
+     */
     UINT64((short)9),
 
+
+    /**
+     * 32-bit single precision floating point.
+     */
     FLOAT((short)10),
 
+
+    /**
+     * 64-bit double precision floating point.
+     */
     DOUBLE((short)11),
 
     /**
@@ -42,11 +92,22 @@ public enum PrimitiveTypeCodec
         this.value = value;
     }
 
+    /**
+     * The raw encoded value in the Java type representation.
+     *
+     * @return the raw value encoded.
+     */
     public short value()
     {
         return value;
     }
 
+    /**
+     * Lookup the enum value representing the value.
+     *
+     * @param value encoded to be looked up.
+     * @return the enum value representing the value.
+     */
     public static PrimitiveTypeCodec get(final short value)
     {
         switch (value)

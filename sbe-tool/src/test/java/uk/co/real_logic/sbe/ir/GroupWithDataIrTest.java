@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2022 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,14 +25,13 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static uk.co.real_logic.sbe.TestUtil.getLocalResource;
+import static uk.co.real_logic.sbe.Tests.getLocalResource;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
-public class GroupWithDataIrTest
+class GroupWithDataIrTest
 {
     @Test
-    public void shouldGenerateCorrectIrForSingleVarDataInRepeatingGroup()
-        throws Exception
+    void shouldGenerateIrForSingleVarDataInRepeatingGroup() throws Exception
     {
         final MessageSchema schema = parse(getLocalResource("group-with-data-schema.xml"), ParserOptions.DEFAULT);
         final IrGenerator irg = new IrGenerator();
@@ -73,8 +72,7 @@ public class GroupWithDataIrTest
     }
 
     @Test
-    public void shouldGenerateCorrectIrForMultipleVarDataInRepeatingGroup()
-        throws Exception
+    void shouldGenerateIrForMultipleVarDataInRepeatingGroup() throws Exception
     {
         final MessageSchema schema = parse(getLocalResource("group-with-data-schema.xml"), ParserOptions.DEFAULT);
         final IrGenerator irg = new IrGenerator();
@@ -102,8 +100,7 @@ public class GroupWithDataIrTest
     }
 
     @Test
-    public void shouldGenerateCorrectIrForVarDataInNestedRepeatingGroup()
-        throws Exception
+    void shouldGenerateIrForVarDataInNestedRepeatingGroup() throws Exception
     {
         final MessageSchema schema = parse(getLocalResource("group-with-data-schema.xml"), ParserOptions.DEFAULT);
         final IrGenerator irg = new IrGenerator();
@@ -135,8 +132,7 @@ public class GroupWithDataIrTest
     }
 
     @Test
-    public void shouldGenerateCorrectIrForOnlyMultipleVarDataInRepeatingGroup()
-        throws Exception
+    void shouldGenerateIrForOnlyMultipleVarDataInRepeatingGroup() throws Exception
     {
         final MessageSchema schema = parse(getLocalResource("group-with-data-schema.xml"), ParserOptions.DEFAULT);
         final IrGenerator irg = new IrGenerator();

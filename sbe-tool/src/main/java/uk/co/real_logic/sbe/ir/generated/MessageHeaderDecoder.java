@@ -1,13 +1,14 @@
-/* Generated SBE (Simple Binary Encoding) message codec */
+/* Generated SBE (Simple Binary Encoding) message codec. */
 package uk.co.real_logic.sbe.ir.generated;
 
 import org.agrona.DirectBuffer;
 
+
 /**
- * Message identifiers and length of message root
+ * Message identifiers and length of message root.
  */
 @SuppressWarnings("all")
-public class MessageHeaderDecoder
+public final class MessageHeaderDecoder
 {
     public static final int SCHEMA_ID = 1;
     public static final int SCHEMA_VERSION = 0;
@@ -199,23 +200,33 @@ public class MessageHeaderDecoder
 
     public String toString()
     {
+        if (null == buffer)
+        {
+            return "";
+        }
+
         return appendTo(new StringBuilder()).toString();
     }
 
     public StringBuilder appendTo(final StringBuilder builder)
     {
+        if (null == buffer)
+        {
+            return builder;
+        }
+
         builder.append('(');
         builder.append("blockLength=");
-        builder.append(blockLength());
+        builder.append(this.blockLength());
         builder.append('|');
         builder.append("templateId=");
-        builder.append(templateId());
+        builder.append(this.templateId());
         builder.append('|');
         builder.append("schemaId=");
-        builder.append(schemaId());
+        builder.append(this.schemaId());
         builder.append('|');
         builder.append("version=");
-        builder.append(version());
+        builder.append(this.version());
         builder.append(')');
 
         return builder;

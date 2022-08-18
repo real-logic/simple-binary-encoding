@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2022 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,11 +37,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class CompositeTypeTest
+class CompositeTypeTest
 {
     @Test
-    public void shouldHandleDecimalCompositeType()
-        throws Exception
+    void shouldHandleDecimalCompositeType() throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -65,8 +64,7 @@ public class CompositeTypeTest
     }
 
     @Test
-    public void shouldHandleDecimal32CompositeType()
-        throws Exception
+    void shouldHandleDecimal32CompositeType() throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -92,8 +90,7 @@ public class CompositeTypeTest
     }
 
     @Test
-    public void shouldHandleDecimal64CompositeType()
-        throws Exception
+    void shouldHandleDecimal64CompositeType() throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -118,8 +115,7 @@ public class CompositeTypeTest
     }
 
     @Test
-    public void shouldHandleCompositeTypeList()
-        throws Exception
+    void shouldHandleCompositeTypeList() throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -138,8 +134,7 @@ public class CompositeTypeTest
     }
 
     @Test
-    public void shouldHandleCompositeHasNullableType()
-        throws Exception
+    void shouldHandleCompositeHasNullableType() throws Exception
     {
         final String nullValStr = "9223372036854775807";
         final String testXmlString =
@@ -160,8 +155,7 @@ public class CompositeTypeTest
     }
 
     @Test
-    public void shouldThrowExceptionWhenCompositeTypeHasTypeNameDuplicates()
-        throws Exception
+    void shouldThrowExceptionWhenCompositeTypeHasTypeNameDuplicates()
     {
         final String testXmlString =
             "<types>" +

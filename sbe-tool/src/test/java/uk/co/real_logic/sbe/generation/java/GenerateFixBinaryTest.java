@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2022 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,19 +15,15 @@
  */
 package uk.co.real_logic.sbe.generation.java;
 
-import org.junit.jupiter.api.Test;
 import org.agrona.DirectBuffer;
 import org.agrona.MutableDirectBuffer;
 import org.agrona.generation.CompilerUtil;
 import org.agrona.generation.StringWriterOutputManager;
+import org.junit.jupiter.api.Test;
 import uk.co.real_logic.sbe.SbeTool;
-import uk.co.real_logic.sbe.TestUtil;
-import uk.co.real_logic.sbe.ir.Ir;
-import uk.co.real_logic.sbe.ir.IrDecoder;
-import uk.co.real_logic.sbe.ir.IrEncoder;
-import uk.co.real_logic.sbe.xml.IrGenerator;
-import uk.co.real_logic.sbe.xml.MessageSchema;
-import uk.co.real_logic.sbe.xml.ParserOptions;
+import uk.co.real_logic.sbe.Tests;
+import uk.co.real_logic.sbe.ir.*;
+import uk.co.real_logic.sbe.xml.*;
 
 import java.nio.ByteBuffer;
 import java.util.Map;
@@ -36,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
-public class GenerateFixBinaryTest
+class GenerateFixBinaryTest
 {
     private static final Class<?> BUFFER_CLASS = MutableDirectBuffer.class;
     private static final String BUFFER_NAME = BUFFER_CLASS.getName();
@@ -46,12 +42,12 @@ public class GenerateFixBinaryTest
     private final StringWriterOutputManager outputManager = new StringWriterOutputManager();
 
     @Test
-    public void shouldGenerateValidJava() throws Exception
+    void shouldGenerateValidJava() throws Exception
     {
         System.setProperty(SbeTool.KEYWORD_APPEND_TOKEN, "_");
 
         final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
-        final MessageSchema schema = parse(TestUtil.getLocalResource("FixBinary.xml"), options);
+        final MessageSchema schema = parse(Tests.getLocalResource("FixBinary.xml"), options);
         final IrGenerator irg = new IrGenerator();
         final Ir ir = irg.generate(schema);
         final JavaGenerator generator = new JavaGenerator(
@@ -63,21 +59,29 @@ public class GenerateFixBinaryTest
         generator.generate();
 
         final Map<String, CharSequence> sources = outputManager.getSources();
-        final String className = "MDIncrementalRefreshTradeSummary42Decoder";
-        final String fqClassName = ir.applicableNamespace() + "." + className;
 
-        final Class<?> aClass = CompilerUtil.compileInMemory(fqClassName, sources);
+        {
+            final String className = "MDIncrementalRefreshTradeSummary42Encoder";
+            final String fqClassName = ir.applicableNamespace() + "." + className;
+            final Class<?> aClass = CompilerUtil.compileInMemory(fqClassName, sources);
+            assertNotNull(aClass);
+        }
 
-        assertNotNull(aClass);
+        {
+            final String className = "MDIncrementalRefreshTradeSummary42Decoder";
+            final String fqClassName = ir.applicableNamespace() + "." + className;
+            final Class<?> aClass = CompilerUtil.compileInMemory(fqClassName, sources);
+            assertNotNull(aClass);
+        }
     }
 
     @Test
-    public void shouldGenerateAndEncodeIr() throws Exception
+    void shouldGenerateAndEncodeIr() throws Exception
     {
         System.setProperty(SbeTool.KEYWORD_APPEND_TOKEN, "_");
 
         final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
-        final MessageSchema schema = parse(TestUtil.getLocalResource("FixBinary.xml"), options);
+        final MessageSchema schema = parse(Tests.getLocalResource("FixBinary.xml"), options);
         final IrGenerator irg = new IrGenerator();
         final Ir ir = irg.generate(schema);
         final ByteBuffer buffer = ByteBuffer.allocate(1024 * 1024);

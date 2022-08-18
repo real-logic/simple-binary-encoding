@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2022 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 package uk.co.real_logic.sbe.xml;
 
 import org.junit.jupiter.api.Test;
-import uk.co.real_logic.sbe.TestUtil;
+import uk.co.real_logic.sbe.Tests;
 
 import java.util.List;
 
@@ -24,13 +24,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
-public class CompositeElementsTest
+class CompositeElementsTest
 {
     @Test
-    public void shouldParseSchemaSuccessfully()
-        throws Exception
+    void shouldParseSchemaSuccessfully() throws Exception
     {
-        final MessageSchema schema = parse(TestUtil.getLocalResource(
+        final MessageSchema schema = parse(Tests.getLocalResource(
             "composite-elements-schema.xml"), ParserOptions.DEFAULT);
         final List<Field> fields = schema.getMessage(1).fields();
         final Field composite = fields.get(0);

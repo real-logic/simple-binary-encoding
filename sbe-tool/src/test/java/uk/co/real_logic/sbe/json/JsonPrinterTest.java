@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2022 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,13 +34,13 @@ import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class JsonPrinterTest extends EncodedCarTestBase
+class JsonPrinterTest extends EncodedCarTestBase
 {
     private static final int SCHEMA_BUFFER_CAPACITY = 16 * 1024;
     private static final int MSG_BUFFER_CAPACITY = 4 * 1024;
 
     @Test
-    public void exampleMessagePrintedAsJson() throws Exception
+    void exampleMessagePrintedAsJson() throws Exception
     {
         final ByteBuffer encodedSchemaBuffer = ByteBuffer.allocate(SCHEMA_BUFFER_CAPACITY);
         encodeSchema(encodedSchemaBuffer);
@@ -70,6 +70,8 @@ public class JsonPrinterTest extends EncodedCarTestBase
             "        \"manufacturerCode\": \"123\",\n" +
             "        \"fuel\": \"Petrol\"\n" +
             "    },\n" +
+            "    \"uuid\": [7, 3],\n" +
+            "    \"cupHolderCount\": 5,\n" +
             "    \"fuelFigures\": [\n" +
             "    {\n" +
             "        \"speed\": 30,\n" +

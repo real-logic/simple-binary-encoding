@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2022 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import java.nio.file.Files;
 import static java.io.File.separatorChar;
 
 /**
- * {@link OutputManager} for managing the creation of C++98 source files as the target of code generation.
+ * {@link OutputManager} for managing the creation of C++11 source files as the target of code generation.
  * The character encoding for the {@link java.io.Writer} is UTF-8.
  */
 public class NamespaceOutputManager implements OutputManager

@@ -1,13 +1,14 @@
-/* Generated SBE (Simple Binary Encoding) message codec */
+/* Generated SBE (Simple Binary Encoding) message codec. */
 package uk.co.real_logic.sbe.ir.generated;
 
 import org.agrona.DirectBuffer;
 
+
 /**
- * Header for var data fields
+ * Header for var data fields.
  */
 @SuppressWarnings("all")
-public class VarDataEncodingDecoder
+public final class VarDataEncodingDecoder
 {
     public static final int SCHEMA_ID = 1;
     public static final int SCHEMA_VERSION = 0;
@@ -121,14 +122,24 @@ public class VarDataEncodingDecoder
 
     public String toString()
     {
+        if (null == buffer)
+        {
+            return "";
+        }
+
         return appendTo(new StringBuilder()).toString();
     }
 
     public StringBuilder appendTo(final StringBuilder builder)
     {
+        if (null == buffer)
+        {
+            return builder;
+        }
+
         builder.append('(');
         builder.append("length=");
-        builder.append(length());
+        builder.append(this.length());
         builder.append('|');
         builder.append(')');
 

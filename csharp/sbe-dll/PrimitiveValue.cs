@@ -104,7 +104,6 @@ namespace Org.SbeTool.Sbe.Dll
         #endregion
 
 
-
         /// <summary>
         /// Minimum value for INT8 SBE type
         /// </summary>

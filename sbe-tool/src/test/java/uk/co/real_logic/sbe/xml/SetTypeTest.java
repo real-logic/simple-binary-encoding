@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2022 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.PrimitiveValue;
-import uk.co.real_logic.sbe.TestUtil;
+import uk.co.real_logic.sbe.Tests;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -41,11 +41,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
-public class SetTypeTest
+class SetTypeTest
 {
     @Test
-    public void shouldHandleBinarySetType()
-        throws Exception
+    void shouldHandleBinarySetType() throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -66,8 +65,7 @@ public class SetTypeTest
     }
 
     @Test
-    public void shouldHandleSetTypeList()
-        throws Exception
+    void shouldHandleSetTypeList() throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -117,8 +115,7 @@ public class SetTypeTest
     }
 
     @Test
-    public void shouldThrowExceptionWhenIllegalEncodingTypeSpecified()
-        throws Exception
+    void shouldThrowExceptionWhenIllegalEncodingTypeSpecified()
     {
         final String testXmlString =
             "<types>" +
@@ -133,8 +130,7 @@ public class SetTypeTest
     }
 
     @Test
-    public void shouldThrowExceptionWhenDuplicateValueSpecified()
-        throws Exception
+    void shouldThrowExceptionWhenDuplicateValueSpecified()
     {
         final String testXmlString =
             "<types>" +
@@ -149,8 +145,7 @@ public class SetTypeTest
     }
 
     @Test
-    public void shouldThrowExceptionWhenDuplicateNameSpecified()
-        throws Exception
+    void shouldThrowExceptionWhenDuplicateNameSpecified()
     {
         final String testXmlString =
             "<types>" +
@@ -165,8 +160,7 @@ public class SetTypeTest
     }
 
     @Test
-    public void shouldThrowExceptionWhenValueOutOfBoundsSpecified()
-        throws Exception
+    void shouldThrowExceptionWhenValueOutOfBoundsSpecified()
     {
         final String testXmlString =
             "<types>" +
@@ -181,10 +175,9 @@ public class SetTypeTest
     }
 
     @Test
-    public void shouldHandleEncodingTypesWithNamedTypes()
-        throws Exception
+    void shouldHandleEncodingTypesWithNamedTypes() throws Exception
     {
-        final MessageSchema schema = parse(TestUtil.getLocalResource(
+        final MessageSchema schema = parse(Tests.getLocalResource(
             "encoding-types-schema.xml"), ParserOptions.DEFAULT);
         final List<Field> fields = schema.getMessage(1).fields();
 

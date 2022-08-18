@@ -22,11 +22,20 @@
         <property name="ignorePattern" value="^[ \t]*\*.*@.*$"/>
     </module>
 
+    <module name="Header">
+        <property name="header" value="/*\n * Copyright 2013-2022 Real Logic Limited."/>
+        <property name="fileExtensions" value="java"/>
+    </module>
+
     <module name="TreeWalker">
         <property name="tabWidth" value="4"/>
         <property name="severity" value="error"/>
 
         <module name="SuppressWarningsHolder"/>
+
+        <module name="MissingJavadocType"/>
+        <module name="MissingJavadocMethod"/>
+        <module name="MissingJavadocPackage"/>
 
         <module name="Indentation">
             <property name="forceStrictCondition" value="true"/>

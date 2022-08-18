@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2022 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,11 +29,11 @@ static const char *SCHEMA_FILENAME = "composite-offsets-schema.sbeir";
 class CompositeOffsetsIrTest : public testing::Test, public OtfMessageDecoder::BasicTokenListener
 {
 public:
-    char m_buffer[2048];
-    IrDecoder m_irDecoder;
-    int m_eventNumber;
+    char m_buffer[2048] = {};
+    IrDecoder m_irDecoder = {};
+    int m_eventNumber = 0;
 
-    virtual void SetUp()
+    void SetUp() override
     {
         m_eventNumber = 0;
     }
@@ -65,10 +65,10 @@ public:
     }
 
     void onEncoding(
-        Token& fieldToken,
+        Token &fieldToken,
         const char *buffer,
-        Token& typeToken,
-        std::uint64_t actingVersion)
+        Token &typeToken,
+        std::uint64_t actingVersion) override
     {
         switch (m_eventNumber++)
         {
@@ -102,9 +102,7 @@ public:
 
     }
 
-    void onGroupHeader(
-        Token& token,
-        std::uint64_t numInGroup)
+    void onGroupHeader(Token &token, std::uint64_t numInGroup) override
     {
         switch (m_eventNumber++)
         {
@@ -138,17 +136,18 @@ TEST_F(CompositeOffsetsIrTest, shouldHandleDecodingOfMessageHeaderCorrectly)
     EXPECT_EQ(headerDecoder.getSchemaVersion(m_buffer), TestMessage1::sbeSchemaVersion());
 }
 
-TEST_F(CompositeOffsetsIrTest, shouldHandleAllEventsCorrectltInOrder)
+TEST_F(CompositeOffsetsIrTest, shouldHandleAllEventsCorrectlyInOrder)
 {
     ASSERT_EQ(encodeHdrAndMsg(), 52u);
 
     ASSERT_GE(m_irDecoder.decode(SCHEMA_FILENAME), 0);
 
     std::shared_ptr<std::vector<Token>> headerTokens = m_irDecoder.header();
-    std::shared_ptr<std::vector<Token>> messageTokens = m_irDecoder.message(TestMessage1::sbeTemplateId(), TestMessage1::sbeSchemaVersion());
+    std::shared_ptr<std::vector<Token>> messageTokens = m_irDecoder.message(
+        TestMessage1::sbeTemplateId(), TestMessage1::sbeSchemaVersion());
 
     ASSERT_TRUE(headerTokens != nullptr);
-    ASSERT_TRUE(messageTokens!= nullptr);
+    ASSERT_TRUE(messageTokens != nullptr);
 
     OtfHeaderDecoder headerDecoder(headerTokens);
 
@@ -158,8 +157,8 @@ TEST_F(CompositeOffsetsIrTest, shouldHandleAllEventsCorrectltInOrder)
     std::uint64_t actingVersion = headerDecoder.getSchemaVersion(m_buffer);
     std::uint64_t blockLength = headerDecoder.getBlockLength(m_buffer);
 
-    const std::size_t result =
-        OtfMessageDecoder::decode(messageBuffer, length, actingVersion, blockLength, messageTokens, *this);
+    const std::size_t result = OtfMessageDecoder::decode(
+        messageBuffer, length, actingVersion, blockLength, messageTokens, *this);
     EXPECT_EQ(result, static_cast<std::size_t>(52 - MessageHeader::encodedLength()));
 
     EXPECT_EQ(m_eventNumber, 5);

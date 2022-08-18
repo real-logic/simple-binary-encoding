@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2022 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,12 +28,12 @@ public abstract class Type
     private final String name;
     private final Presence presence;
     private final String description;
-    private final int sinceVersion;
     private final int deprecated;
     private final String semanticType;
     private final String referencedName;
 
     private int offsetAttribute;
+    private int sinceVersion;
 
     /**
      * Construct a new Type from XML Schema. Called by subclasses to mostly set common fields
@@ -151,6 +151,16 @@ public abstract class Type
     }
 
     /**
+     * Set the sinceVersion for the type.
+     *
+     * @param version to be set.
+     */
+    public void sinceVersion(final int version)
+    {
+        sinceVersion = version;
+    }
+
+    /**
      * Version in which type was deprecated. Only valid if greater than zero.
      *
      * @return version in which the type was deprecated.
@@ -170,6 +180,11 @@ public abstract class Type
         return semanticType;
     }
 
+    /**
+     * Is the type variable length when encoded.
+     *
+     * @return true if the type is variable length when encoded.
+     */
     public abstract boolean isVariableLength();
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2022 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,17 +22,62 @@ import static uk.co.real_logic.sbe.PrimitiveValue.*;
  */
 public enum PrimitiveType
 {
+    /**
+     * One byte character type which is a flavour of ASCII.
+     */
     CHAR("char", 1, MIN_VALUE_CHAR, MAX_VALUE_CHAR, NULL_VALUE_CHAR),
+
+    /**
+     * A raw byte or signed 8-bit integer.
+     */
     INT8("int8", 1, MIN_VALUE_INT8, MAX_VALUE_INT8, NULL_VALUE_INT8),
+
+    /**
+     * A 16-bit signed integer.
+     */
     INT16("int16", 2, MIN_VALUE_INT16, MAX_VALUE_INT16, NULL_VALUE_INT16),
+
+    /**
+     * A 32-bit signed integer.
+     */
     INT32("int32", 4, MIN_VALUE_INT32, MAX_VALUE_INT32, NULL_VALUE_INT32),
+
+    /**
+     * A 64-bit signed integer.
+     */
     INT64("int64", 8, MIN_VALUE_INT64, MAX_VALUE_INT64, NULL_VALUE_INT64),
+
+    /**
+     * A 8-bit unsigned integer.
+     */
     UINT8("uint8", 1, MIN_VALUE_UINT8, MAX_VALUE_UINT8, NULL_VALUE_UINT8),
+
+    /**
+     * A 16-bit unsigned integer.
+     */
     UINT16("uint16", 2, MIN_VALUE_UINT16, MAX_VALUE_UINT16, NULL_VALUE_UINT16),
+
+    /**
+     * A 32-bit unsigned integer.
+     */
     UINT32("uint32", 4, MIN_VALUE_UINT32, MAX_VALUE_UINT32, NULL_VALUE_UINT32),
+
+    /**
+     * A 64-bit unsigned integer.
+     */
     UINT64("uint64", 8, MIN_VALUE_UINT64, MAX_VALUE_UINT64, NULL_VALUE_UINT64),
+
+    /**
+     * A 32-bit single precision floating point number.
+     */
     FLOAT("float", 4, MIN_VALUE_FLOAT, MAX_VALUE_FLOAT, NULL_VALUE_FLOAT),
+
+    /**
+     * A 64-bit double precision floating point number.
+     */
     DOUBLE("double", 8, MIN_VALUE_DOUBLE, MAX_VALUE_DOUBLE, NULL_VALUE_DOUBLE);
+
+    private static final PrimitiveType[] VALUES = PrimitiveType.values();
 
     private final String name;
     private final int size;
@@ -139,23 +184,14 @@ public enum PrimitiveType
      */
     public static PrimitiveType get(final String name)
     {
-        for (final PrimitiveType p : Singleton.VALUES)
+        for (final PrimitiveType primitiveType : VALUES)
         {
-            if (p.name.equals(name))
+            if (primitiveType.name.equals(name))
             {
-                return p;
+                return primitiveType;
             }
         }
 
         throw new IllegalArgumentException("No PrimitiveType for name: " + name);
-    }
-
-    /**
-     * Used to hold a reference to the values array without having it defensively copied
-     * on every call to {@link Enum} values().
-     */
-    static class Singleton
-    {
-        public static final PrimitiveType[] VALUES = PrimitiveType.values();
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2022 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,9 +26,24 @@ import java.util.List;
  */
 public class HeaderStructure
 {
+    /**
+     * The field containing the length of the root block in bytes.
+     */
     public static final String BLOCK_LENGTH = "blockLength";
+
+    /**
+     * The field containing the template id of the following message.
+     */
     public static final String TEMPLATE_ID = "templateId";
+
+    /**
+     * The field containing the schema id to which the following message belongs.
+     */
     public static final String SCHEMA_ID = "schemaId";
+
+    /**
+     * The field containing the version of the following message.
+     */
     public static final String SCHEMA_VERSION = "version";
 
     private final List<Token> tokens;

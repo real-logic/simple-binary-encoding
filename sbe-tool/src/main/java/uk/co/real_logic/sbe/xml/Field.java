@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2022 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,13 @@ import java.util.Map;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
 
 /**
- * Holder for Field (or Group or Data) information
+ * Representation for a field (or group or data) member from the SBE schema.
  */
 public class Field
 {
+    /**
+     * Value to indicate a {@link Field} is invalid or not yet set.
+     */
     public static final int INVALID_ID = Integer.MAX_VALUE;  // schemaId must be a short, so this is way out of range.
 
     private final String name;                 // required for field/data & group
@@ -48,7 +51,7 @@ public class Field
     private final String epoch;                // optional, epoch from which a timestamps start, defaults to "unix"
     private final String timeUnit;             // optional, defaults to "nanosecond".
 
-    public Field(
+    Field(
         final String name,
         final String description,
         final int id,
@@ -85,6 +88,12 @@ public class Field
         this.timeUnit = timeUnit;
     }
 
+    /**
+     * Validate the node is correct for the type.
+     *
+     * @param node          in the XML.
+     * @param typeByNameMap for validating refs.
+     */
     public void validate(final Node node, final Map<String, Type> typeByNameMap)
     {
         if (type != null &&
@@ -137,111 +146,219 @@ public class Field
         }
     }
 
+    /**
+     * Set the group fields when a group.
+     *
+     * @param fields for the group.
+     */
     public void groupFields(final List<Field> fields)
     {
         groupFieldList = fields;
     }
 
+    /**
+     * Get the list of group fields.
+     *
+     * @return the list of group fields.
+     */
     public List<Field> groupFields()
     {
         return groupFieldList;
     }
 
+    /**
+     * Set the computed offset at which the field begins.
+     *
+     * @param offset at which the field begins.
+     */
     public void computedOffset(final int offset)
     {
         computedOffset = offset;
     }
 
+    /**
+     * The computed offset at which the field begins.
+     *
+     * @return the computed offset at which the field begins.
+     */
     public int computedOffset()
     {
         return computedOffset;
     }
 
+    /**
+     * Name value for the field.
+     *
+     * @return name value for the field.
+     */
     public String name()
     {
         return name;
     }
 
+    /**
+     * Description attribute for the field.
+     *
+     * @return the description attribute for the field.
+     */
     public String description()
     {
         return description;
     }
 
+    /**
+     * ID attribute for the field.
+     *
+     * @return the ID attribute for the field.
+     */
     public int id()
     {
         return id;
     }
 
+    /**
+     * Type attribute for the field.
+     *
+     * @return the Type attribute for the field.
+     */
     public Type type()
     {
         return type;
     }
 
+    /**
+     * The offset at which the field begins.
+     *
+     * @return the offset at which the field begins.
+     */
     public int offset()
     {
         return offset;
     }
 
+    /**
+     * The block length of the field.
+     *
+     * @return the block length the field.
+     */
     public int blockLength()
     {
         return blockLength;
     }
 
+    /**
+     * The computed block length of the field.
+     *
+     * @param length computed for the block length,
+     */
     public void computedBlockLength(final int length)
     {
         computedBlockLength = length;
     }
 
+    /**
+     * The computed block length of the field.
+     *
+     * @return the computed block length the field.
+     */
     public int computedBlockLength()
     {
         return computedBlockLength;
     }
 
+    /**
+     * Presence attribute for the field.
+     *
+     * @return the Presence attribute for the field.
+     */
     public Presence presence()
     {
         return presence;
     }
 
+    /**
+     * Ref attribute for the field.
+     *
+     * @return the Ref attribute for the field.
+     */
     public String valueRef()
     {
         return valueRef;
     }
 
+    /**
+     * Semantic type attribute for the field.
+     *
+     * @return the Semantic type attribute for the field.
+     */
     public String semanticType()
     {
         return semanticType;
     }
 
+    /**
+     * Dimension type for the field when group or var data.
+     *
+     * @return the Dimension type for the field when group or var data.
+     */
     public CompositeType dimensionType()
     {
         return dimensionType;
     }
 
+    /**
+     * Is the field variable length when encoded?
+     *
+     * @return true if the field is variable length when encoded.
+     */
     public boolean isVariableLength()
     {
         return variableLength;
     }
 
+    /**
+     * Since version attribute for the field.
+     *
+     * @return the Since version attribute for the field.
+     */
     public int sinceVersion()
     {
         return sinceVersion;
     }
 
+    /**
+     * Deprecated version attribute for the field.
+     *
+     * @return the Deprecated version attribute for the field.
+     */
     public int deprecated()
     {
         return deprecated;
     }
 
+    /**
+     * Epoch attribute for the field.
+     *
+     * @return the Epoch attribute for the field.
+     */
     public String epoch()
     {
         return epoch;
     }
 
+    /**
+     * Time unit attribute for the field.
+     *
+     * @return the time unit attribute for the field.
+     */
     public String timeUnit()
     {
         return timeUnit;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public String toString()
     {
         return "Field{name='" + name + '\'' +
@@ -296,7 +413,10 @@ public class Field
         }
     }
 
-    public static class Builder
+    /**
+     * Builder to make creation of {@link Field} easier.
+     */
+    static class Builder
     {
         private String name;
         private String description;
@@ -314,97 +434,97 @@ public class Field
         private String epoch;
         private String timeUnit;
 
-        public Builder name(final String name)
+        Builder name(final String name)
         {
             this.name = name;
             return this;
         }
 
-        public Builder description(final String description)
+        Builder description(final String description)
         {
             this.description = description;
             return this;
         }
 
-        public Builder id(final int id)
+        Builder id(final int id)
         {
             this.id = id;
             return this;
         }
 
-        public Builder type(final Type type)
+        Builder type(final Type type)
         {
             this.type = type;
             return this;
         }
 
-        public Builder offset(final int offset)
+        Builder offset(final int offset)
         {
             this.offset = offset;
             return this;
         }
 
-        public Builder semanticType(final String semanticType)
+        Builder semanticType(final String semanticType)
         {
             this.semanticType = semanticType;
             return this;
         }
 
-        public Builder presence(final Presence presence)
+        Builder presence(final Presence presence)
         {
             this.presence = presence;
             return this;
         }
 
-        public Builder valueRef(final String refValue)
+        Builder valueRef(final String refValue)
         {
             this.refValue = refValue;
             return this;
         }
 
-        public Builder blockLength(final int blockLength)
+        Builder blockLength(final int blockLength)
         {
             this.blockLength = blockLength;
             return this;
         }
 
-        public Builder dimensionType(final CompositeType dimensionType)
+        Builder dimensionType(final CompositeType dimensionType)
         {
             this.dimensionType = dimensionType;
             return this;
         }
 
-        public Builder variableLength(final boolean variableLength)
+        Builder variableLength(final boolean variableLength)
         {
             this.variableLength = variableLength;
             return this;
         }
 
-        public Builder sinceVersion(final int sinceVersion)
+        Builder sinceVersion(final int sinceVersion)
         {
             this.sinceVersion = sinceVersion;
             return this;
         }
 
-        public Builder deprecated(final int deprecated)
+        Builder deprecated(final int deprecated)
         {
             this.deprecated = deprecated;
             return this;
         }
 
-        public Builder epoch(final String epoch)
+        Builder epoch(final String epoch)
         {
             this.epoch = epoch;
             return this;
         }
 
-        public Builder timeUnit(final String timeUnit)
+        Builder timeUnit(final String timeUnit)
         {
             this.timeUnit = timeUnit;
             return this;
         }
 
-        public Field build()
+        Field build()
         {
             return new Field(
                 name,

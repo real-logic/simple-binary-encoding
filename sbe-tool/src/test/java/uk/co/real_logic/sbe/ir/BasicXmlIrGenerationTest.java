@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2022 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,14 +26,13 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static uk.co.real_logic.sbe.TestUtil.getLocalResource;
+import static uk.co.real_logic.sbe.Tests.getLocalResource;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
-public class BasicXmlIrGenerationTest
+class BasicXmlIrGenerationTest
 {
     @Test
-    public void shouldGenerateCorrectIrForMessageHeader()
-        throws Exception
+    void shouldGenerateIrForMessageHeader() throws Exception
     {
         final MessageSchema schema = parse(getLocalResource("basic-schema.xml"), ParserOptions.DEFAULT);
         final IrGenerator irg = new IrGenerator();
@@ -95,8 +94,7 @@ public class BasicXmlIrGenerationTest
     }
 
     @Test
-    public void shouldGenerateCorrectIrForBasicMessage()
-        throws Exception
+    void shouldGenerateIrForBasicMessage() throws Exception
     {
         final MessageSchema schema = parse(getLocalResource("basic-schema.xml"), ParserOptions.DEFAULT);
         final IrGenerator irg = new IrGenerator();
@@ -145,8 +143,7 @@ public class BasicXmlIrGenerationTest
     }
 
     @Test
-    public void shouldGenerateCorrectIrForMessageWithVariableLengthField()
-        throws Exception
+    void shouldGenerateIrForMessageWithVariableLengthField() throws Exception
     {
         final MessageSchema schema = parse(getLocalResource(
             "basic-variable-length-schema.xml"), ParserOptions.DEFAULT);
@@ -209,8 +206,7 @@ public class BasicXmlIrGenerationTest
     }
 
     @Test
-    public void shouldGenerateCorrectIrForMessageWithRepeatingGroupWithEmbeddedDimensions()
-        throws Exception
+    void shouldGenerateIrForMessageWithRepeatingGroupWithEmbeddedDimensions() throws Exception
     {
         final MessageSchema schema = parse(getLocalResource(
             "basic-group-schema.xml"), ParserOptions.DEFAULT);
@@ -244,8 +240,7 @@ public class BasicXmlIrGenerationTest
     }
 
     @Test
-    public void shouldGenerateCorrectIrForMessageWithRepeatingGroupWithEmbeddedDimensionsDefaultDimensionType()
-        throws Exception
+    void shouldGenerateIrForMessageWithRepeatingGroupWithEmbeddedDimensionsDefaultDimensionType() throws Exception
     {
         final MessageSchema schema = parse(getLocalResource(
             "embedded-length-and-count-schema.xml"), ParserOptions.DEFAULT);
@@ -271,8 +266,7 @@ public class BasicXmlIrGenerationTest
     }
 
     @Test
-    public void shouldGenerateCorrectIrForMessageWithVariableLengthFieldWithEmbeddedLength()
-        throws Exception
+    void shouldGenerateIrForMessageWithVariableLengthFieldWithEmbeddedLength() throws Exception
     {
         final MessageSchema schema = parse(getLocalResource(
             "embedded-length-and-count-schema.xml"), ParserOptions.DEFAULT);

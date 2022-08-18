@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2022 Real Logic Limited.
  * Copyright 2017 MarketFactory Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
  */
 package uk.co.real_logic.sbe.xml;
 
-import uk.co.real_logic.sbe.TestUtil;
+import uk.co.real_logic.sbe.Tests;
 
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
@@ -41,11 +41,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
-public class ErrorHandlerTest
+class ErrorHandlerTest
 {
     @Test
-    public void shouldNotExitOnTypeErrorsAndWarnings()
-        throws Exception
+    void shouldNotExitOnTypeErrorsAndWarnings() throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -89,18 +88,17 @@ public class ErrorHandlerTest
         parseTestXmlAddToMap(map, "/types/enum", testXmlString, handler);
         parseTestXmlAddToMap(map, "/types/set", testXmlString, handler);
 
-        assertThat(handler.errorCount(), is(3));
+        assertThat(handler.errorCount(), is(2));
         assertThat(handler.warningCount(), is(33));
     }
 
     @Test
-    public void shouldExitAfterTypes()
-        throws Exception
+    void shouldExitAfterTypes() throws Exception
     {
         try
         {
             final ParserOptions options = ParserOptions.builder().suppressOutput(true).build();
-            parse(TestUtil.getLocalResource("error-handler-types-schema.xml"), options);
+            parse(Tests.getLocalResource("error-handler-types-schema.xml"), options);
         }
         catch (final IllegalStateException ex)
         {
@@ -112,17 +110,16 @@ public class ErrorHandlerTest
     }
 
     @Test
-    public void shouldExitAfterTypesWhenDupTypesDefined()
-        throws Exception
+    void shouldExitAfterTypesWhenDupTypesDefined() throws Exception
     {
         try
         {
             final ParserOptions options = ParserOptions.builder().suppressOutput(true).warningsFatal(true).build();
-            parse(TestUtil.getLocalResource("error-handler-types-dup-schema.xml"), options);
+            parse(Tests.getLocalResource("error-handler-types-dup-schema.xml"), options);
         }
         catch (final IllegalStateException ex)
         {
-            assertEquals("had 1 warnings", ex.getMessage());
+            assertEquals("had 1 warning", ex.getMessage());
             return;
         }
 
@@ -130,17 +127,16 @@ public class ErrorHandlerTest
     }
 
     @Test
-    public void shouldExitAfterMessageWhenDupMessageIdsDefined()
-        throws Exception
+    void shouldExitAfterMessageWhenDupMessageIdsDefined() throws Exception
     {
         try
         {
             final ParserOptions options = ParserOptions.builder().suppressOutput(true).warningsFatal(true).build();
-            parse(TestUtil.getLocalResource("error-handler-dup-message-schema.xml"), options);
+            parse(Tests.getLocalResource("error-handler-dup-message-schema.xml"), options);
         }
         catch (final IllegalStateException ex)
         {
-            assertEquals("had 1 errors", ex.getMessage());
+            assertEquals("had 1 error", ex.getMessage());
             return;
         }
 
@@ -148,13 +144,12 @@ public class ErrorHandlerTest
     }
 
     @Test
-    public void shouldExitAfterMessage()
-        throws Exception
+    void shouldExitAfterMessage() throws Exception
     {
         try
         {
             final ParserOptions options = ParserOptions.builder().suppressOutput(true).warningsFatal(true).build();
-            parse(TestUtil.getLocalResource("error-handler-message-schema.xml"), options);
+            parse(Tests.getLocalResource("error-handler-message-schema.xml"), options);
         }
         catch (final IllegalStateException ex)
         {
@@ -166,17 +161,16 @@ public class ErrorHandlerTest
     }
 
     @Test
-    public void shouldExitAfterMessageWhenGroupDimensionsNotComposite()
-        throws Exception
+    void shouldExitAfterMessageWhenGroupDimensionsNotComposite() throws Exception
     {
         try
         {
             final ParserOptions options = ParserOptions.builder().suppressOutput(true).warningsFatal(true).build();
-            parse(TestUtil.getLocalResource("error-handler-group-dimensions-schema.xml"), options);
+            parse(Tests.getLocalResource("error-handler-group-dimensions-schema.xml"), options);
         }
         catch (final IllegalStateException ex)
         {
-            assertEquals("had 1 errors", ex.getMessage());
+            assertEquals("had 1 error", ex.getMessage());
             return;
         }
 
@@ -184,13 +178,12 @@ public class ErrorHandlerTest
     }
 
     @Test
-    public void shouldExitAfterTypesWhenCompositeOffsetsIncorrect()
-        throws Exception
+    void shouldExitAfterTypesWhenCompositeOffsetsIncorrect() throws Exception
     {
         try
         {
             final ParserOptions options = ParserOptions.builder().suppressOutput(true).warningsFatal(true).build();
-            parse(TestUtil.getLocalResource("error-handler-invalid-composite-offsets-schema.xml"), options);
+            parse(Tests.getLocalResource("error-handler-invalid-composite-offsets-schema.xml"), options);
         }
         catch (final IllegalStateException ex)
         {
@@ -202,13 +195,29 @@ public class ErrorHandlerTest
     }
 
     @Test
-    public void shouldExitInvalidFieldNames()
-        throws Exception
+    void shouldExitAfterTypesWhenCompositeHasInvalidTypes() throws Exception
     {
         try
         {
             final ParserOptions options = ParserOptions.builder().suppressOutput(true).warningsFatal(true).build();
-            parse(TestUtil.getLocalResource("error-handler-invalid-name.xml"), options);
+            parse(Tests.getLocalResource("error-handler-invalid-composite.xml"), options);
+        }
+        catch (final IllegalStateException ex)
+        {
+            assertEquals("had 2 errors", ex.getMessage());
+            return;
+        }
+
+        fail("expected IllegalStateException");
+    }
+
+    @Test
+    void shouldExitInvalidFieldNames() throws Exception
+    {
+        try
+        {
+            final ParserOptions options = ParserOptions.builder().suppressOutput(true).warningsFatal(true).build();
+            parse(Tests.getLocalResource("error-handler-invalid-name.xml"), options);
         }
         catch (final IllegalStateException ex)
         {

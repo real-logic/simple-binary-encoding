@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2022 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,10 +24,13 @@ import static java.nio.charset.Charset.forName;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 
 /**
- * Class used to encapsulate values for primitives. Used for nullValue, minValue, maxValue, and constants
+ * Class used to encapsulate values for primitives. Used for nullValue, minValue, maxValue, and constants.
  */
 public class PrimitiveValue
 {
+    /**
+     * Representation type used for the stored value.
+     */
     public enum Representation
     {
         /**
@@ -46,56 +49,185 @@ public class PrimitiveValue
         BYTE_ARRAY
     }
 
+    /**
+     * Minimum value representation for a char type.
+     */
     public static final long MIN_VALUE_CHAR = 0x20;
+
+    /**
+     * Maximum value representation for a char type.
+     */
     public static final long MAX_VALUE_CHAR = 0x7E;
+
+    /**
+     * Null value representation for a char type.
+     */
     public static final long NULL_VALUE_CHAR = 0;
 
+    /**
+     * Minimum value representation for a signed 8-bit type.
+     */
     public static final long MIN_VALUE_INT8 = -127;
+
+    /**
+     * Maximum value representation for a signed 8-bit type.
+     */
     public static final long MAX_VALUE_INT8 = 127;
+
+    /**
+     * Null value representation for a signed 8-bit type.
+     */
     public static final long NULL_VALUE_INT8 = -128;
 
+    /**
+     * Minimum value representation for an unsigned 8-bit type.
+     */
     public static final long MIN_VALUE_UINT8 = 0;
+
+    /**
+     * Maximum value representation for an unsigned 8-bit type.
+     */
     public static final long MAX_VALUE_UINT8 = 254;
+
+    /**
+     * Null value representation for an unsigned 8-bit type.
+     */
     public static final long NULL_VALUE_UINT8 = 255;
 
+    /**
+     * Minimum value representation for a signed 16-bit type.
+     */
     public static final long MIN_VALUE_INT16 = -32767;
+
+    /**
+     * Maximum value representation for a signed 16-bit type.
+     */
     public static final long MAX_VALUE_INT16 = 32767;
+
+    /**
+     * Null value representation for a signed 16-bit type.
+     */
     public static final long NULL_VALUE_INT16 = -32768;
 
+    /**
+     * Minimum value representation for an unsigned 16-bit type.
+     */
     public static final long MIN_VALUE_UINT16 = 0;
+
+    /**
+     * Maximum value representation for an unsigned 16-bit type.
+     */
     public static final long MAX_VALUE_UINT16 = 65534;
+
+    /**
+     * Null value representation for an unsigned 16-bit type.
+     */
     public static final long NULL_VALUE_UINT16 = 65535;
 
+    /**
+     * Minimum value representation for a signed 32-bit type.
+     */
     public static final long MIN_VALUE_INT32 = -2147483647;
+
+    /**
+     * Maximum value representation for a signed 32-bit type.
+     */
     public static final long MAX_VALUE_INT32 = 2147483647;
+
+    /**
+     * Null value representation for a signed 32-bit type.
+     */
     public static final long NULL_VALUE_INT32 = -2147483648;
 
+    /**
+     * Minimum value representation for an unsigned 32-bit type.
+     */
     public static final long MIN_VALUE_UINT32 = 0;
+
+    /**
+     * Maximum value representation for an unsigned 32-bit type.
+     */
     public static final long MAX_VALUE_UINT32 = 0xFFFF_FFFFL - 1;
+
+    /**
+     * Null value representation for an unsigned 32-bit type.
+     */
     public static final long NULL_VALUE_UINT32 = 0xFFFF_FFFFL;
 
+    /**
+     * Minimum value representation for a signed 64-bit type.
+     */
     public static final long MIN_VALUE_INT64 = Long.MIN_VALUE + 1; // (-2 ^ 63) + 1
+
+    /**
+     * Maximum value representation for a signed 64-bit type.
+     */
     public static final long MAX_VALUE_INT64 = Long.MAX_VALUE;     // ( 2 ^ 63) - 1
+
+    /**
+     * Null value representation for a signed 64-bit type.
+     */
     public static final long NULL_VALUE_INT64 = Long.MIN_VALUE;    // (-2 ^ 63)
 
+    /**
+     * Minimum value representation for an unsigned 64-bit type.
+     */
     public static final long MIN_VALUE_UINT64 = 0;
+
+    /**
+     * Maximum value representation for an unsigned 64-bit type.
+     */
     public static final BigInteger BI_MAX_VALUE_UINT64 = new BigInteger("18446744073709551614");
+
+    /**
+     * Maximum value representation for an unsigned 64-bit type.
+     */
     public static final long MAX_VALUE_UINT64 = BI_MAX_VALUE_UINT64.longValue(); // (2 ^ 64) - 2
+
+    /**
+     * Null value representation for an unsigned 64-bit type.
+     */
     public static final BigInteger BI_NULL_VALUE_UINT64 = new BigInteger("18446744073709551615");
+
+    /**
+     * Null value representation for an unsigned 64-bit type.
+     */
     public static final long NULL_VALUE_UINT64 = BI_NULL_VALUE_UINT64.longValue(); // (2 ^ 64) - 1
 
+    /**
+     * Maximum value representation for a single precision 32-bit floating point type.
+     */
     public static final float MIN_VALUE_FLOAT = Float.MIN_VALUE;
+
+    /**
+     * Maximum value representation for a single precision 32-bit floating point type.
+     */
     public static final float MAX_VALUE_FLOAT = Float.MAX_VALUE;
+
+    /**
+     * Null value representation for a single precision 32-bit floating point type.
+     */
     public static final float NULL_VALUE_FLOAT = Float.NaN;
 
+    /**
+     * Minimum value representation for a double precision 64-bit floating point type.
+     */
     public static final double MIN_VALUE_DOUBLE = Double.MIN_VALUE;
+
+    /**
+     * Maximum value representation for a double precision 64-bit floating point type.
+     */
     public static final double MAX_VALUE_DOUBLE = Double.MAX_VALUE;
+
+    /**
+     * Null value representation for a double precision 64-bit floating point type.
+     */
     public static final double NULL_VALUE_DOUBLE = Double.NaN;
 
     private final Representation representation;
     private final long longValue;
     private final double doubleValue;
-    private final byte[] byteArrayValue;
+    private final byte[] bytesValue;
     private final String characterEncoding;
     private final int size;
     private final byte[] byteArrayValueForLong = new byte[1];
@@ -103,15 +235,15 @@ public class PrimitiveValue
     /**
      * Construct and fill in value as a long.
      *
-     * @param value in long format
-     * @param size  of the type in bytes
+     * @param value in long format.
+     * @param size  of the type in bytes.
      */
     public PrimitiveValue(final long value, final int size)
     {
         representation = Representation.LONG;
         longValue = value;
         doubleValue = 0.0;
-        byteArrayValue = null;
+        bytesValue = null;
         characterEncoding = null;
         this.size = size;
     }
@@ -127,7 +259,7 @@ public class PrimitiveValue
         representation = Representation.LONG;
         longValue = value;
         doubleValue = 0.0;
-        byteArrayValue = null;
+        bytesValue = null;
         this.characterEncoding = characterEncoding;
         this.size = 1;
     }
@@ -135,15 +267,15 @@ public class PrimitiveValue
     /**
      * Construct and fill in value as a double.
      *
-     * @param value in double format
-     * @param size  of the type in bytes
+     * @param value in double format.
+     * @param size  of the type in bytes.
      */
     public PrimitiveValue(final double value, final int size)
     {
         representation = Representation.DOUBLE;
         longValue = 0;
         doubleValue = value;
-        byteArrayValue = null;
+        bytesValue = null;
         characterEncoding = null;
         this.size = size;
     }
@@ -151,16 +283,16 @@ public class PrimitiveValue
     /**
      * Construct and fill in value as a byte array.
      *
-     * @param value             as a byte array
-     * @param characterEncoding of the characters
-     * @param size              of string in characters
+     * @param value             as a byte array.
+     * @param characterEncoding of the characters.
+     * @param size              of string in characters.
      */
     public PrimitiveValue(final byte[] value, final String characterEncoding, final int size)
     {
         representation = Representation.BYTE_ARRAY;
         longValue = 0;
         doubleValue = 0.0;
-        byteArrayValue = value;
+        bytesValue = value;
         this.characterEncoding = characterEncoding;
         this.size = size;
     }
@@ -178,8 +310,8 @@ public class PrimitiveValue
     /**
      * Parse constant value string and set representation based on type
      *
-     * @param value         expressed as a String
-     * @param primitiveType that this is supposed to be
+     * @param value         expressed as a String.
+     * @param primitiveType that this is supposed to be.
      * @return a new {@link PrimitiveValue} for the value.
      * @throws IllegalArgumentException if parsing malformed type
      */
@@ -192,7 +324,7 @@ public class PrimitiveValue
                 {
                     throw new IllegalArgumentException("Constant char value malformed: " + value);
                 }
-                return new PrimitiveValue((long)value.getBytes(US_ASCII)[0], 1);
+                return new PrimitiveValue(value.getBytes(US_ASCII)[0], 1);
 
             case INT8:
                 return new PrimitiveValue(Byte.parseByte(value), 1);
@@ -237,8 +369,8 @@ public class PrimitiveValue
     /**
      * Parse constant value string and set representation based on type
      *
-     * @param value             expressed as a String
-     * @param primitiveType     that this is supposed to be
+     * @param value             expressed as a String.
+     * @param primitiveType     that this is supposed to be.
      * @param characterEncoding of the constant value.
      * @return a new {@link PrimitiveValue} for the value.
      * @throws IllegalArgumentException if parsing malformed type
@@ -262,11 +394,11 @@ public class PrimitiveValue
     /**
      * Parse constant value string and set representation based on type, length, and characterEncoding
      *
-     * @param value             expressed as a String
-     * @param length            of the type
-     * @param characterEncoding of the String
+     * @param value             expressed as a String.
+     * @param length            of the type.
+     * @param characterEncoding of the String.
      * @return a new {@link PrimitiveValue} for the value.
-     * @throws IllegalArgumentException if parsing malformed type
+     * @throws IllegalArgumentException if parsing malformed type.
      */
     public static PrimitiveValue parse(
         final String value, final int length, final String characterEncoding)
@@ -286,17 +418,17 @@ public class PrimitiveValue
     }
 
     /**
-     * Return long value for this PrimitiveValue
+     * Return long value for this PrimitiveValue.
      *
-     * @return value expressed as a long
-     * @throws IllegalStateException if not a long value representation
+     * @return value expressed as a long.
+     * @throws IllegalStateException if not a long value representation.
      */
     public long longValue()
     {
         if (representation != Representation.LONG)
         {
             throw new IllegalStateException(
-                "Not a long representation: representation=" + representation + " value=" + toString());
+                "Not a long representation: representation=" + representation + " value=" + this);
         }
 
         return longValue;
@@ -305,15 +437,15 @@ public class PrimitiveValue
     /**
      * Return double value for this PrimitiveValue.
      *
-     * @return value expressed as a double
-     * @throws IllegalStateException if not a double value representation
+     * @return value expressed as a double.
+     * @throws IllegalStateException if not a double value representation.
      */
     public double doubleValue()
     {
         if (representation != Representation.DOUBLE)
         {
             throw new IllegalStateException(
-                "Not a double representation: representation=" + representation + " value=" + toString());
+                "Not a double representation: representation=" + representation + " value=" + this);
         }
 
         return doubleValue;
@@ -322,32 +454,32 @@ public class PrimitiveValue
     /**
      * Return byte array value for this PrimitiveValue.
      *
-     * @return value expressed as a byte array
-     * @throws IllegalStateException if not a byte array value representation
+     * @return value expressed as a byte array.
+     * @throws IllegalStateException if not a byte array value representation.
      */
     public byte[] byteArrayValue()
     {
         if (representation != Representation.BYTE_ARRAY)
         {
             throw new IllegalStateException(
-                "Not a byte[] representation: representation=" + representation + " value=" + toString());
+                "Not a byte[] representation: representation=" + representation + " value=" + this);
         }
 
-        return byteArrayValue;
+        return bytesValue;
     }
 
     /**
      * Return byte array value for this PrimitiveValue given a particular type
      *
-     * @param type of this value
-     * @return value expressed as a byte array
-     * @throws IllegalStateException if not a byte array value representation
+     * @param type of this value.
+     * @return value expressed as a byte array.
+     * @throws IllegalStateException if not a byte array value representation.
      */
     public byte[] byteArrayValue(final PrimitiveType type)
     {
         if (representation == Representation.BYTE_ARRAY)
         {
-            return byteArrayValue;
+            return bytesValue;
         }
         else if (representation == Representation.LONG && size == 1 && type == PrimitiveType.CHAR)
         {
@@ -361,7 +493,7 @@ public class PrimitiveValue
     /**
      * Return encodedLength for this PrimitiveValue for serialization purposes.
      *
-     * @return encodedLength for serialization
+     * @return encodedLength for serialization.
      */
     public int size()
     {
@@ -379,41 +511,42 @@ public class PrimitiveValue
     }
 
     /**
-     * Return String representation of this object
+     * Return String value representation of this object.
      *
-     * @return String representing object value
+     * @return String representing object value.
      */
     public String toString()
     {
-        switch (representation)
+        if (Representation.LONG == representation)
         {
-            case LONG:
-                return Long.toString(longValue);
-
-            case DOUBLE:
-                return Double.toString(doubleValue);
-
-            case BYTE_ARRAY:
-                try
-                {
-                    return null == characterEncoding ?
-                        new String(byteArrayValue) : new String(byteArrayValue, characterEncoding);
-                }
-                catch (final UnsupportedEncodingException ex)
-                {
-                    throw new IllegalStateException(ex);
-                }
-
-            default:
-                throw new IllegalStateException("Unsupported Representation: " + representation);
+            return Long.toString(longValue);
+        }
+        else if (Representation.DOUBLE == representation)
+        {
+            return Double.toString(doubleValue);
+        }
+        else if (Representation.BYTE_ARRAY == representation)
+        {
+            try
+            {
+                return null == characterEncoding ? new String(bytesValue) : new String(bytesValue, characterEncoding);
+            }
+            catch (final UnsupportedEncodingException ex)
+            {
+                throw new IllegalStateException(ex);
+            }
+        }
+        else
+        {
+            throw new IllegalStateException("Unsupported Representation: " + representation);
         }
     }
 
     /**
      * Determine if two values are equivalent.
      *
-     * @param value to compare this value with
-     * @return equivalence of values
+     * @param value to compare this value with.
+     * @return equivalence of values.
      */
     public boolean equals(final Object value)
     {
@@ -432,7 +565,7 @@ public class PrimitiveValue
                         return doubleToLongBits(doubleValue) == doubleToLongBits(rhs.doubleValue);
 
                     case BYTE_ARRAY:
-                        return Arrays.equals(byteArrayValue, rhs.byteArrayValue);
+                        return Arrays.equals(bytesValue, rhs.bytesValue);
                 }
             }
         }
@@ -441,9 +574,9 @@ public class PrimitiveValue
     }
 
     /**
-     * Return hashCode for value. This is the underlying representations hashCode for the value
+     * Return hashCode for value. This is the underlying representations hashCode for the value.
      *
-     * @return int value of the hashCode
+     * @return int value of the hashCode.
      */
     public int hashCode()
     {
@@ -459,7 +592,7 @@ public class PrimitiveValue
                 break;
 
             case BYTE_ARRAY:
-                return Arrays.hashCode(byteArrayValue);
+                return Arrays.hashCode(bytesValue);
 
             default:
                 throw new IllegalStateException("Unrecognised representation: " + representation);

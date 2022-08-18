@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2022 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import java.nio.ByteOrder;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class TypesTest
+class TypesTest
 {
     private static final ByteOrder BYTE_ORDER = ByteOrder.nativeOrder();
     private static final int BUFFER_CAPACITY = 64;
@@ -31,7 +31,7 @@ public class TypesTest
     private final MutableDirectBuffer buffer = new UnsafeBuffer(new byte[BUFFER_CAPACITY]);
 
     @Test
-    public void shouldTestBitInByte()
+    void shouldTestBitInByte()
     {
         final byte bits = (byte)0b1000_0000;
         final int bufferIndex = 8;
@@ -53,7 +53,7 @@ public class TypesTest
     }
 
     @Test
-    public void shouldSetBitInByte()
+    void shouldSetBitInByte()
     {
         final int bufferIndex = 8;
 
@@ -69,7 +69,7 @@ public class TypesTest
     }
 
     @Test
-    public void shouldTestBitInShort()
+    void shouldTestBitInShort()
     {
         final short bits = (short)0b0000_0000_0000_0100;
         final int bufferIndex = 8;
@@ -91,7 +91,7 @@ public class TypesTest
     }
 
     @Test
-    public void shouldSetBitInShort()
+    void shouldSetBitInShort()
     {
         final int bufferIndex = 8;
 
@@ -107,7 +107,7 @@ public class TypesTest
     }
 
     @Test
-    public void shouldTestBitInInt()
+    void shouldTestBitInInt()
     {
         final int bits = 0b0000_0000_0000_0000_0000_0000_0000_0100;
         final int bufferIndex = 8;
@@ -129,7 +129,7 @@ public class TypesTest
     }
 
     @Test
-    public void shouldSetBitInInt()
+    void shouldSetBitInInt()
     {
         final int bufferIndex = 8;
         long total = 0;

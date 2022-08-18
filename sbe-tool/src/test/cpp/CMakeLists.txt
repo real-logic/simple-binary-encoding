@@ -1,5 +1,5 @@
 #
-# Copyright 2013-2020 Real Logic Limited.
+# Copyright 2013-2022 Real Logic Limited.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -34,10 +34,12 @@ endfunction()
 find_package(Java REQUIRED)
 
 set(CODE_GENERATION_SCHEMA ${CODEC_SCHEMA_DIR}/code-generation-schema.xml)
+set(COMPOSITE_ELEMENTS_SCHEMA ${CODEC_SCHEMA_DIR}/composite-elements-schema.xml)
 set(COMPOSITE_OFFSETS_SCHEMA ${CODEC_SCHEMA_DIR}/composite-offsets-schema.xml)
 set(MESSAGE_BLOCK_LENGTH_TEST ${CODEC_SCHEMA_DIR}/message-block-length-test.xml)
 set(GROUP_WITH_DATA_SCHEMA ${CODEC_SCHEMA_DIR}/group-with-data-schema.xml)
-set(COMPOSITE_ELEMENTS_SCHEMA ${CODEC_SCHEMA_DIR}/composite-elements-schema.xml)
+set(ISSUE835_SCHEMA ${CODEC_SCHEMA_DIR}/issue835.xml)
+set(ISSUE889_SCHEMA ${CODEC_SCHEMA_DIR}/issue889.xml)
 
 set(GENERATED_CODECS
     ${CXX_CODEC_TARGET_DIR}
@@ -45,7 +47,13 @@ set(GENERATED_CODECS
 
 add_custom_command(
     OUTPUT ${GENERATED_CODECS}
-    DEPENDS ${CODE_GENERATION_SCHEMA} ${CODE_GENERATION_SCHEMA_CPP} ${COMPOSITE_OFFSETS_SCHEMA} ${MESSAGE_BLOCK_LENGTH_TEST}
+    DEPENDS ${CODE_GENERATION_SCHEMA}
+        ${COMPOSITE_ELEMENTS_SCHEMA}
+        ${COMPOSITE_OFFSETS_SCHEMA}
+        ${MESSAGE_BLOCK_LENGTH_TEST}
+        ${GROUP_WITH_DATA_SCHEMA}
+        ${ISSUE835_SCHEMA}
+        ${ISSUE889_SCHEMA}
     sbe-jar ${SBE_JAR}
     COMMAND
         ${Java_JAVA_EXECUTABLE}
@@ -58,6 +66,8 @@ add_custom_command(
             ${MESSAGE_BLOCK_LENGTH_TEST}
             ${GROUP_WITH_DATA_SCHEMA}
             ${COMPOSITE_ELEMENTS_SCHEMA}
+            ${ISSUE835_SCHEMA}
+            ${ISSUE889_SCHEMA}
 )
 
 add_custom_target(codecs DEPENDS ${GENERATED_CODECS})
@@ -71,3 +81,5 @@ sbe_test(MessageBlockLengthTest codecs)
 sbe_test(GroupWithDataTest codecs)
 sbe_test(Rc3OtfFullIrTest codecs)
 sbe_test(CompositeElementsTest codecs)
+sbe_test(Issue835Test codecs)
+sbe_test(Issue889Test codecs)

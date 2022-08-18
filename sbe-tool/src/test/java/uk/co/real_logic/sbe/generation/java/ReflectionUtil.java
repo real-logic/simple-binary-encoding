@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2022 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,11 @@
  */
 package uk.co.real_logic.sbe.generation.java;
 
+import org.agrona.DirectBuffer;
+import org.agrona.MutableDirectBuffer;
 import uk.co.real_logic.sbe.generation.Generators;
 
-public final class ReflectionUtil
+final class ReflectionUtil
 {
     static int getSbeSchemaVersion(final Object encoder) throws Exception
     {
@@ -88,12 +90,12 @@ public final class ReflectionUtil
         return (boolean)extras.getClass().getMethod("cruiseControl").invoke(extras);
     }
 
-    public static int getCapacity(final Object flyweight) throws Exception
+    static int getCapacity(final Object flyweight) throws Exception
     {
         return getInt(flyweight, "capacity");
     }
 
-    public static void setCapacity(final Object flyweight, final int value) throws Exception
+    static void setCapacity(final Object flyweight, final int value) throws Exception
     {
         flyweight
             .getClass()
@@ -108,6 +110,58 @@ public final class ReflectionUtil
         final Object value) throws Exception
     {
         object.getClass().getMethod(name, type).invoke(object, value);
+    }
+
+    static void putByteArray(
+        final Object encoder,
+        final String name,
+        final byte[] value,
+        final int offset,
+        final int length) throws Exception
+    {
+        encoder.getClass().getDeclaredMethod(name, byte[].class, int.class, int.class)
+            .invoke(encoder, value, offset, length);
+    }
+
+    static int getByteArray(
+        final Object decoder,
+        final String name,
+        final byte[] dst,
+        final int dstOffset,
+        final int length) throws Exception
+    {
+        return (Integer)decoder.getClass().getDeclaredMethod(name, byte[].class, int.class, int.class)
+            .invoke(decoder, dst, dstOffset, length);
+    }
+
+    static void putDirectBuffer(
+        final Object encoder,
+        final String name,
+        final DirectBuffer value,
+        final int offset,
+        final int length) throws Exception
+    {
+        encoder.getClass().getDeclaredMethod(name, DirectBuffer.class, int.class, int.class)
+                .invoke(encoder, value, offset, length);
+    }
+
+    static int getDirectBuffer(
+        final Object decoder,
+        final String name,
+        final MutableDirectBuffer dst,
+        final int dstOffset,
+        final int length) throws Exception
+    {
+        return (Integer)decoder.getClass().getDeclaredMethod(name, MutableDirectBuffer.class, int.class, int.class)
+            .invoke(decoder, dst, dstOffset, length);
+    }
+
+    static void wrapDirectBuffer(final Object decoder, final String name, final DirectBuffer dst) throws Exception
+    {
+        decoder
+            .getClass()
+            .getDeclaredMethod(name, DirectBuffer.class)
+            .invoke(decoder, dst);
     }
 
     static Object getByte(final Class<?> clazz, final byte value) throws Exception

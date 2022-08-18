@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2022 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,28 +15,31 @@
  */
 package uk.co.real_logic.sbe.generation.java;
 
+import org.agrona.Strings;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.SbeTool;
+import uk.co.real_logic.sbe.ValidationUtil;
 import uk.co.real_logic.sbe.generation.Generators;
 import uk.co.real_logic.sbe.ir.Token;
-import uk.co.real_logic.sbe.util.ValidationUtil;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
-import static java.lang.reflect.Modifier.STATIC;
-
 /**
- * Utilities for mapping between IR and the Java language.
+ * Utilities for mapping between {@link uk.co.real_logic.sbe.ir.Ir} and the Java language.
  */
 public class JavaUtil
 {
-    public enum Separators
+    /**
+     * Separator symbols for {@link Object#toString()} implementations on codecs.
+     */
+    enum Separator
     {
         BEGIN_GROUP('['),
         END_GROUP(']'),
@@ -50,25 +53,21 @@ public class JavaUtil
         KEY_VALUE('='),
         ENTRY(',');
 
-        public final char symbol;
+        private final char symbol;
 
-        Separators(final char symbol)
+        Separator(final char symbol)
         {
             this.symbol = symbol;
         }
 
-        /**
-         * Add separator to a generated append to a {@link StringBuilder}.
-         *
-         * @param builder     the code generation builder to which information should be added
-         * @param indent      the current generated code indentation
-         * @param builderName of the generated StringBuilder to which separator should be added
-         */
-        public void appendToGeneratedBuilder(final StringBuilder builder, final String indent, final String builderName)
+        void appendToGeneratedBuilder(final StringBuilder builder, final String indent)
         {
-            builder.append(indent).append(builderName).append(".append('").append(symbol).append("');").append('\n');
+            builder.append(indent).append("builder.append('").append(symbol).append("');").append('\n');
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public String toString()
         {
             return String.valueOf(symbol);
@@ -96,7 +95,7 @@ public class JavaUtil
     /**
      * Indexes known charset aliases to the name of the instance in {@link StandardCharsets}.
      */
-    private static final Map<String, String> STD_CHARSETS = new HashMap<>();
+    static final HashMap<String, String> STD_CHARSETS = new HashMap<>();
 
     static
     {
@@ -104,11 +103,27 @@ public class JavaUtil
         {
             for (final Field field : StandardCharsets.class.getDeclaredFields())
             {
-                if (Charset.class.isAssignableFrom(field.getType()) && ((field.getModifiers() & STATIC) == STATIC))
+                if (Charset.class.isAssignableFrom(field.getType()) && Modifier.isStatic(field.getModifiers()) &&
+                    Modifier.isPublic(field.getModifiers()))
                 {
                     final Charset charset = (Charset)field.get(null);
-                    STD_CHARSETS.put(charset.name(), field.getName());
-                    charset.aliases().forEach((alias) -> STD_CHARSETS.put(alias, field.getName()));
+                    final String name = field.getName();
+                    String oldName = STD_CHARSETS.put(charset.name(), name);
+
+                    if (null != oldName)
+                    {
+                        throw new IllegalStateException("Duplicate charset alias: old=" + oldName + ", new=" + name);
+                    }
+
+                    for (final String alias : charset.aliases())
+                    {
+                        oldName = STD_CHARSETS.put(alias, name);
+                        if (null != oldName)
+                        {
+                            throw new IllegalStateException(
+                                "Duplicate charset alias: old=" + oldName + ", new=" + alias);
+                        }
+                    }
                 }
             }
         }
@@ -201,14 +216,56 @@ public class JavaUtil
     public static String charset(final String encoding)
     {
         final String charsetName = STD_CHARSETS.get(encoding);
-        if (charsetName != null)
+        if (null != charsetName)
         {
             return "java.nio.charset.StandardCharsets." + charsetName;
         }
         else
         {
-            return "java.nio.charset.Charset.forName(\"" + encoding + "\")";
+            final String canonicalName = Charset.isSupported(encoding) ? Charset.forName(encoding).name() : encoding;
+            return "java.nio.charset.Charset.forName(\"" + canonicalName + "\")";
         }
+    }
+
+    /**
+     * Code to fetch the name of the {@link Charset} given the encoding.
+     *
+     * @param encoding as a string name (eg. UTF-8).
+     * @return the code to fetch the associated Charset name.
+     */
+    public static String charsetName(final String encoding)
+    {
+        final String charsetName = STD_CHARSETS.get(encoding);
+        if (null != charsetName)
+        {
+            return "java.nio.charset.StandardCharsets." + charsetName + ".name()";
+        }
+        else
+        {
+            return "\"" + (Charset.isSupported(encoding) ? Charset.forName(encoding).name() : encoding) + "\"";
+        }
+    }
+
+    /**
+     * Checks if the given encoding represents an ASCII charset.
+     *
+     * @param encoding as a string name (e.g. ASCII).
+     * @return {@code true} if the encoding denotes an ASCII charset.
+     */
+    public static boolean isAsciiEncoding(final String encoding)
+    {
+        return "US_ASCII".equals(STD_CHARSETS.get(encoding));
+    }
+
+    /**
+     * Checks if the given encoding represents a UTF-8 charset.
+     *
+     * @param encoding as a string name (e.g. unicode-1-1-utf-8).
+     * @return {@code true} if the encoding denotes a UTF-8 charset.
+     */
+    public static boolean isUtf8Encoding(final String encoding)
+    {
+        return "UTF_8".equals(STD_CHARSETS.get(encoding));
     }
 
     /**
@@ -268,17 +325,21 @@ public class JavaUtil
      * @param indent    level for the comment.
      * @param typeToken for the type.
      */
-    public static void generateTypeJavadoc(
-        final StringBuilder sb, final String indent, final Token typeToken)
+    public static void generateTypeJavadoc(final StringBuilder sb, final String indent, final Token typeToken)
     {
         final String description = typeToken.description();
-        if (null == description || description.isEmpty())
+        if (Strings.isEmpty(description))
         {
             return;
         }
 
-        sb.append(indent).append("/**\n")
-            .append(indent).append(" * ").append(description).append('\n')
+        sb.append('\n')
+            .append(indent).append("/**\n")
+            .append(indent).append(" * ");
+
+        escapeJavadoc(sb, description);
+
+        sb.append('\n')
             .append(indent).append(" */\n");
     }
 
@@ -290,20 +351,23 @@ public class JavaUtil
      * @param optionToken for the type.
      * @throws IOException on failing to write to output.
      */
-    public static void generateOptionDecodeJavadoc(
-        final Appendable out, final String indent, final Token optionToken)
+    public static void generateOptionDecodeJavadoc(final Appendable out, final String indent, final Token optionToken)
         throws IOException
     {
         final String description = optionToken.description();
-        if (null == description || description.isEmpty())
+        if (Strings.isEmpty(description))
         {
             return;
         }
 
         out.append(indent).append("/**\n")
-            .append(indent).append(" * ").append(description).append('\n')
+            .append(indent).append(" * ");
+
+        escapeJavadoc(out, description);
+
+        out.append('\n')
             .append(indent).append(" *\n")
-            .append(indent).append(" * @return true if ").append(optionToken.name()).append(" is set or false if not\n")
+            .append(indent).append(" * @return true if ").append(optionToken.name()).append(" set or false if not.\n")
             .append(indent).append(" */\n");
     }
 
@@ -315,21 +379,25 @@ public class JavaUtil
      * @param optionToken for the type.
      * @throws IOException on failing to write to output.
      */
-    public static void generateOptionEncodeJavadoc(
-        final Appendable out, final String indent, final Token optionToken)
+    public static void generateOptionEncodeJavadoc(final Appendable out, final String indent, final Token optionToken)
         throws IOException
     {
         final String description = optionToken.description();
-        if (null == description || description.isEmpty())
+        if (Strings.isEmpty(description))
         {
             return;
         }
 
-        final String name = optionToken.name();
         out.append(indent).append("/**\n")
-            .append(indent).append(" * ").append(description).append('\n')
+            .append(indent).append(" * ");
+
+        escapeJavadoc(out, description);
+
+        final String name = optionToken.name();
+        out.append('\n')
             .append(indent).append(" *\n")
             .append(indent).append(" * @param value true if ").append(name).append(" is set or false if not.\n")
+            .append(indent).append(" * @return this for a fluent API.\n")
             .append(indent).append(" */\n");
     }
 
@@ -345,16 +413,25 @@ public class JavaUtil
         final StringBuilder sb, final String indent, final Token propertyToken, final String typeName)
     {
         final String description = propertyToken.description();
-        if (null == description || description.isEmpty())
+        if (Strings.isEmpty(description))
         {
             return;
         }
 
-        sb.append(indent).append("/**\n")
-            .append(indent).append(" * ").append(description).append('\n')
+        sb.append('\n')
+            .append(indent).append("/**\n")
+            .append(indent).append(" * ");
+
+        escapeJavadoc(sb, description);
+
+        sb.append('\n')
             .append(indent).append(" *\n")
-            .append(indent).append(" * @return ").append(typeName).append(" : ").append(description).append("\n")
-            .append(indent).append(" */\n");
+            .append(indent).append(" * @return ").append(typeName).append(" : ");
+
+        escapeJavadoc(sb, description);
+
+        sb.append("\n")
+            .append(indent).append(" */");
     }
 
     /**
@@ -369,16 +446,69 @@ public class JavaUtil
         final StringBuilder sb, final String indent, final Token propertyToken, final String typeName)
     {
         final String description = propertyToken.description();
-        if (null == description || description.isEmpty())
+        if (Strings.isEmpty(description))
         {
             return;
         }
 
-        sb.append(indent).append("/**\n")
-            .append(indent).append(" * ").append(description).append("\n")
+        sb.append('\n')
+            .append(indent).append("/**\n")
+            .append(indent).append(" * ");
+
+        escapeJavadoc(sb, description);
+
+        sb.append("\n")
             .append(indent).append(" *\n")
-            .append(indent).append(" * @param count of times the group will be encoded\n")
-            .append(indent).append(" * @return ").append(typeName).append(" : encoder for the group\n")
-            .append(indent).append(" */\n");
+            .append(indent).append(" * @param count of times the group will be encoded.\n")
+            .append(indent).append(" * @return ").append(typeName).append(" : encoder for the group.\n")
+            .append(indent).append(" */");
+    }
+
+    private static void escapeJavadoc(final Appendable out, final String doc) throws IOException
+    {
+        for (int i = 0, length = doc.length(); i < length; i++)
+        {
+            final char c = doc.charAt(i);
+            switch (c)
+            {
+                case '<':
+                    out.append("&lt;");
+                    break;
+
+                case '>':
+                    out.append("&gt;");
+                    break;
+
+                default:
+                    out.append(c);
+                    break;
+            }
+        }
+    }
+
+    private static void escapeJavadoc(final StringBuilder sb, final String doc)
+    {
+        for (int i = 0, length = doc.length(); i < length; i++)
+        {
+            final char c = doc.charAt(i);
+            switch (c)
+            {
+                case '<':
+                    sb.append("&lt;");
+                    break;
+
+                case '>':
+                    sb.append("&gt;");
+                    break;
+
+                case '&':
+                    sb.append("&amp;");
+                    break;
+
+                default:
+                    sb.append(c);
+                    break;
+            }
+        }
     }
 }

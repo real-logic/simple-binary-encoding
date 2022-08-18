@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2022 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,14 @@
 package uk.co.real_logic.sbe.xml;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.PrimitiveValue;
-import uk.co.real_logic.sbe.TestUtil;
+import uk.co.real_logic.sbe.Tests;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -31,21 +33,20 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
-public class EnumTypeTest
+class EnumTypeTest
 {
     @Test
-    public void shouldHandleBinaryEnumType()
-        throws Exception
+    void shouldHandleBinaryEnumType() throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -66,8 +67,7 @@ public class EnumTypeTest
     }
 
     @Test
-    public void shouldHandleBooleanEnumType()
-        throws Exception
+    void shouldHandleBooleanEnumType() throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -88,8 +88,7 @@ public class EnumTypeTest
     }
 
     @Test
-    public void shouldHandleOptionalBooleanEnumType()
-        throws Exception
+    void shouldHandleOptionalBooleanEnumType() throws Exception
     {
         final String nullValueStr = "255";
         final String testXmlString =
@@ -113,8 +112,7 @@ public class EnumTypeTest
     }
 
     @Test
-    public void shouldHandleEnumTypeList()
-        throws Exception
+    void shouldHandleEnumTypeList() throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -158,8 +156,7 @@ public class EnumTypeTest
     }
 
     @Test
-    public void shouldHandleCharEnumEncodingType()
-        throws Exception
+    void shouldHandleCharEnumEncodingType() throws Exception
     {
         final String testXmlString =
             "<types>" +
@@ -182,8 +179,7 @@ public class EnumTypeTest
     }
 
     @Test
-    public void shouldThrowExceptionWhenIllegalEncodingTypeSpecified()
-        throws Exception
+    void shouldThrowExceptionWhenIllegalEncodingTypeSpecified()
     {
         final String testXmlString =
             "<types>" +
@@ -198,8 +194,7 @@ public class EnumTypeTest
     }
 
     @Test
-    public void shouldThrowExceptionWhenDuplicateValueSpecified()
-        throws Exception
+    void shouldThrowExceptionWhenDuplicateValueSpecified()
     {
         final String testXmlString =
             "<types>" +
@@ -215,8 +210,7 @@ public class EnumTypeTest
     }
 
     @Test
-    public void shouldThrowExceptionWhenDuplicateNameSpecified()
-        throws Exception
+    void shouldThrowExceptionWhenDuplicateNameSpecified()
     {
         final String testXmlString =
             "<types>" +
@@ -232,10 +226,64 @@ public class EnumTypeTest
     }
 
     @Test
-    public void shouldHandleEncodingTypesWithNamedTypes()
-        throws Exception
+    void shouldThrowExceptionWhenImplicitNullValueIsUsed()
     {
-        final MessageSchema schema = parse(TestUtil.getLocalResource(
+        final String testXmlString =
+            "<types>" +
+            "<enum name=\"test\" encodingType=\"uint8\">" +
+            "    <validValue name=\"one\">1</validValue>" +
+            "    <validValue name=\"invalidNullValue\">255</validValue>" +
+            "</enum>" +
+            "</types>";
+
+        assertThrows(IllegalArgumentException.class, () ->
+            parseTestXmlWithMap("/types/enum", testXmlString));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenExplicitNullValueIsUsed()
+    {
+        final String testXmlString =
+            "<types>" +
+            "<enum name=\"test\" encodingType=\"uint8\" presence=\"optional\" nullValue=\"5\">" +
+            "    <validValue name=\"one\">1</validValue>" +
+            "    <validValue name=\"invalidNullValue\">5</validValue>" +
+            "</enum>" +
+            "</types>";
+
+        assertThrows(IllegalArgumentException.class, () ->
+            parseTestXmlWithMap("/types/enum", testXmlString));
+    }
+
+    @ParameterizedTest
+    @ValueSource(longs = { (long)Integer.MIN_VALUE - 1, (long)Integer.MAX_VALUE + 1 })
+    void shouldThrowExceptionWhenIntValueIsOutOfRange(final long value)
+    {
+        final String testXmlString =
+            "<types>" +
+            "<enum name=\"test\" encodingType=\"int32\">" +
+            "    <validValue name=\"X\">" + value + "</validValue>" +
+            "</enum>" +
+            "</types>";
+
+        final NumberFormatException exception = assertThrows(NumberFormatException.class, () ->
+            parseTestXmlWithMap("/types/enum", testXmlString));
+        assertEquals("For input string: \"" + value + "\"", exception.getMessage());
+    }
+
+    @Test
+    void shouldThrowExceptionIfEnumValueIsOutOfCustomValueRange() throws IOException
+    {
+        final InputStream file = Tests.getLocalResource("error-handler-enum-violates-min-max-value-range.xml");
+        final IllegalStateException exception = assertThrows(IllegalStateException.class,
+            () -> parse(file, ParserOptions.builder().suppressOutput(true).build()));
+        assertEquals("had 4 errors", exception.getMessage());
+    }
+
+    @Test
+    void shouldHandleEncodingTypesWithNamedTypes() throws Exception
+    {
+        final MessageSchema schema = parse(Tests.getLocalResource(
             "encoding-types-schema.xml"), ParserOptions.DEFAULT);
         final List<Field> fields = schema.getMessage(1).fields();
 

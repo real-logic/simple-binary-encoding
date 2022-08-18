@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2022 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,8 @@ public class ErrorHandler
     private int warnings = 0;
 
     /**
-     * Construct a new {@link ErrorHandler} that outputs to a provided {@link PrintStream}.
+     * Construct a new {@link ErrorHandler} that outputs to a provided {@link PrintStream} which overrides the value
+     * set in {@link ParserOptions#errorPrintStream()}.
      *
      * @param stream  to which output should be sent.
      * @param options the parsing options.
@@ -44,13 +45,14 @@ public class ErrorHandler
     }
 
     /**
-     * Default {@link ErrorHandler} that outputs to {@link System#err}.
+     * Default {@link ErrorHandler} that outputs to {@link System#err} if {@link ParserOptions#errorPrintStream()} is
+     * not set.
      *
      * @param options the parsing options.
      */
     public ErrorHandler(final ParserOptions options)
     {
-        this(System.err, options);
+        this(options.errorPrintStream() != null ? options.errorPrintStream() : System.err, options);
     }
 
     /**
@@ -74,9 +76,9 @@ public class ErrorHandler
     }
 
     /**
-     * Record a message signifying an warning condition.
+     * Record a message signifying a warning condition.
      *
-     * @param msg signifying an warning.
+     * @param msg signifying a warning.
      */
     public void warning(final String msg)
     {
@@ -102,11 +104,11 @@ public class ErrorHandler
     {
         if (errors > 0)
         {
-            throw new IllegalStateException("had " + errors + " errors");
+            throw new IllegalStateException("had " + errors + (errors > 1 ? " errors" : " error"));
         }
         else if (warnings > 0 && warningsFatal)
         {
-            throw new IllegalStateException("had " + warnings + " warnings");
+            throw new IllegalStateException("had " + warnings + (warnings > 1 ? " warnings" : " warning"));
         }
     }
 
@@ -130,6 +132,9 @@ public class ErrorHandler
         return warnings;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public String toString()
     {
         return "ErrorHandler{" +

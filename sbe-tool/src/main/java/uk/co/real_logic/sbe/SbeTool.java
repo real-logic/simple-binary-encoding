@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2022 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,24 +17,13 @@ package uk.co.real_logic.sbe;
 
 import org.agrona.DirectBuffer;
 import org.agrona.MutableDirectBuffer;
-import uk.co.real_logic.sbe.generation.CodeGenerator;
-import uk.co.real_logic.sbe.generation.TargetCodeGenerator;
-import uk.co.real_logic.sbe.generation.TargetCodeGeneratorLoader;
-import uk.co.real_logic.sbe.ir.Ir;
-import uk.co.real_logic.sbe.ir.IrDecoder;
-import uk.co.real_logic.sbe.ir.IrEncoder;
-import uk.co.real_logic.sbe.xml.IrGenerator;
-import uk.co.real_logic.sbe.xml.MessageSchema;
-import uk.co.real_logic.sbe.xml.ParserOptions;
-import uk.co.real_logic.sbe.xml.XmlSchemaParser;
-
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import org.xml.sax.InputSource;
+import uk.co.real_logic.sbe.generation.*;
+import uk.co.real_logic.sbe.ir.*;
+import uk.co.real_logic.sbe.xml.*;
+
+import java.io.*;
+import java.nio.file.*;
 
 /**
  * A tool for running the SBE parser, validator, and code generator.
@@ -52,7 +41,7 @@ import org.xml.sax.InputSource;
  * <li><b>sbe.validation.stop.on.error</b>: Should the parser stop on first error encountered? Defaults to false.</li>
  * <li><b>sbe.validation.warnings.fatal</b>: Are warnings in parsing considered fatal? Defaults to false.</li>
  * <li>
- * <b>sbe.validation.suppress.output</b>: Should the parser suppress output during validation? Defaults to false.
+ *     <b>sbe.validation.suppress.output</b>: Should the parser suppress output during validation? Defaults to false.
  * </li>
  * <li><b>sbe.generate.stubs</b>: Generate stubs or not. Defaults to true.</li>
  * <li><b>sbe.target.language</b>: Target language for code generation, defaults to Java.</li>
@@ -64,12 +53,12 @@ import org.xml.sax.InputSource;
  * <li><b>sbe.target.namespace</b>: Namespace for the generated code to override schema package.</li>
  * <li><b>sbe.cpp.namespaces.collapse</b>: Namespace for the generated code to override schema package.</li>
  * <li>
- * <b>sbe.java.generate.group-order.annotation</b>: Should the GroupOrder annotation be added to generated stubs.
+ *     <b>sbe.java.generate.group-order.annotation</b>: Should the GroupOrder annotation be added to generated stubs.
  * </li>
  * <li><b>sbe.csharp.generate.namespace.dir</b>: Should a directory be created for the namespace under
  * the output directory? Defaults to true</li>
  * <li><b>sbe.keyword.append.token</b>: Token to be appended to keywords.</li>
- * <li><b>sbe.decode.unknown.enum.values</b>: Support unknown decoded enum values.</li>
+ * <li><b>sbe.decode.unknown.enum.values</b>: Support unknown decoded enum values. Defaults to false.</li>
  * <li><b>sbe.xinclude.aware</b>: Is XInclude supported for the schema. Defaults to false.</li>
  * </ul>
  */
@@ -175,7 +164,7 @@ public class SbeTool
      * Specifies token that should be appended to keywords to avoid compilation errors.
      * <p>
      * If none is supplied then use of keywords results in an error during schema parsing. The
-     * underscore character is a good example fo a token to use.
+     * underscore character is a good example of a token to use.
      */
     public static final String KEYWORD_APPEND_TOKEN = "sbe.keyword.append.token";
 
@@ -216,7 +205,10 @@ public class SbeTool
             }
             else if (fileName.endsWith(".sbeir"))
             {
-                ir = new IrDecoder(fileName).decode();
+                try (IrDecoder irDecoder = new IrDecoder(fileName))
+                {
+                    ir = irDecoder.decode();
+                }
             }
             else
             {

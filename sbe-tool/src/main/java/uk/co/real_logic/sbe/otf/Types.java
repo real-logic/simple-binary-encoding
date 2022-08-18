@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2022 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,13 @@ package uk.co.real_logic.sbe.otf;
 
 import org.agrona.DirectBuffer;
 import uk.co.real_logic.sbe.PrimitiveType;
+import uk.co.real_logic.sbe.PrimitiveValue;
 import uk.co.real_logic.sbe.ir.Encoding;
 
 import java.nio.ByteOrder;
 
 /**
- * Utility functions for applying to types to help with on-the-fly (OTF) decoding.
+ * Utility functions for applying over encoded types to help with on-the-fly (OTF) decoding.
  */
 public class Types
 {
@@ -30,7 +31,7 @@ public class Types
      * Get an integer value from a buffer at a given index for a {@link PrimitiveType}.
      *
      * @param buffer    from which to read.
-     * @param index     at which he integer should be read.
+     * @param index     at which the integer should be read.
      * @param type      of the integer encoded in the buffer.
      * @param byteOrder of the integer in the buffer.
      * @return the value of the encoded integer.
@@ -73,7 +74,7 @@ public class Types
      * Get a long value from a buffer at a given index for a given {@link Encoding}.
      *
      * @param buffer   from which to read.
-     * @param index    at which he integer should be read.
+     * @param index    at which the integer should be read.
      * @param encoding of the value.
      * @return the value of the encoded long.
      */
@@ -261,6 +262,78 @@ public class Types
                 else
                 {
                     sb.append(value);
+                }
+                break;
+            }
+        }
+    }
+
+    /**
+     * Append a value as a Json String to a {@link StringBuilder}.
+     *
+     * @param sb       to append the value to.
+     * @param value    to append.
+     * @param encoding representing the encoded value.
+     */
+    public static void appendAsJsonString(final StringBuilder sb, final PrimitiveValue value, final Encoding encoding)
+    {
+        switch (encoding.primitiveType())
+        {
+            case CHAR:
+                sb.append('\'').append((char)value.longValue()).append('\'');
+                break;
+
+            case INT8:
+            case UINT8:
+            case INT16:
+            case UINT16:
+            case INT32:
+            case UINT32:
+            case INT64:
+            case UINT64:
+                sb.append(value.longValue());
+                break;
+
+            case FLOAT:
+            {
+                final float floatValue = (float)value.doubleValue();
+                if (Float.isNaN(floatValue))
+                {
+                    sb.append("0/0");
+                }
+                else if (floatValue == Float.POSITIVE_INFINITY)
+                {
+                    sb.append("1/0");
+                }
+                else if (floatValue == Float.NEGATIVE_INFINITY)
+                {
+                    sb.append("-1/0");
+                }
+                else
+                {
+                    sb.append(value);
+                }
+                break;
+            }
+
+            case DOUBLE:
+            {
+                final double doubleValue = value.doubleValue();
+                if (Double.isNaN(doubleValue))
+                {
+                    sb.append("0/0");
+                }
+                else if (doubleValue == Double.POSITIVE_INFINITY)
+                {
+                    sb.append("1/0");
+                }
+                else if (doubleValue == Double.NEGATIVE_INFINITY)
+                {
+                    sb.append("-1/0");
+                }
+                else
+                {
+                    sb.append(doubleValue);
                 }
                 break;
             }

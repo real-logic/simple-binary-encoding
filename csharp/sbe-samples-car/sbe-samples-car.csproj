@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net45;netcoreapp2.2</TargetFrameworks>
-    <OutputTypeEx>exe</OutputTypeEx>
+    <TargetFrameworks>net45;netcoreapp3.1</TargetFrameworks>
+    <OutputType>exe</OutputType>
     <RootNamespace>Org.SbeTool.Sbe.Example.Car</RootNamespace>
     <AssemblyName>Org.SbeTool.Sbe.Example.Car</AssemblyName>
   </PropertyGroup>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2022 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,5 +27,10 @@ import java.lang.annotation.Target;
 @Target({ ElementType.TYPE })
 public @interface GroupOrder
 {
+    /**
+     * Array of class values in order.
+     *
+     * @return array of class values in order.
+     */
     Class<?>[] value();
 }

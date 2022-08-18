@@ -52,7 +52,7 @@ namespace Org.SbeTool.Sbe.Tests
         public void InteropDecodeTest()
         {
             _directBuffer = new DirectBuffer(_decodeBuffer);
-            _messageHeader.Wrap(_directBuffer, 0, Baseline.Car.SchemaVersion);
+            _messageHeader.Wrap(_directBuffer, 0, Baseline.MessageHeader.SbeSchemaVersion);
 
             var Car = new Car();
             Car.WrapForDecode(_directBuffer, MessageHeader.Size, _messageHeader.BlockLength, _messageHeader.Version);
@@ -160,7 +160,7 @@ namespace Org.SbeTool.Sbe.Tests
         {
             Car = new Car();
             _directBuffer = new DirectBuffer(_encodeBuffer);
-            _messageHeader.Wrap(_directBuffer, 0, Baseline.Car.SchemaVersion);
+            _messageHeader.Wrap(_directBuffer, 0, Baseline.MessageHeader.SbeSchemaVersion);
             _messageHeader.BlockLength = Car.BlockLength;
             _messageHeader.SchemaId = Car.SchemaId;
             _messageHeader.TemplateId = Car.TemplateId;

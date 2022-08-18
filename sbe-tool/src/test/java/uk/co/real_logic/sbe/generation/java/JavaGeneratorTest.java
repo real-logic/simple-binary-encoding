@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2022 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import org.agrona.generation.CompilerUtil;
 import org.agrona.generation.StringWriterOutputManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import uk.co.real_logic.sbe.TestUtil;
+import uk.co.real_logic.sbe.Tests;
 import uk.co.real_logic.sbe.ir.Ir;
 import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
@@ -38,12 +38,11 @@ import static org.hamcrest.Matchers.startsWith;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static uk.co.real_logic.sbe.generation.CodeGenerator.MESSAGE_HEADER_DECODER_TYPE;
-import static uk.co.real_logic.sbe.generation.java.JavaGenerator.MESSAGE_HEADER_ENCODER_TYPE;
+import static uk.co.real_logic.sbe.generation.java.JavaGenerator.MESSAGE_HEADER_DECODER_TYPE;
 import static uk.co.real_logic.sbe.generation.java.ReflectionUtil.*;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
-public class JavaGeneratorTest
+class JavaGeneratorTest
 {
     private static final Class<?> BUFFER_CLASS = MutableDirectBuffer.class;
     private static final String BUFFER_NAME = BUFFER_CLASS.getName();
@@ -57,10 +56,10 @@ public class JavaGeneratorTest
     private Ir ir;
 
     @BeforeEach
-    public void setUp() throws Exception
+    void setUp() throws Exception
     {
         final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
-        final MessageSchema schema = parse(TestUtil.getLocalResource("code-generation-schema.xml"), options);
+        final MessageSchema schema = parse(Tests.getLocalResource("code-generation-schema.xml"), options);
         final IrGenerator irg = new IrGenerator();
         ir = irg.generate(schema);
 
@@ -69,13 +68,13 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldGenerateMessageHeaderStub() throws Exception
+    void shouldGenerateMessageHeaderStub() throws Exception
     {
         final int bufferOffset = 64;
         final int templateIdOffset = 2;
         final short templateId = (short)7;
         final int blockLength = 32;
-        final String fqClassName = ir.applicableNamespace() + "." + MESSAGE_HEADER_ENCODER_TYPE;
+        final String fqClassName = ir.applicableNamespace() + "." + JavaGenerator.MESSAGE_HEADER_ENCODER_TYPE;
 
         when(mockBuffer.getShort(bufferOffset + templateIdOffset, BYTE_ORDER)).thenReturn(templateId);
 
@@ -96,7 +95,7 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldGenerateMessageHeaderDecoderStub() throws Exception
+    void shouldGenerateMessageHeaderDecoderStub() throws Exception
     {
         final int bufferOffset = 64;
         final int templateIdOffset = 2;
@@ -121,7 +120,7 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldGenerateUint8EnumStub() throws Exception
+    void shouldGenerateUint8EnumStub() throws Exception
     {
         final String className = "BooleanType";
         final String fqClassName = ir.applicableNamespace() + "." + className;
@@ -137,7 +136,7 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldGenerateCharEnumStub() throws Exception
+    void shouldGenerateCharEnumStub() throws Exception
     {
         generateTypeStubs();
 
@@ -149,7 +148,7 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldGenerateChoiceSetStub() throws Exception
+    void shouldGenerateChoiceSetStub() throws Exception
     {
         final int bufferOffset = 8;
         final byte bitset = (byte)0b0000_0100;
@@ -173,7 +172,7 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldGenerateCompositeEncoder() throws Exception
+    void shouldGenerateCompositeEncoder() throws Exception
     {
         final int bufferOffset = 64;
         final int capacityFieldOffset = bufferOffset;
@@ -206,7 +205,7 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldGenerateCompositeDecoder() throws Exception
+    void shouldGenerateCompositeDecoder() throws Exception
     {
         final int bufferOffset = 64;
         final int capacityFieldOffset = bufferOffset;
@@ -234,7 +233,7 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldGenerateBasicMessage() throws Exception
+    void shouldGenerateBasicMessage() throws Exception
     {
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
         generator().generate();
@@ -249,7 +248,7 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldGenerateRepeatingGroupDecoder() throws Exception
+    void shouldGenerateRepeatingGroupDecoder() throws Exception
     {
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
         generator().generate();
@@ -270,7 +269,7 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldGenerateReadOnlyMessage() throws Exception
+    void shouldGenerateReadOnlyMessage() throws Exception
     {
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
         generator().generate();
@@ -285,7 +284,7 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldGenerateVarDataCodecs() throws Exception
+    void shouldGenerateVarDataCodecs() throws Exception
     {
         final String expectedManufacturer = "Ford";
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
@@ -303,7 +302,7 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldGenerateCompositeDecoding() throws Exception
+    void shouldGenerateCompositeDecoding() throws Exception
     {
         final int expectedEngineCapacity = 2000;
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
@@ -321,7 +320,7 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldGenerateBitSetCodecs() throws Exception
+    void shouldGenerateBitSetCodecs() throws Exception
     {
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
 
@@ -339,7 +338,7 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldGenerateEnumCodecs() throws Exception
+    void shouldGenerateEnumCodecs() throws Exception
     {
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
         generator().generate();
@@ -356,7 +355,7 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldGenerateGetString() throws Exception
+    void shouldGenerateGetString() throws Exception
     {
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
         generator().generate();
@@ -375,7 +374,7 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldGenerateGetFixedLengthStringUsingAppendable() throws Exception
+    void shouldGenerateGetFixedLengthStringUsingAppendable() throws Exception
     {
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
         final StringBuilder result = new StringBuilder();
@@ -400,7 +399,7 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldGenerateGetVariableStringUsingAppendable() throws Exception
+    void shouldGenerateGetVariableStringUsingAppendable() throws Exception
     {
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
         final StringBuilder result = new StringBuilder();
@@ -424,7 +423,7 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldGeneratePutCharSequence() throws Exception
+    void shouldGeneratePutCharSequence() throws Exception
     {
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
         generator().generate();
@@ -440,6 +439,46 @@ public class JavaGeneratorTest
 
         set(encoder, "vehicleCode", CharSequence.class, "R11R12");
         assertThat(get(decoder, "vehicleCode"), is("R11R12"));
+    }
+
+    @Test
+    void shouldGenerateRepeatingGroupCountLimits() throws Exception
+    {
+        generator().generate();
+
+        final String className = "CarEncoder$FuelFiguresEncoder";
+        final String fqClassName = ir.applicableNamespace() + "." + className;
+
+        final Class<?> clazz = compile(fqClassName);
+        final Method minValue = clazz.getMethod("countMinValue");
+        assertNotNull(minValue);
+        assertEquals(0, minValue.invoke(null));
+        final Method maxValue = clazz.getMethod("countMaxValue");
+        assertNotNull(maxValue);
+        assertEquals(65534, maxValue.invoke(null));
+    }
+
+    @Test
+    void shouldMarkDeprecatedClasses() throws Exception
+    {
+        final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
+        final MessageSchema schema = parse(Tests.getLocalResource("deprecated-msg-test-schema.xml"), options);
+        final IrGenerator irg = new IrGenerator();
+        ir = irg.generate(schema);
+
+        outputManager.clear();
+        outputManager.setPackageName(ir.applicableNamespace());
+
+        generator().generate();
+        final String encoderFqcn = ir.applicableNamespace() + ".DeprecatedMessageEncoder";
+        final Class<?> encoderClazz = compile(encoderFqcn);
+        assertNotNull(encoderClazz);
+        assertTrue(encoderClazz.isAnnotationPresent(Deprecated.class));
+
+        final String decoderFqcn = ir.applicableNamespace() + ".DeprecatedMessageDecoder";
+        final Class<?> decoderClazz = compile(decoderFqcn);
+        assertNotNull(decoderClazz);
+        assertTrue(decoderClazz.isAnnotationPresent(Deprecated.class));
     }
 
     private Class<?> getModelClass(final Object encoder) throws ClassNotFoundException
@@ -479,31 +518,35 @@ public class JavaGeneratorTest
     }
 
     @Test
-    public void shouldValidateMissingMutableBufferClass()
+    void shouldValidateMissingMutableBufferClass()
     {
-        assertThrows(IllegalArgumentException.class, () ->
-            new JavaGenerator(ir, "dasdsads", BUFFER_NAME, false, false, false, outputManager));
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> new JavaGenerator(ir, "dasdsads", BUFFER_NAME, false, false, false, outputManager));
     }
 
     @Test
-    public void shouldValidateNotImplementedMutableBufferClass()
+    void shouldValidateNotImplementedMutableBufferClass()
     {
-        assertThrows(IllegalArgumentException.class, () ->
-            new JavaGenerator(ir, "java.nio.ByteBuffer", BUFFER_NAME, false, false, false, outputManager));
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> new JavaGenerator(ir, "java.nio.ByteBuffer", BUFFER_NAME, false, false, false, outputManager));
     }
 
     @Test
-    public void shouldValidateMissingReadOnlyBufferClass()
+    void shouldValidateMissingReadOnlyBufferClass()
     {
-        assertThrows(IllegalArgumentException.class, () ->
-            new JavaGenerator(ir, BUFFER_NAME, "dasdsads", false, false, false, outputManager));
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> new JavaGenerator(ir, BUFFER_NAME, "dasdsads", false, false, false, outputManager));
     }
 
     @Test
-    public void shouldValidateNotImplementedReadOnlyBufferClass()
+    void shouldValidateNotImplementedReadOnlyBufferClass()
     {
-        assertThrows(IllegalArgumentException.class, () ->
-            new JavaGenerator(ir, BUFFER_NAME, "java.nio.ByteBuffer", false, false, false, outputManager));
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> new JavaGenerator(ir, BUFFER_NAME, "java.nio.ByteBuffer", false, false, false, outputManager));
     }
 
     private Class<?> compileCarEncoder() throws Exception
@@ -554,7 +597,7 @@ public class JavaGeneratorTest
     {
         final Map<String, CharSequence> sources = outputManager.getSources();
         final Class<?> aClass = CompilerUtil.compileInMemory(fqClassName, sources);
-        if (aClass == null)
+        if (null == aClass)
         {
             System.out.println(sources);
         }

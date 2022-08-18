@@ -34,7 +34,7 @@ namespace Org.SbeTool.Sbe.Tests
             _issue435 = new Issue435.Issue435();
             _messageHeader = new Issue435.MessageHeader();
 
-            _messageHeader.Wrap(_directBuffer, 0, Issue435.Issue435.SchemaVersion);
+            _messageHeader.Wrap(_directBuffer, 0, Issue435.MessageHeader.SbeSchemaVersion);
             _messageHeader.BlockLength = Issue435.Issue435.BlockLength;
             _messageHeader.SchemaId = Issue435.Issue435.SchemaId;
             _messageHeader.TemplateId = Issue435.Issue435.TemplateId;
@@ -60,7 +60,7 @@ namespace Org.SbeTool.Sbe.Tests
             _issue435.Example.E = Issue435.EnumRef.Two;
 
             // Check size is normal eight bytes plus one extra for S
-            Assert.IsTrue(Issue435.Issue435.BlockLength == 1, "Issue435 size has unexpected blocklength");
+            Assert.IsTrue(Issue435.Issue435.BlockLength == 1, "Issue435 size has unexpected BlockLength");
 
             // Now let's decode
             _messageHeader.Wrap(_directBuffer, 0, Issue435.Issue435.SchemaVersion);

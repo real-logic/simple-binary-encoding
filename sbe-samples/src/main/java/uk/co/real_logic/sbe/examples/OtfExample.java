@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2022 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
+/**
+ * Example of On-The-Fly decoding of a message based on encoded IR.
+ */
 public class OtfExample
 {
     private static final MessageHeaderEncoder HEADER_ENCODER = new MessageHeaderEncoder();
@@ -43,18 +46,24 @@ public class OtfExample
     private static final int MSG_BUFFER_CAPACITY = 4 * 1024;
     private static final int SCHEMA_BUFFER_CAPACITY = 16 * 1024;
 
+    /**
+     * Main entry point for the example.
+     *
+     * @param args which are ignored.
+     * @throws Exception if an error occurs when parsing the XML or doing IO.
+     */
     public static void main(final String[] args) throws Exception
     {
         System.out.println("\n*** OTF Example ***\n");
 
         // Encode up message and schema as if we just got them off the wire.
-        final ByteBuffer encodedSchemaBuffer = ByteBuffer.allocateDirect(SCHEMA_BUFFER_CAPACITY);
+        final ByteBuffer encodedSchemaBuffer = ByteBuffer.allocate(SCHEMA_BUFFER_CAPACITY);
         encodeSchema(encodedSchemaBuffer);
 
-        final ByteBuffer encodedMsgBuffer = ByteBuffer.allocateDirect(MSG_BUFFER_CAPACITY);
+        final ByteBuffer encodedMsgBuffer = ByteBuffer.allocate(MSG_BUFFER_CAPACITY);
         encodeTestMessage(encodedMsgBuffer);
 
-        // Now lets decode the schema IR so we have IR objects.
+        // Now let's decode the schema IR, so we have IR objects.
         encodedSchemaBuffer.flip();
         final Ir ir = decodeIr(encodedSchemaBuffer);
 
@@ -72,7 +81,7 @@ public class OtfExample
 
         bufferOffset += headerDecoder.encodedLength();
 
-        // Given the header information we can select the appropriate message template to do the decode.
+        // Given the header information we can select the appropriate message template to do the decode operation.
         // The OTF Java classes are thread safe so the same instances can be reused across multiple threads.
 
         final List<Token> msgTokens = ir.getMessage(templateId);
@@ -93,7 +102,7 @@ public class OtfExample
 
     private static void encodeSchema(final ByteBuffer byteBuffer) throws Exception
     {
-        final Path path = Paths.get("example-schema.xml");
+        final Path path = Paths.get("example-extension-schema.xml");
         try (InputStream in = new BufferedInputStream(Files.newInputStream(path)))
         {
             final MessageSchema schema = XmlSchemaParser.parse(in, ParserOptions.DEFAULT);
@@ -108,7 +117,6 @@ public class OtfExample
     private static void encodeTestMessage(final ByteBuffer byteBuffer)
     {
         final UnsafeBuffer buffer = new UnsafeBuffer(byteBuffer);
-
         final int encodedLength = ExampleUsingGeneratedStub.encode(CAR_ENCODER, buffer, HEADER_ENCODER);
 
         byteBuffer.position(encodedLength);

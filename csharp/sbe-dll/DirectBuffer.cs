@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace Org.SbeTool.Sbe.Dll
 {
@@ -64,6 +65,25 @@ namespace Org.SbeTool.Sbe.Dll
         }
 
         /// <summary>
+        /// Attach a view to a buffer owned by external code
+        /// </summary>
+        /// <param name="buffer">byte buffer</param>
+        public DirectBuffer(ArraySegment<byte> buffer) : this(buffer, null)
+        {
+        }
+
+        /// <summary>
+        /// Attach a view to a buffer owned by external code
+        /// </summary>
+        /// <param name="buffer">byte buffer</param>
+        /// <param name="bufferOverflow">delegate to allow reallocation of buffer</param>
+        public DirectBuffer(ArraySegment<byte> buffer, BufferOverflowDelegate bufferOverflow)
+        {
+            this.bufferOverflow = bufferOverflow;
+            Wrap(buffer);
+        }
+
+        /// <summary>
         /// Creates a DirectBuffer that can later be wrapped
         /// </summary>
         public DirectBuffer()
@@ -114,13 +134,31 @@ namespace Org.SbeTool.Sbe.Dll
         }
 
         /// <summary>
+        /// Recycles an existing <see cref="DirectBuffer"/> from a byte buffer owned by external code
+        /// </summary>
+        /// <param name="buffer">buffer of bytes</param>
+        public void Wrap(ArraySegment<byte> buffer)
+        {
+            if (buffer == null) throw new ArgumentNullException(nameof(buffer));
+
+            FreeGCHandle();
+
+            // pin the buffer so it does not get moved around by GC, this is required since we use pointers
+            _pinnedGCHandle = GCHandle.Alloc(buffer.Array, GCHandleType.Pinned);
+            _needToFreeGCHandle = true;
+
+            _pBuffer = ((byte*)_pinnedGCHandle.AddrOfPinnedObject().ToPointer()) + buffer.Offset;
+            _capacity = buffer.Count;
+        }
+
+        /// <summary>
         /// Capacity of the underlying buffer
         /// </summary>
         public int Capacity
         {
             get { return _capacity; }
         }
-
+        
         /// <summary>
         /// Check that a given limit is not greater than the capacity of a buffer from a given offset.
         /// </summary>
@@ -129,17 +167,26 @@ namespace Org.SbeTool.Sbe.Dll
         {
             if (limit > _capacity)
             {
-                if (bufferOverflow == null)
-                    throw new IndexOutOfRangeException(string.Format("limit={0} is beyond capacity={1}", limit, _capacity));
-
-                var newBuffer = bufferOverflow(_capacity, limit);
-
-                if (newBuffer == null)
-                    throw new IndexOutOfRangeException(string.Format("limit={0} is beyond capacity={1}", limit, _capacity));
-
-                Marshal.Copy((IntPtr)_pBuffer, newBuffer, 0, _capacity);
-                Wrap(newBuffer);
+                TryResizeBuffer(limit);
             }
+        }
+
+        private void TryResizeBuffer(int limit)
+        {
+            if (bufferOverflow == null)
+            {
+                throw new IndexOutOfRangeException("limit=" + limit + " is beyond capacity=" + _capacity);
+            }
+
+            var newBuffer = bufferOverflow(_capacity, limit);
+
+            if (newBuffer == null)
+            {
+                throw new IndexOutOfRangeException("limit=" + limit + " is beyond capacity=" + _capacity);
+            }
+
+            Marshal.Copy((IntPtr)_pBuffer, newBuffer, 0, _capacity);
+            Wrap(newBuffer);
         }
 
         /// <summary>
@@ -646,6 +693,123 @@ namespace Org.SbeTool.Sbe.Dll
         }
 
         /// <summary>
+        /// Writes a string into the underlying buffer, encoding using the provided <see cref="System.Text.Encoding"/>.
+        /// If there is not enough room in the buffer for the bytes it will throw IndexOutOfRangeException.
+        /// </summary>
+        /// <param name="encoding">encoding to use to write the bytes from the string</param>
+        /// <param name="src">source string</param>
+        /// <param name="index">index in the underlying buffer to start writing bytes</param>
+        /// <returns>count of bytes written</returns>
+        public unsafe int SetBytesFromString(Encoding encoding, string src, int index)
+        {
+           int available = _capacity - index;
+           int byteCount = encoding.GetByteCount(src);
+
+           if (byteCount > available)
+           {
+               ThrowHelper.ThrowIndexOutOfRangeException(_capacity);
+           }
+
+           fixed (char* ptr = src)
+           {
+               return encoding.GetBytes(ptr, src.Length, _pBuffer + index, byteCount);
+           }
+        }
+
+        /// <summary>
+        /// Reads a string from the buffer; converting the bytes to characters using 
+        /// the provided <see cref="System.Text.Encoding"/>.
+        /// If there are not enough bytes in the buffer it will throw an IndexOutOfRangeException.
+        /// </summary>
+        /// <param name="encoding">encoding to use to convert the bytes into characters</param>
+        /// <param name="index">index in the underlying buffer to start writing bytes</param>
+        /// <param name="byteCount">the number of bytes to read into the string</param>
+        /// <returns>the string representing the decoded bytes read from the buffer</returns>
+        public string GetStringFromBytes(Encoding encoding, int index, int byteCount)
+        {
+            int num = _capacity - index;
+            if (byteCount > num)
+            {
+                ThrowHelper.ThrowIndexOutOfRangeException(_capacity);
+            }
+
+            return new String((sbyte*)_pBuffer, index, byteCount, encoding);
+        }
+
+        /// <summary>
+        /// Reads a number of bytes from the buffer to create a string, truncating the string if a null byte is found
+        /// </summary>
+        /// <param name="encoding">The text encoding to use for string creation</param>
+        /// <param name="index">index in the underlying buffer to start from</param>
+        /// <param name="maxLength">The maximum number of bytes to read</param>
+        /// <param name="nullByte">The null value for this string</param>
+        /// <returns>The created string</returns>
+        public unsafe string GetStringFromNullTerminatedBytes(Encoding encoding, int index, int maxLength, byte nullByte)
+        {
+            int count = Math.Min(maxLength, _capacity - index);
+            if (count <= 0)
+            {
+                ThrowHelper.ThrowIndexOutOfRangeException(index);
+            }
+
+            if (_pBuffer[index] == nullByte)
+            {
+                return null;
+            }
+
+            int byteCount2 = 0;
+            for (byteCount2 = 0; byteCount2 < count && _pBuffer[byteCount2 + index] != nullByte; byteCount2++)
+            { 
+            }
+
+            return new String((sbyte*) _pBuffer, index, byteCount2, encoding);
+        }
+
+        /// <summary>
+        /// Writes a number of bytes into the buffer using the given encoding and string.
+        /// Note that pre-computing the bytes to be written, when possible, will be quicker than using the encoder to convert on-the-fly.
+        /// </summary>
+        /// <param name="encoding">The text encoding to use</param>
+        /// <param name="src">String to write</param>
+        /// <param name="index"></param>
+        /// <param name="maxLength">Maximum number of bytes to write</param>
+        /// <param name="nullByte"></param>
+        /// <returns>The number of bytes written.</returns>
+        public unsafe int SetNullTerminatedBytesFromString(Encoding encoding, string src, int index, int maxLength, byte nullByte)
+        {
+            int available = Math.Min(maxLength, _capacity - index);
+            if (available <= 0)
+            {
+                ThrowHelper.ThrowIndexOutOfRangeException(index);
+            }
+
+            if (src == null)
+            {
+                _pBuffer[index] = nullByte;
+                return 1;
+            }
+
+            int byteCount = encoding.GetByteCount(src);
+            if (byteCount > available)
+            {
+                ThrowHelper.ThrowIndexOutOfRangeException(index + available);
+            }
+
+            fixed (char* ptr = src)
+            {
+                encoding.GetBytes(ptr, src.Length, _pBuffer + index, byteCount);
+            }
+
+            if (byteCount < available)
+            {
+                *(_pBuffer + index + byteCount) = nullByte;
+                return byteCount + 1;
+            }
+
+            return byteCount;
+        }
+
+        /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         /// <filterpriority>2</filterpriority>
@@ -666,7 +830,9 @@ namespace Org.SbeTool.Sbe.Dll
         private void Dispose(bool disposing)
         {
             if (_disposed)
+            {
                 return;
+            }
 
             FreeGCHandle();
 

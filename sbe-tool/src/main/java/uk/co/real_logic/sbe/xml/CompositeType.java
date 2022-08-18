@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2022 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,12 +45,12 @@ public class CompositeType extends Type
      * SBE schema composite type.
      */
     public static final String COMPOSITE_TYPE = "composite";
-    public static final String SUB_TYPES_EXP = "type|enum|set|composite|ref";
+    private static final String SUB_TYPES_EXP = "type|enum|set|composite|ref|data|group";
 
     private final List<String> compositesPath = new ArrayList<>();
     private final Map<String, Type> containedTypeByNameMap = new LinkedHashMap<>();
 
-    public CompositeType(final Node node) throws XPathExpressionException
+    CompositeType(final Node node) throws XPathExpressionException
     {
         this(node, null, null, new ArrayList<>());
     }
@@ -58,13 +58,13 @@ public class CompositeType extends Type
     /**
      * Construct a new compositeType from XML Schema.
      *
-     * @param node           from the XML Schema Parsing
+     * @param node           from the XML Schema parsing.
      * @param givenName      for this node.
      * @param referencedName of the type when created from a ref in a composite.
      * @param compositesPath with the path of composites that represents the levels of composition.
      * @throws XPathExpressionException if the XPath is invalid.
      */
-    public CompositeType(
+    CompositeType(
         final Node node, final String givenName, final String referencedName, final List<String> compositesPath)
         throws XPathExpressionException
     {
@@ -88,10 +88,10 @@ public class CompositeType extends Type
     }
 
     /**
-     * Return the EncodedDataType within this composite with the given name
+     * Return the EncodedDataType within this composite with the given name.
      *
-     * @param name of the EncodedDataType to return
-     * @return type requested
+     * @param name of the type to return.
+     * @return type requested.
      */
     public Type getType(final String name)
     {
@@ -99,9 +99,9 @@ public class CompositeType extends Type
     }
 
     /**
-     * The encodedLength (in octets) of the list of EncodedDataTypes
+     * The encodedLength (in octets) of the list of encoded types.
      *
-     * @return encodedLength of the compositeType
+     * @return encodedLength of the compositeType.
      */
     public int encodedLength()
     {
@@ -129,19 +129,18 @@ public class CompositeType extends Type
     }
 
     /**
-     * Return list of the {@link Type}s that compose this composite
+     * Return list of the {@link Type}s that compose this composite.
      *
-     * @return {@link List} that holds the {@link Type}s in this composite
+     * @return {@link List} that holds the {@link Type}s in this composite.
      */
     public List<Type> getTypeList()
     {
-
         return new ArrayList<>(containedTypeByNameMap.values());
     }
 
     /**
      * Make this composite type, if it has a varData member, variable length
-     * by making the EncodedDataType with the name "varData" be variable length.
+     * by making the type with the name "varData" be variable length.
      */
     public void makeDataFieldCompositeType()
     {
@@ -153,10 +152,10 @@ public class CompositeType extends Type
     }
 
     /**
-     * Check the composite for being a well formed group encodedLength encoding. This means
+     * Check the composite for being a well-formed group encodedLength encoding. This means
      * that there are the fields "blockLength" and "numInGroup" present.
      *
-     * @param node of the XML for this composite
+     * @param node of the XML for this composite.
      */
     public void checkForWellFormedGroupSizeEncoding(final Node node)
     {
@@ -227,7 +226,7 @@ public class CompositeType extends Type
     }
 
     /**
-     * Check the composite for being a well formed variable length data encoding. This means
+     * Check the composite for being a well-formed variable length data encoding. This means
      * that there are the fields "length" and "varData" present.
      *
      * @param node of the XML for this composite
@@ -296,14 +295,14 @@ public class CompositeType extends Type
     }
 
     /**
-     * Check the composite for being a well formed message headerStructure encoding. This means
+     * Check the composite for being a well-formed message headerStructure encoding. This means
      * that there are the fields "blockLength", "templateId" and "version" present.
      *
      * @param node of the XML for this composite
      */
     public void checkForWellFormedMessageHeader(final Node node)
     {
-        final boolean shouldGenerateInterfaces = Boolean.getBoolean(JAVA_GENERATE_INTERFACES);
+        final boolean shouldGenerateInterfaces = "true".equals(System.getProperty(JAVA_GENERATE_INTERFACES));
 
         final EncodedDataType blockLengthType = (EncodedDataType)containedTypeByNameMap.get("blockLength");
         final EncodedDataType templateIdType = (EncodedDataType)containedTypeByNameMap.get("templateId");
@@ -395,6 +394,9 @@ public class CompositeType extends Type
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public boolean isVariableLength()
     {
         return false;
@@ -431,10 +433,7 @@ public class CompositeType extends Type
             case "ref":
             {
                 final XPath xPath = XPathFactory.newInstance().newXPath();
-
-                final String refName = XmlSchemaParser.getAttributeValue(subTypeNode, "name");
                 final String refTypeName = XmlSchemaParser.getAttributeValue(subTypeNode, "type");
-                final int refOffset = Integer.parseInt(XmlSchemaParser.getAttributeValue(subTypeNode, "offset", "-1"));
                 final Node refTypeNode = (Node)xPath.compile(
                     "/*[local-name() = 'messageSchema']/types/*[@name='" + refTypeName + "']")
                     .evaluate(subTypeNode.getOwnerDocument(), XPathConstants.NODE);
@@ -451,16 +450,43 @@ public class CompositeType extends Type
                         throw new IllegalStateException("ref types cannot create circular dependencies");
                     }
 
+                    final String refName = XmlSchemaParser.getAttributeValue(subTypeNode, "name");
                     type = processType(refTypeNode, refName, refName, refTypeName);
 
-                    if (-1 != refOffset)
+                    final String refOffset = XmlSchemaParser.getAttributeValueOrNull(subTypeNode, "offset");
+                    if (null != refOffset)
                     {
-                        type.offsetAttribute(refOffset);
+                        try
+                        {
+                            type.offsetAttribute(Integer.parseInt(refOffset));
+                        }
+                        catch (final NumberFormatException ex)
+                        {
+                            XmlSchemaParser.handleError(subTypeNode, "invalid number type: " + refOffset);
+                        }
+                    }
+
+                    final String refVersion = XmlSchemaParser.getAttributeValueOrNull(subTypeNode, "sinceVersion");
+                    if (null != refVersion)
+                    {
+                        try
+                        {
+                            type.sinceVersion(Integer.parseInt(refVersion));
+                        }
+                        catch (final NumberFormatException ex)
+                        {
+                            XmlSchemaParser.handleError(subTypeNode, "invalid number type: " + refVersion);
+                        }
                     }
                 }
 
                 break;
             }
+
+            case "data":
+            case "group":
+                XmlSchemaParser.handleError(subTypeNode, nodeName + " not valid within composite");
+                break;
 
             default:
                 throw new IllegalStateException("Unknown node type: name=" + nodeName);
@@ -479,6 +505,9 @@ public class CompositeType extends Type
         return type;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public String toString()
     {
         return "CompositeType{" +

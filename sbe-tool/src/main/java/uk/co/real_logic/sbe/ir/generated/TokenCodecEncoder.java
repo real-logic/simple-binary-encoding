@@ -1,14 +1,15 @@
-/* Generated SBE (Simple Binary Encoding) message codec */
+/* Generated SBE (Simple Binary Encoding) message codec. */
 package uk.co.real_logic.sbe.ir.generated;
 
 import org.agrona.MutableDirectBuffer;
 import org.agrona.DirectBuffer;
 
+
 /**
- * Codec for an IR Token
+ * Codec for an IR Token.
  */
 @SuppressWarnings("all")
-public class TokenCodecEncoder
+public final class TokenCodecEncoder
 {
     public static final int BLOCK_LENGTH = 28;
     public static final int TEMPLATE_ID = 2;
@@ -18,9 +19,9 @@ public class TokenCodecEncoder
 
     private final TokenCodecEncoder parentMessage = this;
     private MutableDirectBuffer buffer;
-    protected int initialOffset;
-    protected int offset;
-    protected int limit;
+    private int initialOffset;
+    private int offset;
+    private int limit;
 
     public int sbeBlockLength()
     {
@@ -566,7 +567,7 @@ public class TokenCodecEncoder
 
     public static String nameCharacterEncoding()
     {
-        return "UTF-8";
+        return java.nio.charset.StandardCharsets.UTF_8.name();
     }
 
     public static String nameMetaAttribute(final MetaAttribute metaAttribute)
@@ -618,15 +619,7 @@ public class TokenCodecEncoder
 
     public TokenCodecEncoder name(final String value)
     {
-        final byte[] bytes;
-        try
-        {
-            bytes = null == value || value.isEmpty() ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes("UTF-8");
-        }
-        catch (final java.io.UnsupportedEncodingException ex)
-        {
-            throw new RuntimeException(ex);
-        }
+        final byte[] bytes = (null == value || value.isEmpty()) ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes(java.nio.charset.StandardCharsets.UTF_8);
 
         final int length = bytes.length;
         if (length > 65534)
@@ -650,7 +643,7 @@ public class TokenCodecEncoder
 
     public static String constValueCharacterEncoding()
     {
-        return "UTF-8";
+        return java.nio.charset.StandardCharsets.UTF_8.name();
     }
 
     public static String constValueMetaAttribute(final MetaAttribute metaAttribute)
@@ -702,15 +695,7 @@ public class TokenCodecEncoder
 
     public TokenCodecEncoder constValue(final String value)
     {
-        final byte[] bytes;
-        try
-        {
-            bytes = null == value || value.isEmpty() ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes("UTF-8");
-        }
-        catch (final java.io.UnsupportedEncodingException ex)
-        {
-            throw new RuntimeException(ex);
-        }
+        final byte[] bytes = (null == value || value.isEmpty()) ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes(java.nio.charset.StandardCharsets.UTF_8);
 
         final int length = bytes.length;
         if (length > 65534)
@@ -734,7 +719,7 @@ public class TokenCodecEncoder
 
     public static String minValueCharacterEncoding()
     {
-        return "UTF-8";
+        return java.nio.charset.StandardCharsets.UTF_8.name();
     }
 
     public static String minValueMetaAttribute(final MetaAttribute metaAttribute)
@@ -786,15 +771,7 @@ public class TokenCodecEncoder
 
     public TokenCodecEncoder minValue(final String value)
     {
-        final byte[] bytes;
-        try
-        {
-            bytes = null == value || value.isEmpty() ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes("UTF-8");
-        }
-        catch (final java.io.UnsupportedEncodingException ex)
-        {
-            throw new RuntimeException(ex);
-        }
+        final byte[] bytes = (null == value || value.isEmpty()) ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes(java.nio.charset.StandardCharsets.UTF_8);
 
         final int length = bytes.length;
         if (length > 65534)
@@ -818,7 +795,7 @@ public class TokenCodecEncoder
 
     public static String maxValueCharacterEncoding()
     {
-        return "UTF-8";
+        return java.nio.charset.StandardCharsets.UTF_8.name();
     }
 
     public static String maxValueMetaAttribute(final MetaAttribute metaAttribute)
@@ -870,15 +847,7 @@ public class TokenCodecEncoder
 
     public TokenCodecEncoder maxValue(final String value)
     {
-        final byte[] bytes;
-        try
-        {
-            bytes = null == value || value.isEmpty() ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes("UTF-8");
-        }
-        catch (final java.io.UnsupportedEncodingException ex)
-        {
-            throw new RuntimeException(ex);
-        }
+        final byte[] bytes = (null == value || value.isEmpty()) ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes(java.nio.charset.StandardCharsets.UTF_8);
 
         final int length = bytes.length;
         if (length > 65534)
@@ -902,7 +871,7 @@ public class TokenCodecEncoder
 
     public static String nullValueCharacterEncoding()
     {
-        return "UTF-8";
+        return java.nio.charset.StandardCharsets.UTF_8.name();
     }
 
     public static String nullValueMetaAttribute(final MetaAttribute metaAttribute)
@@ -954,15 +923,7 @@ public class TokenCodecEncoder
 
     public TokenCodecEncoder nullValue(final String value)
     {
-        final byte[] bytes;
-        try
-        {
-            bytes = null == value || value.isEmpty() ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes("UTF-8");
-        }
-        catch (final java.io.UnsupportedEncodingException ex)
-        {
-            throw new RuntimeException(ex);
-        }
+        final byte[] bytes = (null == value || value.isEmpty()) ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes(java.nio.charset.StandardCharsets.UTF_8);
 
         final int length = bytes.length;
         if (length > 65534)
@@ -986,7 +947,7 @@ public class TokenCodecEncoder
 
     public static String characterEncodingCharacterEncoding()
     {
-        return "UTF-8";
+        return java.nio.charset.StandardCharsets.UTF_8.name();
     }
 
     public static String characterEncodingMetaAttribute(final MetaAttribute metaAttribute)
@@ -1038,15 +999,7 @@ public class TokenCodecEncoder
 
     public TokenCodecEncoder characterEncoding(final String value)
     {
-        final byte[] bytes;
-        try
-        {
-            bytes = null == value || value.isEmpty() ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes("UTF-8");
-        }
-        catch (final java.io.UnsupportedEncodingException ex)
-        {
-            throw new RuntimeException(ex);
-        }
+        final byte[] bytes = (null == value || value.isEmpty()) ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes(java.nio.charset.StandardCharsets.UTF_8);
 
         final int length = bytes.length;
         if (length > 65534)
@@ -1070,7 +1023,7 @@ public class TokenCodecEncoder
 
     public static String epochCharacterEncoding()
     {
-        return "UTF-8";
+        return java.nio.charset.StandardCharsets.UTF_8.name();
     }
 
     public static String epochMetaAttribute(final MetaAttribute metaAttribute)
@@ -1122,15 +1075,7 @@ public class TokenCodecEncoder
 
     public TokenCodecEncoder epoch(final String value)
     {
-        final byte[] bytes;
-        try
-        {
-            bytes = null == value || value.isEmpty() ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes("UTF-8");
-        }
-        catch (final java.io.UnsupportedEncodingException ex)
-        {
-            throw new RuntimeException(ex);
-        }
+        final byte[] bytes = (null == value || value.isEmpty()) ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes(java.nio.charset.StandardCharsets.UTF_8);
 
         final int length = bytes.length;
         if (length > 65534)
@@ -1154,7 +1099,7 @@ public class TokenCodecEncoder
 
     public static String timeUnitCharacterEncoding()
     {
-        return "UTF-8";
+        return java.nio.charset.StandardCharsets.UTF_8.name();
     }
 
     public static String timeUnitMetaAttribute(final MetaAttribute metaAttribute)
@@ -1206,15 +1151,7 @@ public class TokenCodecEncoder
 
     public TokenCodecEncoder timeUnit(final String value)
     {
-        final byte[] bytes;
-        try
-        {
-            bytes = null == value || value.isEmpty() ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes("UTF-8");
-        }
-        catch (final java.io.UnsupportedEncodingException ex)
-        {
-            throw new RuntimeException(ex);
-        }
+        final byte[] bytes = (null == value || value.isEmpty()) ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes(java.nio.charset.StandardCharsets.UTF_8);
 
         final int length = bytes.length;
         if (length > 65534)
@@ -1238,7 +1175,7 @@ public class TokenCodecEncoder
 
     public static String semanticTypeCharacterEncoding()
     {
-        return "UTF-8";
+        return java.nio.charset.StandardCharsets.UTF_8.name();
     }
 
     public static String semanticTypeMetaAttribute(final MetaAttribute metaAttribute)
@@ -1290,15 +1227,7 @@ public class TokenCodecEncoder
 
     public TokenCodecEncoder semanticType(final String value)
     {
-        final byte[] bytes;
-        try
-        {
-            bytes = null == value || value.isEmpty() ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes("UTF-8");
-        }
-        catch (final java.io.UnsupportedEncodingException ex)
-        {
-            throw new RuntimeException(ex);
-        }
+        final byte[] bytes = (null == value || value.isEmpty()) ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes(java.nio.charset.StandardCharsets.UTF_8);
 
         final int length = bytes.length;
         if (length > 65534)
@@ -1322,7 +1251,7 @@ public class TokenCodecEncoder
 
     public static String descriptionCharacterEncoding()
     {
-        return "UTF-8";
+        return java.nio.charset.StandardCharsets.UTF_8.name();
     }
 
     public static String descriptionMetaAttribute(final MetaAttribute metaAttribute)
@@ -1374,15 +1303,7 @@ public class TokenCodecEncoder
 
     public TokenCodecEncoder description(final String value)
     {
-        final byte[] bytes;
-        try
-        {
-            bytes = null == value || value.isEmpty() ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes("UTF-8");
-        }
-        catch (final java.io.UnsupportedEncodingException ex)
-        {
-            throw new RuntimeException(ex);
-        }
+        final byte[] bytes = (null == value || value.isEmpty()) ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes(java.nio.charset.StandardCharsets.UTF_8);
 
         final int length = bytes.length;
         if (length > 65534)
@@ -1406,7 +1327,7 @@ public class TokenCodecEncoder
 
     public static String referencedNameCharacterEncoding()
     {
-        return "UTF-8";
+        return java.nio.charset.StandardCharsets.UTF_8.name();
     }
 
     public static String referencedNameMetaAttribute(final MetaAttribute metaAttribute)
@@ -1458,15 +1379,7 @@ public class TokenCodecEncoder
 
     public TokenCodecEncoder referencedName(final String value)
     {
-        final byte[] bytes;
-        try
-        {
-            bytes = null == value || value.isEmpty() ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes("UTF-8");
-        }
-        catch (final java.io.UnsupportedEncodingException ex)
-        {
-            throw new RuntimeException(ex);
-        }
+        final byte[] bytes = (null == value || value.isEmpty()) ? org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : value.getBytes(java.nio.charset.StandardCharsets.UTF_8);
 
         final int length = bytes.length;
         if (length > 65534)
@@ -1485,14 +1398,24 @@ public class TokenCodecEncoder
 
     public String toString()
     {
+        if (null == buffer)
+        {
+            return "";
+        }
+
         return appendTo(new StringBuilder()).toString();
     }
 
     public StringBuilder appendTo(final StringBuilder builder)
     {
-        TokenCodecDecoder writer = new TokenCodecDecoder();
-        writer.wrap(buffer, initialOffset, BLOCK_LENGTH, SCHEMA_VERSION);
+        if (null == buffer)
+        {
+            return builder;
+        }
 
-        return writer.appendTo(builder);
+        final TokenCodecDecoder decoder = new TokenCodecDecoder();
+        decoder.wrap(buffer, initialOffset, BLOCK_LENGTH, SCHEMA_VERSION);
+
+        return decoder.appendTo(builder);
     }
 }

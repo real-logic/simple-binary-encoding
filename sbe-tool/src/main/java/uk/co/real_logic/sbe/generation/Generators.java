@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2022 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,9 @@ import uk.co.real_logic.sbe.ir.Token;
 import java.util.List;
 import java.util.function.BiConsumer;
 
+/**
+ * Common operations available to all {@link CodeGenerator}s.
+ */
 public class Generators
 {
     /**
@@ -51,7 +54,7 @@ public class Generators
     /**
      * Uppercase the first character of a given String.
      *
-     * @param s to have the first character upper cased.
+     * @param s to have the first character upper-cased.
      * @return a new String with the first character in uppercase.
      */
     public static String toUpperFirstChar(final String s)
@@ -67,7 +70,7 @@ public class Generators
     /**
      * Lowercase the first character of a given String.
      *
-     * @param s to have the first character upper cased.
+     * @param s to have the first character upper-cased.
      * @return a new String with the first character in uppercase.
      */
     public static String toLowerFirstChar(final String s)

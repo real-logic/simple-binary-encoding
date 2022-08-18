@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2022 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,12 +23,12 @@ class CodecBench
 public:
     int encode_buffer(char *buffer, const int bufferLength)
     {
-        return static_cast<Derived *>(this)->encode(buffer, bufferLength);
+        return static_cast<int>(static_cast<Derived *>(this)->encode(buffer, bufferLength));
     };
 
     int decode_buffer(const char *buffer, const int bufferLength)
     {
-        return static_cast<Derived *>(this)->decode(buffer, bufferLength);
+        return static_cast<int>(static_cast<Derived *>(this)->decode(buffer, bufferLength));
     };
 
     /*
@@ -97,7 +97,9 @@ public:
         {
             ptr += encode_buffer(ptr, bufferLength);
         }
+
         ptr = buffer;
+
         for (int i = 0; i < n; i++)
         {
             ptr += decode_buffer(ptr, bufferLength);

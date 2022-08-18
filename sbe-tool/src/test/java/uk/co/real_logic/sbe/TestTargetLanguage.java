@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2022 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,9 @@ import static org.mockito.Mockito.mock;
 
 public class TestTargetLanguage implements TargetCodeGenerator
 {
-    public static final CodeGenerator SINGLETON = mock(CodeGenerator.class);
-    public static Ir ir = null;
-    public static String outputDir = "";
+    static final CodeGenerator SINGLETON = mock(CodeGenerator.class);
+    static Ir ir = null;
+    static String outputDir = "";
 
     public CodeGenerator newInstance(final Ir ir, final String outputDir)
     {

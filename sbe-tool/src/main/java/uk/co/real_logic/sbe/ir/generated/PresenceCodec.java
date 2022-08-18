@@ -1,15 +1,29 @@
-/* Generated SBE (Simple Binary Encoding) message codec */
+/* Generated SBE (Simple Binary Encoding) message codec. */
 package uk.co.real_logic.sbe.ir.generated;
 
+
 /**
- * Field presence declaration
+ * Field presence declaration.
  */
+@SuppressWarnings("all")
 public enum PresenceCodec
 {
+
+    /**
+     * A field is required.
+     */
     SBE_REQUIRED((short)0),
 
+
+    /**
+     * A field is optional.
+     */
     SBE_OPTIONAL((short)1),
 
+
+    /**
+     * A field is a constant value.
+     */
     SBE_CONSTANT((short)2),
 
     /**
@@ -24,11 +38,22 @@ public enum PresenceCodec
         this.value = value;
     }
 
+    /**
+     * The raw encoded value in the Java type representation.
+     *
+     * @return the raw value encoded.
+     */
     public short value()
     {
         return value;
     }
 
+    /**
+     * Lookup the enum value representing the value.
+     *
+     * @param value encoded to be looked up.
+     * @return the enum value representing the value.
+     */
     public static PresenceCodec get(final short value)
     {
         switch (value)

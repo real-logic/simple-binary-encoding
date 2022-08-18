@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2022 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,21 +23,30 @@ import java.util.List;
 /**
  * Abstract {@link TokenListener} that can be extended when not all callback methods are required.
  * <p>
- * By extending this class their is a possibility for the optimizer to elide unused methods otherwise
+ * By extending this class there is a possibility for the optimizer to elide unused methods otherwise
  * requiring polymorphic dispatch.
  */
 public abstract class AbstractTokenListener implements TokenListener
 {
+    /**
+     * {@inheritDoc}
+     */
     public void onBeginMessage(final Token token)
     {
         // no op
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void onEndMessage(final Token token)
     {
         // no op
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void onEncoding(
         final Token fieldToken,
         final DirectBuffer buffer,
@@ -48,6 +57,9 @@ public abstract class AbstractTokenListener implements TokenListener
         // no op
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void onEnum(
         final Token fieldToken,
         final DirectBuffer buffer,
@@ -60,6 +72,9 @@ public abstract class AbstractTokenListener implements TokenListener
         // no op
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void onBitSet(
         final Token fieldToken,
         final DirectBuffer buffer,
@@ -72,33 +87,51 @@ public abstract class AbstractTokenListener implements TokenListener
         // no op
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void onBeginComposite(
         final Token fieldToken, final List<Token> tokens, final int fromIndex, final int toIndex)
     {
         // no op
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void onEndComposite(
         final Token fieldToken, final List<Token> tokens, final int fromIndex, final int toIndex)
     {
         // no op
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void onGroupHeader(final Token token, final int numInGroup)
     {
         // no op
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void onBeginGroup(final Token token, final int groupIndex, final int numInGroup)
     {
         // no op
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void onEndGroup(final Token token, final int groupIndex, final int numInGroup)
     {
         // no op
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public void onVarData(
         final Token fieldToken,
         final DirectBuffer buffer,

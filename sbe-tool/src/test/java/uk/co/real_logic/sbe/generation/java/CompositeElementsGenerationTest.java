@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2022 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.*;
 
-public class CompositeElementsGenerationTest
+class CompositeElementsGenerationTest
 {
     private static final MessageHeaderEncoder MESSAGE_HEADER = new MessageHeaderEncoder();
     private static final MsgEncoder MSG_ENCODER = new MsgEncoder();
@@ -57,7 +57,7 @@ public class CompositeElementsGenerationTest
     private static final int SCHEMA_BUFFER_CAPACITY = 16 * 1024;
 
     @Test
-    public void shouldEncodeCorrectly()
+    void shouldEncode()
     {
         final ByteBuffer encodedMsgBuffer = ByteBuffer.allocate(MSG_BUFFER_CAPACITY);
         encodeTestMessage(encodedMsgBuffer);
@@ -93,7 +93,7 @@ public class CompositeElementsGenerationTest
     }
 
     @Test
-    public void shouldDecodeCorrectly()
+    void shouldDecode()
     {
         final ByteBuffer encodedMsgBuffer = ByteBuffer.allocate(MSG_BUFFER_CAPACITY);
         encodeTestMessage(encodedMsgBuffer);
@@ -124,7 +124,7 @@ public class CompositeElementsGenerationTest
     }
 
     @Test
-    public void shouldDisplayCorrectly()
+    void shouldDisplay()
     {
         final ByteBuffer encodedMsgBuffer = ByteBuffer.allocate(MSG_BUFFER_CAPACITY);
         encodeTestMessage(encodedMsgBuffer);
@@ -137,14 +137,13 @@ public class CompositeElementsGenerationTest
     }
 
     @Test
-    public void shouldOtfDecodeCorrectly() throws Exception
+    void shouldOtfDecode() throws Exception
     {
         final ByteBuffer encodedSchemaBuffer = ByteBuffer.allocate(SCHEMA_BUFFER_CAPACITY);
         encodeSchema(encodedSchemaBuffer);
 
         final ByteBuffer encodedMsgBuffer = ByteBuffer.allocate(MSG_BUFFER_CAPACITY);
         encodeTestMessage(encodedMsgBuffer);
-
 
         encodedSchemaBuffer.flip();
         final Ir ir = decodeIr(encodedSchemaBuffer);

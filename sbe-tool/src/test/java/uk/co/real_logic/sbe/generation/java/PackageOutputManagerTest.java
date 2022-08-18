@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2020 Real Logic Limited.
+ * Copyright 2013-2022 Real Logic Limited.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,12 +26,12 @@ import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class PackageOutputManagerTest
+class PackageOutputManagerTest
 {
     private final String tempDirName = System.getProperty("java.io.tmpdir");
 
     @Test
-    public void shouldCreateFileWithinPackage() throws Exception
+    void shouldCreateFileWithinPackage() throws Exception
     {
         final String packageName = "uk.co.real_logic.test";
         final String exampleClassName = "ExampleClassName";
