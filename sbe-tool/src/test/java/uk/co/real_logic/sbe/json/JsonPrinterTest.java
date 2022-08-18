@@ -15,6 +15,9 @@
  */
 package uk.co.real_logic.sbe.json;
 
+import baseline.CredentialsEncoder;
+import baseline.MessageHeaderEncoder;
+import org.agrona.concurrent.UnsafeBuffer;
 import org.junit.jupiter.api.Test;
 import uk.co.real_logic.sbe.EncodedCarTestBase;
 import uk.co.real_logic.sbe.ir.Ir;
@@ -121,6 +124,33 @@ class JsonPrinterTest extends EncodedCarTestBase
             "    \"manufacturer\": \"Honda\",\n" +
             "    \"model\": \"Civic VTi\",\n" +
             "    \"activationCode\": \"315\\\\8\"\n" +
+            "}",
+            result);
+    }
+
+    @Test
+    public void exampleVarData() throws Exception
+    {
+        final ByteBuffer encodedSchemaBuffer = ByteBuffer.allocate(SCHEMA_BUFFER_CAPACITY);
+        encodeSchema(encodedSchemaBuffer);
+
+        final ByteBuffer encodedMsgBuffer = ByteBuffer.allocate(MSG_BUFFER_CAPACITY);
+        final UnsafeBuffer buffer = new UnsafeBuffer(encodedMsgBuffer);
+        final CredentialsEncoder encoder = new CredentialsEncoder();
+        encoder.wrapAndApplyHeader(buffer, 0, new MessageHeaderEncoder());
+        encoder.login("example");
+        encoder.putEncryptedPassword(new byte[] {11, 0, 64, 97}, 0, 4);
+        encodedMsgBuffer.position(encoder.encodedLength());
+
+        encodedSchemaBuffer.flip();
+        final Ir ir = decodeIr(encodedSchemaBuffer);
+
+        final JsonPrinter printer = new JsonPrinter(ir);
+        final String result = printer.print(encodedMsgBuffer);
+        assertEquals(
+            "{\n" +
+            "    \"login\": \"example\",\n" +
+            "    \"encryptedPassword\": \"0b004061\"\n" +
             "}",
             result);
     }
