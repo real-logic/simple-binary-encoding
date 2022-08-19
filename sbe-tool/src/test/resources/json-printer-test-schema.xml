@@ -23,6 +23,10 @@
         </composite>
         <type name="uuid_t" primitiveType="int64" length="2"/>
         <type name="cupHolderCount_t" primitiveType="uint8"/>
+        <composite name="varDataEncoding">
+            <type name="length" primitiveType="uint32" maxValue="1073741824"/>
+            <type name="varData" primitiveType="uint8" length="0"/>
+        </composite>
     </types>
     <types>
         <type name="ModelYear" primitiveType="uint16"/>
@@ -77,4 +81,11 @@
         <data name="model" id="18" type="varStringEncoding"/>
         <data name="activationCode" id="19" type="varStringEncoding"/>
     </sbe:message>
+
+    <sbe:message name="Credentials" id="2">
+        <data name="login" id="1" type="varStringEncoding"/>
+        <!-- variable length encoding with embedded length in composite -->
+        <data id="2" name="encryptedPassword" type="varDataEncoding"/>
+    </sbe:message>
+
 </sbe:messageSchema>
