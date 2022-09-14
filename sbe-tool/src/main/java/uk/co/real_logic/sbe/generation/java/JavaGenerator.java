@@ -19,6 +19,7 @@ import org.agrona.DirectBuffer;
 import org.agrona.MutableDirectBuffer;
 import org.agrona.Strings;
 import org.agrona.Verify;
+import org.agrona.generation.DynamicPackageOutputManager;
 import org.agrona.sbe.*;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.generation.CodeGenerator;
@@ -39,7 +40,6 @@ import static uk.co.real_logic.sbe.generation.java.JavaGenerator.CodecType.DECOD
 import static uk.co.real_logic.sbe.generation.java.JavaGenerator.CodecType.ENCODER;
 import static uk.co.real_logic.sbe.generation.java.JavaUtil.*;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.*;
-import uk.co.real_logic.sbe.generation.MultiPackageOutputManager;
 
 /**
  * Generate codecs for the Java 8 programming language.
@@ -62,7 +62,7 @@ public class JavaGenerator implements CodeGenerator
     private static final String INDENT = "    ";
 
     private final Ir ir;
-    private final MultiPackageOutputManager outputManager;
+    private final DynamicPackageOutputManager outputManager;
     private final String fqMutableBuffer;
     private final String mutableBuffer;
     private final String fqReadOnlyBuffer;
@@ -91,7 +91,7 @@ public class JavaGenerator implements CodeGenerator
         final boolean shouldGenerateGroupOrderAnnotation,
         final boolean shouldGenerateInterfaces,
         final boolean shouldDecodeUnknownEnumValues,
-        final MultiPackageOutputManager outputManager)
+        final DynamicPackageOutputManager outputManager)
     {
         this(ir, mutableBuffer, readOnlyBuffer, shouldGenerateGroupOrderAnnotation, shouldGenerateInterfaces,
             shouldDecodeUnknownEnumValues, false, outputManager);
@@ -117,7 +117,7 @@ public class JavaGenerator implements CodeGenerator
         final boolean shouldGenerateInterfaces,
         final boolean shouldDecodeUnknownEnumValues,
         final boolean shouldSupportTypePackages,
-        final MultiPackageOutputManager outputManager)
+        final DynamicPackageOutputManager outputManager)
     {
         Verify.notNull(ir, "ir");
         Verify.notNull(outputManager, "outputManager");

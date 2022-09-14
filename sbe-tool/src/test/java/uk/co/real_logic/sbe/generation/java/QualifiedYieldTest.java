@@ -20,6 +20,7 @@ import java.util.Map;
 import org.agrona.DirectBuffer;
 import org.agrona.MutableDirectBuffer;
 import org.agrona.generation.CompilerUtil;
+import org.agrona.generation.StringWriterOutputManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;

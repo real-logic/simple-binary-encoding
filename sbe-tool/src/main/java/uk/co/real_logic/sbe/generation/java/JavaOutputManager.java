@@ -20,13 +20,13 @@ import java.io.IOException;
 import java.io.Writer;
 import org.agrona.collections.Object2NullableObjectHashMap;
 import org.agrona.collections.Object2ObjectHashMap;
+import org.agrona.generation.DynamicPackageOutputManager;
 import org.agrona.generation.PackageOutputManager;
-import uk.co.real_logic.sbe.generation.MultiPackageOutputManager;
 
 /**
- * Implementation of {@link MultiPackageOutputManager} for Java.
+ * Implementation of {@link DynamicPackageOutputManager} for Java.
  */
-public class JavaOutputManager implements MultiPackageOutputManager
+public class JavaOutputManager implements DynamicPackageOutputManager
 {
     private final String baseDirName;
     private final PackageOutputManager basePackageOutputManager;
