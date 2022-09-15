@@ -83,6 +83,20 @@ public class Message
         validateBlockLength(messageNode, blockLength, computedBlockLength);
     }
 
+    Message(final Message message, final List<Field> newFieldList)
+    {
+        id = message.id;
+        name = message.name;
+        description = message.description;
+        blockLength = message.blockLength;
+        sinceVersion = message.sinceVersion;
+        deprecated = message.deprecated;
+        semanticType = message.semanticType;
+        typeByNameMap = message.typeByNameMap;
+        fieldList = newFieldList;
+        computedBlockLength = computeMessageRootBlockLength(newFieldList);
+    }
+
     /**
      * Return the template schemaId of the message
      *

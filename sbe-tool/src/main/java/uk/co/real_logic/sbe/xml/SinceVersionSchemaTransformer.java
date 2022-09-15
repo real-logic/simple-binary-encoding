@@ -15,25 +15,26 @@
  */
 package uk.co.real_logic.sbe.xml;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 class SinceVersionSchemaTransformer implements SchemaTransformer
 {
     private final int sinceVersion;
 
-    public SinceVersionSchemaTransformer(final int sinceVersion)
+    SinceVersionSchemaTransformer(final int sinceVersion)
     {
         this.sinceVersion = sinceVersion;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public MessageSchema transform(final MessageSchema originalSchema)
     {
         final Collection<Type> types = originalSchema.types();
         final Map<String, Type> newTypes = new HashMap<>();
 
-        for (Type type : types)
+        for (final Type type : types)
         {
             if (type.sinceVersion() <= this.sinceVersion)
             {
@@ -43,11 +44,14 @@ class SinceVersionSchemaTransformer implements SchemaTransformer
 
         final Collection<Message> messages = originalSchema.messages();
         final Map<Long, Message> newMessages = new HashMap<>();
-        for (Message message : messages)
+        for (final Message message : messages)
         {
-            if (message.sinceVersion() <= this.sinceVersion)
+            final List<Field> newFields = removeFields(message.fields(), sinceVersion);
+            final Message newMessage = new Message(message, newFields);
+
+            if (newMessage.sinceVersion() <= this.sinceVersion)
             {
-                newMessages.put((long)message.id(), message);
+                newMessages.put((long)newMessage.id(), newMessage);
             }
         }
 
@@ -61,6 +65,30 @@ class SinceVersionSchemaTransformer implements SchemaTransformer
             originalSchema.messageHeader().name(),
             newTypes,
             newMessages);
+    }
+
+    private List<Field> removeFields(final List<Field> fields, final int sinceVersion)
+    {
+        final ArrayList<Field> newFields = new ArrayList<>();
+        for (final Field field : fields)
+        {
+            if (field.sinceVersion() > sinceVersion)
+            {
+                continue;
+            }
+
+            Field newField = field;
+            List<Field> groupFields = field.groupFields();
+            if (null != groupFields && !groupFields.isEmpty())
+            {
+                groupFields = removeFields(groupFields, sinceVersion);
+                newField = new Field(field, groupFields);
+            }
+
+            newFields.add(newField);
+        }
+
+        return newFields;
     }
 
     int sinceVersion()

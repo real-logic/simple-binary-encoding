@@ -42,7 +42,7 @@ class SchemaTransformerFactoryTest
         final SchemaTransformer delegate = schemaTransformerFactory.delegate();
         assertInstanceOf(SinceVersionSchemaTransformer.class, delegate);
 
-        SinceVersionSchemaTransformer transformer = (SinceVersionSchemaTransformer)delegate;
+        final SinceVersionSchemaTransformer transformer = (SinceVersionSchemaTransformer)delegate;
         assertEquals(5, transformer.sinceVersion());
     }
 
@@ -53,7 +53,7 @@ class SchemaTransformerFactoryTest
         final SchemaTransformer delegate = schemaTransformerFactory.delegate();
         assertInstanceOf(IdKeyedSchemaTransformer.class, delegate);
 
-        IdKeyedSchemaTransformer transformer = (IdKeyedSchemaTransformer)delegate;
+        final IdKeyedSchemaTransformer transformer = (IdKeyedSchemaTransformer)delegate;
         final SinceVersionSchemaTransformer schemaTransformer1 =
             (SinceVersionSchemaTransformer)transformer.lookupTransformer(1);
         assertEquals(20, schemaTransformer1.sinceVersion());

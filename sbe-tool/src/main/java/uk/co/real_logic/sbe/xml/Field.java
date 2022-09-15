@@ -88,6 +88,27 @@ public class Field
         this.timeUnit = timeUnit;
     }
 
+    Field(final Field field, final List<Field> groupFieldList)
+    {
+        this(
+            field.name,
+            field.description,
+            field.id,
+            field.type,
+            field.offset,
+            field.semanticType,
+            field.presence,
+            field.valueRef,
+            field.blockLength,
+            field.dimensionType,
+            field.variableLength,
+            field.sinceVersion,
+            field.deprecated,
+            field.epoch,
+            field.timeUnit);
+        this.groupFieldList = groupFieldList;
+    }
+
     /**
      * Validate the node is correct for the type.
      *

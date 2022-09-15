@@ -26,6 +26,13 @@ public class SchemaTransformerFactory implements SchemaTransformer
 {
     private final SchemaTransformer transformer;
 
+    /**
+     * Construct the SchemaTransformerFactory with the specified configuration for filtering the messages and types by
+     * version.
+     *
+     * @param schemaTransformConfig configuration for the sinceVersion transformation
+     * @see uk.co.real_logic.sbe.SbeTool#SCHEMA_TRANSFORM_VERSION
+     */
     public SchemaTransformerFactory(final String schemaTransformConfig)
     {
         transformer = parse(schemaTransformConfig);
@@ -66,7 +73,7 @@ public class SchemaTransformerFactory implements SchemaTransformer
         final String[] configuration,
         final Map<Integer, SchemaTransformer> transformerBySchemaId)
     {
-        for (String field : configuration)
+        for (final String field : configuration)
         {
             final String[] fieldParts = field.split(":");
 

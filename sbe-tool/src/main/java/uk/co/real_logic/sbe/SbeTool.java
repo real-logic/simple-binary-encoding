@@ -190,7 +190,8 @@ public class SbeTool
      * to generate older versions of a schema to do version compatibility testing.
      * <p>
      * This field can contain a list of ordered pairs in the form:
-     * <code>((&lt;schema id&gt; | '*') ':' &lt;schema id&gt;)(',' ((&lt;schema id&gt; | '*') ':' &lt;schema id&gt;))*</code>.
+     * <code>((&lt;schema id&gt; | '*') ':' &lt;schema id&gt;)(',' ((&lt;schema id&gt; | '*') ':' &lt;schema id&gt;))*
+     * </code>.
      * E.g. <code>123:5,*:6</code> which means transform schema with id = 123 to version 5, all others to version 6.
      */
     public static final String SCHEMA_TRANSFORM_VERSION = "sbe.schema.transform.version";

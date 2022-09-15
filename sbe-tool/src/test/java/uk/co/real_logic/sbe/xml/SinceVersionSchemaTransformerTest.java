@@ -19,10 +19,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import uk.co.real_logic.sbe.Tests;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.*;
 
+import static java.util.Comparator.comparing;
 import static org.junit.jupiter.api.Assertions.*;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
@@ -51,24 +50,63 @@ public class SinceVersionSchemaTransformerTest
     {
         final ArrayList<Message> transformedMessagesCopy = new ArrayList<>(transformedSchema.messages());
 
-        final Collection<Message> types = originalSchema.messages();
-        for (Message message : types)
+        final Collection<Message> messages = originalSchema.messages();
+        for (final Message originalMessage : messages)
         {
-            if (message.sinceVersion() <= filteringVersion)
+
+            if (originalMessage.sinceVersion() <= filteringVersion)
             {
-                assertNotNull(
-                    findAndRemove(transformedMessagesCopy, message),
-                    "Message (" + message.name() + ") should be retained");
+                final Message transformedMessage = findAndRemove(
+                    transformedMessagesCopy, originalMessage, comparing(Message::id));
+                assertNotNull(transformedMessage, "Message (" + originalMessage.name() + ") should be retained");
+
+                assertFieldsSinceVersionLessOrEqualTo(
+                    filteringVersion, originalMessage.fields(), transformedMessage.fields());
             }
             else
             {
                 assertNull(
-                    findAndRemove(transformedMessagesCopy, message),
-                    "Message (" + message.name() + ") should be removed");
+                    findAndRemove(transformedMessagesCopy, originalMessage, comparing(Message::id)),
+                    "Message (" + originalMessage.name() + ") should be removed");
             }
         }
 
         assertTrue(transformedMessagesCopy.isEmpty(), "Messages should have been removed: " + transformedMessagesCopy);
+    }
+
+    private static void assertFieldsSinceVersionLessOrEqualTo(
+        final int filteringVersion,
+        final List<Field> originalFields,
+        final List<Field> transformedFields)
+    {
+        assertFalse(null == originalFields ^ null == transformedFields);
+        if (null == originalFields)
+        {
+            return;
+        }
+
+        final ArrayList<Field> transformedFieldsCopy = new ArrayList<>(transformedFields);
+
+        for (final Field originalField : originalFields)
+        {
+            if (originalField.sinceVersion() <= filteringVersion)
+            {
+                final Field transformedField = findAndRemove(
+                    transformedFieldsCopy, originalField, comparing(Field::name));
+                assertNotNull(transformedField, "Field (" + originalField.name() + ") should be retained");
+
+                assertFieldsSinceVersionLessOrEqualTo(
+                    filteringVersion, originalField.groupFields(), transformedField.groupFields());
+            }
+            else
+            {
+                assertNull(
+                    findAndRemove(transformedFieldsCopy, originalField, comparing(Field::name)),
+                    "Field (" + originalField.name() + ") should be removed");
+            }
+        }
+
+        assertTrue(transformedFieldsCopy.isEmpty(), "Fields should have been removed: " + transformedFields);
     }
 
     private static void assertTypeSinceVersionLessOrEqualTo(
@@ -79,18 +117,18 @@ public class SinceVersionSchemaTransformerTest
         final ArrayList<Type> transformedTypesCopy = new ArrayList<>(transformedSchema.types());
 
         final Collection<Type> types = originalSchema.types();
-        for (Type type : types)
+        for (final Type type : types)
         {
             if (type.sinceVersion() <= filteringVersion)
             {
                 assertNotNull(
-                    findAndRemove(transformedTypesCopy, type),
+                    findAndRemove(transformedTypesCopy, type, comparing(Type::name)),
                     "Type (" + type.name() + ") should be retained");
             }
             else
             {
                 assertNull(
-                    findAndRemove(transformedTypesCopy, type),
+                    findAndRemove(transformedTypesCopy, type, comparing(Type::name)),
                     "Type (" + type.name() + ") should be removed");
             }
         }
@@ -98,31 +136,18 @@ public class SinceVersionSchemaTransformerTest
         assertTrue(transformedTypesCopy.isEmpty(), "Types should have been removed: " + transformedTypesCopy);
     }
 
-    private static Type findAndRemove(final ArrayList<Type> transformedTypesCopy, final Type type)
+    private static <T> T findAndRemove(
+        final ArrayList<T> transformedTsCopy,
+        final T original,
+        final Comparator<T> comparator)
     {
-        Type result = null;
-        for (final Iterator<Type> it = transformedTypesCopy.iterator(); it.hasNext();)
+        T result = null;
+        for (final Iterator<T> it = transformedTsCopy.iterator(); it.hasNext();)
         {
-            final Type transformedType = it.next();
-            if (type.name().equals(transformedType.name()))
+            final T transformedT = it.next();
+            if (0 == comparator.compare(original, transformedT))
             {
-                result = transformedType;
-                it.remove();
-            }
-        }
-
-        return result;
-    }
-
-    private static Message findAndRemove(final ArrayList<Message> transformedMessagesCopy, final Message message)
-    {
-        Message result = null;
-        for (final Iterator<Message> it = transformedMessagesCopy.iterator(); it.hasNext();)
-        {
-            final Message transformedMessage = it.next();
-            if (message.id() == transformedMessage.id())
-            {
-                result = transformedMessage;
+                result = transformedT;
                 it.remove();
             }
         }

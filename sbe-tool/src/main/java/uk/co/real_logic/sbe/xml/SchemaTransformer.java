@@ -31,5 +31,5 @@ public interface SchemaTransformer
      * @param originalSchema to be transformed
      * @return resulting transformed schema.
      */
-    MessageSchema transform(final MessageSchema originalSchema);
+    MessageSchema transform(MessageSchema originalSchema);
 }
