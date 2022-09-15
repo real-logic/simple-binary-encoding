@@ -113,3 +113,5 @@ rust/Cargo.lock
 # Mac
 .DS_Store
 /sbe-tool/src/main/golang/uk_co_real_logic_sbe_ir_generated/
+
+/generated/

@@ -18,12 +18,20 @@ package uk.co.real_logic.sbe;
 import org.agrona.DirectBuffer;
 import org.agrona.MutableDirectBuffer;
 import org.xml.sax.InputSource;
-import uk.co.real_logic.sbe.generation.*;
-import uk.co.real_logic.sbe.ir.*;
+import uk.co.real_logic.sbe.generation.CodeGenerator;
+import uk.co.real_logic.sbe.generation.TargetCodeGenerator;
+import uk.co.real_logic.sbe.generation.TargetCodeGeneratorLoader;
+import uk.co.real_logic.sbe.ir.Ir;
+import uk.co.real_logic.sbe.ir.IrDecoder;
+import uk.co.real_logic.sbe.ir.IrEncoder;
 import uk.co.real_logic.sbe.xml.*;
 
-import java.io.*;
-import java.nio.file.*;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * A tool for running the SBE parser, validator, and code generator.
@@ -177,6 +185,17 @@ public class SbeTool
     public static final String DECODE_UNKNOWN_ENUM_VALUES = "sbe.decode.unknown.enum.values";
 
     /**
+     * Configuration option used to manage sinceVersion based transformations. When set, parsed schemas will be
+     * transformed to discard messages and types higher than the specified version. This can be useful when needing
+     * to generate older versions of a schema to do version compatibility testing.
+     * <p>
+     * This field can contain a list of ordered pairs in the form:
+     * <code>((&lt;schema id&gt; | '*') ':' &lt;schema id&gt;)(',' ((&lt;schema id&gt; | '*') ':' &lt;schema id&gt;))*</code>.
+     * E.g. <code>123:5,*:6</code> which means transform schema with id = 123 to version 5, all others to version 6.
+     */
+    public static final String SCHEMA_TRANSFORM_VERSION = "sbe.schema.transform.version";
+
+    /**
      * Main entry point for the SBE Tool.
      *
      * @param args command line arguments. A single filename is expected.
@@ -201,7 +220,10 @@ public class SbeTool
                     validateAgainstSchema(fileName, xsdFilename);
                 }
 
-                ir = new IrGenerator().generate(parseSchema(fileName), System.getProperty(TARGET_NAMESPACE));
+                final MessageSchema schema = parseSchema(fileName);
+                final SchemaTransformer transformer = new SchemaTransformerFactory(
+                    System.getProperty(SCHEMA_TRANSFORM_VERSION));
+                ir = new IrGenerator().generate(transformer.transform(schema), System.getProperty(TARGET_NAMESPACE));
             }
             else if (fileName.endsWith(".sbeir"))
             {

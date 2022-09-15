@@ -15,8 +15,8 @@
  */
 package uk.co.real_logic.sbe.xml;
 
-import org.w3c.dom.Node;
 import org.agrona.Verify;
+import org.w3c.dom.Node;
 
 import java.nio.ByteOrder;
 import java.util.*;
@@ -60,6 +60,28 @@ public class MessageSchema
         Verify.present(typeByNameMap, this.headerType, "Message header");
 
         ((CompositeType)typeByNameMap.get(this.headerType)).checkForWellFormedMessageHeader(schemaNode);
+    }
+
+    MessageSchema(
+        final String packageName,
+        final String description,
+        final int id,
+        final int version,
+        final String semanticVersion,
+        final ByteOrder byteOrder,
+        final String headerType,
+        final Map<String, Type> typeByNameMap,
+        final Map<Long, Message> messageByIdMap)
+    {
+        this.packageName = packageName;
+        this.description = description;
+        this.id = id;
+        this.version = version;
+        this.semanticVersion = semanticVersion;
+        this.byteOrder = byteOrder;
+        this.headerType = headerType;
+        this.typeByNameMap = typeByNameMap;
+        this.messageByIdMap = messageByIdMap;
     }
 
     /**
@@ -152,6 +174,16 @@ public class MessageSchema
     public Collection<Message> messages()
     {
         return messageByIdMap.values();
+    }
+
+    /**
+     * Get the {@link Collection} of {@link Type}s for this Schema.
+     *
+     * @return the {@link Collection} of {@link Type}s for this Schema.
+     */
+    public Collection<Type> types()
+    {
+        return typeByNameMap.values();
     }
 
     /**
