@@ -46,7 +46,6 @@ public class JavaOutputManager implements DynamicPackageOutputManager
         this.baseDirName = baseDirName;
     }
 
-    @Override
     public void setPackageName(final String packageName)
     {
         actingPackageOutputManager = outputManagerCache.get(packageName);
@@ -62,7 +61,6 @@ public class JavaOutputManager implements DynamicPackageOutputManager
         actingPackageOutputManager = basePackageOutputManager;
     }
 
-    @Override
     public Writer createOutput(final String name) throws IOException
     {
         return new FilterWriter(actingPackageOutputManager.createOutput(name))
