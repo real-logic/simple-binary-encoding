@@ -47,7 +47,7 @@ public class JavaOutputManager implements DynamicPackageOutputManager
     }
 
     /**
-     * @inherit
+     * {@inheritDoc}
      */
     public void setPackageName(final String packageName)
     {
@@ -65,7 +65,7 @@ public class JavaOutputManager implements DynamicPackageOutputManager
     }
 
     /**
-     * @inherit
+     * {@inheritDoc}
      */
     public Writer createOutput(final String name) throws IOException
     {
