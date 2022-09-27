@@ -65,7 +65,7 @@ public class EncodedDataType extends Type
     /**
      * Construct a new encodedDataType from XML Schema.
      *
-     * @param node           from the XML Schema Parsing
+     * @param node           from the XML Schema Parsing.
      * @param givenName      for this node.
      * @param referencedName of the type when created from a ref in a composite.
      */
@@ -201,13 +201,13 @@ public class EncodedDataType extends Type
     /**
      * Construct a new EncodedDataType with direct values. Does not handle constant values.
      *
-     * @param name          of the type
-     * @param presence      of the type
-     * @param description   of the type or null
-     * @param semanticType  of the type or null
-     * @param primitiveType of the EncodedDataType
-     * @param length        of the EncodedDataType
-     * @param varLen        of the EncodedDataType
+     * @param name          of the type.
+     * @param presence      of the type.
+     * @param description   of the type or null.
+     * @param semanticType  of the type or null.
+     * @param primitiveType of the EncodedDataType.
+     * @param length        of the EncodedDataType.
+     * @param varLen        of the EncodedDataType.
      */
     public EncodedDataType(
         final String name,
@@ -222,16 +222,16 @@ public class EncodedDataType extends Type
     }
 
     /**
-     * Construct a new EncodedDataType with direct values.Does not handle constant values.
+     * Construct a new EncodedDataType with direct values. Does not handle constant values.
      *
-     * @param name of the type
-     * @param packageName of the type
-     * @param presence of the type
-     * @param description of the type or null
-     * @param semanticType of the type or null
-     * @param primitiveType of the EncodedDataType
-     * @param length of the EncodedDataType
-     * @param varLen of the EncodedDataType
+     * @param name          of the type.
+     * @param packageName   of the type.
+     * @param presence      of the type.
+     * @param description   of the type or null.
+     * @param semanticType  of the type or null.
+     * @param primitiveType of the EncodedDataType.
+     * @param length        of the EncodedDataType.
+     * @param varLen        of the EncodedDataType.
      */
     public EncodedDataType(
         final String name,

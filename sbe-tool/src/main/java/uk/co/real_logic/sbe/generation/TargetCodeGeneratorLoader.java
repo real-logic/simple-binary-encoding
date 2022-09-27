@@ -52,7 +52,7 @@ public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
                 "true".equals(System.getProperty(JAVA_GROUP_ORDER_ANNOTATION)),
                 "true".equals(System.getProperty(JAVA_GENERATE_INTERFACES)),
                 "true".equals(System.getProperty(DECODE_UNKNOWN_ENUM_VALUES)),
-                "true".equals(System.getProperty(TYPE_PACKAGE_OVERRIDE)),
+                "true".equals(System.getProperty(TYPES_PACKAGE_OVERRIDE)),
                 new JavaOutputManager(outputDir, ir.applicableNamespace()));
         }
     },

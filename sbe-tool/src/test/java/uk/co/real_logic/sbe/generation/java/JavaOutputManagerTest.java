@@ -15,26 +15,27 @@
  */
 package uk.co.real_logic.sbe.generation.java;
 
+import org.agrona.SystemUtil;
+import org.junit.jupiter.api.Test;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
+
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import org.junit.jupiter.api.Test;
 
-public class JavaOutputManagerTest
+class JavaOutputManagerTest
 {
-
-    private final String tempDirName = System.getProperty("java.io.tmpdir");
-
     @Test
     void shouldCreateFileWithinPackage() throws Exception
     {
         final String packageName = "uk.co.real_logic.test";
         final String exampleClassName = "ExampleClassName";
 
+        final String tempDirName = SystemUtil.tmpDirName();
         final JavaOutputManager cut = new JavaOutputManager(tempDirName, packageName);
         final Writer out = cut.createOutput(exampleClassName);
         out.close();
@@ -64,8 +65,9 @@ public class JavaOutputManagerTest
 
     private void assertFileExists(final String packageName, final String exampleClassName) throws IOException
     {
-        final String baseDirName = tempDirName.endsWith("" + File.separatorChar) ? tempDirName : tempDirName +
-            File.separatorChar;
+        final String tempDirName = SystemUtil.tmpDirName();
+        final String baseDirName = tempDirName.endsWith("" + File.separatorChar) ?
+            tempDirName : tempDirName + File.separatorChar;
 
         final String fullyQualifiedFilename = baseDirName + packageName.replace('.', File.separatorChar) +
             File.separatorChar + exampleClassName + ".java";
@@ -76,5 +78,4 @@ public class JavaOutputManagerTest
 
         assertTrue(exists);
     }
-
 }

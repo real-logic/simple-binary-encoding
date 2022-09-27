@@ -15,13 +15,14 @@
  */
 package uk.co.real_logic.sbe.generation.java;
 
-import java.io.FilterWriter;
-import java.io.IOException;
-import java.io.Writer;
 import org.agrona.collections.Object2NullableObjectHashMap;
 import org.agrona.collections.Object2ObjectHashMap;
 import org.agrona.generation.DynamicPackageOutputManager;
 import org.agrona.generation.PackageOutputManager;
+
+import java.io.FilterWriter;
+import java.io.IOException;
+import java.io.Writer;
 
 /**
  * Implementation of {@link DynamicPackageOutputManager} for Java.
@@ -29,20 +30,21 @@ import org.agrona.generation.PackageOutputManager;
 public class JavaOutputManager implements DynamicPackageOutputManager
 {
     private final String baseDirName;
-    private final PackageOutputManager basePackageOutputManager;
+    private final PackageOutputManager initialPackageOutputManager;
     private PackageOutputManager actingPackageOutputManager;
-    private final Object2ObjectHashMap<String, PackageOutputManager> outputManagerCache
+    private final Object2ObjectHashMap<String, PackageOutputManager> outputManagerByPackageName
         = new Object2NullableObjectHashMap<>();
 
     /**
      * Constructor.
+     *
      * @param baseDirName the target directory
      * @param packageName the initial package name
      */
     public JavaOutputManager(final String baseDirName, final String packageName)
     {
-        basePackageOutputManager = new PackageOutputManager(baseDirName, packageName);
-        actingPackageOutputManager = basePackageOutputManager;
+        initialPackageOutputManager = new PackageOutputManager(baseDirName, packageName);
+        actingPackageOutputManager = initialPackageOutputManager;
         this.baseDirName = baseDirName;
     }
 
@@ -51,17 +53,17 @@ public class JavaOutputManager implements DynamicPackageOutputManager
      */
     public void setPackageName(final String packageName)
     {
-        actingPackageOutputManager = outputManagerCache.get(packageName);
+        actingPackageOutputManager = outputManagerByPackageName.get(packageName);
         if (actingPackageOutputManager == null)
         {
             actingPackageOutputManager = new PackageOutputManager(baseDirName, packageName);
-            outputManagerCache.put(packageName, actingPackageOutputManager);
+            outputManagerByPackageName.put(packageName, actingPackageOutputManager);
         }
     }
 
     private void resetPackage()
     {
-        actingPackageOutputManager = basePackageOutputManager;
+        actingPackageOutputManager = initialPackageOutputManager;
     }
 
     /**

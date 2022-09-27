@@ -377,7 +377,7 @@ public class Token
     {
         private Signal signal;
         private String name;
-        private String packageName = null;
+        private String packageName;
         private String referencedName;
         private String description;
         private int id = INVALID_ID;
@@ -413,7 +413,7 @@ public class Token
         }
 
         /**
-         * Package name for the Token. Default is null. Use for BEGIN_MESSAGE tokens for types that require an explicit
+         * Package name for the Token, default is null. Use for BEGIN_MESSAGE tokens for types that require an explicit
          * package.
          *
          * @param packageName for the Token.
