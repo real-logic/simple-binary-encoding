@@ -218,7 +218,32 @@ public class EncodedDataType extends Type
         final int length,
         final boolean varLen)
     {
-        super(name, presence, description, 0, 0, semanticType);
+        this(name, null, presence, description, semanticType, primitiveType, length, varLen);
+    }
+
+    /**
+     * Construct a new EncodedDataType with direct values.Does not handle constant values.
+     *
+     * @param name of the type
+     * @param packageName of the type
+     * @param presence of the type
+     * @param description of the type or null
+     * @param semanticType of the type or null
+     * @param primitiveType of the EncodedDataType
+     * @param length of the EncodedDataType
+     * @param varLen of the EncodedDataType
+     */
+    public EncodedDataType(
+        final String name,
+        final String packageName,
+        final Presence presence,
+        final String description,
+        final String semanticType,
+        final PrimitiveType primitiveType,
+        final int length,
+        final boolean varLen)
+    {
+        super(name, packageName, presence, description, 0, 0, semanticType);
 
         this.primitiveType = primitiveType;
         this.length = length;

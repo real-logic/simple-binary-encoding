@@ -327,6 +327,18 @@ public class XmlSchemaParser
     }
 
     /**
+     * To be used with child elements of {@code <types>} elements. Returns the package attribute as
+     * defined on the parent {@code <types>} element
+     *
+     * @param elementNode the node inside the types element
+     * @return the package name, or null if not defined
+     */
+    public static String getTypesPackageAttribute(final Node elementNode)
+    {
+        return getAttributeValue(elementNode.getParentNode(), "package", null);
+    }
+
+    /**
      * Helper function that hides the null return from {@link org.w3c.dom.NamedNodeMap#getNamedItem(String)}.
      *
      * @param elementNode that could be null.
