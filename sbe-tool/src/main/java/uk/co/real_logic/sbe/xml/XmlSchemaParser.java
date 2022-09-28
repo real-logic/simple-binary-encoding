@@ -327,15 +327,26 @@ public class XmlSchemaParser
     }
 
     /**
-     * To be used with child elements of {@code <types>} elements. Returns the package attribute as
-     * defined on the parent {@code <types>} element
+     * To be used with descendant elements of {@code <types>} elements. Returns the package attribute value as
+     * defined on the ancestor {@code <types>} element.
      *
-     * @param elementNode the node inside the types element
-     * @return the package name, or null if not defined
+     * @param elementNode the node inside the {@code <types>} element.
+     * @return the package name, or null if not defined.
      */
     public static String getTypesPackageAttribute(final Node elementNode)
     {
-        return getAttributeValue(elementNode.getParentNode(), "package", null);
+        Node parentNode = elementNode.getParentNode();
+        while (null != parentNode)
+        {
+            if ("types".equals(parentNode.getLocalName()) || "types".equals(parentNode.getNodeName()))
+            {
+                return getAttributeValue(parentNode, "package", null);
+            }
+
+            parentNode = parentNode.getParentNode();
+        }
+
+        return null;
     }
 
     /**
