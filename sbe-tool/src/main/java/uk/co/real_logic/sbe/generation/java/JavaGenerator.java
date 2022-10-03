@@ -1332,6 +1332,17 @@ public class JavaGenerator implements CodeGenerator
         try (Writer out = outputManager.createOutput(decoderName))
         {
             final String implementsString = implementsInterface(CompositeDecoderFlyweight.class.getSimpleName());
+            for (int i = 1; i < tokens.size() - 1; i++)
+            {
+                // scan ahead possible types we'll need to import
+                final Token typeToken = tokens.get(i);
+                if (typeToken.signal() == Signal.BEGIN_ENUM ||
+                    typeToken.signal() == Signal.BEGIN_SET ||
+                    typeToken.signal() == Signal.BEGIN_COMPOSITE)
+                {
+                    registerTypesPackageName(typeToken, ir);
+                }
+            }
             generateCompositeFlyweightHeader(
                 token, decoderName, out, readOnlyBuffer, fqReadOnlyBuffer, implementsString);
 
@@ -1620,11 +1631,20 @@ public class JavaGenerator implements CodeGenerator
 
     private CharSequence generateFileHeader(final String packageName, final String fqBuffer)
     {
+        final StringBuilder packageImports = new StringBuilder();
+        for (final String typePackage : packageNameByTypes)
+        {
+            packageImports.append("import ");
+            packageImports.append(typePackage);
+            packageImports.append(".*;\n");
+        }
+
         return
             "/* Generated SBE (Simple Binary Encoding) message codec. */\n" +
             "package " + packageName + ";\n\n" +
             "import " + fqBuffer + ";\n" +
-            interfaceImportLine();
+            interfaceImportLine() +
+            packageImports;
     }
 
     private CharSequence generateMainHeader(
