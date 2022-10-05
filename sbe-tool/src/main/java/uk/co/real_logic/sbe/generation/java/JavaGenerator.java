@@ -61,7 +61,7 @@ public class JavaGenerator implements CodeGenerator
     private static final String PACKAGE_INFO = "package-info";
     private static final String BASE_INDENT = "";
     private static final String INDENT = "    ";
-    private static final Set<String> NO_PACKAGES = Collections.emptySet();
+    private static final Set<String> PACKAGES_EMPTY_SET = Collections.emptySet();
 
     private final Ir ir;
     private final DynamicPackageOutputManager outputManager;
@@ -178,7 +178,7 @@ public class JavaGenerator implements CodeGenerator
     }
 
     /**
-     * Register the types explicit package - if it's set and should be supported.
+     * Register the types explicit package - if set and should be supported.
      *
      * @param token the 0-th token of the type.
      * @param ir    the intermediate representation.
@@ -186,17 +186,18 @@ public class JavaGenerator implements CodeGenerator
      */
     private String registerTypesPackageName(final Token token, final Ir ir)
     {
-
         if (!shouldSupportTypesPackageNames)
         {
             return ir.applicableNamespace();
         }
+
         if (token.packageName() != null)
         {
             packageNameByTypes.add(token.packageName());
             outputManager.setPackageName(token.packageName());
             return token.packageName();
         }
+
         return ir.applicableNamespace();
     }
 
@@ -1249,8 +1250,8 @@ public class JavaGenerator implements CodeGenerator
         try (Writer out = outputManager.createOutput(decoderName))
         {
             final Encoding encoding = token.encoding();
-            generateFixedFlyweightHeader(out, token, decoderName, implementsString, readOnlyBuffer, fqReadOnlyBuffer,
-                NO_PACKAGES);
+            generateFixedFlyweightHeader(
+                out, token, decoderName, implementsString, readOnlyBuffer, fqReadOnlyBuffer, PACKAGES_EMPTY_SET);
             out.append(generateChoiceIsEmpty(encoding.primitiveType()));
 
             new Formatter(out).format(
@@ -1270,8 +1271,8 @@ public class JavaGenerator implements CodeGenerator
         registerTypesPackageName(token, ir);
         try (Writer out = outputManager.createOutput(encoderName))
         {
-            generateFixedFlyweightHeader(out, token, encoderName, implementsString, mutableBuffer, fqMutableBuffer,
-                NO_PACKAGES);
+            generateFixedFlyweightHeader(
+                out, token, encoderName, implementsString, mutableBuffer, fqMutableBuffer, PACKAGES_EMPTY_SET);
             generateChoiceClear(out, encoderName, token);
             generateChoiceEncoders(out, encoderName, choiceList);
             out.append("}\n");
@@ -1287,8 +1288,7 @@ public class JavaGenerator implements CodeGenerator
         final String fqBuffer,
         final Set<String> importedTypesPackages) throws IOException
     {
-        final String packageName = registerTypesPackageName(token, ir);
-        out.append(generateFileHeader(packageName, importedTypesPackages, fqBuffer));
+        out.append(generateFileHeader(registerTypesPackageName(token, ir), importedTypesPackages, fqBuffer));
         out.append(generateDeclaration(typeName, implementsString, token));
         out.append(generateFixedFlyweightCode(typeName, token.encodedLength(), buffer));
     }
@@ -1302,8 +1302,7 @@ public class JavaGenerator implements CodeGenerator
         final String implementsString,
         final Set<String> importedTypesPackages) throws IOException
     {
-        final String packageName = registerTypesPackageName(token, ir);
-        out.append(generateFileHeader(packageName, importedTypesPackages, fqBuffer));
+        out.append(generateFileHeader(registerTypesPackageName(token, ir), importedTypesPackages, fqBuffer));
         out.append(generateDeclaration(typeName, implementsString, token));
         out.append(generateFixedFlyweightCode(typeName, token.encodedLength(), buffer));
     }
@@ -1314,8 +1313,8 @@ public class JavaGenerator implements CodeGenerator
         final String enumName = formatClassName(enumToken.applicableTypeName());
         final Encoding encoding = enumToken.encoding();
         final String nullVal = encoding.applicableNullValue().toString();
-
         final String packageName = registerTypesPackageName(enumToken, ir);
+
         try (Writer out = outputManager.createOutput(enumName))
         {
             out.append(generateEnumFileHeader(packageName));
@@ -1340,6 +1339,7 @@ public class JavaGenerator implements CodeGenerator
 
         registerTypesPackageName(token, ir);
         final Set<String> importedTypesPackages = scanPackagesToImport(tokens);
+
         try (Writer out = outputManager.createOutput(decoderName))
         {
             final String implementsString = implementsInterface(CompositeDecoderFlyweight.class.getSimpleName());
@@ -1392,8 +1392,8 @@ public class JavaGenerator implements CodeGenerator
         try (Writer out = outputManager.createOutput(encoderName))
         {
             final String implementsString = implementsInterface(CompositeEncoderFlyweight.class.getSimpleName());
-            generateCompositeFlyweightHeader(token, encoderName, out, mutableBuffer, fqMutableBuffer, implementsString,
-                importedTypesPackages);
+            generateCompositeFlyweightHeader(
+                token, encoderName, out, mutableBuffer, fqMutableBuffer, implementsString, importedTypesPackages);
 
             for (int i = 1, end = tokens.size() - 1; i < end;)
             {
@@ -1439,11 +1439,12 @@ public class JavaGenerator implements CodeGenerator
     {
         if (!shouldSupportTypesPackageNames)
         {
-            return NO_PACKAGES;
+            return PACKAGES_EMPTY_SET;
         }
 
         final Set<String> packagesToImport = new HashSet<>();
-        for (int i = 1; i < tokens.size() - 1; i++)
+
+        for (int i = 1, limit = tokens.size() - 1; i < limit; i++)
         {
             final Token typeToken = tokens.get(i);
             if (typeToken.signal() == Signal.BEGIN_ENUM ||
@@ -1456,6 +1457,7 @@ public class JavaGenerator implements CodeGenerator
                 }
             }
         }
+
         return packagesToImport;
     }
 
@@ -1646,19 +1648,22 @@ public class JavaGenerator implements CodeGenerator
 
     private StringBuilder generateImportStatements(final Set<String> packages, final String currentPackage)
     {
-        final StringBuilder importsStatements = new StringBuilder();
+        final StringBuilder importStatements = new StringBuilder();
+
         for (final String candidatePackage : packages)
         {
-            if (!candidatePackage.equalsIgnoreCase(currentPackage))
+            if (!candidatePackage.equals(currentPackage))
             {
-                importsStatements.append("import ").append(candidatePackage).append(".*;\n");
+                importStatements.append("import ").append(candidatePackage).append(".*;\n");
             }
         }
-        if (importsStatements.length() > 0)
+
+        if (importStatements.length() > 0)
         {
-            importsStatements.append("\n\n");
+            importStatements.append("\n\n");
         }
-        return importsStatements;
+
+        return importStatements;
     }
 
     private String interfaceImportLine()
@@ -3878,13 +3883,6 @@ public class JavaGenerator implements CodeGenerator
 
     private String implementsInterface(final String interfaceName)
     {
-        if (!shouldGenerateInterfaces)
-        {
-            return "";
-        }
-        else
-        {
-            return " implements " + interfaceName;
-        }
+        return shouldGenerateInterfaces ? " implements " + interfaceName : "";
     }
 }
