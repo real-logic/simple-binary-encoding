@@ -61,7 +61,7 @@ public class JavaGenerator implements CodeGenerator
     private static final String PACKAGE_INFO = "package-info";
     private static final String BASE_INDENT = "";
     private static final String INDENT = "    ";
-    private static final Set<String> NO_PACKAGES = Collections.unmodifiableSet(new HashSet<>());
+    private static final Set<String> NO_PACKAGES = Collections.emptySet();
 
     private final Ir ir;
     private final DynamicPackageOutputManager outputManager;
