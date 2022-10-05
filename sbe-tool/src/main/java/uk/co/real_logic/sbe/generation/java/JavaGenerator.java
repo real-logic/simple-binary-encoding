@@ -1285,10 +1285,10 @@ public class JavaGenerator implements CodeGenerator
         final String implementsString,
         final String buffer,
         final String fqBuffer,
-        final Set<String> additionalPackages) throws IOException
+        final Set<String> importedTypesPackages) throws IOException
     {
         final String packageName = registerTypesPackageName(token, ir);
-        out.append(generateFileHeader(packageName, additionalPackages, fqBuffer));
+        out.append(generateFileHeader(packageName, importedTypesPackages, fqBuffer));
         out.append(generateDeclaration(typeName, implementsString, token));
         out.append(generateFixedFlyweightCode(typeName, token.encodedLength(), buffer));
     }
@@ -1300,10 +1300,10 @@ public class JavaGenerator implements CodeGenerator
         final String buffer,
         final String fqBuffer,
         final String implementsString,
-        final Set<String> additionalPackages) throws IOException
+        final Set<String> importedTypesPackages) throws IOException
     {
         final String packageName = registerTypesPackageName(token, ir);
-        out.append(generateFileHeader(packageName, additionalPackages, fqBuffer));
+        out.append(generateFileHeader(packageName, importedTypesPackages, fqBuffer));
         out.append(generateDeclaration(typeName, implementsString, token));
         out.append(generateFixedFlyweightCode(typeName, token.encodedLength(), buffer));
     }
@@ -1339,12 +1339,12 @@ public class JavaGenerator implements CodeGenerator
         final String encoderName = encoderName(compositeName);
 
         registerTypesPackageName(token, ir);
-        final Set<String> additionalPackages = scanPackagesToImport(tokens);
+        final Set<String> importedTypesPackages = scanPackagesToImport(tokens);
         try (Writer out = outputManager.createOutput(decoderName))
         {
             final String implementsString = implementsInterface(CompositeDecoderFlyweight.class.getSimpleName());
             generateCompositeFlyweightHeader(
-                token, decoderName, out, readOnlyBuffer, fqReadOnlyBuffer, implementsString, additionalPackages);
+                token, decoderName, out, readOnlyBuffer, fqReadOnlyBuffer, implementsString, importedTypesPackages);
 
             for (int i = 1, end = tokens.size() - 1; i < end;)
             {
@@ -1393,7 +1393,7 @@ public class JavaGenerator implements CodeGenerator
         {
             final String implementsString = implementsInterface(CompositeEncoderFlyweight.class.getSimpleName());
             generateCompositeFlyweightHeader(token, encoderName, out, mutableBuffer, fqMutableBuffer, implementsString,
-                additionalPackages);
+                importedTypesPackages);
 
             for (int i = 1, end = tokens.size() - 1; i < end;)
             {
@@ -1672,10 +1672,10 @@ public class JavaGenerator implements CodeGenerator
     }
 
 
-    private CharSequence generateFileHeader(final String packageName, final Set<String> additionalPackages,
+    private CharSequence generateFileHeader(final String packageName, final Set<String> importedTypesPackages,
         final String fqBuffer)
     {
-        final StringBuilder importStatements = generateImportStatements(additionalPackages, packageName);
+        final StringBuilder importStatements = generateImportStatements(importedTypesPackages, packageName);
 
         return "/* Generated SBE (Simple Binary Encoding) message codec. */\n" +
             "package " + packageName + ";\n\n" +
