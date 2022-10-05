@@ -1651,9 +1651,7 @@ public class JavaGenerator implements CodeGenerator
         {
             if (!candidatePackage.equalsIgnoreCase(currentPackage))
             {
-                importsStatements.append("import ");
-                importsStatements.append(candidatePackage);
-                importsStatements.append(".*;\n");
+                importsStatements.append("import ").append(candidatePackage).append(".*;\n");
             }
         }
         if (importsStatements.length() > 0)
