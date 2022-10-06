@@ -1,12 +1,6 @@
 Simple Binary Encoding (SBE)
 ============================
 
-<a href="https://foojay.io/works-with-openjdk/">
-   <img align="right" 
-        src="https://github.com/foojayio/badges/raw/main/works_with_openjdk/Works-with-OpenJDK.png"   
-        width="100">
-</a>
-
 [![Javadocs](https://www.javadoc.io/badge/uk.co.real-logic/sbe-tool.svg)](https://www.javadoc.io/doc/uk.co.real-logic/sbe-tool)
 [![GitHub](https://img.shields.io/github/license/real-logic/simple-binary-encoding.svg)](https://github.com/real-logic/simple-binary-encoding/blob/master/LICENSE)
 
