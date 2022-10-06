@@ -79,6 +79,7 @@ public class Token
     private final String name;
     private final String referencedName;
     private final String description;
+    private final String packageName;
     private final int id;
     private final int version;
     private final int deprecated;
@@ -94,6 +95,8 @@ public class Token
      * @param name                of the token in the message.
      * @param referencedName      of the type when created from a ref in a composite.
      * @param description         of what the token is for.
+     * @param packageName         of the token in the message. Use null, except for BEGIN_MESSAGE tokens for types that
+     *                            require an explicit package.
      * @param id                  as the identifier in the message declaration.
      * @param version             application within the template.
      * @param deprecated          as of this version.
@@ -107,6 +110,7 @@ public class Token
         final String name,
         final String referencedName,
         final String description,
+        final String packageName,
         final int id,
         final int version,
         final int deprecated,
@@ -123,6 +127,7 @@ public class Token
         this.name = name;
         this.referencedName = referencedName;
         this.description = description;
+        this.packageName = packageName;
         this.id = id;
         this.version = version;
         this.deprecated = deprecated;
@@ -150,6 +155,16 @@ public class Token
     public String name()
     {
         return name;
+    }
+
+    /**
+     * Return the packageName of the token
+     *
+     * @return packageName of the token or null, if it was not set explicitly.
+     */
+    public String packageName()
+    {
+        return packageName;
     }
 
     /**
@@ -344,6 +359,7 @@ public class Token
             ", name='" + name + '\'' +
             ", referencedName='" + referencedName + '\'' +
             ", description='" + description + '\'' +
+            ", packageName='" + packageName + '\'' +
             ", id=" + id +
             ", version=" + version +
             ", deprecated=" + deprecated +
@@ -361,6 +377,7 @@ public class Token
     {
         private Signal signal;
         private String name;
+        private String packageName;
         private String referencedName;
         private String description;
         private int id = INVALID_ID;
@@ -392,6 +409,19 @@ public class Token
         public Builder name(final String name)
         {
             this.name = name;
+            return this;
+        }
+
+        /**
+         * Package name for the Token, default is null. Use for BEGIN_MESSAGE tokens for types that require an explicit
+         * package.
+         *
+         * @param packageName for the Token.
+         * @return this for a fluent API.
+         */
+        public Builder packageName(final String packageName)
+        {
+            this.packageName = packageName;
             return this;
         }
 
@@ -515,6 +545,7 @@ public class Token
                 name,
                 referencedName,
                 description,
+                packageName,
                 id,
                 version,
                 deprecated,

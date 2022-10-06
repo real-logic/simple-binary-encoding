@@ -19,6 +19,7 @@ import org.w3c.dom.Node;
 
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValue;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValueOrNull;
+import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getTypesPackageAttribute;
 
 /**
  * An SBE type. One of encodedDataType, compositeType, enumType, or setType per the SBE spec.
@@ -26,6 +27,7 @@ import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValueOrNull;
 public abstract class Type
 {
     private final String name;
+    private final String packageName;
     private final Presence presence;
     private final String description;
     private final int deprecated;
@@ -38,7 +40,7 @@ public abstract class Type
     /**
      * Construct a new Type from XML Schema. Called by subclasses to mostly set common fields
      *
-     * @param node           from the XML Schema Parsing
+     * @param node           from the XML Schema Parsing.
      * @param givenName      of this node, if null then the attributed name will be used.
      * @param referencedName of the type when created from a ref in a composite.
      */
@@ -54,7 +56,7 @@ public abstract class Type
         }
 
         this.referencedName = referencedName;
-
+        packageName = getTypesPackageAttribute(node);
         presence = Presence.get(getAttributeValue(node, "presence", "required"));
         description = getAttributeValueOrNull(node, "description");
         sinceVersion = Integer.parseInt(getAttributeValue(node, "sinceVersion", "0"));
@@ -66,12 +68,12 @@ public abstract class Type
     /**
      * Construct a new Type from direct values.
      *
-     * @param name         of the type
-     * @param presence     of the type
-     * @param description  of the type or null
-     * @param sinceVersion for the type
+     * @param name         of the type.
+     * @param presence     of the type.
+     * @param description  of the type or null.
+     * @param sinceVersion for the type.
      * @param deprecated   version in which this was deprecated.
-     * @param semanticType of the type or null
+     * @param semanticType of the type or null.
      */
     public Type(
         final String name,
@@ -81,7 +83,31 @@ public abstract class Type
         final int deprecated,
         final String semanticType)
     {
+        this(name, null, presence, description, sinceVersion, deprecated, semanticType);
+    }
+
+    /**
+     * Construct a new Type from direct values.
+     *
+     * @param name         of the type.
+     * @param packageName  of the type.
+     * @param presence     of the type.
+     * @param description  of the type or null.
+     * @param sinceVersion for the type
+     * @param deprecated   version in which this wa.s deprecated.
+     * @param semanticType of the type or null.
+     */
+    public Type(
+        final String name,
+        final String packageName,
+        final Presence presence,
+        final String description,
+        final int sinceVersion,
+        final int deprecated,
+        final String semanticType)
+    {
         this.name = name;
+        this.packageName = packageName;
         this.presence = presence;
         this.description = description;
         this.sinceVersion = sinceVersion;
@@ -92,9 +118,9 @@ public abstract class Type
     }
 
     /**
-     * Return the name of the type
+     * The name of the type.
      *
-     * @return name of the Type
+     * @return name of the Type.
      */
     public String name()
     {
@@ -112,9 +138,9 @@ public abstract class Type
     }
 
     /**
-     * Return the presence of the type
+     * The {@link Presence} of the type.
      *
-     * @return presence of the Type
+     * @return {@link Presence} of the type.
      */
     public Presence presence()
     {
@@ -131,9 +157,9 @@ public abstract class Type
     public abstract int encodedLength();
 
     /**
-     * The description of the Type (if set) or null
+     * The description of the Type (if set) or null.
      *
-     * @return description set by the type or null
+     * @return description set by the type or null.
      */
     public String description()
     {
@@ -171,9 +197,9 @@ public abstract class Type
     }
 
     /**
-     * The semanticType of the Type
+     * The FIX semanticType of the Type.
      *
-     * @return semanticType of the Type if set or null if not set
+     * @return FIX semanticType of the Type if set or null if not set.
      */
     public String semanticType()
     {
@@ -188,9 +214,9 @@ public abstract class Type
     public abstract boolean isVariableLength();
 
     /**
-     * Return the offset attribute of the {@link Type} from the schema
+     * The offset attribute of the {@link Type} from the schema.
      *
-     * @return the offset attribute value or -1 to indicate not set by the schema
+     * @return the offset attribute value or -1 to indicate not set by the schema.
      */
     public int offsetAttribute()
     {
@@ -198,12 +224,22 @@ public abstract class Type
     }
 
     /**
-     * Set the offset attribute of the {@link Type} from the schema
+     * Set the offset attribute of the {@link Type} from the schema.
      *
-     * @param offsetAttribute to set
+     * @param offsetAttribute to set.
      */
     public void offsetAttribute(final int offsetAttribute)
     {
         this.offsetAttribute = offsetAttribute;
+    }
+
+    /**
+     * The packageName attribute of the {@link Type} from the schema.
+     *
+     * @return the packageName attribute value or null, if not explicitly defined by the schema.
+     */
+    public String packageName()
+    {
+        return packageName;
     }
 }

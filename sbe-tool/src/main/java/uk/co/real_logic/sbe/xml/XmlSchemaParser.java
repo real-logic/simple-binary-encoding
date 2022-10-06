@@ -327,6 +327,29 @@ public class XmlSchemaParser
     }
 
     /**
+     * To be used with descendant elements of {@code <types>} elements. Returns the package attribute value as
+     * defined on the ancestor {@code <types>} element.
+     *
+     * @param elementNode the node inside the {@code <types>} element.
+     * @return the package name, or null if not defined.
+     */
+    public static String getTypesPackageAttribute(final Node elementNode)
+    {
+        Node parentNode = elementNode.getParentNode();
+        while (null != parentNode)
+        {
+            if ("types".equals(parentNode.getLocalName()) || "types".equals(parentNode.getNodeName()))
+            {
+                return getAttributeValue(parentNode, "package", null);
+            }
+
+            parentNode = parentNode.getParentNode();
+        }
+
+        return null;
+    }
+
+    /**
      * Helper function that hides the null return from {@link org.w3c.dom.NamedNodeMap#getNamedItem(String)}.
      *
      * @param elementNode that could be null.
