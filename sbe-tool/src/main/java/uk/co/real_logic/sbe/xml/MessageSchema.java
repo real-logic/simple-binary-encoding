@@ -18,10 +18,19 @@ package uk.co.real_logic.sbe.xml;
 import org.agrona.Verify;
 import org.w3c.dom.Node;
 
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 import java.nio.ByteOrder;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.Collection;
+import java.util.Deque;
+import java.util.List;
+import java.util.Map;
 
-import static uk.co.real_logic.sbe.xml.XmlSchemaParser.*;
+import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValue;
+import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getAttributeValueOrNull;
+import static uk.co.real_logic.sbe.xml.XmlSchemaParser.getByteOrder;
 
 /**
  * Message schema aggregate for schema attributes, messageHeader, and reference for multiple {@link Message} objects.
@@ -59,7 +68,8 @@ public class MessageSchema
         this.headerType = null == headerType ? HEADER_TYPE_DEFAULT : headerType;
         Verify.present(typeByNameMap, this.headerType, "Message header");
 
-        ((CompositeType)typeByNameMap.get(this.headerType)).checkForWellFormedMessageHeader(schemaNode);
+        final Node messageHeaderNode = findNode(schemaNode, "types/composite[@name='" + this.headerType + "']");
+        ((CompositeType)typeByNameMap.get(this.headerType)).checkForWellFormedMessageHeader(messageHeaderNode);
     }
 
     MessageSchema(
@@ -352,5 +362,18 @@ public class MessageSchema
             .append(" > messageSchema.version=").append(version);
 
         errorHandler.error(sb.toString());
+    }
+
+    private static Node findNode(final Node contextNode, final String path)
+    {
+        try
+        {
+            return (Node)XPathFactory.newInstance().newXPath()
+                .evaluate(path, contextNode, XPathConstants.NODE);
+        }
+        catch (final XPathExpressionException e)
+        {
+            throw new IllegalArgumentException("Unable to locate node with path=" + path, e);
+        }
     }
 }

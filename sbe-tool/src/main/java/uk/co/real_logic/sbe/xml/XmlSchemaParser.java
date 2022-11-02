@@ -363,7 +363,13 @@ public class XmlSchemaParser
             return null;
         }
 
-        final Node attrNode = elementNode.getAttributes().getNamedItemNS(null, attrName);
+        final NamedNodeMap attributes = elementNode.getAttributes();
+//        if (null == attributes)
+//        {
+//            return null;
+//        }
+
+        final Node attrNode = attributes.getNamedItemNS(null, attrName);
         if (null == attrNode)
         {
             return null;
