@@ -1126,7 +1126,7 @@ public class CppGenerator implements CodeGenerator
             "#  define SBE_BOUNDS_CHECK_EXPECT(exp, c) (false)\n" +
             "#elif defined(_MSC_VER)\n" +
             "#  define SBE_BOUNDS_CHECK_EXPECT(exp, c) (exp)\n" +
-            "#else\n" +
+            "#elif !defined(SBE_BOUNDS_CHECK_EXPECT)\n" +
             "#  define SBE_BOUNDS_CHECK_EXPECT(exp, c) (__builtin_expect(exp, c))\n" +
             "#endif\n\n" +
 
