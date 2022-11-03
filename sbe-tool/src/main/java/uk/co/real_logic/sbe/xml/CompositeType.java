@@ -195,9 +195,9 @@ public class CompositeType extends Type
             }
             else if (numInGroupMinValue.longValue() < 0)
             {
-                XmlSchemaParser.handleError(node, String.format(
-                    "\"numInGroup\" minValue=%s must be greater than zero " +
-                    "for signed \"numInGroup\" types", numInGroupMinValue));
+                XmlSchemaParser.handleError(node,
+                    "\"numInGroup\" minValue=" + numInGroupMinValue + " must be greater than zero " +
+                    "for signed \"numInGroup\" types");
             }
         }
         else
@@ -218,8 +218,8 @@ public class CompositeType extends Type
 
                 if (numInGroupMinValue.longValue() > max)
                 {
-                    XmlSchemaParser.handleError(node, String.format(
-                        "\"numInGroup\" minValue=%s greater than maxValue=%d", numInGroupMinValue, max));
+                    XmlSchemaParser.handleError(
+                        node, "\"numInGroup\" minValue=" + numInGroupMinValue + " greater than maxValue=" + max);
                 }
             }
         }
@@ -275,22 +275,22 @@ public class CompositeType extends Type
             final long allowedValue = primitiveType.maxValue().longValue();
             if (longValue > allowedValue)
             {
-                XmlSchemaParser.handleError(node, String.format(
-                    "maxValue greater than allowed for type: maxValue=%d allowed=%d", longValue, allowedValue));
+                XmlSchemaParser.handleError(
+                    node, "maxValue greater than allowed for type: maxValue=" + longValue + " allowed=" + allowedValue);
             }
 
             final long maxInt = INT32.maxValue().longValue();
             if (primitiveType == UINT32 && longValue > maxInt)
             {
-                XmlSchemaParser.handleError(node, String.format(
-                    "maxValue greater than allowed for type: maxValue=%d allowed=%d", longValue, maxInt));
+                XmlSchemaParser.handleError(
+                    node, "maxValue greater than allowed for type: maxValue=" + longValue + " allowed=" + maxInt);
             }
         }
         else if (primitiveType == UINT32)
         {
             final long maxInt = INT32.maxValue().longValue();
-            XmlSchemaParser.handleError(node, String.format(
-                "maxValue must be set for varData UINT32 type: max value allowed=%d", maxInt));
+            XmlSchemaParser.handleError(
+                node, "maxValue must be set for varData UINT32 type: max value allowed=" + maxInt);
         }
     }
 
@@ -333,33 +333,25 @@ public class CompositeType extends Type
     {
         if (actualType == null)
         {
-            XmlSchemaParser.handleError(
-                node,
-                String.format("composite for message header must have \"%s\"", fieldName));
+            XmlSchemaParser.handleError(node, "composite for message header must have \"" + fieldName + "\"");
         }
         else if (actualType.primitiveType() != expectedType)
         {
-            XmlSchemaParser.handleWarning(node, String.format("\"%s\" should be %s", fieldName, expectedType.name()));
+            XmlSchemaParser.handleWarning(node, "\"" + fieldName + "\" should be " + expectedType.name());
 
             if (shouldGenerateInterfaces)
             {
                 if (actualType.primitiveType().size() > expectedType.size())
                 {
-                    XmlSchemaParser.handleError(
-                        node,
-                        String.format("\"%s\" must be less than %s bytes to use %s",
-                        fieldName,
-                        expectedType.size(),
-                        JAVA_GENERATE_INTERFACES));
+                    final String msg = "\"" + fieldName + "\" must be less than " + expectedType.size() +
+                        " bytes to use " + JAVA_GENERATE_INTERFACES;
+                    XmlSchemaParser.handleError(node, msg);
                 }
                 else
                 {
-                    XmlSchemaParser.handleWarning(
-                        node,
-                        String.format("\"%s\" will be cast to %s to use %s",
-                        fieldName,
-                        expectedType.name(),
-                        JAVA_GENERATE_INTERFACES));
+                    final String msg = "\"" + fieldName + "\" will be cast to " + expectedType.name() +
+                        " to use " + JAVA_GENERATE_INTERFACES;
+                    XmlSchemaParser.handleWarning(node, msg);
                 }
             }
         }
@@ -383,8 +375,7 @@ public class CompositeType extends Type
                 if (offsetAttribute < offset)
                 {
                     XmlSchemaParser.handleError(
-                        node,
-                        String.format("composite element \"%s\" has incorrect offset specified", edt.name()));
+                        node, "composite element \"" + edt.name() + "\" has incorrect offset specified");
                 }
 
                 offset = offsetAttribute;
@@ -434,8 +425,8 @@ public class CompositeType extends Type
             {
                 final XPath xPath = XPathFactory.newInstance().newXPath();
                 final String refTypeName = XmlSchemaParser.getAttributeValue(subTypeNode, "type");
-                final Node refTypeNode = (Node)xPath.compile(
-                    "/*[local-name() = 'messageSchema']/types/*[@name='" + refTypeName + "']")
+                final String expression = "/*[local-name() = 'messageSchema']/types/*[@name='" + refTypeName + "']";
+                final Node refTypeNode = (Node)xPath.compile(expression)
                     .evaluate(subTypeNode.getOwnerDocument(), XPathConstants.NODE);
 
                 if (refTypeNode == null)

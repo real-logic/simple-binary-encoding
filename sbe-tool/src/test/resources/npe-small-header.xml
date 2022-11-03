@@ -7,16 +7,19 @@
         description="Message format for XXXXXX"
         byteOrder="littleEndian">
     <types>
-        <!--  SBE standard-ish MessageHeader:
-                    We think we can use uint8 for most of these fields.
-                    Part of the argument is to acknowledge XXXXXXXX does use complex/large msgs, but they are/should-be config/protobuffs, not SBE  -->
-        <composite name="messageHeader" description="Header included at the start of every SBE message">
-            <type name="schemaId" primitiveType="uint16" description="ID for the schema"/>
-            <type name="version" primitiveType="uint8" description="Version number of the schema"/>
-            <type name="templateId" primitiveType="uint8" description="ID of the msg type. 0-127 = outbound (inc Ping, etc), 128-255 = inbound(Pong, etc)"/>
-            <type name="blockLength" primitiveType="uint8" description="Length of fixed-size root-block part, excludes this header, repeating-groups and VarData"/>
-            <type name="numGroups" primitiveType="uint8" description="Number of repeating-groups"/>
-            <type name="numVarDataFields" primitiveType="uint8" description="Number of variable-length fields"/>
+        <composite name="messageHeader" description="Header included before every SBE message">
+            <type name="schemaId" primitiveType="uint16"
+                  description="ID for the schema"/>
+            <type name="version" primitiveType="uint8"
+                  description="Version number of the schema"/>
+            <type name="templateId" primitiveType="uint8"
+                  description="ID of the msg type."/>
+            <type name="blockLength" primitiveType="uint8"
+                  description="Length of fixed-size root-block, excludes this header, repeating-groups and var-data"/>
+            <type name="numGroups" primitiveType="uint8"
+                  description="Number of repeating-groups"/>
+            <type name="numVarDataFields" primitiveType="uint8"
+                  description="Number of variable-length fields"/>
         </composite>
     </types>
     <sbe:message name="Ping" id="0"> </sbe:message>

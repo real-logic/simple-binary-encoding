@@ -176,9 +176,10 @@ public class XmlSchemaParser
      * @param document for the XML parsing.
      * @param xPath    for XPath expression reuse.
      * @return {@link java.util.Map} of name {@link java.lang.String} to {@link Type}.
-     * @throws Exception on parsing error.
+     * @throws XPathExpressionException on parsing error.
      */
-    public static Map<String, Type> findTypes(final Document document, final XPath xPath) throws Exception
+    public static Map<String, Type> findTypes(final Document document, final XPath xPath)
+        throws XPathExpressionException
     {
         final Map<String, Type> typeByNameMap = new HashMap<>();
 
@@ -216,10 +217,11 @@ public class XmlSchemaParser
      * @param xPath         for XPath expression reuse.
      * @param typeByNameMap to use for Type objects.
      * @return {@link java.util.Map} of schemaId to {@link Message}.
-     * @throws Exception on parsing error.
+     * @throws XPathExpressionException on parsing error.
      */
     public static Map<Long, Message> findMessages(
-        final Document document, final XPath xPath, final Map<String, Type> typeByNameMap) throws Exception
+        final Document document, final XPath xPath, final Map<String, Type> typeByNameMap)
+        throws XPathExpressionException
     {
         final Map<Long, Message> messageByIdMap = new HashMap<>();
         final ObjectHashSet<String> distinctNames = new ObjectHashSet<>();

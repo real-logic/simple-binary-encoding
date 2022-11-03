@@ -24,27 +24,31 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static uk.co.real_logic.sbe.Tests.getLocalResource;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
-public class WarningFormattingTest
+class WarningFormattingTest
 {
     @Test
     void shouldGenerateCorrectWarning() throws Exception
     {
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
-        final ParserOptions options = new ParserOptions.Builder().errorPrintStream(new PrintStream(out)).build();
+        final ParserOptions options = new ParserOptions.Builder()
+            .stopOnError(true)
+            .errorPrintStream(new PrintStream(out))
+            .build();
         final MessageSchema schema = parse(getLocalResource("npe-small-header.xml"), options);
         final IrGenerator irg = new IrGenerator();
         irg.generate(schema);
 
         final String warnings = out.toString(StandardCharsets.US_ASCII.name());
-        assertTrue(warnings.contains(
+        assertThat(warnings, containsString(
             "WARNING: at <types><composite name=\"messageHeader\"> \"blockLength\" should be UINT16"));
-        assertTrue(warnings.contains(
+        assertThat(warnings, containsString(
             "WARNING: at <types><composite name=\"messageHeader\"> \"templateId\" should be UINT16"));
-        assertTrue(warnings.contains(
+        assertThat(warnings, containsString(
             "WARNING: at <types><composite name=\"messageHeader\"> \"version\" should be UINT16"));
     }
 }

@@ -52,8 +52,7 @@ public class MessageSchema
     private final Map<String, Type> typeByNameMap;
     private final Map<Long, Message> messageByIdMap;
 
-    MessageSchema(
-        final Node schemaNode, final Map<String, Type> typeByNameMap, final Map<Long, Message> messageByIdMap)
+    MessageSchema(final Node schemaNode, final Map<String, Type> typeByNameMap, final Map<Long, Message> messageByIdMap)
     {
         this.packageName = getAttributeValue(schemaNode, "package");
         this.description = getAttributeValueOrNull(schemaNode, "description");
@@ -371,9 +370,9 @@ public class MessageSchema
             return (Node)XPathFactory.newInstance().newXPath()
                 .evaluate(path, contextNode, XPathConstants.NODE);
         }
-        catch (final XPathExpressionException e)
+        catch (final XPathExpressionException ex)
         {
-            throw new IllegalArgumentException("Unable to locate node with path=" + path, e);
+            throw new IllegalArgumentException("Unable to locate node with path=" + path, ex);
         }
     }
 }
