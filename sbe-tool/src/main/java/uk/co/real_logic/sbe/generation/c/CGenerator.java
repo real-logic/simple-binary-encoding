@@ -1127,12 +1127,14 @@ public class CGenerator implements CodeGenerator
             " Set __BYTE_ORDER__ manually before including this file.\"\n" +
             "#endif\n\n" +
 
-            "#if defined(SBE_NO_BOUNDS_CHECK)\n" +
-            "    #define SBE_BOUNDS_CHECK_EXPECT(exp,c) (false)\n" +
-            "#elif defined(_MSC_VER)\n" +
-            "    #define SBE_BOUNDS_CHECK_EXPECT(exp,c) (exp)\n" +
-            "#elif !defined(SBE_BOUNDS_CHECK_EXPECT)\n" +
-            "    #define SBE_BOUNDS_CHECK_EXPECT(exp,c) (__builtin_expect(exp,c))\n" +
+            "#if !defined(SBE_BOUNDS_CHECK_EXPECT)\n" +
+            "#  if defined(SBE_NO_BOUNDS_CHECK)\n" +
+            "#    define SBE_BOUNDS_CHECK_EXPECT(exp, c) (false)\n" +
+            "#  elif defined(_MSC_VER)\n" +
+            "#    define SBE_BOUNDS_CHECK_EXPECT(exp, c) (exp)\n" +
+            "#  else \n" +
+            "#    define SBE_BOUNDS_CHECK_EXPECT(exp, c) (__builtin_expect(exp, c))\n" +
+            "#  endif\n\n" +
             "#endif\n\n" +
 
             "#define SBE_NULLVALUE_INT8 INT8_MIN\n" +
