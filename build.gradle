@@ -21,7 +21,7 @@ import java.security.MessageDigest
 plugins {
     id 'java-library'
     id 'com.github.johnrengelman.shadow' version '7.1.2' apply false
-    id "com.github.ben-manes.versions" version "0.43.0"
+    id "com.github.ben-manes.versions" version "0.44.0"
 }
 
 defaultTasks 'clean', 'build'
@@ -44,9 +44,9 @@ def toolchainLauncher = javaToolchains.launcherFor {
 
 def checkstyleVersion = '9.3'
 def hamcrestVersion = '2.2'
-def mockitoVersion = '4.8.1'
+def mockitoVersion = '4.9.0'
 def junitVersion = '5.9.1'
-def jmhVersion = '1.35'
+def jmhVersion = '1.36'
 def agronaVersion = '1.17.1'
 def agronaVersionRange = '[1.17.1,2.0[' // allow any release >= 1.17.1 and < 2.0.0
 
