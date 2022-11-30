@@ -822,7 +822,7 @@ tasks.named('dependencyUpdates').configure {
 tasks.findByName('build').dependsOn verifyJavaIrCodecsInSync
 
 wrapper {
-    gradleVersion = '7.5.1'
+    gradleVersion = '7.6'
     distributionType = 'ALL'
 }
 
