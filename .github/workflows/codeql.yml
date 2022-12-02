@@ -1,0 +1,181 @@
+name: "CodeQL"
+
+on:
+  push:
+    branches: [ 'master' ]
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches: [ 'master' ]
+  schedule:
+    - cron: '16 7 * * 3'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+  
+env:
+  GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.java.installations.auto-detect=false -Dorg.gradle.warning.mode=fail'
+  CMAKE_VERSION: '3.14.7'
+
+permissions:
+  contents: read
+  
+jobs:
+ 
+  java-analyze:
+    name: Java Analyze ${{ matrix.java }}
+    runs-on: ubuntu-22.04
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'java' ]
+        java: [ '8' ]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: Cache Gradle wrappers
+        uses: actions/cache@v3
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
+      - name: Setup java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: ${{ matrix.java }}
+      - name: Setup BUILD_JAVA_HOME & BUILD_JAVA_VERSION
+        run: |
+          java -Xinternalversion
+          echo "BUILD_JAVA_HOME=${JAVA_HOME}" >> $GITHUB_ENV
+          echo "BUILD_JAVA_VERSION=${{ matrix.java }}" >> $GITHUB_ENV
+          
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: ${{ matrix.language }}
+        
+      - name: Build with Gradle
+        run: ./gradlew
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+        with:
+          category: "/language:${{matrix.language}}"
+          
+  csharp-analyze:
+    name: C# Analyze ${{ matrix.dotnet }}
+    runs-on: ubuntu-22.04
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'csharp' ]
+        dotnet: [ '3.1.301' ]
+    env:
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: Cache Gradle wrappers
+        uses: actions/cache@v3
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
+      - name: Cache NuGet dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('csharp/**/*.sln') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: ${{ matrix.dotnet }}
+  
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: ${{ matrix.language }}
+        
+      - name: Build
+        run: ./csharp/build.sh
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+        with:
+          category: "/language:${{matrix.language}}"
+          
+  cpp-gcc-2204-analyze:
+    name: C++ GCC Analyze ${{ matrix.version }}
+    runs-on: ubuntu-22.04
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        language: ['cpp']
+        version: [ '12' ]
+    env:
+      CC: gcc-${{ matrix.version }}
+      CXX: g++-${{ matrix.version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Cache Gradle dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: Cache Gradle wrappers
+        uses: actions/cache@v3
+        with:
+          path: ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
+      - name: Install compiler
+        run: |
+          sudo apt-get install -y g++-${{ matrix.version }}
+          curl -O -L https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.tar.gz
+          tar xf cmake-${CMAKE_VERSION}-Linux-x86_64.tar.gz
+          echo "cmake-${CMAKE_VERSION}-Linux-x86_64/bin" >> $GITHUB_PATH
+          
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: ${{ matrix.language }}
+          
+      - name: Build
+        run: ./cppbuild/cppbuild
+        
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+        with:
+          category: "/language:${{matrix.language}}"
+
