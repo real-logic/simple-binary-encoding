@@ -260,7 +260,7 @@ public class RustUtil
     {
         if (shadowsKeyword(name))
         {
-            return name + "_";
+            return "r#" + name;
         }
         else
         {
@@ -310,7 +310,7 @@ public class RustUtil
         {
             for (final ReservedKeyword value : ReservedKeyword.values())
             {
-                LOWER_CASE_NAMES.add(value.name());
+                LOWER_CASE_NAMES.add(value.name().toLowerCase());
             }
         }
 

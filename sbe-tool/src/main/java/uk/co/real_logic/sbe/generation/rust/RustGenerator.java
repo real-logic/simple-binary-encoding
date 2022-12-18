@@ -542,7 +542,7 @@ public class RustGenerator implements CodeGenerator
                 decoderName,
                 decoderTypeName);
 
-            indent(sb, level + 1, "if self.acting_version < %d {\n", fieldToken.version());
+            indent(sb, level + 1, "if self.acting_version > 0 && self.acting_version < %d {\n", fieldToken.version());
             indent(sb, level + 2, "return Either::Left(self);\n");
             indent(sb, level + 1, "}\n\n");
 
@@ -576,7 +576,7 @@ public class RustGenerator implements CodeGenerator
 
         if (bitsetToken.version() > 0)
         {
-            indent(sb, level + 1, "if self.acting_version < %d {\n", bitsetToken.version());
+            indent(sb, level + 1, "if self.acting_version > 0 && self.acting_version < %d {\n", bitsetToken.version());
             indent(sb, level + 2, "return %s::default();\n", structTypeName);
             indent(sb, level + 1, "}\n\n");
         }
@@ -636,8 +636,8 @@ public class RustGenerator implements CodeGenerator
 
         if (fieldToken.version() > 0)
         {
-            indent(sb, level + 1, "if self.acting_version < %d {\n", fieldToken.version());
-            indent(sb, level + 2, "return [%s, %d];\n", encoding.applicableNullValue(), arrayLength);
+            indent(sb, level + 1, "if self.acting_version > 0 && self.acting_version < %d {\n", fieldToken.version());
+            indent(sb, level + 2, "return [%s; %d];\n", encoding.applicableNullValue(), arrayLength);
             indent(sb, level + 1, "}\n\n");
         }
 
@@ -737,7 +737,7 @@ public class RustGenerator implements CodeGenerator
 
         if (fieldToken.version() > 0)
         {
-            indent(sb, level + 1, "if self.acting_version < %d {\n", fieldToken.version());
+            indent(sb, level + 1, "if self.acting_version > 0 && self.acting_version < %d {\n", fieldToken.version());
             indent(sb, level + 2, "return None;\n");
             indent(sb, level + 1, "}\n\n");
         }
@@ -790,7 +790,7 @@ public class RustGenerator implements CodeGenerator
 
         if (fieldToken.version() > 0)
         {
-            indent(sb, level + 1, "if self.acting_version < %d {\n", fieldToken.version());
+            indent(sb, level + 1, "if self.acting_version > 0 && self.acting_version < %d {\n", fieldToken.version());
             indent(sb, level + 2, "return %s;\n",
                 generateRustLiteral(encoding.primitiveType(), encoding.applicableNullValue().toString()));
             indent(sb, level + 1, "}\n\n");
@@ -939,7 +939,7 @@ public class RustGenerator implements CodeGenerator
             {
                 if (varDataToken.version() > 0)
                 {
-                    indent(sb, level + 1, "if self.acting_version < %d {\n", varDataToken.version());
+                    indent(sb, level + 1, "if self.acting_version > 0 && self.acting_version < %d {\n", varDataToken.version());
                     indent(sb, level + 2, "return (self.parent.as_ref().unwrap().get_limit(), 0);\n");
                     indent(sb, level + 1, "}\n\n");
                 }
@@ -954,7 +954,7 @@ public class RustGenerator implements CodeGenerator
             {
                 if (varDataToken.version() > 0)
                 {
-                    indent(sb, level + 1, "if self.acting_version < %d {\n", varDataToken.version());
+                    indent(sb, level + 1, "if self.acting_version > 0 && self.acting_version < %d {\n", varDataToken.version());
                     indent(sb, level + 2, "return (self.get_limit(), 0);\n");
                     indent(sb, level + 1, "}\n\n");
                 }
@@ -973,7 +973,7 @@ public class RustGenerator implements CodeGenerator
 
             if (varDataToken.version() > 0)
             {
-                indent(sb, level + 1, "if self.acting_version < %d {\n", varDataToken.version());
+                indent(sb, level + 1, "if self.acting_version > 0 && self.acting_version < %d {\n", varDataToken.version());
                 indent(sb, level + 2, "return &[] as &[u8];\n");
                 indent(sb, level + 1, "}\n\n");
             }
@@ -1354,6 +1354,7 @@ public class RustGenerator implements CodeGenerator
         indent(out, 1, "pub struct %s<P> {\n", encoderName);
         indent(out, 2, "parent: Option<P>,\n");
         indent(out, 2, "offset: usize,\n");
+        indent(out, 2, "acting_version: usize,\n");
         indent(out, 1, "}\n\n");
 
         appendImplWriterForComposite(out, 1, encoderName);
@@ -1413,6 +1414,7 @@ public class RustGenerator implements CodeGenerator
         indent(out, 1, "pub struct %s<P> {\n", decoderName);
         indent(out, 2, "parent: Option<P>,\n");
         indent(out, 2, "offset: usize,\n");
+        indent(out, 2, "acting_version: usize,\n");
         indent(out, 1, "}\n\n");
 
         appendImplReaderForComposite(out, 1, decoderName);
