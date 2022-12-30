@@ -473,7 +473,7 @@ public class RustGenerator implements CodeGenerator
         final String name) throws IOException
     {
         final String encoderName = toLowerSnakeCase(encoderName(name));
-        final String encoderTypeName = encoderName(formatStructName(typeToken.name()));
+        final String encoderTypeName = encoderName(formatStructName(typeToken.applicableTypeName()));
         indent(sb, level, "/// COMPOSITE ENCODER\n");
         indent(sb, level, "#[inline]\n");
         indent(sb, level, "pub fn %s(self) -> %2$s<Self> {\n",
@@ -533,7 +533,7 @@ public class RustGenerator implements CodeGenerator
         final String name) throws IOException
     {
         final String decoderName = toLowerSnakeCase(decoderName(name));
-        final String decoderTypeName = decoderName(formatStructName(typeToken.name()));
+        final String decoderTypeName = decoderName(formatStructName(typeToken.applicableTypeName()));
         indent(sb, level, "/// COMPOSITE DECODER\n");
         indent(sb, level, "#[inline]\n");
         if (fieldToken.version() > 0)
