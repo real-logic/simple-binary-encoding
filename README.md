@@ -131,7 +131,7 @@ Or run test directly with `Cargo`
 
 License (See LICENSE file for full license)
 -------------------------------------------
-Copyright 2013-2022 Real Logic Limited.  
+Copyright 2013-2023 Real Logic Limited.  
 Copyright 2017 MarketFactory Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
