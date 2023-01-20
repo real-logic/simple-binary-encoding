@@ -5,8 +5,6 @@ Simple Binary Encoding (SBE)
 [![GitHub](https://img.shields.io/github/license/real-logic/simple-binary-encoding.svg)](https://github.com/real-logic/simple-binary-encoding/blob/master/LICENSE)
 
 [![Actions Status](https://github.com/real-logic/simple-binary-encoding/workflows/Continuous%20Integration/badge.svg)](https://github.com/real-logic/simple-binary-encoding/actions)
-[![Total Alerts](https://img.shields.io/lgtm/alerts/g/real-logic/simple-binary-encoding.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/real-logic/simple-binary-encoding/alerts)
-[![Code Quality: Java](https://img.shields.io/lgtm/grade/java/g/real-logic/simple-binary-encoding.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/real-logic/simple-binary-encoding/context:java)
 
 [SBE](https://github.com/FIXTradingCommunity/fix-simple-binary-encoding) is an OSI layer 6 presentation for 
 encoding and decoding binary application messages for low-latency financial applications. This repository contains 
