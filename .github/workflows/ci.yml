@@ -238,6 +238,8 @@ jobs:
           key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
       - name: Install compiler
         run: |
+          sudo add-apt-repository "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-${{ matrix.version }} main"
+          sudo apt-get update
           sudo apt-get install -y clang-${{ matrix.version }}
           curl -O -L https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.tar.gz
           tar xf cmake-${CMAKE_VERSION}-Linux-x86_64.tar.gz
