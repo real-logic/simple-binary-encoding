@@ -2,12 +2,12 @@ name: "CodeQL"
 
 on:
   push:
-    branches: [ 'master' ]
+    branches:
+      - master
   pull_request:
-    # The branches below must be a subset of the branches above
-    branches: [ 'master' ]
-  schedule:
-    - cron: '16 7 * * 3'
+    types: [opened, synchronize]
+    branches:
+      - master
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -178,4 +178,3 @@ jobs:
         uses: github/codeql-action/analyze@v2
         with:
           category: "/language:${{matrix.language}}"
-
