@@ -57,7 +57,7 @@ class TypesTest
     {
         final int bufferIndex = 8;
 
-        short total = 0;
+        int total = 0;
         for (int i = 0; i < 8; i++)
         {
             byte bits = buffer.getByte(bufferIndex);
