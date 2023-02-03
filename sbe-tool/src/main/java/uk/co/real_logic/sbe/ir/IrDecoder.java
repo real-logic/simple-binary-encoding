@@ -46,7 +46,7 @@ public class IrDecoder implements AutoCloseable
     private final FrameCodecDecoder frameDecoder = new FrameCodecDecoder();
     private final TokenCodecDecoder tokenDecoder = new TokenCodecDecoder();
     private int offset;
-    private final long length;
+    private final int length;
     private String irPackageName = null;
     private String irNamespaceName = null;
     private String semanticVersion = null;
@@ -67,9 +67,15 @@ public class IrDecoder implements AutoCloseable
         {
             channel = FileChannel.open(Paths.get(fileName), READ);
             final long fileLength = channel.size();
+
+            if (fileLength > Integer.MAX_VALUE)
+            {
+                throw new IllegalStateException("Invalid IR file: length=" + fileLength + " > Integer.MAX_VALUE");
+            }
+
             final MappedByteBuffer buffer = channel.map(FileChannel.MapMode.READ_ONLY, 0, fileLength);
             directBuffer = new UnsafeBuffer(buffer);
-            length = fileLength;
+            length = (int)fileLength;
             offset = 0;
         }
         catch (final IOException ex)
