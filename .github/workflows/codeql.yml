@@ -64,15 +64,15 @@ jobs:
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v2
         with:
-          languages: 'java'
-
-      - name: Autobuild
-        uses: github/codeql-action/autobuild@v2
+          languages: ${{ matrix.language }}
+        
+      - name: Build with Gradle
+        run: ./gradlew
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
         with:
-          category: '/language:java'
+          category: "/language:${{matrix.language}}"
           
   csharp-analyze:
     name: C# Analyze ${{ matrix.dotnet }}
