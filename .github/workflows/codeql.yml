@@ -65,6 +65,7 @@ jobs:
         uses: github/codeql-action/init@v2
         with:
           languages: ${{ matrix.language }}
+          queries: +security-and-quality
         
       - name: Build with Gradle
         run: ./gradlew
@@ -120,6 +121,7 @@ jobs:
         uses: github/codeql-action/init@v2
         with:
           languages: ${{ matrix.language }}
+          queries: +security-and-quality
         
       - name: Build
         run: ./csharp/build.sh
@@ -170,6 +172,7 @@ jobs:
         uses: github/codeql-action/init@v2
         with:
           languages: ${{ matrix.language }}
+          queries: +security-and-quality
           
       - name: Build
         run: ./cppbuild/cppbuild
