@@ -83,10 +83,10 @@ public:
     {
         car.wrapForDecode((char *)buffer, 0, Car::sbeBlockLength(), Car::sbeSchemaVersion(), bufferLength);
 
-        volatile int64_t tmpInt;
-        volatile const char *tmpChar;
-        volatile double tmpDouble;
-        volatile bool tmpBool;
+        volatile int64_t tmpInt = 0;
+        volatile const char *tmpChar = nullptr;
+        volatile double tmpDouble = 0;
+        volatile bool tmpBool = 0;
 
         tmpInt = car.serialNumber();
         tmpInt = car.modelYear();
