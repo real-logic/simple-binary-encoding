@@ -48,14 +48,14 @@ class IrUtil
     {
         switch (byteOrder)
         {
-            case SBE_LITTLE_ENDIAN:
-                return ByteOrder.LITTLE_ENDIAN;
-
             case SBE_BIG_ENDIAN:
                 return ByteOrder.BIG_ENDIAN;
-        }
 
-        return ByteOrder.LITTLE_ENDIAN;
+            default:
+            case SBE_LITTLE_ENDIAN:
+            case NULL_VAL:
+                return ByteOrder.LITTLE_ENDIAN;
+        }
     }
 
     static SignalCodec mapSignal(final Signal signal)
@@ -414,9 +414,11 @@ class IrUtil
 
             case SBE_CONSTANT:
                 return Encoding.Presence.CONSTANT;
-        }
 
-        return Encoding.Presence.REQUIRED;
+            default:
+            case SBE_REQUIRED:
+                return Encoding.Presence.REQUIRED;
+        }
     }
 
     static PresenceCodec mapPresence(final Encoding.Presence presence)
@@ -428,8 +430,10 @@ class IrUtil
 
             case CONSTANT:
                 return PresenceCodec.SBE_CONSTANT;
-        }
 
-        return PresenceCodec.SBE_REQUIRED;
+            default:
+            case REQUIRED:
+                return PresenceCodec.SBE_REQUIRED;
+        }
     }
 }
