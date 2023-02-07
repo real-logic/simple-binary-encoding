@@ -75,6 +75,5 @@ namespace Org.SbeTool.Sbe.Tests
 
             Assert.AreEqual(Issue435.EnumRef.Two, _issue435.Example.E, "Incorrect EnuRef");
         }
-
     }
 }

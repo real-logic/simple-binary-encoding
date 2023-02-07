@@ -485,7 +485,7 @@ namespace Org.SbeTool.Sbe.Dll
         /// <returns> equivalence of values </returns>
         public override bool Equals(object value)
         {
-            if (null != value && value is PrimitiveValue)
+            if (null != value && this.GetType().Equals(value.GetType()))
             {
                 var rhs = (PrimitiveValue) value;
 
