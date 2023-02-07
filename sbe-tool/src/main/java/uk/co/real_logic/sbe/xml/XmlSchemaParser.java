@@ -16,6 +16,7 @@
  */
 package uk.co.real_logic.sbe.xml;
 
+import org.agrona.Strings;
 import org.agrona.collections.ObjectHashSet;
 import org.w3c.dom.*;
 import org.xml.sax.InputSource;
@@ -298,13 +299,20 @@ public class XmlSchemaParser
 
         final NamedNodeMap attributes = elementNode.getAttributes();
         final Node attrNode = attributes.getNamedItemNS(null, attrName);
-        if (null == attrNode || "".equals(attrNode.getNodeValue()))
+        if (null == attrNode)
         {
             throw new IllegalStateException(
-                "element '" + elementNode.getNodeName() + "' has empty or missing attribute: " + attrName);
+                "element '" + elementNode.getNodeName() + "' has missing attribute: " + attrName);
         }
 
-        return attrNode.getNodeValue();
+        final String nodeValue = attrNode.getNodeValue();
+        if (Strings.isEmpty(nodeValue))
+        {
+            throw new IllegalStateException(
+                "element '" + elementNode.getNodeName() + "' has empty attribute: " + attrName);
+        }
+
+        return nodeValue;
     }
 
     /**
