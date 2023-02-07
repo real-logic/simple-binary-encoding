@@ -261,7 +261,7 @@ namespace Baseline
 
             sb.Append("\ncar.size=").Append(car.Size);
 
-            Console.WriteLine(sb.ToString());
+            Console.WriteLine(sb);
         }
     }
 }

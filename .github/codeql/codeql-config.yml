@@ -7,4 +7,6 @@ query-filters:
   - exclude:
       id: java/iterator-implements-iterable
   - exclude:
+      id: java/missing-override-annotation
+  - exclude:
       id: cs/useless-assignment-to-local

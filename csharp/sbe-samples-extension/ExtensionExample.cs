@@ -74,7 +74,7 @@ class Example
 
         // And now let's encode an extension and decode it as baseline
         Extension.ExtensionExample.Encode(extensionCar, directBuffer, Extension.MessageHeader.Size);
-        Baseline.ExtensionExample.Decode(baselineCar, directBuffer, (int)Baseline.MessageHeader.Size, (int)Extension.Car.BlockLength, (int)Baseline.Car.SchemaVersion);
+        Baseline.ExtensionExample.Decode(baselineCar, directBuffer, Baseline.MessageHeader.Size, (int)Extension.Car.BlockLength, (int)Baseline.Car.SchemaVersion);
     }
 }
 
@@ -283,7 +283,7 @@ namespace Baseline
 
             sb.Append("\ncar.size=").Append(car.Size);
 
-            Console.WriteLine(sb.ToString());
+            Console.WriteLine(sb);
         }
     }
 }
@@ -539,7 +539,7 @@ namespace Extension
 
             sb.Append("\ncar.size=").Append(car.Size);
 
-            Console.WriteLine(sb.ToString());
+            Console.WriteLine(sb);
         }
     }
 }
