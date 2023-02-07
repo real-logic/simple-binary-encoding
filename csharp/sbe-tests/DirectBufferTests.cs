@@ -103,21 +103,21 @@ namespace Org.SbeTool.Sbe.Tests
         [TestMethod]
         public void Recycle()
         {
-            var directBuffer = new DirectBuffer();
-            var firstBuffer = new Byte[16];
-            directBuffer.Wrap(firstBuffer);
+            using (var directBuffer = new DirectBuffer())
+            {
+                var firstBuffer = new Byte[16];
+                directBuffer.Wrap(firstBuffer);
 
-            directBuffer.Int64PutLittleEndian(0, 1);
-            Assert.AreEqual(1, BitConverter.ToInt64(firstBuffer, 0));
+                directBuffer.Int64PutLittleEndian(0, 1);
+                Assert.AreEqual(1, BitConverter.ToInt64(firstBuffer, 0));
 
-            var secondBuffer = new byte[16];
-            var secondBufferHandle = GCHandle.Alloc(secondBuffer, GCHandleType.Pinned);
-            var secondUnmanagedBuffer = (byte*)secondBufferHandle.AddrOfPinnedObject().ToPointer();
-            directBuffer.Wrap(secondUnmanagedBuffer, 16);
-            directBuffer.Int64PutLittleEndian(0, 2);
-            Assert.AreEqual(2, BitConverter.ToInt64(secondBuffer, 0));
-
-            directBuffer.Dispose();
+                var secondBuffer = new byte[16];
+                var secondBufferHandle = GCHandle.Alloc(secondBuffer, GCHandleType.Pinned);
+                var secondUnmanagedBuffer = (byte*)secondBufferHandle.AddrOfPinnedObject().ToPointer();
+                directBuffer.Wrap(secondUnmanagedBuffer, 16);
+                directBuffer.Int64PutLittleEndian(0, 2);
+                Assert.AreEqual(2, BitConverter.ToInt64(secondBuffer, 0));
+            }
         }
 
         [TestMethod]
