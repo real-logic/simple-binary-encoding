@@ -9,6 +9,8 @@ query-filters:
   - exclude:
       id: java/missing-override-annotation
   - exclude:
+      id: java/uncaught-number-format-exception
+  - exclude:
       id: cs/useless-assignment-to-local
   - exclude:
       id: cpp/trivial-switch
