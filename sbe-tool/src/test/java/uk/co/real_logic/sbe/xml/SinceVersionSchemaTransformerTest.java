@@ -19,6 +19,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import uk.co.real_logic.sbe.Tests;
 
+import java.io.InputStream;
 import java.util.*;
 
 import static java.util.Comparator.comparing;
@@ -31,16 +32,18 @@ public class SinceVersionSchemaTransformerTest
     @ValueSource(ints = { 0, 4, 5 })
     void shouldFilterAllVersionedFields(final int filteringVersion) throws Exception
     {
-        final MessageSchema schema = parse(
-            Tests.getLocalResource("since-version-filter-schema.xml"), ParserOptions.DEFAULT);
+        try (InputStream in = Tests.getLocalResource("since-version-filter-schema.xml"))
+        {
+            final MessageSchema schema = parse(in, ParserOptions.DEFAULT);
 
-        final SinceVersionSchemaTransformer sinceVersionSchemaTransformer = new SinceVersionSchemaTransformer(
-            filteringVersion);
-        final MessageSchema transformedSchema = sinceVersionSchemaTransformer.transform(schema);
+            final SinceVersionSchemaTransformer sinceVersionSchemaTransformer = new SinceVersionSchemaTransformer(
+                filteringVersion);
+            final MessageSchema transformedSchema = sinceVersionSchemaTransformer.transform(schema);
 
-        assertEquals(filteringVersion, transformedSchema.version());
-        assertTypeSinceVersionLessOrEqualTo(filteringVersion, schema, transformedSchema);
-        assertMessageSinceVersionLessOrEqualTo(filteringVersion, schema, transformedSchema);
+            assertEquals(filteringVersion, transformedSchema.version());
+            assertTypeSinceVersionLessOrEqualTo(filteringVersion, schema, transformedSchema);
+            assertMessageSinceVersionLessOrEqualTo(filteringVersion, schema, transformedSchema);
+        }
     }
 
     private static void assertMessageSinceVersionLessOrEqualTo(

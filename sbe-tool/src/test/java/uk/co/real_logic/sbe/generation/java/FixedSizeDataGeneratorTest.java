@@ -27,14 +27,15 @@ import uk.co.real_logic.sbe.ir.Ir;
 import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
 import uk.co.real_logic.sbe.xml.ParserOptions;
+import uk.co.real_logic.sbe.xml.XmlSchemaParser;
 
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
 import static uk.co.real_logic.sbe.generation.java.ReflectionUtil.*;
-import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 class FixedSizeDataGeneratorTest
 {
@@ -50,15 +51,18 @@ class FixedSizeDataGeneratorTest
     @BeforeEach
     void setUp() throws Exception
     {
-        final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
-        final MessageSchema schema = parse(Tests.getLocalResource("extension-schema.xml"), options);
-        final IrGenerator irg = new IrGenerator();
-        ir = irg.generate(schema);
+        try (InputStream in = Tests.getLocalResource("extension-schema.xml"))
+        {
+            final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
+            final MessageSchema schema = XmlSchemaParser.parse(in, options);
+            final IrGenerator irg = new IrGenerator();
+            ir = irg.generate(schema);
 
-        outputManager.clear();
-        outputManager.setPackageName(ir.applicableNamespace());
+            outputManager.clear();
+            outputManager.setPackageName(ir.applicableNamespace());
 
-        generator().generate();
+            generator().generate();
+        }
     }
 
     @Test

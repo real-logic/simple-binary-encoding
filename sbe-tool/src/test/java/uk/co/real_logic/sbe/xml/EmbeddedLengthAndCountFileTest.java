@@ -18,6 +18,7 @@ package uk.co.real_logic.sbe.xml;
 import org.junit.jupiter.api.Test;
 import uk.co.real_logic.sbe.Tests;
 
+import java.io.InputStream;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -30,21 +31,26 @@ class EmbeddedLengthAndCountFileTest
     @Test
     void shouldHandleEmbeddedCountForGroup() throws Exception
     {
-        final MessageSchema schema = parse(
-            Tests.getLocalResource("embedded-length-and-count-schema.xml"), ParserOptions.DEFAULT);
-        final List<Field> fields = schema.getMessage(1).fields();
+        try (InputStream in = Tests.getLocalResource("embedded-length-and-count-schema.xml"))
+        {
+            final MessageSchema schema = parse(in, ParserOptions.DEFAULT);
+            final List<Field> fields = schema.getMessage(1).fields();
 
-        assertThat(fields.get(1).name(), is("ListOrdGrp"));
-        assertThat(fields.get(1).id(), is(73));
-        assertNotNull(fields.get(1).dimensionType());
+            assertThat(fields.get(1).name(), is("ListOrdGrp"));
+            assertThat(fields.get(1).id(), is(73));
+            assertNotNull(fields.get(1).dimensionType());
 
-        final List<Field> groupFields = fields.get(1).groupFields();
-        assertNotNull(groupFields);
+            final List<Field> groupFields = fields.get(1).groupFields();
+            assertNotNull(groupFields);
+        }
     }
 
     @Test
     void shouldHandleEmbeddedLengthForData() throws Exception
     {
-        parse(Tests.getLocalResource("embedded-length-and-count-schema.xml"), ParserOptions.DEFAULT);
+        try (InputStream in = Tests.getLocalResource("embedded-length-and-count-schema.xml"))
+        {
+            parse(in, ParserOptions.DEFAULT);
+        }
     }
 }

@@ -24,10 +24,12 @@ import uk.co.real_logic.sbe.ir.Ir;
 import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
 import uk.co.real_logic.sbe.xml.ParserOptions;
+import uk.co.real_logic.sbe.xml.XmlSchemaParser;
+
+import java.io.InputStream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.StringContains.containsString;
-import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 class ConstantCharArrayTest
 {
@@ -39,45 +41,48 @@ class ConstantCharArrayTest
     @Test
     void shouldGenerateConstCharArrayMethods() throws Exception
     {
-        final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
-        final MessageSchema schema = parse(Tests.getLocalResource("issue505.xml"), options);
-        final IrGenerator irg = new IrGenerator();
-        final Ir ir = irg.generate(schema);
+        try (InputStream in = Tests.getLocalResource("issue505.xml"))
+        {
+            final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
+            final MessageSchema schema = XmlSchemaParser.parse(in, options);
+            final IrGenerator irg = new IrGenerator();
+            final Ir ir = irg.generate(schema);
 
-        final StringWriterOutputManager outputManager = new StringWriterOutputManager();
-        outputManager.setPackageName(ir.applicableNamespace());
-        final JavaGenerator generator = new JavaGenerator(
-            ir, BUFFER_NAME, READ_ONLY_BUFFER_NAME, false, false, false, outputManager);
+            final StringWriterOutputManager outputManager = new StringWriterOutputManager();
+            outputManager.setPackageName(ir.applicableNamespace());
+            final JavaGenerator generator = new JavaGenerator(
+                ir, BUFFER_NAME, READ_ONLY_BUFFER_NAME, false, false, false, outputManager);
 
-        generator.generate();
-        final String sources = outputManager.getSources().toString();
+            generator.generate();
+            final String sources = outputManager.getSources().toString();
 
-        final String expectedOne =
-            "    public byte sourceOne()\n" +
-            "    {\n" +
-            "        return (byte)67;\n" +
-            "    }";
-        assertThat(sources, containsString(expectedOne));
+            final String expectedOne =
+                "    public byte sourceOne()\n" +
+                "    {\n" +
+                "        return (byte)67;\n" +
+                "    }";
+            assertThat(sources, containsString(expectedOne));
 
-        final String expectedTwo =
-            "    public byte sourceTwo()\n" +
-            "    {\n" +
-            "        return (byte)68;\n" +
-            "    }";
-        assertThat(sources, containsString(expectedTwo));
+            final String expectedTwo =
+                "    public byte sourceTwo()\n" +
+                "    {\n" +
+                "        return (byte)68;\n" +
+                "    }";
+            assertThat(sources, containsString(expectedTwo));
 
-        final String expectedThree =
-            "    public String sourceThree()\n" +
-            "    {\n" +
-            "        return \"EF\";\n" +
-            "    }";
-        assertThat(sources, containsString(expectedThree));
+            final String expectedThree =
+                "    public String sourceThree()\n" +
+                "    {\n" +
+                "        return \"EF\";\n" +
+                "    }";
+            assertThat(sources, containsString(expectedThree));
 
-        final String expectedFour =
-            "    public String sourceFour()\n" +
-            "    {\n" +
-            "        return \"GH\";\n" +
-            "    }";
-        assertThat(sources, containsString(expectedFour));
+            final String expectedFour =
+                "    public String sourceFour()\n" +
+                "    {\n" +
+                "        return \"GH\";\n" +
+                "    }";
+            assertThat(sources, containsString(expectedFour));
+        }
     }
 }

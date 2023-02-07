@@ -21,10 +21,12 @@ import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
 import uk.co.real_logic.sbe.xml.ParserOptions;
 
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.core.Is.is;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
@@ -35,137 +37,178 @@ class EncodedIrTest
     @Test
     void shouldEncodeIr() throws Exception
     {
-        final MessageSchema schema = parse(Tests.getLocalResource("basic-schema.xml"), ParserOptions.DEFAULT);
-        final IrGenerator irg = new IrGenerator();
-        final Ir ir = irg.generate(schema);
-        final ByteBuffer buffer = ByteBuffer.allocateDirect(CAPACITY);
-        final IrEncoder irEncoder = new IrEncoder(buffer, ir);
-
-        irEncoder.encode();
+        try (InputStream in = Tests.getLocalResource("basic-schema.xml"))
+        {
+            final MessageSchema schema = parse(in, ParserOptions.DEFAULT);
+            final IrGenerator irg = new IrGenerator();
+            final Ir ir = irg.generate(schema);
+            final ByteBuffer buffer = ByteBuffer.allocate(CAPACITY);
+            try (IrEncoder irEncoder = new IrEncoder(buffer, ir))
+            {
+                irEncoder.encode();
+                assertThat(buffer.position(), greaterThan(0));
+            }
+        }
     }
 
     @Test
     void shouldEncodeThenDecodeIr() throws Exception
     {
-        final MessageSchema schema = parse(Tests.getLocalResource("basic-schema.xml"), ParserOptions.DEFAULT);
-        final IrGenerator irg = new IrGenerator();
-        final Ir ir = irg.generate(schema);
-        final ByteBuffer buffer = ByteBuffer.allocateDirect(CAPACITY);
-        final IrEncoder irEncoder = new IrEncoder(buffer, ir);
+        try (InputStream in = Tests.getLocalResource("basic-schema.xml"))
+        {
+            final MessageSchema schema = parse(in, ParserOptions.DEFAULT);
+            final IrGenerator irg = new IrGenerator();
+            final Ir ir = irg.generate(schema);
+            final ByteBuffer buffer = ByteBuffer.allocate(CAPACITY);
+            try (IrEncoder irEncoder = new IrEncoder(buffer, ir))
+            {
+                irEncoder.encode();
+            }
 
-        irEncoder.encode();
-        buffer.flip();
+            buffer.flip();
 
-        final IrDecoder decoder = new IrDecoder(buffer);
-        decoder.decode();
+            try (IrDecoder decoder = new IrDecoder(buffer))
+            {
+                decoder.decode();
+            }
+        }
     }
 
     @Test
     void shouldHandleRightSizedBuffer() throws Exception
     {
-        final MessageSchema schema = parse(Tests.getLocalResource("basic-schema.xml"), ParserOptions.DEFAULT);
-        final IrGenerator irg = new IrGenerator();
-        final Ir ir = irg.generate(schema);
-        final ByteBuffer buffer = ByteBuffer.allocateDirect(CAPACITY);
-        final IrEncoder irEncoder = new IrEncoder(buffer, ir);
+        try (InputStream in = Tests.getLocalResource("basic-schema.xml"))
+        {
+            final MessageSchema schema = parse(in, ParserOptions.DEFAULT);
+            final IrGenerator irg = new IrGenerator();
+            final Ir ir = irg.generate(schema);
+            final ByteBuffer buffer = ByteBuffer.allocate(CAPACITY);
 
-        irEncoder.encode();
-        buffer.flip();
+            try (IrEncoder irEncoder = new IrEncoder(buffer, ir))
+            {
+                irEncoder.encode();
+            }
 
-        final ByteBuffer readBuffer = ByteBuffer.allocateDirect(buffer.remaining());
-        readBuffer.put(buffer);
-        readBuffer.flip();
+            buffer.flip();
 
-        final IrDecoder irDecoder = new IrDecoder(readBuffer);
-        irDecoder.decode();
+            final ByteBuffer readBuffer = ByteBuffer.allocate(buffer.remaining());
+            readBuffer.put(buffer);
+            readBuffer.flip();
+
+            try (IrDecoder irDecoder = new IrDecoder(readBuffer))
+            {
+                irDecoder.decode();
+            }
+        }
     }
 
     @Test
     void shouldDecodeFrame() throws Exception
     {
-        final MessageSchema schema = parse(Tests.getLocalResource(
-            "code-generation-schema.xml"), ParserOptions.DEFAULT);
-        final IrGenerator irg = new IrGenerator();
-        final Ir ir = irg.generate(schema);
-        final ByteBuffer buffer = ByteBuffer.allocateDirect(CAPACITY);
-        final IrEncoder irEncoder = new IrEncoder(buffer, ir);
+        final InputStream in = Tests.getLocalResource("code-generation-schema.xml");
+        {
+            final MessageSchema schema = parse(in, ParserOptions.DEFAULT);
+            final IrGenerator irg = new IrGenerator();
+            final Ir ir = irg.generate(schema);
+            final ByteBuffer buffer = ByteBuffer.allocate(CAPACITY);
 
-        irEncoder.encode();
-        buffer.flip();
+            try (IrEncoder irEncoder = new IrEncoder(buffer, ir))
+            {
+                irEncoder.encode();
+            }
 
-        final IrDecoder irDecoder = new IrDecoder(buffer);
-        final Ir decodedIr = irDecoder.decode();
+            buffer.flip();
 
-        assertThat(decodedIr.id(), is(ir.id()));
-        assertThat(decodedIr.version(), is(ir.version()));
-        assertThat(decodedIr.semanticVersion(), is(ir.semanticVersion()));
-        assertThat(decodedIr.packageName(), is(ir.packageName()));
-        assertThat(decodedIr.namespaceName(), is(ir.namespaceName()));
+            try (IrDecoder irDecoder = new IrDecoder(buffer))
+            {
+                final Ir decodedIr = irDecoder.decode();
+
+                assertThat(decodedIr.id(), is(ir.id()));
+                assertThat(decodedIr.version(), is(ir.version()));
+                assertThat(decodedIr.semanticVersion(), is(ir.semanticVersion()));
+                assertThat(decodedIr.packageName(), is(ir.packageName()));
+                assertThat(decodedIr.namespaceName(), is(ir.namespaceName()));
+            }
+        }
     }
 
     @Test
     void shouldDecodeHeader() throws Exception
     {
-        final MessageSchema schema = parse(Tests.getLocalResource(
-            "code-generation-schema.xml"), ParserOptions.DEFAULT);
-        final IrGenerator irg = new IrGenerator();
-        final Ir ir = irg.generate(schema);
-        final ByteBuffer buffer = ByteBuffer.allocateDirect(CAPACITY);
-        final IrEncoder irEncoder = new IrEncoder(buffer, ir);
-
-        irEncoder.encode();
-        buffer.flip();
-
-        final IrDecoder irDecoder = new IrDecoder(buffer);
-        final Ir decodedIr = irDecoder.decode();
-        final List<Token> tokens = decodedIr.headerStructure().tokens();
-
-        assertThat(tokens.size(), is(ir.headerStructure().tokens().size()));
-        for (int i = 0, size = tokens.size(); i < size; i++)
+        try (InputStream in = Tests.getLocalResource("code-generation-schema.xml"))
         {
-            assertEqual(tokens.get(i), ir.headerStructure().tokens().get(i));
+            final MessageSchema schema = parse(in, ParserOptions.DEFAULT);
+            final IrGenerator irg = new IrGenerator();
+            final Ir ir = irg.generate(schema);
+            final ByteBuffer buffer = ByteBuffer.allocate(CAPACITY);
+
+            try (IrEncoder irEncoder = new IrEncoder(buffer, ir))
+            {
+                irEncoder.encode();
+            }
+
+            buffer.flip();
+
+            try (IrDecoder irDecoder = new IrDecoder(buffer))
+            {
+                final Ir decodedIr = irDecoder.decode();
+                final List<Token> tokens = decodedIr.headerStructure().tokens();
+
+                assertThat(tokens.size(), is(ir.headerStructure().tokens().size()));
+                for (int i = 0, size = tokens.size(); i < size; i++)
+                {
+                    assertEqual(tokens.get(i), ir.headerStructure().tokens().get(i));
+                }
+            }
         }
     }
 
     @Test
     void shouldDecodeMessagesAndTypes() throws Exception
     {
-        final MessageSchema schema = parse(Tests.getLocalResource(
-            "code-generation-schema.xml"), ParserOptions.DEFAULT);
-        final IrGenerator irg = new IrGenerator();
-        final Ir ir = irg.generate(schema);
-        final ByteBuffer buffer = ByteBuffer.allocateDirect(CAPACITY);
-        final IrEncoder irEncoder = new IrEncoder(buffer, ir);
-
-        irEncoder.encode();
-        buffer.flip();
-
-        final IrDecoder irDecoder = new IrDecoder(buffer);
-        final Ir decodedIr = irDecoder.decode();
-
-        assertThat(decodedIr.messages().size(), is(ir.messages().size()));
-        for (final List<Token> decodedTokenList : decodedIr.messages())
+        try (InputStream in = Tests.getLocalResource("code-generation-schema.xml"))
         {
-            final List<Token> tokens = ir.getMessage(decodedTokenList.get(0).id());
+            final MessageSchema schema = parse(in, ParserOptions.DEFAULT);
+            final IrGenerator irg = new IrGenerator();
+            final Ir ir = irg.generate(schema);
+            final ByteBuffer buffer = ByteBuffer.allocate(CAPACITY);
 
-            assertThat(decodedTokenList.size(), is(tokens.size()));
-            for (int i = 0, size = decodedTokenList.size(); i < size; i++)
+            try (IrEncoder irEncoder = new IrEncoder(buffer, ir))
             {
-                assertEqual(decodedTokenList.get(i), tokens.get(i));
+                irEncoder.encode();
             }
-        }
 
-        assertThat(decodedIr.types().size(), is(ir.types().size()));
-        for (final List<Token> decodedTokenList : decodedIr.types())
-        {
-            final Token t = decodedTokenList.get(0);
-            final String name = t.referencedName() != null ? t.referencedName() : t.name();
-            final List<Token> tokens = ir.getType(name);
+            buffer.flip();
 
-            assertThat(name + " token count", decodedTokenList.size(), is(tokens.size()));
-            for (int i = 0, size = decodedTokenList.size(); i < size; i++)
+            try (IrDecoder irDecoder = new IrDecoder(buffer))
             {
-                assertEqual(decodedTokenList.get(i), tokens.get(i));
+                final Ir decodedIr = irDecoder.decode();
+
+                assertThat(decodedIr.messages().size(), is(ir.messages().size()));
+                for (final List<Token> decodedTokenList : decodedIr.messages())
+                {
+                    final List<Token> tokens = ir.getMessage(decodedTokenList.get(0).id());
+
+                    assertThat(decodedTokenList.size(), is(tokens.size()));
+                    for (int i = 0, size = decodedTokenList.size(); i < size; i++)
+                    {
+                        assertEqual(decodedTokenList.get(i), tokens.get(i));
+                    }
+                }
+
+                assertThat(decodedIr.types().size(), is(ir.types().size()));
+                for (final List<Token> decodedTokenList : decodedIr.types())
+                {
+                    final Token t = decodedTokenList.get(0);
+                    final String name = t.referencedName() != null ? t.referencedName() : t.name();
+                    final List<Token> tokens = ir.getType(name);
+
+                    assertThat(name + " token count", decodedTokenList.size(), is(tokens.size()));
+                    for (int i = 0, size = decodedTokenList.size(); i < size; i++)
+                    {
+                        assertEqual(decodedTokenList.get(i), tokens.get(i));
+                    }
+                }
             }
         }
     }

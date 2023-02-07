@@ -31,6 +31,7 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -177,27 +178,25 @@ class SetTypeTest
     @Test
     void shouldHandleEncodingTypesWithNamedTypes() throws Exception
     {
-        final MessageSchema schema = parse(Tests.getLocalResource(
-            "encoding-types-schema.xml"), ParserOptions.DEFAULT);
-        final List<Field> fields = schema.getMessage(1).fields();
+        try (InputStream in = Tests.getLocalResource("encoding-types-schema.xml"))
+        {
+            final MessageSchema schema = parse(in, ParserOptions.DEFAULT);
+            final List<Field> fields = schema.getMessage(1).fields();
 
-        assertNotNull(fields);
+            assertNotNull(fields);
 
-        SetType type = (SetType)fields.get(3).type();
+            SetType type = (SetType)fields.get(3).type();
+            assertThat(type.encodingType(), is(PrimitiveType.UINT8));
 
-        assertThat(type.encodingType(), is(PrimitiveType.UINT8));
+            type = (SetType)fields.get(4).type();
+            assertThat(type.encodingType(), is(PrimitiveType.UINT16));
 
-        type = (SetType)fields.get(4).type();
+            type = (SetType)fields.get(5).type();
+            assertThat(type.encodingType(), is(PrimitiveType.UINT32));
 
-        assertThat(type.encodingType(), is(PrimitiveType.UINT16));
-
-        type = (SetType)fields.get(5).type();
-
-        assertThat(type.encodingType(), is(PrimitiveType.UINT32));
-
-        type = (SetType)fields.get(6).type();
-
-        assertThat(type.encodingType(), is(PrimitiveType.UINT64));
+            type = (SetType)fields.get(6).type();
+            assertThat(type.encodingType(), is(PrimitiveType.UINT64));
+        }
     }
 
     private static Map<String, Type> parseTestXmlWithMap(final String xPathExpr, final String xml)

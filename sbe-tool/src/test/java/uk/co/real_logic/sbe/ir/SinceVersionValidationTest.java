@@ -18,6 +18,8 @@ package uk.co.real_logic.sbe.ir;
 import org.junit.jupiter.api.Test;
 import uk.co.real_logic.sbe.xml.ParserOptions;
 
+import java.io.InputStream;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import static uk.co.real_logic.sbe.Tests.getLocalResource;
@@ -28,10 +30,10 @@ class SinceVersionValidationTest
     @Test
     void shouldErrorOnTypeWithGreaterSinceVersion() throws Exception
     {
-        try
+        final ParserOptions options = ParserOptions.builder().suppressOutput(true).build();
+        try (InputStream in = getLocalResource("error-handler-since-version.xml"))
         {
-            final ParserOptions options = ParserOptions.builder().suppressOutput(true).build();
-            parse(getLocalResource("error-handler-since-version.xml"), options);
+            parse(in, options);
         }
         catch (final IllegalStateException ex)
         {

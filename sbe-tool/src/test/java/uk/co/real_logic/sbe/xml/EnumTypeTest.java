@@ -274,28 +274,30 @@ class EnumTypeTest
     @Test
     void shouldThrowExceptionIfEnumValueIsOutOfCustomValueRange() throws IOException
     {
-        final InputStream file = Tests.getLocalResource("error-handler-enum-violates-min-max-value-range.xml");
-        final IllegalStateException exception = assertThrows(IllegalStateException.class,
-            () -> parse(file, ParserOptions.builder().suppressOutput(true).build()));
-        assertEquals("had 4 errors", exception.getMessage());
+        try (InputStream in = Tests.getLocalResource("error-handler-enum-violates-min-max-value-range.xml"))
+        {
+            final IllegalStateException exception = assertThrows(IllegalStateException.class,
+                () -> parse(in, ParserOptions.builder().suppressOutput(true).build()));
+            assertEquals("had 4 errors", exception.getMessage());
+        }
     }
 
     @Test
     void shouldHandleEncodingTypesWithNamedTypes() throws Exception
     {
-        final MessageSchema schema = parse(Tests.getLocalResource(
-            "encoding-types-schema.xml"), ParserOptions.DEFAULT);
-        final List<Field> fields = schema.getMessage(1).fields();
+        try (InputStream in = Tests.getLocalResource("encoding-types-schema.xml"))
+        {
+            final MessageSchema schema = parse(in, ParserOptions.DEFAULT);
+            final List<Field> fields = schema.getMessage(1).fields();
 
-        assertNotNull(fields);
+            assertNotNull(fields);
 
-        EnumType type = (EnumType)fields.get(1).type();
+            EnumType type = (EnumType)fields.get(1).type();
+            assertThat(type.encodingType(), is(PrimitiveType.CHAR));
 
-        assertThat(type.encodingType(), is(PrimitiveType.CHAR));
-
-        type = (EnumType)fields.get(2).type();
-
-        assertThat(type.encodingType(), is(PrimitiveType.UINT8));
+            type = (EnumType)fields.get(2).type();
+            assertThat(type.encodingType(), is(PrimitiveType.UINT8));
+        }
     }
 
     private static Map<String, Type> parseTestXmlWithMap(final String xPathExpr, final String xml)

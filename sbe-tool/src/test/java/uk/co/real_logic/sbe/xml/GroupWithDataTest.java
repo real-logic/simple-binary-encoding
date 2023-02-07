@@ -18,6 +18,7 @@ package uk.co.real_logic.sbe.xml;
 import org.junit.jupiter.api.Test;
 import uk.co.real_logic.sbe.Tests;
 
+import java.io.InputStream;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -30,18 +31,20 @@ class GroupWithDataTest
     @Test
     void shouldParseSchemaSuccessfully() throws Exception
     {
-        final MessageSchema schema = parse(Tests.getLocalResource(
-            "group-with-data-schema.xml"), ParserOptions.DEFAULT);
-        final List<Field> fields = schema.getMessage(1).fields();
-        final Field entriesGroup = fields.get(1);
-        final CompositeType dimensionType = entriesGroup.dimensionType();
-        final List<Field> entriesFields = entriesGroup.groupFields();
+        try (InputStream in = Tests.getLocalResource("group-with-data-schema.xml"))
+        {
+            final MessageSchema schema = parse(in, ParserOptions.DEFAULT);
+            final List<Field> fields = schema.getMessage(1).fields();
+            final Field entriesGroup = fields.get(1);
+            final CompositeType dimensionType = entriesGroup.dimensionType();
+            final List<Field> entriesFields = entriesGroup.groupFields();
 
-        assertThat(entriesGroup.name(), is("Entries"));
-        assertThat(dimensionType.name(), is("groupSizeEncoding"));
+            assertThat(entriesGroup.name(), is("Entries"));
+            assertThat(dimensionType.name(), is("groupSizeEncoding"));
 
-        final Field varDataField = entriesFields.get(2);
-        assertThat(varDataField.name(), is("varDataField"));
-        assertTrue(varDataField.isVariableLength());
+            final Field varDataField = entriesFields.get(2);
+            assertThat(varDataField.name(), is("varDataField"));
+            assertTrue(varDataField.isVariableLength());
+        }
     }
 }

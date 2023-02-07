@@ -20,6 +20,8 @@ import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
 import uk.co.real_logic.sbe.xml.ParserOptions;
 
+import java.io.InputStream;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static uk.co.real_logic.sbe.Tests.getLocalResource;
@@ -30,14 +32,17 @@ class ValueRefsTest
     @Test
     void shouldGenerateValueRefToEnum() throws Exception
     {
-        final MessageSchema schema = parse(getLocalResource("value-ref-schema.xml"), ParserOptions.DEFAULT);
-        final IrGenerator irg = new IrGenerator();
-        final Ir ir = irg.generate(schema);
+        try (InputStream in = getLocalResource("value-ref-schema.xml"))
+        {
+            final MessageSchema schema = parse(in, ParserOptions.DEFAULT);
+            final IrGenerator irg = new IrGenerator();
+            final Ir ir = irg.generate(schema);
 
-        assertThat(ir.getMessage(1).get(1).encodedLength(), is(8));
-        assertThat(ir.getMessage(2).get(1).encodedLength(), is(0));
-        assertThat(ir.getMessage(3).get(1).encodedLength(), is(0));
-        assertThat(ir.getMessage(4).get(1).encodedLength(), is(0));
-        assertThat(ir.getMessage(5).get(1).encodedLength(), is(0));
+            assertThat(ir.getMessage(1).get(1).encodedLength(), is(8));
+            assertThat(ir.getMessage(2).get(1).encodedLength(), is(0));
+            assertThat(ir.getMessage(3).get(1).encodedLength(), is(0));
+            assertThat(ir.getMessage(4).get(1).encodedLength(), is(0));
+            assertThat(ir.getMessage(5).get(1).encodedLength(), is(0));
+        }
     }
 }

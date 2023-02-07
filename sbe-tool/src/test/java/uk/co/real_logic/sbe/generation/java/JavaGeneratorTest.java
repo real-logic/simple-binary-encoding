@@ -29,6 +29,7 @@ import uk.co.real_logic.sbe.xml.MessageSchema;
 import uk.co.real_logic.sbe.xml.ParserOptions;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.nio.ByteOrder;
 import java.util.Map;
@@ -58,13 +59,16 @@ class JavaGeneratorTest
     @BeforeEach
     void setUp() throws Exception
     {
-        final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
-        final MessageSchema schema = parse(Tests.getLocalResource("code-generation-schema.xml"), options);
-        final IrGenerator irg = new IrGenerator();
-        ir = irg.generate(schema);
+        try (InputStream in = Tests.getLocalResource("code-generation-schema.xml"))
+        {
+            final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
+            final MessageSchema schema = parse(in, options);
+            final IrGenerator irg = new IrGenerator();
+            ir = irg.generate(schema);
 
-        outputManager.clear();
-        outputManager.setPackageName(ir.applicableNamespace());
+            outputManager.clear();
+            outputManager.setPackageName(ir.applicableNamespace());
+        }
     }
 
     @Test
@@ -461,88 +465,97 @@ class JavaGeneratorTest
     @Test
     void shouldMarkDeprecatedClasses() throws Exception
     {
-        final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
-        final MessageSchema schema = parse(Tests.getLocalResource("deprecated-msg-test-schema.xml"), options);
-        final IrGenerator irg = new IrGenerator();
-        ir = irg.generate(schema);
+        try (InputStream in = Tests.getLocalResource("deprecated-msg-test-schema.xml"))
+        {
+            final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
+            final MessageSchema schema = parse(in, options);
+            final IrGenerator irg = new IrGenerator();
+            ir = irg.generate(schema);
 
-        outputManager.clear();
-        outputManager.setPackageName(ir.applicableNamespace());
+            outputManager.clear();
+            outputManager.setPackageName(ir.applicableNamespace());
 
-        generator().generate();
-        final String encoderFqcn = ir.applicableNamespace() + ".DeprecatedMessageEncoder";
-        final Class<?> encoderClazz = compile(encoderFqcn);
-        assertNotNull(encoderClazz);
-        assertTrue(encoderClazz.isAnnotationPresent(Deprecated.class));
+            generator().generate();
+            final String encoderFqcn = ir.applicableNamespace() + ".DeprecatedMessageEncoder";
+            final Class<?> encoderClazz = compile(encoderFqcn);
+            assertNotNull(encoderClazz);
+            assertTrue(encoderClazz.isAnnotationPresent(Deprecated.class));
 
-        final String decoderFqcn = ir.applicableNamespace() + ".DeprecatedMessageDecoder";
-        final Class<?> decoderClazz = compile(decoderFqcn);
-        assertNotNull(decoderClazz);
-        assertTrue(decoderClazz.isAnnotationPresent(Deprecated.class));
+            final String decoderFqcn = ir.applicableNamespace() + ".DeprecatedMessageDecoder";
+            final Class<?> decoderClazz = compile(decoderFqcn);
+            assertNotNull(decoderClazz);
+            assertTrue(decoderClazz.isAnnotationPresent(Deprecated.class));
+        }
     }
 
     @Test
     void shouldCreateTypesInDifferentPackages() throws Exception
     {
-        final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
-        final MessageSchema schema = parse(Tests.getLocalResource("explicit-package-test-schema.xml"), options);
-        final IrGenerator irg = new IrGenerator();
-        ir = irg.generate(schema);
+        try (InputStream in = Tests.getLocalResource("explicit-package-test-schema.xml"))
+        {
+            final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
+            final MessageSchema schema = parse(in, options);
+            final IrGenerator irg = new IrGenerator();
+            ir = irg.generate(schema);
 
-        outputManager.clear();
-        outputManager.setPackageName(ir.applicableNamespace());
+            outputManager.clear();
+            outputManager.setPackageName(ir.applicableNamespace());
 
-        final JavaGenerator generator = new JavaGenerator(ir, BUFFER_NAME, READ_ONLY_BUFFER_NAME, false, false, false,
-            true, outputManager);
+            final JavaGenerator generator = new JavaGenerator(
+                ir, BUFFER_NAME, READ_ONLY_BUFFER_NAME, false, false, false, true, outputManager);
 
-        generator.generate();
-        final String encoderFqcn = ir.applicableNamespace() + ".TestMessageEncoder";
-        final Class<?> encoderClazz = compile(encoderFqcn);
-        assertNotNull(encoderClazz);
+            generator.generate();
+            final String encoderFqcn = ir.applicableNamespace() + ".TestMessageEncoder";
+            final Class<?> encoderClazz = compile(encoderFqcn);
+            assertNotNull(encoderClazz);
 
-        final String decoderFqcn = ir.applicableNamespace() + ".TestMessageDecoder";
-        final Class<?> decoderClazz = compile(decoderFqcn);
-        assertNotNull(decoderClazz);
+            final String decoderFqcn = ir.applicableNamespace() + ".TestMessageDecoder";
+            final Class<?> decoderClazz = compile(decoderFqcn);
+            assertNotNull(decoderClazz);
 
-        final Map<String, CharSequence> sources = outputManager.getSources();
-        assertNotNull(sources.get("test.message.schema.common.CarEncoder"));
-        assertNotNull(sources.get("test.message.schema.common.CarDecoder"));
-        assertNotNull(sources.get("outside.schema.BooleanType"));
-        assertNotNull(sources.get("outside.schema.DaysEncoder"));
-        assertNotNull(sources.get("outside.schema.DaysDecoder"));
-        assertNotNull(sources.get(ir.applicableNamespace() + ".MessageHeaderEncoder"));
+            final Map<String, CharSequence> sources = outputManager.getSources();
+            assertNotNull(sources.get("test.message.schema.common.CarEncoder"));
+            assertNotNull(sources.get("test.message.schema.common.CarDecoder"));
+            assertNotNull(sources.get("outside.schema.BooleanType"));
+            assertNotNull(sources.get("outside.schema.DaysEncoder"));
+            assertNotNull(sources.get("outside.schema.DaysDecoder"));
+            assertNotNull(sources.get(ir.applicableNamespace() + ".MessageHeaderEncoder"));
+        }
     }
 
     @Test
     void shouldCreateTypesInSamePackageIfSupportDisabled() throws Exception
     {
-        final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
-        final MessageSchema schema = parse(Tests.getLocalResource("explicit-package-test-schema.xml"), options);
-        final IrGenerator irg = new IrGenerator();
-        ir = irg.generate(schema);
+        try (InputStream in = Tests.getLocalResource("explicit-package-test-schema.xml"))
+        {
+            final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
+            final MessageSchema schema = parse(in, options);
+            final IrGenerator irg = new IrGenerator();
+            ir = irg.generate(schema);
 
-        outputManager.clear();
-        outputManager.setPackageName(ir.applicableNamespace());
+            outputManager.clear();
+            outputManager.setPackageName(ir.applicableNamespace());
 
-        final JavaGenerator generator = new JavaGenerator(ir, BUFFER_NAME, READ_ONLY_BUFFER_NAME, false, false, false,
-            false, outputManager);
+            final JavaGenerator generator = new JavaGenerator(
+                ir, BUFFER_NAME, READ_ONLY_BUFFER_NAME, false, false, false, false, outputManager);
 
-        generator.generate();
-        final String encoderFqcn = ir.applicableNamespace() + ".TestMessageEncoder";
-        final Class<?> encoderClazz = compile(encoderFqcn);
-        assertNotNull(encoderClazz);
+            generator.generate();
+            final String encoderFqcn = ir.applicableNamespace() + ".TestMessageEncoder";
+            final Class<?> encoderClazz = compile(encoderFqcn);
+            assertNotNull(encoderClazz);
 
-        final String decoderFqcn = ir.applicableNamespace() + ".TestMessageDecoder";
-        final Class<?> decoderClazz = compile(decoderFqcn);
-        assertNotNull(decoderClazz);
+            final String decoderFqcn = ir.applicableNamespace() + ".TestMessageDecoder";
+            final Class<?> decoderClazz = compile(decoderFqcn);
+            assertNotNull(decoderClazz);
 
-        final Map<String, CharSequence> sources = outputManager.getSources();
-        assertNotNull(sources.get(ir.applicableNamespace() + ".CarEncoder"));
-        assertNotNull(sources.get(ir.applicableNamespace() + ".CarDecoder"));
-        assertNotNull(sources.get(ir.applicableNamespace() + ".BooleanType"));
-        assertNotNull(sources.get(ir.applicableNamespace() + ".DaysEncoder"));
-        assertNotNull(sources.get(ir.applicableNamespace() + ".DaysDecoder"));
-        assertNotNull(sources.get(ir.applicableNamespace() + ".MessageHeaderEncoder"));
+            final Map<String, CharSequence> sources = outputManager.getSources();
+            assertNotNull(sources.get(ir.applicableNamespace() + ".CarEncoder"));
+            assertNotNull(sources.get(ir.applicableNamespace() + ".CarDecoder"));
+            assertNotNull(sources.get(ir.applicableNamespace() + ".BooleanType"));
+            assertNotNull(sources.get(ir.applicableNamespace() + ".DaysEncoder"));
+            assertNotNull(sources.get(ir.applicableNamespace() + ".DaysDecoder"));
+            assertNotNull(sources.get(ir.applicableNamespace() + ".MessageHeaderEncoder"));
+        }
     }
 
     private Class<?> getModelClass(final Object encoder) throws ClassNotFoundException

@@ -24,12 +24,13 @@ import uk.co.real_logic.sbe.ir.Ir;
 import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
 import uk.co.real_logic.sbe.xml.ParserOptions;
+import uk.co.real_logic.sbe.xml.XmlSchemaParser;
 
+import java.io.InputStream;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.StringContains.containsString;
-import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 class NullEnumTypedTest
 {
@@ -41,26 +42,29 @@ class NullEnumTypedTest
     @Test
     void shouldGenerateEnumWithNonDefaultNullType() throws Exception
     {
-        final ParserOptions options = ParserOptions.builder()
-            .stopOnError(true)
-            .build();
-        final MessageSchema schema = parse(Tests.getLocalResource("issue889.xml"), options);
-        final IrGenerator irg = new IrGenerator();
-        final Ir ir = irg.generate(schema);
+        try (InputStream in = Tests.getLocalResource("issue889.xml"))
+        {
+            final ParserOptions options = ParserOptions.builder()
+                .stopOnError(true)
+                .build();
+            final MessageSchema schema = XmlSchemaParser.parse(in, options);
+            final IrGenerator irg = new IrGenerator();
+            final Ir ir = irg.generate(schema);
 
-        final StringWriterOutputManager outputManager = new StringWriterOutputManager();
-        final JavaGenerator generator = new JavaGenerator(
-            ir, BUFFER_NAME, READ_ONLY_BUFFER_NAME, false, false, true, outputManager);
+            final StringWriterOutputManager outputManager = new StringWriterOutputManager();
+            final JavaGenerator generator = new JavaGenerator(
+                ir, BUFFER_NAME, READ_ONLY_BUFFER_NAME, false, false, true, outputManager);
 
-        outputManager.setPackageName(ir.applicableNamespace());
-        generator.generateMessageHeaderStub();
-        generator.generateTypeStubs();
-        generator.generate();
+            outputManager.setPackageName(ir.applicableNamespace());
+            generator.generateMessageHeaderStub();
+            generator.generateTypeStubs();
+            generator.generate();
 
-        final Map<String, CharSequence> sources = outputManager.getSources();
-        final String source = sources.get("issue889.LotType").toString();
+            final Map<String, CharSequence> sources = outputManager.getSources();
+            final String source = sources.get("issue889.LotType").toString();
 
-        assertThat(source, containsString("NULL_VAL((short)0);"));
-        assertThat(source, containsString("case 0: return NULL_VAL;"));
+            assertThat(source, containsString("NULL_VAL((short)0);"));
+            assertThat(source, containsString("case 0: return NULL_VAL;"));
+        }
     }
 }

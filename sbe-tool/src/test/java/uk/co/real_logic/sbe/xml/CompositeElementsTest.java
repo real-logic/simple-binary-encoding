@@ -18,6 +18,7 @@ package uk.co.real_logic.sbe.xml;
 import org.junit.jupiter.api.Test;
 import uk.co.real_logic.sbe.Tests;
 
+import java.io.InputStream;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -29,36 +30,38 @@ class CompositeElementsTest
     @Test
     void shouldParseSchemaSuccessfully() throws Exception
     {
-        final MessageSchema schema = parse(Tests.getLocalResource(
-            "composite-elements-schema.xml"), ParserOptions.DEFAULT);
-        final List<Field> fields = schema.getMessage(1).fields();
-        final Field composite = fields.get(0);
+        try (InputStream in = Tests.getLocalResource("composite-elements-schema.xml"))
+        {
+            final MessageSchema schema = parse(in, ParserOptions.DEFAULT);
+            final List<Field> fields = schema.getMessage(1).fields();
+            final Field composite = fields.get(0);
 
-        assertThat(composite.name(), is("structure"));
-        final CompositeType compositeType = (CompositeType)composite.type();
+            assertThat(composite.name(), is("structure"));
+            final CompositeType compositeType = (CompositeType)composite.type();
 
-        assertThat(compositeType.name(), is("outer"));
-        final List<Type> elements = compositeType.getTypeList();
+            assertThat(compositeType.name(), is("outer"));
+            final List<Type> elements = compositeType.getTypeList();
 
-        final EnumType enumType = (EnumType)elements.get(0);
-        final EncodedDataType encodedDataType = (EncodedDataType)elements.get(1);
-        final SetType setType = (SetType)elements.get(2);
-        final CompositeType nestedCompositeType = (CompositeType)elements.get(3);
+            final EnumType enumType = (EnumType)elements.get(0);
+            final EncodedDataType encodedDataType = (EncodedDataType)elements.get(1);
+            final SetType setType = (SetType)elements.get(2);
+            final CompositeType nestedCompositeType = (CompositeType)elements.get(3);
 
-        assertThat(enumType.name(), is("enumOne"));
-        assertThat(encodedDataType.name(), is("zeroth"));
-        assertThat(setType.name(), is("setOne"));
-        assertThat(nestedCompositeType.name(), is("inner"));
+            assertThat(enumType.name(), is("enumOne"));
+            assertThat(encodedDataType.name(), is("zeroth"));
+            assertThat(setType.name(), is("setOne"));
+            assertThat(nestedCompositeType.name(), is("inner"));
 
-        final List<Type> nestedElements = nestedCompositeType.getTypeList();
+            final List<Type> nestedElements = nestedCompositeType.getTypeList();
 
-        final EncodedDataType first = (EncodedDataType)nestedElements.get(0);
-        final EncodedDataType second = (EncodedDataType)nestedElements.get(1);
+            final EncodedDataType first = (EncodedDataType)nestedElements.get(0);
+            final EncodedDataType second = (EncodedDataType)nestedElements.get(1);
 
-        assertThat(first.name(), is("first"));
-        assertThat(second.name(), is("second"));
+            assertThat(first.name(), is("first"));
+            assertThat(second.name(), is("second"));
 
-        assertThat(nestedCompositeType.encodedLength(), is(16));
-        assertThat(compositeType.encodedLength(), is(22));
+            assertThat(nestedCompositeType.encodedLength(), is(16));
+            assertThat(compositeType.encodedLength(), is(22));
+        }
     }
 }

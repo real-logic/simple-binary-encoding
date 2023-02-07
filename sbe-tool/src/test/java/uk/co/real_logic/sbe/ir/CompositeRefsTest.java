@@ -20,6 +20,8 @@ import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
 import uk.co.real_logic.sbe.xml.ParserOptions;
 
+import java.io.InputStream;
+
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static uk.co.real_logic.sbe.Tests.getLocalResource;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
@@ -29,12 +31,15 @@ class CompositeRefsTest
     @Test
     void shouldGenerateIrForCompositeRefs() throws Exception
     {
-        final MessageSchema schema = parse(getLocalResource("issue496.xml"), ParserOptions.DEFAULT);
-        final IrGenerator irg = new IrGenerator();
-        final Ir ir = irg.generate(schema);
+        try (InputStream in = getLocalResource("issue496.xml"))
+        {
+            final MessageSchema schema = parse(in, ParserOptions.DEFAULT);
+            final IrGenerator irg = new IrGenerator();
+            final Ir ir = irg.generate(schema);
 
-        assertNotNull(ir.getType("compositeOne"));
-        assertNotNull(ir.getType("compositeTwo"));
-        assertNotNull(ir.getType("compositeThree"));
+            assertNotNull(ir.getType("compositeOne"));
+            assertNotNull(ir.getType("compositeTwo"));
+            assertNotNull(ir.getType("compositeThree"));
+        }
     }
 }

@@ -22,6 +22,7 @@ import uk.co.real_logic.sbe.Tests;
 import uk.co.real_logic.sbe.ir.Ir;
 import uk.co.real_logic.sbe.xml.*;
 
+import java.io.InputStream;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -35,28 +36,30 @@ public class SinceVersionTransformedSchemaJavaGenerationTest
     @CsvSource({ "0,4", "4,5", "5,6" })
     void shouldGenerateCodeForOlderVersion(final int versionIncluded, final int versionExcluded) throws Exception
     {
-        final MessageSchema schema = parse(
-            Tests.getLocalResource("since-version-filter-schema.xml"), ParserOptions.DEFAULT);
-        final SchemaTransformer transformer = new SchemaTransformerFactory("*:" + versionIncluded);
-        final MessageSchema transformedSchema = transformer.transform(schema);
-        final Ir ir = new IrGenerator().generate(transformedSchema);
-        final StringWriterOutputManager outputManager = new StringWriterOutputManager();
-        outputManager.setPackageName("test");
+        try (InputStream in = Tests.getLocalResource("since-version-filter-schema.xml"))
+        {
+            final MessageSchema schema = parse(in, ParserOptions.DEFAULT);
+            final SchemaTransformer transformer = new SchemaTransformerFactory("*:" + versionIncluded);
+            final MessageSchema transformedSchema = transformer.transform(schema);
+            final Ir ir = new IrGenerator().generate(transformedSchema);
+            final StringWriterOutputManager outputManager = new StringWriterOutputManager();
+            outputManager.setPackageName("test");
 
-        final JavaGenerator javaGenerator = new JavaGenerator(
-            ir,
-            JAVA_DEFAULT_ENCODING_BUFFER_TYPE,
-            JAVA_DEFAULT_DECODING_BUFFER_TYPE,
-            false,
-            false,
-            false,
-            outputManager);
+            final JavaGenerator javaGenerator = new JavaGenerator(
+                ir,
+                JAVA_DEFAULT_ENCODING_BUFFER_TYPE,
+                JAVA_DEFAULT_DECODING_BUFFER_TYPE,
+                false,
+                false,
+                false,
+                outputManager);
 
-        javaGenerator.generate();
+            javaGenerator.generate();
 
-        final Map<String, CharSequence> sources = outputManager.getSources();
-        assertTrue(containsCodeWithSinceVersion(sources, versionIncluded));
-        assertTrue(doesNotContainsCodeWithSinceVersion(sources, versionExcluded));
+            final Map<String, CharSequence> sources = outputManager.getSources();
+            assertTrue(containsCodeWithSinceVersion(sources, versionIncluded));
+            assertTrue(doesNotContainsCodeWithSinceVersion(sources, versionExcluded));
+        }
     }
 
     private static boolean containsCodeWithSinceVersion(final Map<String, CharSequence> sources, final int version)

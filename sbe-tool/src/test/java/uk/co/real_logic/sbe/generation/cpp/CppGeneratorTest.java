@@ -23,6 +23,8 @@ import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
 import uk.co.real_logic.sbe.xml.ParserOptions;
 
+import java.io.InputStream;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
@@ -33,18 +35,21 @@ class CppGeneratorTest
     @Test
     void shouldUseGeneratedLiteralForConstantOneWhenGeneratingBitsetCode() throws Exception
     {
-        final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
-        final MessageSchema schema = parse(Tests.getLocalResource("issue827.xml"), options);
-        final IrGenerator irg = new IrGenerator();
-        final Ir ir = irg.generate(schema);
-        final StringWriterOutputManager outputManager = new StringWriterOutputManager();
-        outputManager.setPackageName(ir.applicableNamespace());
+        try (InputStream in = Tests.getLocalResource("issue827.xml"))
+        {
+            final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
+            final MessageSchema schema = parse(in, options);
+            final IrGenerator irg = new IrGenerator();
+            final Ir ir = irg.generate(schema);
+            final StringWriterOutputManager outputManager = new StringWriterOutputManager();
+            outputManager.setPackageName(ir.applicableNamespace());
 
-        final CppGenerator generator = new CppGenerator(ir, false, outputManager);
-        generator.generate();
+            final CppGenerator generator = new CppGenerator(ir, false, outputManager);
+            generator.generate();
 
-        final String source = outputManager.getSource("issue827.FlagsSet").toString();
-        assertThat(source, not(containsString("1u << ")));
-        assertThat(source, containsString("UINT64_C(0x1) << "));
+            final String source = outputManager.getSource("issue827.FlagsSet").toString();
+            assertThat(source, not(containsString("1u << ")));
+            assertThat(source, containsString("UINT64_C(0x1) << "));
+        }
     }
 }

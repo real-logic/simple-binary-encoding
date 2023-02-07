@@ -172,7 +172,7 @@ public class XmlSchemaParser
     }
 
     /**
-     * Scan XML for all types (encodedDataType, compositeType, enumType, and setType) and save in map.
+     * Scan XML for all types (encodedDataType, compositeType, enumType, and setType) and save in a map.
      *
      * @param document for the XML parsing.
      * @param xPath    for XPath expression reuse.

@@ -19,36 +19,40 @@ import org.junit.jupiter.api.Test;
 import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
 import uk.co.real_logic.sbe.xml.ParserOptions;
+import uk.co.real_logic.sbe.xml.XmlSchemaParser;
 
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static uk.co.real_logic.sbe.Tests.getLocalResource;
-import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
 class WarningFormattingTest
 {
     @Test
     void shouldGenerateCorrectWarning() throws Exception
     {
-        final ByteArrayOutputStream out = new ByteArrayOutputStream();
-        final ParserOptions options = new ParserOptions.Builder()
-            .stopOnError(true)
-            .errorPrintStream(new PrintStream(out))
-            .build();
-        final MessageSchema schema = parse(getLocalResource("npe-small-header.xml"), options);
-        final IrGenerator irg = new IrGenerator();
-        irg.generate(schema);
+        try (InputStream in = getLocalResource("npe-small-header.xml"))
+        {
+            final ByteArrayOutputStream out = new ByteArrayOutputStream();
+            final ParserOptions options = new ParserOptions.Builder()
+                .stopOnError(true)
+                .errorPrintStream(new PrintStream(out))
+                .build();
+            final MessageSchema schema = XmlSchemaParser.parse(in, options);
+            final IrGenerator irg = new IrGenerator();
+            irg.generate(schema);
 
-        final String warnings = out.toString(StandardCharsets.US_ASCII.name());
-        assertThat(warnings, containsString(
-            "WARNING: at <types><composite name=\"messageHeader\"> \"blockLength\" should be UINT16"));
-        assertThat(warnings, containsString(
-            "WARNING: at <types><composite name=\"messageHeader\"> \"templateId\" should be UINT16"));
-        assertThat(warnings, containsString(
-            "WARNING: at <types><composite name=\"messageHeader\"> \"version\" should be UINT16"));
+            final String warnings = out.toString(StandardCharsets.US_ASCII.name());
+            assertThat(warnings, containsString(
+                "WARNING: at <types><composite name=\"messageHeader\"> \"blockLength\" should be UINT16"));
+            assertThat(warnings, containsString(
+                "WARNING: at <types><composite name=\"messageHeader\"> \"templateId\" should be UINT16"));
+            assertThat(warnings, containsString(
+                "WARNING: at <types><composite name=\"messageHeader\"> \"version\" should be UINT16"));
+        }
     }
 }

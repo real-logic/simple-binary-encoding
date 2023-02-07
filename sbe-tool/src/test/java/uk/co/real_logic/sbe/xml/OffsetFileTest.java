@@ -18,6 +18,7 @@ package uk.co.real_logic.sbe.xml;
 import org.junit.jupiter.api.Test;
 import uk.co.real_logic.sbe.Tests;
 
+import java.io.InputStream;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -33,138 +34,154 @@ class OffsetFileTest
     @Test
     void shouldHandleAllTypeOffsets() throws Exception
     {
-        final MessageSchema schema = parse(Tests.getLocalResource(
-            "basic-types-schema.xml"), ParserOptions.DEFAULT);
-        final List<Field> fields = schema.getMessage(1).fields();
+        try (InputStream in = Tests.getLocalResource("basic-types-schema.xml"))
+        {
+            final MessageSchema schema = parse(in, ParserOptions.DEFAULT);
+            final List<Field> fields = schema.getMessage(1).fields();
 
-        assertThat(fields.get(0).computedOffset(), is(0));
-        assertThat(fields.get(0).type().encodedLength(), is(8));
-        assertThat(fields.get(1).computedOffset(), is(8));
-        assertThat(fields.get(1).type().encodedLength(), is(20));
-        assertThat(fields.get(2).computedOffset(), is(28));
-        assertThat(fields.get(2).type().encodedLength(), is(1));
-        assertThat(fields.get(3).computedOffset(), is(29));
-        assertThat(fields.get(3).type().encodedLength(), is(4));
-        assertThat(fields.get(4).computedOffset(), is(33));
-        assertThat(fields.get(4).type().encodedLength(), is(8));
+            assertThat(fields.get(0).computedOffset(), is(0));
+            assertThat(fields.get(0).type().encodedLength(), is(8));
+            assertThat(fields.get(1).computedOffset(), is(8));
+            assertThat(fields.get(1).type().encodedLength(), is(20));
+            assertThat(fields.get(2).computedOffset(), is(28));
+            assertThat(fields.get(2).type().encodedLength(), is(1));
+            assertThat(fields.get(3).computedOffset(), is(29));
+            assertThat(fields.get(3).type().encodedLength(), is(4));
+            assertThat(fields.get(4).computedOffset(), is(33));
+            assertThat(fields.get(4).type().encodedLength(), is(8));
+        }
     }
 
     @Test
     void shouldHandleAllTypeOffsetsSetByXml() throws Exception
     {
-        final MessageSchema schema = parse(Tests.getLocalResource(
-            "basic-types-schema.xml"), ParserOptions.DEFAULT);
-        final List<Field> fields = schema.getMessage(2).fields();
+        try (InputStream in = Tests.getLocalResource("basic-types-schema.xml"))
+        {
+            final MessageSchema schema = parse(in, ParserOptions.DEFAULT);
+            final List<Field> fields = schema.getMessage(2).fields();
 
-        assertThat(fields.get(0).computedOffset(), is(0));
-        assertThat(fields.get(0).type().encodedLength(), is(8));
-        assertThat(fields.get(1).computedOffset(), is(8));
-        assertThat(fields.get(1).type().encodedLength(), is(20));
-        assertThat(fields.get(2).computedOffset(), is(32));
-        assertThat(fields.get(2).type().encodedLength(), is(1));
-        assertThat(fields.get(3).computedOffset(), is(128));
-        assertThat(fields.get(3).type().encodedLength(), is(4));
-        assertThat(fields.get(4).computedOffset(), is(136));
-        assertThat(fields.get(4).type().encodedLength(), is(8));
+            assertThat(fields.get(0).computedOffset(), is(0));
+            assertThat(fields.get(0).type().encodedLength(), is(8));
+            assertThat(fields.get(1).computedOffset(), is(8));
+            assertThat(fields.get(1).type().encodedLength(), is(20));
+            assertThat(fields.get(2).computedOffset(), is(32));
+            assertThat(fields.get(2).type().encodedLength(), is(1));
+            assertThat(fields.get(3).computedOffset(), is(128));
+            assertThat(fields.get(3).type().encodedLength(), is(4));
+            assertThat(fields.get(4).computedOffset(), is(136));
+            assertThat(fields.get(4).type().encodedLength(), is(8));
+        }
     }
 
     @Test
     void shouldCalculateGroupOffsetWithNoPaddingFromBlockLength() throws Exception
     {
-        final MessageSchema schema = parse(Tests.getLocalResource(
-            "block-length-schema.xml"), ParserOptions.DEFAULT);
-        final Message msg = schema.getMessage(1);
+        try (InputStream in = Tests.getLocalResource("block-length-schema.xml"))
+        {
+            final MessageSchema schema = parse(in, ParserOptions.DEFAULT);
+            final Message msg = schema.getMessage(1);
 
-        assertThat(msg.blockLength(), is(8));
+            assertThat(msg.blockLength(), is(8));
 
-        final List<Field> fields = msg.fields();
-        assertThat(fields.get(0).computedOffset(), is(0));
-        assertThat(fields.get(0).type().encodedLength(), is(8));
-        assertThat(fields.get(1).computedOffset(), is(8));
-        assertNull(fields.get(1).type());
+            final List<Field> fields = msg.fields();
+            assertThat(fields.get(0).computedOffset(), is(0));
+            assertThat(fields.get(0).type().encodedLength(), is(8));
+            assertThat(fields.get(1).computedOffset(), is(8));
+            assertNull(fields.get(1).type());
 
-        final List<Field> groupFields = fields.get(1).groupFields();
-        assertThat(groupFields.size(), is(2));
-        assertThat(groupFields.get(0).computedOffset(), is(0));
-        assertThat(groupFields.get(0).type().encodedLength(), is(4));
-        assertThat(groupFields.get(1).computedOffset(), is(4));
-        assertThat(groupFields.get(1).type().encodedLength(), is(8));
+            final List<Field> groupFields = fields.get(1).groupFields();
+            assertThat(groupFields.size(), is(2));
+            assertThat(groupFields.get(0).computedOffset(), is(0));
+            assertThat(groupFields.get(0).type().encodedLength(), is(4));
+            assertThat(groupFields.get(1).computedOffset(), is(4));
+            assertThat(groupFields.get(1).type().encodedLength(), is(8));
+        }
     }
 
     @Test
     void shouldCalculateGroupOffsetWithPaddingFromBlockLength() throws Exception
     {
-        final MessageSchema schema = parse(Tests.getLocalResource(
-            "block-length-schema.xml"), ParserOptions.DEFAULT);
-        final List<Field> fields = schema.getMessage(2).fields();
+        try (InputStream in = Tests.getLocalResource("block-length-schema.xml"))
+        {
+            final MessageSchema schema = parse(in, ParserOptions.DEFAULT);
+            final List<Field> fields = schema.getMessage(2).fields();
 
-        assertThat(fields.get(0).computedOffset(), is(0));
-        assertThat(fields.get(0).type().encodedLength(), is(8));
-        assertThat(fields.get(1).computedOffset(), is(64));
-        assertNull(fields.get(1).type());
-        assertThat(fields.get(1).computedBlockLength(), is(12));
+            assertThat(fields.get(0).computedOffset(), is(0));
+            assertThat(fields.get(0).type().encodedLength(), is(8));
+            assertThat(fields.get(1).computedOffset(), is(64));
+            assertNull(fields.get(1).type());
+            assertThat(fields.get(1).computedBlockLength(), is(12));
 
-        final List<Field> groupFields = fields.get(1).groupFields();
+            final List<Field> groupFields = fields.get(1).groupFields();
 
-        assertThat(groupFields.size(), is(2));
-        assertThat(groupFields.get(0).computedOffset(), is(0));
-        assertThat(groupFields.get(0).type().encodedLength(), is(4));
-        assertThat(groupFields.get(1).computedOffset(), is(4));
-        assertThat(groupFields.get(1).type().encodedLength(), is(8));
+            assertThat(groupFields.size(), is(2));
+            assertThat(groupFields.get(0).computedOffset(), is(0));
+            assertThat(groupFields.get(0).type().encodedLength(), is(4));
+            assertThat(groupFields.get(1).computedOffset(), is(4));
+            assertThat(groupFields.get(1).type().encodedLength(), is(8));
+        }
     }
 
     @Test
     void shouldCalculateGroupOffsetWithPaddingFromBlockLengthAndGroupBlockLength() throws Exception
     {
-        final MessageSchema schema = parse(Tests.getLocalResource(
-            "block-length-schema.xml"), ParserOptions.DEFAULT);
-        final List<Field> fields = schema.getMessage(3).fields();
+        try (InputStream in = Tests.getLocalResource("block-length-schema.xml"))
+        {
+            final MessageSchema schema = parse(in, ParserOptions.DEFAULT);
+            final List<Field> fields = schema.getMessage(3).fields();
 
-        assertThat(fields.get(0).computedOffset(), is(0));
-        assertThat(fields.get(0).type().encodedLength(), is(8));
-        assertThat(fields.get(1).computedOffset(), is(64));
-        assertNull(fields.get(1).type());
-        assertThat(fields.get(1).computedBlockLength(), is(16));
+            assertThat(fields.get(0).computedOffset(), is(0));
+            assertThat(fields.get(0).type().encodedLength(), is(8));
+            assertThat(fields.get(1).computedOffset(), is(64));
+            assertNull(fields.get(1).type());
+            assertThat(fields.get(1).computedBlockLength(), is(16));
 
-        final List<Field> groupFields = fields.get(1).groupFields();
+            final List<Field> groupFields = fields.get(1).groupFields();
 
-        assertThat(groupFields.size(), is(2));
-        assertThat(groupFields.get(0).computedOffset(), is(0));
-        assertThat(groupFields.get(0).type().encodedLength(), is(4));
-        assertThat(groupFields.get(1).computedOffset(), is(4));
-        assertThat(groupFields.get(1).type().encodedLength(), is(8));
+            assertThat(groupFields.size(), is(2));
+            assertThat(groupFields.get(0).computedOffset(), is(0));
+            assertThat(groupFields.get(0).type().encodedLength(), is(4));
+            assertThat(groupFields.get(1).computedOffset(), is(4));
+            assertThat(groupFields.get(1).type().encodedLength(), is(8));
+        }
     }
 
     @Test
     void shouldCalculateDataOffsetWithPaddingFromBlockLength() throws Exception
     {
-        final MessageSchema schema = parse(Tests.getLocalResource(
-            "block-length-schema.xml"), ParserOptions.DEFAULT);
-        final List<Field> fields = schema.getMessage(4).fields();
+        try (InputStream in = Tests.getLocalResource("block-length-schema.xml"))
+        {
+            final MessageSchema schema = parse(in, ParserOptions.DEFAULT);
+            final List<Field> fields = schema.getMessage(4).fields();
 
-        assertThat(fields.get(0).computedOffset(), is(0));
-        assertThat(fields.get(0).type().encodedLength(), is(8));
-        assertThat(fields.get(1).computedOffset(), is(64));
-        assertThat(fields.get(1).type().encodedLength(), is(-1));
+            assertThat(fields.get(0).computedOffset(), is(0));
+            assertThat(fields.get(0).type().encodedLength(), is(8));
+            assertThat(fields.get(1).computedOffset(), is(64));
+            assertThat(fields.get(1).type().encodedLength(), is(-1));
+        }
     }
 
     @Test
     void shouldCalculateCompositeSizeWithOffsetsSpecified() throws Exception
     {
-        final MessageSchema schema = parse(Tests.getLocalResource(
-            "composite-offsets-schema.xml"), ParserOptions.DEFAULT);
-        final CompositeType header = schema.messageHeader();
+        try (InputStream in = Tests.getLocalResource("composite-offsets-schema.xml"))
+        {
+            final MessageSchema schema = parse(in, ParserOptions.DEFAULT);
+            final CompositeType header = schema.messageHeader();
 
-        assertThat(header.encodedLength(), is(12));
+            assertThat(header.encodedLength(), is(12));
+        }
     }
 
     @Test
     void shouldCalculateDimensionSizeWithOffsetsSpecified() throws Exception
     {
-        final MessageSchema schema = parse(Tests.getLocalResource(
-            "composite-offsets-schema.xml"), ParserOptions.DEFAULT);
-        final CompositeType dimensions = schema.getMessage(1).fields().get(0).dimensionType();
+        try (InputStream in = Tests.getLocalResource("composite-offsets-schema.xml"))
+        {
+            final MessageSchema schema = parse(in, ParserOptions.DEFAULT);
+            final CompositeType dimensions = schema.getMessage(1).fields().get(0).dimensionType();
 
-        assertThat(dimensions.encodedLength(), is(8));
+            assertThat(dimensions.encodedLength(), is(8));
+        }
     }
 }

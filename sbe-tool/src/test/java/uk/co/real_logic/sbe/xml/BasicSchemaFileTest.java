@@ -18,6 +18,7 @@ package uk.co.real_logic.sbe.xml;
 import org.junit.jupiter.api.Test;
 import uk.co.real_logic.sbe.Tests;
 
+import java.io.InputStream;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -29,37 +30,52 @@ class BasicSchemaFileTest
     @Test
     void shouldHandleBasicFile() throws Exception
     {
-        parse(Tests.getLocalResource("basic-schema.xml"), ParserOptions.DEFAULT);
+        try (InputStream in = Tests.getLocalResource("basic-schema.xml"))
+        {
+            parse(in, ParserOptions.DEFAULT);
+        }
     }
 
     @Test
     void shouldHandleConstantHeaderField() throws Exception
     {
-        parse(Tests.getLocalResource("basic-schema-constant-header-field.xml"), ParserOptions.DEFAULT);
+        try (InputStream in = Tests.getLocalResource("basic-schema-constant-header-field.xml"))
+        {
+            parse(in, ParserOptions.DEFAULT);
+        }
     }
 
     @Test
     void shouldHandleBasicFileWithGroup() throws Exception
     {
-        parse(Tests.getLocalResource("basic-group-schema.xml"), ParserOptions.DEFAULT);
+        try (InputStream in = Tests.getLocalResource("basic-group-schema.xml"))
+        {
+            parse(in, ParserOptions.DEFAULT);
+        }
     }
 
     @Test
     void shouldHandleBasicFileWithVariableLengthData() throws Exception
     {
-        parse(Tests.getLocalResource("basic-variable-length-schema.xml"), ParserOptions.DEFAULT);
+        try (InputStream in = Tests.getLocalResource("basic-variable-length-schema.xml"))
+        {
+            parse(in, ParserOptions.DEFAULT);
+        }
     }
 
     @Test
     void shouldHandleBasicAllTypes() throws Exception
     {
-        final MessageSchema schema = parse(Tests.getLocalResource("basic-types-schema.xml"), ParserOptions.DEFAULT);
-        final List<Field> fields = schema.getMessage(1).fields();
+        try (InputStream in = Tests.getLocalResource("basic-types-schema.xml"))
+        {
+            final MessageSchema schema = parse(in, ParserOptions.DEFAULT);
+            final List<Field> fields = schema.getMessage(1).fields();
 
-        assertThat(fields.get(0).name(), is("header"));
-        assertThat(fields.get(1).name(), is("EDTField"));
-        assertThat(fields.get(2).name(), is("ENUMField"));
-        assertThat(fields.get(3).name(), is("SETField"));
-        assertThat(fields.get(4).name(), is("int64Field"));
+            assertThat(fields.get(0).name(), is("header"));
+            assertThat(fields.get(1).name(), is("EDTField"));
+            assertThat(fields.get(2).name(), is("ENUMField"));
+            assertThat(fields.get(3).name(), is("SETField"));
+            assertThat(fields.get(4).name(), is("int64Field"));
+        }
     }
 }
