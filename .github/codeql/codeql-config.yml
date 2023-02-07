@@ -10,3 +10,5 @@ query-filters:
       id: java/missing-override-annotation
   - exclude:
       id: cs/useless-assignment-to-local
+  - exclude:
+      id: cpp/trivial-switch
