@@ -66,6 +66,7 @@ jobs:
         with:
           languages: ${{ matrix.language }}
           queries: +security-and-quality
+          config-file: ./.github/codeql/codeql-config.yml
         
       - name: Build with Gradle
         run: ./gradlew
@@ -122,6 +123,7 @@ jobs:
         with:
           languages: ${{ matrix.language }}
           queries: +security-and-quality
+          config-file: ./.github/codeql/codeql-config.yml
         
       - name: Build
         run: ./csharp/build.sh
@@ -173,6 +175,7 @@ jobs:
         with:
           languages: ${{ matrix.language }}
           queries: +security-and-quality
+          config-file: ./.github/codeql/codeql-config.yml
           
       - name: Build
         run: ./cppbuild/cppbuild

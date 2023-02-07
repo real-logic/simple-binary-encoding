@@ -1,0 +1,8 @@
+name: "SBE CodeQL Scanning"
+
+queries:
+  - uses: security-and-quality
+
+query-filters:
+  - exclude:
+      id: java/iterator-implements-iterable
