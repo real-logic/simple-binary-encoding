@@ -58,10 +58,14 @@ class Issue567GroupSizeTest
             .stopOnError(true)
             .build();
         final InputStream in = Tests.getLocalResource("issue567-invalid.xml");
-        final InputSource is = new InputSource(new InputStreamReader(in, StandardCharsets.UTF_8));
 
-        assertThrows(IllegalArgumentException.class, () -> XmlSchemaParser.parse(is, options));
-        verify(mockErr).println(ERR_MSG);
+        try (InputStreamReader characterStream = new InputStreamReader(in, StandardCharsets.UTF_8))
+        {
+            final InputSource is = new InputSource(characterStream);
+
+            assertThrows(IllegalArgumentException.class, () -> XmlSchemaParser.parse(is, options));
+            verify(mockErr).println(ERR_MSG);
+        }
     }
 
     @Test
@@ -72,21 +76,25 @@ class Issue567GroupSizeTest
             .stopOnError(true)
             .build();
         final InputStream in = Tests.getLocalResource("issue567-valid.xml");
-        final InputSource is = new InputSource(new InputStreamReader(in, StandardCharsets.UTF_8));
 
-        final MessageSchema schema = XmlSchemaParser.parse(is, options);
-        verify(mockErr).println(ERR_MSG);
+        try (InputStreamReader characterStream = new InputStreamReader(in, StandardCharsets.UTF_8))
+        {
+            final InputSource is = new InputSource(characterStream);
 
-        final IrGenerator irg = new IrGenerator();
-        final Ir ir = irg.generate(schema);
+            final MessageSchema schema = XmlSchemaParser.parse(is, options);
+            verify(mockErr).println(ERR_MSG);
 
-        final StringWriterOutputManager outputManager = new StringWriterOutputManager();
-        outputManager.setPackageName(ir.applicableNamespace());
-        final CSharpGenerator generator = new CSharpGenerator(ir, outputManager);
+            final IrGenerator irg = new IrGenerator();
+            final Ir ir = irg.generate(schema);
 
-        generator.generate();
+            final StringWriterOutputManager outputManager = new StringWriterOutputManager();
+            outputManager.setPackageName(ir.applicableNamespace());
+            final CSharpGenerator generator = new CSharpGenerator(ir, outputManager);
 
-        final String source = outputManager.getSource("tests.Issue567").toString();
-        assertThat(source, containsString(EXPECTED_COUNT_CHECK));
+            generator.generate();
+
+            final String source = outputManager.getSource("tests.Issue567").toString();
+            assertThat(source, containsString(EXPECTED_COUNT_CHECK));
+        }
     }
 }
