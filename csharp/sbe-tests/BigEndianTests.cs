@@ -31,6 +31,7 @@ namespace Org.SbeTool.Sbe.Tests
 
         private DirectBuffer _directBuffer;
         private MessageHeader _messageHeader;
+        private Car Car;
 
         [TestInitialize]
         public void SetUp()
