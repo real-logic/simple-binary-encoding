@@ -1789,10 +1789,11 @@ public class CSharpGenerator implements CodeGenerator
         append(sb, TWO_INDENT, "internal static void BuildString(this " + enumName + " val, StringBuilder builder)");
         append(sb, TWO_INDENT, "{");
         Separators.BEGIN_SET.appendToGeneratedBuilder(sb, THREE_INDENT);
-        append(sb, THREE_INDENT, "builder.Append(val.ToString());");
+        append(sb, THREE_INDENT, "builder.Append(val);");
         Separators.END_SET.appendToGeneratedBuilder(sb, THREE_INDENT);
         append(sb, TWO_INDENT, "}");
         append(sb, INDENT, "}");
+
         return sb;
     }
 
