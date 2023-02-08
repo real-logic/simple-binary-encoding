@@ -13,6 +13,8 @@ query-filters:
   - exclude:
       id: cs/useless-assignment-to-local
   - exclude:
+      id: cs/complex-block
+  - exclude:
       id: cpp/trivial-switch
   - exclude:
       id: cpp/poorly-documented-function
