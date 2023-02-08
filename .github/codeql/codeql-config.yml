@@ -13,6 +13,10 @@ query-filters:
   - exclude:
       id: java/unused-parameter
   - exclude:
+      id: java/confusing-method-signature
+  - exclude:
+      id: java/local-shadows-field
+  - exclude:
       id: cs/useless-assignment-to-local
   - exclude:
       id: cs/complex-block
