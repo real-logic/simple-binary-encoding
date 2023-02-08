@@ -104,6 +104,9 @@ public class CSharpGenerator implements CodeGenerator
                 case BEGIN_COMPOSITE:
                     generateComposite(tokens);
                     break;
+
+                default:
+                    break;
             }
         }
     }
@@ -586,7 +589,6 @@ public class CSharpGenerator implements CodeGenerator
             final Token token = tokens.get(i);
             final String propertyName = formatPropertyName(token.name());
 
-            // FIXME: do I need to pass classname down here for disambiguation
             switch (token.signal())
             {
                 case ENCODING:
@@ -603,6 +605,9 @@ public class CSharpGenerator implements CodeGenerator
 
                 case BEGIN_COMPOSITE:
                     sb.append(generateCompositeProperty(propertyName, token, token, indent));
+                    break;
+
+                default:
                     break;
             }
 
@@ -1271,6 +1276,9 @@ public class CSharpGenerator implements CodeGenerator
                     case BEGIN_COMPOSITE:
                         sb.append(generateCompositeProperty(propertyName, signalToken, encodingToken, indent));
                         break;
+
+                    default:
+                        break;
                 }
             }
         }
@@ -1739,7 +1747,6 @@ public class CSharpGenerator implements CodeGenerator
                     break;
 
                 case BEGIN_COMPOSITE:
-                {
                     append(sb, indent, "if (this." + fieldName + " != null)");
                     append(sb, indent, "{");
                     append(sb, indent, "    this." + fieldName + ".BuildString(builder);");
@@ -1749,7 +1756,9 @@ public class CSharpGenerator implements CodeGenerator
                     append(sb, indent, "    builder.Append(\"null\");");
                     append(sb, indent, "}");
                     break;
-                }
+
+                default:
+                    break;
             }
         }
 

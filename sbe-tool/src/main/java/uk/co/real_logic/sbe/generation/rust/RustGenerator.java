@@ -229,6 +229,8 @@ public class RustGenerator implements CodeGenerator
                         case BEGIN_COMPOSITE:
                             generateCompositeEncoder(sb, level, typeToken, name);
                             break;
+                        default:
+                            break;
                     }
                 }
                 catch (final IOException ex)
@@ -1391,6 +1393,8 @@ public class RustGenerator implements CodeGenerator
                 case BEGIN_COMPOSITE:
                     generateCompositeEncoder(sb, 2, encodingToken, encodingToken.name());
                     break;
+                default:
+                    break;
             }
 
             out.append(sb);
@@ -1439,8 +1443,8 @@ public class RustGenerator implements CodeGenerator
             switch (encodingToken.signal())
             {
                 case ENCODING:
-                    generatePrimitiveDecoder(sb, 2, encodingToken, encodingToken, encodingToken.name(),
-                        encodingToken.encoding());
+                    generatePrimitiveDecoder(
+                        sb, 2, encodingToken, encodingToken, encodingToken.name(), encodingToken.encoding());
                     break;
                 case BEGIN_ENUM:
                     generateEnumDecoder(sb, 2, encodingToken, encodingToken, encodingToken.name());
@@ -1450,6 +1454,8 @@ public class RustGenerator implements CodeGenerator
                     break;
                 case BEGIN_COMPOSITE:
                     generateCompositeDecoder(sb, 2, encodingToken, encodingToken, encodingToken.name());
+                    break;
+                default:
                     break;
             }
 

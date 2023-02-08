@@ -98,6 +98,9 @@ public class CppGenerator implements CodeGenerator
                 case BEGIN_COMPOSITE:
                     generateComposite(tokens);
                     break;
+
+                default:
+                    break;
             }
 
             typesToInclude.add(tokens.get(0).applicableTypeName());
@@ -118,6 +121,9 @@ public class CppGenerator implements CodeGenerator
                 case BEGIN_SET:
                 case BEGIN_COMPOSITE:
                     typesToInclude.add(token.applicableTypeName());
+                    break;
+
+                default:
                     break;
             }
         }
@@ -1242,6 +1248,9 @@ public class CppGenerator implements CodeGenerator
                 case BEGIN_COMPOSITE:
                     generateCompositeProperty(sb, propertyName, fieldToken, indent);
                     break;
+
+                default:
+                    break;
             }
 
             i += tokens.get(i).componentTokenCount();
@@ -2188,6 +2197,9 @@ public class CppGenerator implements CodeGenerator
                     case BEGIN_COMPOSITE:
                         generateCompositeProperty(sb, propertyName, encodingToken, indent);
                         break;
+
+                    default:
+                        break;
                 }
             }
         }
@@ -2802,6 +2814,9 @@ public class CppGenerator implements CodeGenerator
                         fieldName,
                         typeToken.signal() == Signal.BEGIN_SET ? "\"[]\"" : "\"{}\"");
                 }
+                break;
+
+            default:
                 break;
         }
 

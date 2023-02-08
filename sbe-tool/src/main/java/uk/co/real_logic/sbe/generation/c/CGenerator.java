@@ -89,6 +89,9 @@ public class CGenerator implements CodeGenerator
                 case BEGIN_COMPOSITE:
                     generateComposite(scope, tokens);
                     break;
+
+                default:
+                    break;
             }
 
             typesToInclude.add(tokens.get(0).applicableTypeName());
@@ -109,6 +112,9 @@ public class CGenerator implements CodeGenerator
                 case BEGIN_SET:
                 case BEGIN_COMPOSITE:
                     typesToInclude.add(token.applicableTypeName());
+                    break;
+
+                default:
                     break;
             }
         }
@@ -1235,6 +1241,9 @@ public class CGenerator implements CodeGenerator
                     propertyName,
                     encodingToken,
                     containingStructName);
+                break;
+
+            default:
                 break;
         }
     }

@@ -812,6 +812,9 @@ public class GolangGenerator implements CodeGenerator
                     // And we can move over this group
                     i += signalToken.componentTokenCount() - 1;
                     break;
+
+                default:
+                    break;
             }
         }
 
@@ -1113,6 +1116,9 @@ public class GolangGenerator implements CodeGenerator
 
                 generateDecodePrimitive(decode, primitive, encodingToken);
                 generateRangeCheckPrimitive(rc, primitive, encodingToken, signalToken.isOptionalEncoding());
+                break;
+
+            default:
                 break;
         }
 
@@ -1729,6 +1735,9 @@ public class GolangGenerator implements CodeGenerator
                 case END_GROUP:
                     i = tokens.size(); // terminate the loop
                     break;
+
+                default:
+                    break;
             }
         }
 
@@ -1974,7 +1983,7 @@ public class GolangGenerator implements CodeGenerator
         final String typeName,
         final List<Token> tokens) throws IOException
     {
-        // gofmt lines up the types and we don't want it to have to rewrite
+        // gofmt lines up the types, and we don't want it to have to rewrite
         // our generated files. To line things up we need to know the longest
         // string length and then fill with whitespace
         int longest = 0;
@@ -2000,6 +2009,9 @@ public class GolangGenerator implements CodeGenerator
 
                 case END_COMPOSITE:
                     i = tokens.size(); // terminate the loop
+                    break;
+
+                default:
                     break;
             }
         }
@@ -2054,6 +2066,9 @@ public class GolangGenerator implements CodeGenerator
                         .append(generateWhitespace(longest - propertyName.length() + 1))
                         .append((arrayLength > 1) ? ("[" + arrayLength + "]") : "")
                         .append(typeName).append(propertyType).append("\n");
+                    break;
+
+                default:
                     break;
             }
         }
@@ -2306,6 +2321,8 @@ public class GolangGenerator implements CodeGenerator
                 case UINT64:
                     imports.peek().add("math");
                     return "math.MaxUint64";
+                default:
+                    break;
             }
         }
 

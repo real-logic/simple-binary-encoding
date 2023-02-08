@@ -173,6 +173,9 @@ public class JavaGenerator implements CodeGenerator
                 case BEGIN_COMPOSITE:
                     generateComposite(tokens);
                     break;
+
+                default:
+                    break;
             }
         }
     }
@@ -1377,6 +1380,9 @@ public class JavaGenerator implements CodeGenerator
                         generateCompositeProperty(
                             sb, true, DECODER, propertyName, encodingToken, encodingToken, BASE_INDENT, typeName);
                         break;
+
+                    default:
+                        break;
                 }
 
                 out.append(sb);
@@ -1423,6 +1429,9 @@ public class JavaGenerator implements CodeGenerator
                     case BEGIN_COMPOSITE:
                         generateCompositeProperty(
                             sb, true, ENCODER, propertyName, encodingToken, encodingToken, BASE_INDENT, typeName);
+                        break;
+
+                    default:
                         break;
                 }
 
@@ -2941,6 +2950,9 @@ public class JavaGenerator implements CodeGenerator
                         generateCompositeProperty(
                             sb, false, DECODER, propertyName, fieldToken, typeToken, indent, typeName);
                         break;
+
+                    default:
+                        break;
                 }
             });
     }
@@ -3226,6 +3238,9 @@ public class JavaGenerator implements CodeGenerator
 
             case DOUBLE:
                 return "buffer.getDouble(" + index + byteOrder + ")";
+
+            default:
+                break;
         }
 
         throw new IllegalArgumentException("primitive type not supported: " + type);
@@ -3264,6 +3279,9 @@ public class JavaGenerator implements CodeGenerator
 
             case DOUBLE:
                 return "buffer.putDouble(" + index + ", " + value + byteOrder + ")";
+
+            default:
+                break;
         }
 
         throw new IllegalArgumentException("primitive type not supported: " + type);
@@ -3293,6 +3311,9 @@ public class JavaGenerator implements CodeGenerator
 
             case UINT64:
                 return "0 == buffer.getLong(offset)";
+
+            default:
+                break;
         }
 
         throw new IllegalArgumentException("primitive type not supported: " + type);
@@ -3313,6 +3334,9 @@ public class JavaGenerator implements CodeGenerator
 
             case UINT64:
                 return "0 != (buffer.getLong(offset" + byteOrder + ") & (1L << " + bitIndex + "))";
+
+            default:
+                break;
         }
 
         throw new IllegalArgumentException("primitive type not supported: " + type);
@@ -3329,6 +3353,9 @@ public class JavaGenerator implements CodeGenerator
 
             case UINT64:
                 return "0 != (value & (1L << " + bitIndex + "))";
+
+            default:
+                break;
         }
 
         throw new IllegalArgumentException("primitive type not supported: " + type);
@@ -3361,6 +3388,9 @@ public class JavaGenerator implements CodeGenerator
                     "        long bits = buffer.getLong(offset" + byteOrder + ");\n" +
                     "        bits = value ? bits | (1L << " + bitIdx + ") : bits & ~(1L << " + bitIdx + ");\n" +
                     "        buffer.putLong(offset, bits" + byteOrder + ");";
+
+            default:
+                break;
         }
 
         throw new IllegalArgumentException("primitive type not supported: " + type);
@@ -3385,6 +3415,9 @@ public class JavaGenerator implements CodeGenerator
             case UINT64:
                 return
                     "        return value ? bits | (1L << " + bitIdx + ") : bits & ~(1L << " + bitIdx + ");\n";
+
+            default:
+                break;
         }
 
         throw new IllegalArgumentException("primitive type not supported: " + type);
@@ -3748,6 +3781,9 @@ public class JavaGenerator implements CodeGenerator
                 append(sb, indent, "}");
                 break;
             }
+
+            default:
+                break;
         }
 
         final int lengthBeforeFieldSeparator = sb.length();
