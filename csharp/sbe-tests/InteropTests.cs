@@ -30,19 +30,21 @@ namespace Org.SbeTool.Sbe.Tests
         
         // The byte array is from the java example for interop test made by
         // running with -Dsbe.encoding.filename and then decoded using od -tu1
-        static byte[] _decodeBuffer;
-        static byte[] _encodeBuffer;
+        private byte[] _decodeBuffer;
+        private byte[] _encodeBuffer;
 
-        static DirectBuffer _directBuffer;
-        static MessageHeader _messageHeader;
-        static Car Car;
+        private DirectBuffer _directBuffer;
+        private MessageHeader _messageHeader;
+        private Car Car;
 
         [TestInitialize]
         public void Setup()
         {
             const string interopFile = "../../../ExampleUsingGeneratedStub.sbe";
             if (!File.Exists(interopFile))
+            {
                 Assert.Inconclusive($"Could not read interop file: {interopFile}");
+            }
             _decodeBuffer = File.ReadAllBytes(interopFile);
             _encodeBuffer = new byte[_decodeBuffer.Length];
             _messageHeader = new MessageHeader();
