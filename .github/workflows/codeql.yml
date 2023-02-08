@@ -65,7 +65,6 @@ jobs:
         uses: github/codeql-action/init@v2
         with:
           languages: ${{ matrix.language }}
-          queries: +security-and-quality
           config-file: ./.github/codeql/codeql-config.yml
         
       - name: Build with Gradle
@@ -122,7 +121,6 @@ jobs:
         uses: github/codeql-action/init@v2
         with:
           languages: ${{ matrix.language }}
-          queries: +security-and-quality
           config-file: ./.github/codeql/codeql-config.yml
         
       - name: Build
@@ -174,7 +172,6 @@ jobs:
         uses: github/codeql-action/init@v2
         with:
           languages: ${{ matrix.language }}
-          queries: +security-and-quality
           config-file: ./.github/codeql/codeql-config.yml
           
       - name: Build
