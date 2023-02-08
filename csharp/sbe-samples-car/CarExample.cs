@@ -80,9 +80,9 @@ namespace Baseline
                 ManufacturerCode = Engine.ManufacturerCodeResolvedCharacterEncoding.GetBytes("123");
                 ActivationCode = Car.ActivationCodeResolvedCharacterEncoding.GetBytes("abcdef");
             }
-            catch (Exception ex)
+            catch (EncoderFallbackException ex)
             {
-                throw new Exception("An error occured while reading encodings", ex);
+                throw new Exception("An error occurred while reading encodings", ex);
             }
         }
 

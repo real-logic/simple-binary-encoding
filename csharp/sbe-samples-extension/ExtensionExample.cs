@@ -100,12 +100,11 @@ namespace Baseline
                 Model = Encoding.GetEncoding(Car.ModelCharacterEncoding).GetBytes("Civic VTi");
                 ActivationCode = Encoding.GetEncoding(Car.ActivationCodeCharacterEncoding).GetBytes("abcdef");
             }
-            catch (Exception ex)
+            catch (EncoderFallbackException ex)
             {
-                throw new Exception("An error occured while reading encodings", ex);
+                throw new Exception("An error occurred while reading encodings", ex);
             }
         }
-
 
 
         public static int Encode(Car car, DirectBuffer directBuffer, int bufferOffset)
@@ -312,7 +311,7 @@ namespace Extension
                 Model = Encoding.GetEncoding(Car.ModelCharacterEncoding).GetBytes("Civic VTi");
                 ActivationCode = Encoding.GetEncoding(Car.ActivationCodeCharacterEncoding).GetBytes("abcdef");
             }
-            catch (Exception ex)
+            catch (EncoderFallbackException ex)
             {
                 throw new Exception("An error occurred while reading encodings", ex);
             }
@@ -390,7 +389,7 @@ namespace Extension
 
             // we have written all the constant length fields, now we can write the repeatable groups
 
-            var fuelFigures = car.FuelFiguresCount(3); // we specify that we are going to write 3 FueldFigures (the API is not very .NET friendly yet, we will address that)
+            var fuelFigures = car.FuelFiguresCount(3); // we specify that we are going to write 3 FuelFigures (the API is not very .NET friendly yet, we will address that)
             fuelFigures.Next(); // move to the first element
             fuelFigures.Speed = 30;
             fuelFigures.Mpg = 35.9f;
