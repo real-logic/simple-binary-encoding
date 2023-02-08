@@ -440,6 +440,9 @@ public class CppGenerator implements CodeGenerator
             propertyName,
             cppTypeForNumInGroup);
 
+        final int version = token.version();
+        final String versionCheck = 0 == version ?
+            "        return true;\n" : "        return m_actingVersion >= %1$sSinceVersion();\n";
         new Formatter(sb).format("\n" +
             indent + "    SBE_NODISCARD static SBE_CONSTEXPR std::uint64_t %1$sSinceVersion() SBE_NOEXCEPT\n" +
             indent + "    {\n" +
@@ -448,17 +451,10 @@ public class CppGenerator implements CodeGenerator
 
             indent + "    SBE_NODISCARD bool %1$sInActingVersion() const SBE_NOEXCEPT\n" +
             indent + "    {\n" +
-            indent + "#if defined(__clang__)\n" +
-            indent + "#pragma clang diagnostic push\n" +
-            indent + "#pragma clang diagnostic ignored \"-Wtautological-compare\"\n" +
-            indent + "#endif\n" +
-            indent + "        return m_actingVersion >= %1$sSinceVersion();\n" +
-            indent + "#if defined(__clang__)\n" +
-            indent + "#pragma clang diagnostic pop\n" +
-            indent + "#endif\n" +
+            indent + versionCheck +
             indent + "    }\n",
             propertyName,
-            token.version());
+            version);
     }
 
     private void generateVarData(
@@ -662,6 +658,9 @@ public class CppGenerator implements CodeGenerator
             toLowerFirstChar(propertyName),
             characterEncoding);
 
+        final int version = token.version();
+        final String versionCheck = 0 == version ?
+            "        return true;\n" : "        return m_actingVersion >= %1$sSinceVersion();\n";
         new Formatter(sb).format("\n" +
             indent + "    static SBE_CONSTEXPR std::uint64_t %1$sSinceVersion() SBE_NOEXCEPT\n" +
             indent + "    {\n" +
@@ -670,14 +669,7 @@ public class CppGenerator implements CodeGenerator
 
             indent + "    bool %1$sInActingVersion() SBE_NOEXCEPT\n" +
             indent + "    {\n" +
-            indent + "#if defined(__clang__)\n" +
-            indent + "#pragma clang diagnostic push\n" +
-            indent + "#pragma clang diagnostic ignored \"-Wtautological-compare\"\n" +
-            indent + "#endif\n" +
-            indent + "        return m_actingVersion >= %1$sSinceVersion();\n" +
-            indent + "#if defined(__clang__)\n" +
-            indent + "#pragma clang diagnostic pop\n" +
-            indent + "#endif\n" +
+            indent + versionCheck +
             indent + "    }\n\n" +
 
             indent + "    static SBE_CONSTEXPR std::uint16_t %1$sId() SBE_NOEXCEPT\n" +
@@ -685,7 +677,7 @@ public class CppGenerator implements CodeGenerator
             indent + "        return %3$d;\n" +
             indent + "    }\n",
             toLowerFirstChar(propertyName),
-            token.version(),
+            version,
             token.id());
 
         new Formatter(sb).format("\n" +
@@ -705,7 +697,7 @@ public class CppGenerator implements CodeGenerator
             indent + "        return %3$s(length);\n" +
             indent + "    }\n",
             toLowerFirstChar(propertyName),
-            generateArrayFieldNotPresentCondition(token.version(), BASE_INDENT),
+            generateArrayFieldNotPresentCondition(version, BASE_INDENT),
             formatByteOrderEncoding(lengthToken.encoding().byteOrder(), lengthToken.encoding().primitiveType()),
             lengthCppType);
     }
@@ -2220,6 +2212,9 @@ public class CppGenerator implements CodeGenerator
             propertyName,
             fieldToken.id());
 
+        final int version = fieldToken.version();
+        final String versionCheck = 0 == version ?
+            "        return true;\n" : "        return m_actingVersion >= %1$sSinceVersion();\n";
         new Formatter(sb).format("\n" +
             indent + "    SBE_NODISCARD static SBE_CONSTEXPR std::uint64_t %1$sSinceVersion() SBE_NOEXCEPT\n" +
             indent + "    {\n" +
@@ -2228,17 +2223,10 @@ public class CppGenerator implements CodeGenerator
 
             indent + "    SBE_NODISCARD bool %1$sInActingVersion() SBE_NOEXCEPT\n" +
             indent + "    {\n" +
-            indent + "#if defined(__clang__)\n" +
-            indent + "#pragma clang diagnostic push\n" +
-            indent + "#pragma clang diagnostic ignored \"-Wtautological-compare\"\n" +
-            indent + "#endif\n" +
-            indent + "        return m_actingVersion >= %1$sSinceVersion();\n" +
-            indent + "#if defined(__clang__)\n" +
-            indent + "#pragma clang diagnostic pop\n" +
-            indent + "#endif\n" +
+            indent + versionCheck +
             indent + "    }\n",
             propertyName,
-            fieldToken.version());
+            version);
 
         new Formatter(sb).format("\n" +
             indent + "    SBE_NODISCARD static SBE_CONSTEXPR std::size_t %1$sEncodingOffset() SBE_NOEXCEPT\n" +
