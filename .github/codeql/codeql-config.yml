@@ -11,6 +11,8 @@ query-filters:
   - exclude:
       id: java/uncaught-number-format-exception
   - exclude:
+      id: java/unused-parameter
+  - exclude:
       id: cs/useless-assignment-to-local
   - exclude:
       id: cs/complex-block
