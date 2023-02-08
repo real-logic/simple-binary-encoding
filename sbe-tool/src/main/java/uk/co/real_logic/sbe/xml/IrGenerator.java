@@ -505,6 +505,9 @@ public class IrGenerator
                 case CONSTANT:
                     encodingPresence = Encoding.Presence.CONSTANT;
                     break;
+
+                default:
+                    break;
             }
         }
 

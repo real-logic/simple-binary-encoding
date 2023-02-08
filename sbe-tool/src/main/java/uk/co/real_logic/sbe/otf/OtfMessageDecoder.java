@@ -131,6 +131,9 @@ public class OtfMessageDecoder
                 case ENCODING:
                     listener.onEncoding(fieldToken, buffer, bufferOffset + offset, typeToken, actingVersion);
                     break;
+
+                default:
+                    break;
             }
 
             i = nextFieldIdx;
@@ -256,6 +259,9 @@ public class OtfMessageDecoder
 
                 case ENCODING:
                     listener.onEncoding(typeToken, buffer, bufferOffset + offset, typeToken, actingVersion);
+                    break;
+
+                default:
                     break;
             }
 

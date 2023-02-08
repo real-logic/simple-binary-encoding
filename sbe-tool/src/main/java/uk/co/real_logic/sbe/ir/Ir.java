@@ -301,6 +301,9 @@ public class Ir
                 case BEGIN_SET:
                     i = captureType(tokens, i, Signal.END_SET, token.name(), token.referencedName());
                     break;
+
+                default:
+                    break;
             }
         }
     }
