@@ -2556,7 +2556,7 @@ public class CppGenerator implements CodeGenerator
         new Formatter(sb).format("\n" +
             "template<typename CharT, typename Traits>\n" +
             "friend std::basic_ostream<CharT, Traits> & operator << (\n" +
-            "    std::basic_ostream<CharT, Traits> &builder, %1$s _writer)\n" +
+            "    std::basic_ostream<CharT, Traits> &builder, %1$s &_writer)\n" +
             "{\n" +
             "    %1$s writer(\n" +
             "        _writer.m_buffer,\n" +
@@ -2587,7 +2587,7 @@ public class CppGenerator implements CodeGenerator
         return String.format("\n" +
             indent + "template<typename CharT, typename Traits>\n" +
             indent + "friend std::basic_ostream<CharT, Traits> & operator << (\n" +
-            indent + "    std::basic_ostream<CharT, Traits> &builder, %1$s writer)\n" +
+            indent + "    std::basic_ostream<CharT, Traits> &builder, %1$s &writer)\n" +
             indent + "{\n" +
             indent + "    builder << '{';\n" +
             "%2$s" +
@@ -2603,7 +2603,7 @@ public class CppGenerator implements CodeGenerator
         return String.format("\n" +
             "template<typename CharT, typename Traits>\n" +
             "friend std::basic_ostream<CharT, Traits> & operator << (\n" +
-            "    std::basic_ostream<CharT, Traits> &builder, %1$s writer)\n" +
+            "    std::basic_ostream<CharT, Traits> &builder, %1$s &writer)\n" +
             "{\n" +
             "    builder << '{';\n" +
             "%2$s" +
@@ -2822,7 +2822,7 @@ public class CppGenerator implements CodeGenerator
         new Formatter(sb).format("\n" +
             indent + "template<typename CharT, typename Traits>\n" +
             indent + "friend std::basic_ostream<CharT, Traits> & operator << (\n" +
-            indent + "    std::basic_ostream<CharT, Traits> &builder, %1$s writer)\n" +
+            indent + "    std::basic_ostream<CharT, Traits> &builder, %1$s &writer)\n" +
             indent + "{\n" +
             indent + "    builder << '[';\n",
             name);
