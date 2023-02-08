@@ -79,6 +79,11 @@ public class OtfExample
         final int actingVersion = headerDecoder.getSchemaVersion(buffer, bufferOffset);
         final int blockLength = headerDecoder.getBlockLength(buffer, bufferOffset);
 
+        if (schemaId != MessageHeaderEncoder.SCHEMA_ID)
+        {
+            throw new IllegalStateException("Invalid schema id: " + schemaId);
+        }
+
         bufferOffset += headerDecoder.encodedLength();
 
         // Given the header information we can select the appropriate message template to do the decode operation.
