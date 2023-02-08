@@ -98,8 +98,8 @@ public class EncodedDataType extends Type
         }
         else
         {
-            final String characterEncoding = getAttributeValueOrNull(node, "characterEncoding");
-            this.characterEncoding = characterEncoding == null ? null : characterEncoding.trim();
+            final String configuredCharacterEncoding = getAttributeValueOrNull(node, "characterEncoding");
+            characterEncoding = configuredCharacterEncoding == null ? null : configuredCharacterEncoding.trim();
         }
 
         if (presence() == CONSTANT)

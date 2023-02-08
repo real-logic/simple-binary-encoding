@@ -63,8 +63,8 @@ public class MessageSchema
         this.typeByNameMap = typeByNameMap;
         this.messageByIdMap = messageByIdMap;
 
-        final String headerType = getAttributeValueOrNull(schemaNode, "headerType");
-        this.headerType = null == headerType ? HEADER_TYPE_DEFAULT : headerType;
+        final String configuredHeaderType = getAttributeValueOrNull(schemaNode, "headerType");
+        headerType = null == configuredHeaderType ? HEADER_TYPE_DEFAULT : configuredHeaderType;
         Verify.present(typeByNameMap, this.headerType, "Message header");
 
         final Node messageHeaderNode = findNode(schemaNode, "types/composite[@name='" + this.headerType + "']");

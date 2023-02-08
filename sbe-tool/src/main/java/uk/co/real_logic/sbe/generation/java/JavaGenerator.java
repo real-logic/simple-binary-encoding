@@ -2912,6 +2912,9 @@ public class JavaGenerator implements CodeGenerator
                         generateCompositeProperty(
                             sb, false, ENCODER, propertyName, fieldToken, typeToken, indent, typeName);
                         break;
+
+                    default:
+                        break;
                 }
             });
     }
