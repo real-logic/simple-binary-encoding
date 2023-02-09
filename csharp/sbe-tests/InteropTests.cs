@@ -35,7 +35,6 @@ namespace Org.SbeTool.Sbe.Tests
 
         private DirectBuffer _directBuffer;
         private MessageHeader _messageHeader;
-        private Car Car;
 
         [TestInitialize]
         public void Setup()
@@ -56,36 +55,36 @@ namespace Org.SbeTool.Sbe.Tests
             _directBuffer = new DirectBuffer(_decodeBuffer);
             _messageHeader.Wrap(_directBuffer, 0, Baseline.MessageHeader.SbeSchemaVersion);
 
-            var Car = new Car();
-            Car.WrapForDecode(_directBuffer, MessageHeader.Size, _messageHeader.BlockLength, _messageHeader.Version);
+            var car = new Car();
+            car.WrapForDecode(_directBuffer, MessageHeader.Size, _messageHeader.BlockLength, _messageHeader.Version);
 
             Assert.AreEqual(1234UL, Car.SerialNumber);
             Assert.AreEqual((ushort)2013, Car.ModelYear);
             Assert.AreEqual(BooleanType.T, Car.Available);
             Assert.AreEqual(Model.A, Car.Code);
-            for (int i = 0, size = Car.SomeNumbersLength; i < size; i++)
+            for (int i = 0, size = car.SomeNumbersLength; i < size; i++)
             {
-                Assert.AreEqual(Car.GetSomeNumbers(i), (uint)i+1);
+                Assert.AreEqual(car.GetSomeNumbers(i), (uint)i+1);
             }
 
             var btmp = new byte[6];
-            Car.GetVehicleCode(btmp, 0);
+            car.GetVehicleCode(btmp, 0);
             var s = System.Text.Encoding.UTF8.GetString(btmp, 0, btmp.Length);
             Assert.AreEqual("abcdef", s);
-            Assert.AreEqual(OptionalExtras.CruiseControl | OptionalExtras.SportsPack, Car.Extras);
-            Assert.AreEqual((ushort)2000, Car.Engine.Capacity);
-            Assert.AreEqual((byte)4, Car.Engine.NumCylinders);
+            Assert.AreEqual(OptionalExtras.CruiseControl | OptionalExtras.SportsPack, car.Extras);
+            Assert.AreEqual((ushort)2000, car.Engine.Capacity);
+            Assert.AreEqual((byte)4, car.Engine.NumCylinders);
 
             btmp = new byte[3];
-            Car.Engine.GetManufacturerCode(btmp, 0);
+            car.Engine.GetManufacturerCode(btmp, 0);
             s = System.Text.Encoding.UTF8.GetString(btmp, 0, btmp.Length);
             Assert.AreEqual("123", s);
-            Assert.AreEqual((sbyte)35, Car.Engine.Efficiency);
-            Assert.AreEqual(BooleanType.T, Car.Engine.BoosterEnabled);
-            Assert.AreEqual(BoostType.NITROUS, Car.Engine.Booster.BoostType);
-            Assert.AreEqual((byte)200, Car.Engine.Booster.HorsePower);
+            Assert.AreEqual((sbyte)35, car.Engine.Efficiency);
+            Assert.AreEqual(BooleanType.T, car.Engine.BoosterEnabled);
+            Assert.AreEqual(BoostType.NITROUS, car.Engine.Booster.BoostType);
+            Assert.AreEqual((byte)200, car.Engine.Booster.HorsePower);
 
-            var fuelFigures = Car.FuelFigures;
+            var fuelFigures = car.FuelFigures;
             Assert.AreEqual(3, fuelFigures.Count);
 
             fuelFigures.Next();
@@ -112,7 +111,7 @@ namespace Org.SbeTool.Sbe.Tests
             s = System.Text.Encoding.UTF8.GetString(btmp, 0, btmp.Length);
             Assert.AreEqual("Highway Cycle", s);
 
-            var perfFigures = Car.PerformanceFigures;
+            var perfFigures = car.PerformanceFigures;
             Assert.AreEqual(2, perfFigures.Count);
 
             perfFigures.Next();
@@ -144,15 +143,15 @@ namespace Org.SbeTool.Sbe.Tests
             Assert.AreEqual(11.8f, acceleration.Seconds);
 
             btmp = new byte[5];
-            Car.GetManufacturer(btmp, 0, 5);
+            car.GetManufacturer(btmp, 0, 5);
             s = System.Text.Encoding.UTF8.GetString(btmp, 0, btmp.Length);
             Assert.AreEqual("Honda", s);
             btmp = new byte[9];
-            Car.GetModel(btmp, 0, 9);
+            car.GetModel(btmp, 0, 9);
             s = System.Text.Encoding.UTF8.GetString(btmp, 0, btmp.Length);
             Assert.AreEqual("Civic VTi", s);
             btmp = new byte[6];
-            Car.GetActivationCode(btmp, 0, 6);
+            car.GetActivationCode(btmp, 0, 6);
             s = System.Text.Encoding.UTF8.GetString(btmp, 0, btmp.Length);
             Assert.AreEqual("abcdef", s);
         }
@@ -160,7 +159,7 @@ namespace Org.SbeTool.Sbe.Tests
         [TestMethod]
         public void InteropEncodeTest()
         {
-            Car = new Car();
+            car = new Car();
             _directBuffer = new DirectBuffer(_encodeBuffer);
             _messageHeader.Wrap(_directBuffer, 0, Baseline.MessageHeader.SbeSchemaVersion);
             _messageHeader.BlockLength = Car.BlockLength;
@@ -169,27 +168,27 @@ namespace Org.SbeTool.Sbe.Tests
             _messageHeader.Version = Car.SchemaVersion;
 
             // Populate the car with the known interop values
-            Car.WrapForEncode(_directBuffer, Baseline.MessageHeader.Size);
-            Car.SerialNumber = 1234;
-            Car.ModelYear = 2013;
-            Car.Available = BooleanType.T;
-            Car.Code = Model.A;
-            for (int i = 0, size = Car.SomeNumbersLength; i < size; i++)
+            car.WrapForEncode(_directBuffer, Baseline.MessageHeader.Size);
+            car.SerialNumber = 1234;
+            car.ModelYear = 2013;
+            car.Available = BooleanType.T;
+            car.Code = Model.A;
+            for (int i = 0, size = car.SomeNumbersLength; i < size; i++)
             {
-                Car.SetSomeNumbers(i, (uint)i+1);
+                car.SetSomeNumbers(i, (uint)i+1);
             }
-            Car.SetVehicleCode(System.Text.Encoding.ASCII.GetBytes("abcdef"), 0);
-            Car.Extras = OptionalExtras.CruiseControl | OptionalExtras.SportsPack;
+            car.SetVehicleCode(System.Text.Encoding.ASCII.GetBytes("abcdef"), 0);
+            car.Extras = OptionalExtras.CruiseControl | OptionalExtras.SportsPack;
 
-            Car.Engine.Capacity = 2000;
-            Car.Engine.NumCylinders = 4;
-            Car.Engine.SetManufacturerCode(System.Text.Encoding.ASCII.GetBytes("123"), 0);
-            Car.Engine.Efficiency = 35;
-            Car.Engine.BoosterEnabled = BooleanType.T;
-            Car.Engine.Booster.BoostType = BoostType.NITROUS;
-            Car.Engine.Booster.HorsePower = 200;
+            car.Engine.Capacity = 2000;
+            car.Engine.NumCylinders = 4;
+            car.Engine.SetManufacturerCode(System.Text.Encoding.ASCII.GetBytes("123"), 0);
+            car.Engine.Efficiency = 35;
+            car.Engine.BoosterEnabled = BooleanType.T;
+            car.Engine.Booster.BoostType = BoostType.NITROUS;
+            car.Engine.Booster.HorsePower = 200;
 
-            var fuelFigures = Car.FuelFiguresCount(3);
+            var fuelFigures = car.FuelFiguresCount(3);
             fuelFigures.Next();
             fuelFigures.Speed = 30;
             fuelFigures.Mpg = 35.9f;
@@ -205,7 +204,7 @@ namespace Org.SbeTool.Sbe.Tests
             fuelFigures.Mpg = 40.0f;
             fuelFigures.SetUsageDescription(System.Text.Encoding.ASCII.GetBytes("Highway Cycle"), 0, 13);
 
-            var perfFigures = Car.PerformanceFiguresCount(2);
+            var perfFigures = car.PerformanceFiguresCount(2);
             perfFigures.Next();
             perfFigures.OctaneRating = 95;
 
@@ -236,9 +235,9 @@ namespace Org.SbeTool.Sbe.Tests
             acceleration.Mph = 100;
             acceleration.Seconds = 11.8f;
 
-            Car.SetManufacturer(System.Text.Encoding.ASCII.GetBytes("Honda"), 0, 5);
-            Car.SetModel(System.Text.Encoding.ASCII.GetBytes("Civic VTi"), 0, 9);
-            Car.SetActivationCode(System.Text.Encoding.ASCII.GetBytes("abcdef"), 0, 6);
+            car.SetManufacturer(System.Text.Encoding.ASCII.GetBytes("Honda"), 0, 5);
+            car.SetModel(System.Text.Encoding.ASCII.GetBytes("Civic VTi"), 0, 9);
+            car.SetActivationCode(System.Text.Encoding.ASCII.GetBytes("abcdef"), 0, 6);
 
             for (int i = 0; i < _decodeBuffer.Length; i++)
             {
