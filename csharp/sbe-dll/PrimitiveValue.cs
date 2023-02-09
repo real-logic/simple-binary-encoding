@@ -500,9 +500,7 @@ namespace Org.SbeTool.Sbe.Dll
                             return _unsignedLongValue == rhs._unsignedLongValue;
 
                         case Representation.Double:
-                        {
                             return BitConverter.DoubleToInt64Bits(_doubleValue) == BitConverter.DoubleToInt64Bits(rhs._doubleValue);
-                        }
 
                         case Representation.ByteArray:
                             return _byteArrayValue.SequenceEqual(rhs._byteArrayValue);
