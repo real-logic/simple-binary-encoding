@@ -58,10 +58,10 @@ namespace Org.SbeTool.Sbe.Tests
             var car = new Car();
             car.WrapForDecode(_directBuffer, MessageHeader.Size, _messageHeader.BlockLength, _messageHeader.Version);
 
-            Assert.AreEqual(1234UL, Car.SerialNumber);
-            Assert.AreEqual((ushort)2013, Car.ModelYear);
-            Assert.AreEqual(BooleanType.T, Car.Available);
-            Assert.AreEqual(Model.A, Car.Code);
+            Assert.AreEqual(1234UL, car.SerialNumber);
+            Assert.AreEqual((ushort)2013, car.ModelYear);
+            Assert.AreEqual(BooleanType.T, car.Available);
+            Assert.AreEqual(Model.A, car.Code);
             for (int i = 0, size = car.SomeNumbersLength; i < size; i++)
             {
                 Assert.AreEqual(car.GetSomeNumbers(i), (uint)i+1);
@@ -159,13 +159,14 @@ namespace Org.SbeTool.Sbe.Tests
         [TestMethod]
         public void InteropEncodeTest()
         {
-            car = new Car();
             _directBuffer = new DirectBuffer(_encodeBuffer);
             _messageHeader.Wrap(_directBuffer, 0, Baseline.MessageHeader.SbeSchemaVersion);
             _messageHeader.BlockLength = Car.BlockLength;
             _messageHeader.SchemaId = Car.SchemaId;
             _messageHeader.TemplateId = Car.TemplateId;
             _messageHeader.Version = Car.SchemaVersion;
+
+            var car = new Car();
 
             // Populate the car with the known interop values
             car.WrapForEncode(_directBuffer, Baseline.MessageHeader.Size);
