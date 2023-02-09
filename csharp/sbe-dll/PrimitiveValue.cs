@@ -501,7 +501,7 @@ namespace Org.SbeTool.Sbe.Dll
 
                         case Representation.Double:
                         {
-                            return _doubleValue.Equals(rhs._doubleValue);
+                            return BitConverter.DoubleToInt64Bits(_doubleValue) == BitConverter.DoubleToInt64Bits(rhs._doubleValue);
                         }
 
                         case Representation.ByteArray:
