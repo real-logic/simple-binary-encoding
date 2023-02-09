@@ -208,6 +208,9 @@
             get { return _sbePrimitiveType; }
         }
 
+        /// <summary>
+        /// The PrimitiveName as a string.
+        /// </summary>
         public override string ToString() => PrimitiveName;
     }
 }
