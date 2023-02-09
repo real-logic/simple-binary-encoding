@@ -207,5 +207,7 @@
         {
             get { return _sbePrimitiveType; }
         }
+
+        public override string ToString() => PrimitiveName;
     }
 }
