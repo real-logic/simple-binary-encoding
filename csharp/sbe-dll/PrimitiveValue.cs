@@ -501,9 +501,7 @@ namespace Org.SbeTool.Sbe.Dll
 
                         case Representation.Double:
                         {
-                            const double EPSILON = 1e-10;
-                            return (_doubleValue == rhs._doubleValue) ||
-                                (Math.Abs(_doubleValue - rhs._doubleValue) < EPSILON);
+                            return _doubleValue.Equals(rhs._doubleValue);
                         }
 
                         case Representation.ByteArray:
