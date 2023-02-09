@@ -21,6 +21,8 @@ query-filters:
   - exclude:
       id: cs/complex-block
   - exclude:
+      id: cs/constant-comparison
+  - exclude:
       id: cpp/trivial-switch
   - exclude:
       id: cpp/poorly-documented-function
