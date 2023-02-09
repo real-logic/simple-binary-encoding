@@ -62,7 +62,7 @@ namespace Org.SbeTool.Sbe.Tests
             Assert.AreEqual((ushort)2013, car.ModelYear);
             Assert.AreEqual(BooleanType.T, car.Available);
             Assert.AreEqual(Model.A, car.Code);
-            for (int i = 0, size = car.SomeNumbersLength; i < size; i++)
+            for (int i = 0, size = Car.SomeNumbersLength; i < size; i++)
             {
                 Assert.AreEqual(car.GetSomeNumbers(i), (uint)i+1);
             }
@@ -174,7 +174,7 @@ namespace Org.SbeTool.Sbe.Tests
             car.ModelYear = 2013;
             car.Available = BooleanType.T;
             car.Code = Model.A;
-            for (int i = 0, size = car.SomeNumbersLength; i < size; i++)
+            for (int i = 0, size = Car.SomeNumbersLength; i < size; i++)
             {
                 car.SetSomeNumbers(i, (uint)i+1);
             }
