@@ -500,7 +500,11 @@ namespace Org.SbeTool.Sbe.Dll
                             return _unsignedLongValue == rhs._unsignedLongValue;
 
                         case Representation.Double:
-                            return _doubleValue == rhs._doubleValue;
+                        {
+                            const double EPSILON = 1e-10;
+                            return (_doubleValue == rhs._doubleValue) ||
+                                (Math.Abs(_doubleValue - rhs._doubleValue) < EPSILON);
+                        }
 
                         case Representation.ByteArray:
                             return _byteArrayValue.SequenceEqual(rhs._byteArrayValue);
