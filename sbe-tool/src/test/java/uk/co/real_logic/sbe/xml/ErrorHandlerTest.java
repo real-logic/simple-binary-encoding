@@ -198,7 +198,7 @@ class ErrorHandlerTest
     @Test
     void shouldExitAfterTypesWhenCompositeHasInvalidTypes() throws Exception
     {
-        try (InputStream in = Tests.getLocalResource("error-handler-invalid-composite.xml");)
+        try (InputStream in = Tests.getLocalResource("error-handler-invalid-composite.xml"))
         {
             final ParserOptions options = ParserOptions.builder().suppressOutput(true).warningsFatal(true).build();
             parse(in, options);

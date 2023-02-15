@@ -138,7 +138,7 @@ allprojects {
         mavenCentral()
     }
 
-    configurations.all {
+    configurations.configureEach {
         resolutionStrategy {
             failOnVersionConflict()
         }
@@ -166,18 +166,18 @@ subprojects {
 
     checkstyle.toolVersion = "${checkstyleVersion}"
 
-    tasks.withType(Sign) {
+    tasks.withType(Sign).configureEach {
         onlyIf {
             isReleaseVersion && gradle.taskGraph.hasTask(tasks.publish)
         }
     }
 
-    tasks.withType(Jar) {
+    tasks.withType(Jar).configureEach {
         enabled = true
         includeEmptyDirs = false
     }
 
-    tasks.withType(JavaCompile) {
+    tasks.withType(JavaCompile).configureEach {
         options.encoding = 'UTF-8'
         options.deprecation = true
         options.compilerArgs.addAll(['-Xlint:all', '-Werror']) // Enable all warnings and treat them as errors
