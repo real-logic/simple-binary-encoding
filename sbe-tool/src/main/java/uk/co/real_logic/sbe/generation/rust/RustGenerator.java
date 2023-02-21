@@ -941,7 +941,8 @@ public class RustGenerator implements CodeGenerator
             {
                 if (varDataToken.version() > 0)
                 {
-                    indent(sb, level + 1, "if self.acting_version > 0 && self.acting_version < %d {\n", varDataToken.version());
+                    indent(sb, level + 1, "if self.acting_version > 0 && self.acting_version < %d {\n",
+                        varDataToken.version());
                     indent(sb, level + 2, "return (self.parent.as_ref().unwrap().get_limit(), 0);\n");
                     indent(sb, level + 1, "}\n\n");
                 }
@@ -956,7 +957,8 @@ public class RustGenerator implements CodeGenerator
             {
                 if (varDataToken.version() > 0)
                 {
-                    indent(sb, level + 1, "if self.acting_version > 0 && self.acting_version < %d {\n", varDataToken.version());
+                    indent(sb, level + 1, "if self.acting_version > 0 && self.acting_version < %d {\n",
+                        varDataToken.version());
                     indent(sb, level + 2, "return (self.get_limit(), 0);\n");
                     indent(sb, level + 1, "}\n\n");
                 }
@@ -975,7 +977,8 @@ public class RustGenerator implements CodeGenerator
 
             if (varDataToken.version() > 0)
             {
-                indent(sb, level + 1, "if self.acting_version > 0 && self.acting_version < %d {\n", varDataToken.version());
+                indent(sb, level + 1, "if self.acting_version > 0 && self.acting_version < %d {\n",
+                    varDataToken.version());
                 indent(sb, level + 2, "return &[] as &[u8];\n");
                 indent(sb, level + 1, "}\n\n");
             }
