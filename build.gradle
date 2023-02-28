@@ -20,7 +20,7 @@ import java.security.MessageDigest
 
 plugins {
     id 'java-library'
-    id 'com.github.johnrengelman.shadow' version '8.1.0' apply false
+    id 'com.github.johnrengelman.shadow' version '7.1.2' apply false
     id 'com.github.ben-manes.versions' version '0.46.0'
 }
 
@@ -830,7 +830,7 @@ tasks.named('dependencyUpdates').configure {
 }
 
 wrapper {
-    gradleVersion = '8.0.1'
+    gradleVersion = '7.6'
     distributionType = 'ALL'
 }
 
