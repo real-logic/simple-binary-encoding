@@ -1994,7 +1994,7 @@ public class CppGenerator implements CodeGenerator
             "    static const %3$s SBE_TEMPLATE_ID = %4$s;\n" +
             "    static const %5$s SBE_SCHEMA_ID = %6$s;\n" +
             "    static const %7$s SBE_SCHEMA_VERSION = %8$s;\n" +
-            "    static const std::string SBE_SEMANTIC_VERSION = \"%13$s\";\n\n" +
+            "    static constexpr const char* SBE_SEMANTIC_VERSION = \"%13$s\";\n\n" +
 
             "    enum MetaAttribute\n" +
             "    {\n" +
