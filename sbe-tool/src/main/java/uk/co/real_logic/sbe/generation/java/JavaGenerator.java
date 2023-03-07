@@ -2611,10 +2611,12 @@ public class JavaGenerator implements CodeGenerator
         final String schemaIdAccessorType = shouldGenerateInterfaces ? "int" : schemaIdType;
         final String schemaVersionType = javaTypeName(ir.headerStructure().schemaVersionType());
         final String schemaVersionAccessorType = shouldGenerateInterfaces ? "int" : schemaVersionType;
+        final String semanticVersion = ir.semanticVersion();
 
         return String.format(
             "    public static final %5$s SCHEMA_ID = %6$s;\n" +
             "    public static final %7$s SCHEMA_VERSION = %8$s;\n" +
+            "    public static final String SEMANTIC_VERSION = \"%11$s\";\n" +
             "    public static final int ENCODED_LENGTH = %2$d;\n" +
             "    public static final java.nio.ByteOrder BYTE_ORDER = java.nio.ByteOrder.%4$s;\n\n" +
             "    private int offset;\n" +
@@ -2657,7 +2659,8 @@ public class JavaGenerator implements CodeGenerator
             schemaVersionType,
             generateLiteral(ir.headerStructure().schemaVersionType(), Integer.toString(ir.version())),
             schemaIdAccessorType,
-            schemaVersionAccessorType);
+            schemaVersionAccessorType,
+            semanticVersion);
     }
 
     private CharSequence generateDecoderFlyweightCode(final String className, final Token token)
@@ -2735,6 +2738,7 @@ public class JavaGenerator implements CodeGenerator
         final String schemaVersionType = javaTypeName(headerStructure.schemaVersionType());
         final String schemaVersionAccessorType = shouldGenerateInterfaces ? "int" : schemaVersionType;
         final String semanticType = token.encoding().semanticType() == null ? "" : token.encoding().semanticType();
+        final String semanticVersion = ir.semanticVersion();
         final String actingFields = codecType == CodecType.ENCODER ?
             "" :
             "    int actingBlockLength;\n" +
@@ -2745,6 +2749,7 @@ public class JavaGenerator implements CodeGenerator
             "    public static final %3$s TEMPLATE_ID = %4$s;\n" +
             "    public static final %5$s SCHEMA_ID = %6$s;\n" +
             "    public static final %7$s SCHEMA_VERSION = %8$s;\n" +
+            "    public static final String SEMANTIC_VERSION = \"%19$s\";\n" +
             "    public static final java.nio.ByteOrder BYTE_ORDER = java.nio.ByteOrder.%14$s;\n\n" +
             "    private final %9$s parentMessage = this;\n" +
             "    private %11$s buffer;\n" +
@@ -2815,7 +2820,8 @@ public class JavaGenerator implements CodeGenerator
             blockLengthAccessorType,
             templateIdAccessorType,
             schemaIdAccessorType,
-            schemaVersionAccessorType);
+            schemaVersionAccessorType,
+            semanticVersion);
     }
 
     private CharSequence generateEncoderFlyweightCode(final String className, final Token token)

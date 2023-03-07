@@ -1973,6 +1973,7 @@ public class CppGenerator implements CodeGenerator
         final String schemaVersionType = cppTypeName(ir.headerStructure().schemaVersionType());
         final String semanticType = token.encoding().semanticType() == null ? "" : token.encoding().semanticType();
         final String headerType = ir.headerStructure().tokens().get(0).name();
+        final String semanticVersion = ir.semanticVersion();
 
         return String.format(
             "private:\n" +
@@ -1992,7 +1993,8 @@ public class CppGenerator implements CodeGenerator
             "    static const %1$s SBE_BLOCK_LENGTH = %2$s;\n" +
             "    static const %3$s SBE_TEMPLATE_ID = %4$s;\n" +
             "    static const %5$s SBE_SCHEMA_ID = %6$s;\n" +
-            "    static const %7$s SBE_SCHEMA_VERSION = %8$s;\n\n" +
+            "    static const %7$s SBE_SCHEMA_VERSION = %8$s;\n" +
+            "    static const std::string SBE_SEMANTIC_VERSION = \"%13$s\";\n\n" +
 
             "    enum MetaAttribute\n" +
             "    {\n" +
@@ -2151,7 +2153,8 @@ public class CppGenerator implements CodeGenerator
             semanticType,
             className,
             generateConstructorsAndOperators(className),
-            formatClassName(headerType));
+            formatClassName(headerType),
+            semanticVersion);
     }
 
     private void generateFields(
