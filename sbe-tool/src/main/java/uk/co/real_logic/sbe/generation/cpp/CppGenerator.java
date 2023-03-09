@@ -1994,7 +1994,7 @@ public class CppGenerator implements CodeGenerator
             "    static const %3$s SBE_TEMPLATE_ID = %4$s;\n" +
             "    static const %5$s SBE_SCHEMA_ID = %6$s;\n" +
             "    static const %7$s SBE_SCHEMA_VERSION = %8$s;\n" +
-            "    static constexpr const char* SBE_SEMANTIC_VERSION = \"%13$s\";\n\n" +
+            "    static SBE_CONSTEXPR const char* SBE_SEMANTIC_VERSION = \"%13$s\";\n\n" +
 
             "    enum MetaAttribute\n" +
             "    {\n" +
@@ -2039,6 +2039,11 @@ public class CppGenerator implements CodeGenerator
             "    SBE_NODISCARD static SBE_CONSTEXPR %7$s sbeSchemaVersion() SBE_NOEXCEPT\n" +
             "    {\n" +
             "        return %8$s;\n" +
+            "    }\n\n" +
+
+            "    SBE_NODISCARD static SBE_CONSTEXPR const char* sbeSemanticVersion() SBE_NOEXCEPT\n" +
+            "    {\n" +
+            "        return \"%13$s\";\n" +
             "    }\n\n" +
 
             "    SBE_NODISCARD static SBE_CONSTEXPR const char *sbeSemanticType() SBE_NOEXCEPT\n" +
