@@ -2099,7 +2099,7 @@ public class GolangGenerator implements CodeGenerator
         final String templateIdType = golangTypeName(ir.headerStructure().templateIdType());
         final String schemaIdType = golangTypeName(ir.headerStructure().schemaIdType());
         final String schemaVersionType = golangTypeName(ir.headerStructure().schemaVersionType());
-        final String semanticVersion = ir.semanticVersion();
+        final String semanticVersion = ir.semanticVersion() == null ? "" : ir.semanticVersion();
 
         generateEncodeDecode(sb, typeName, tokens, true, true);
 

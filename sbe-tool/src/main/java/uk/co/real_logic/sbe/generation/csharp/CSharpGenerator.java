@@ -1163,7 +1163,7 @@ public class CSharpGenerator implements CodeGenerator
         final String schemaIdType = cSharpTypeName(ir.headerStructure().schemaIdType());
         final String schemaVersionType = cSharpTypeName(ir.headerStructure().schemaVersionType());
         final String semanticType = token.encoding().semanticType() == null ? "" : token.encoding().semanticType();
-        final String semanticVersion = ir.semanticVersion();
+        final String semanticVersion = ir.semanticVersion() == null ? "" : ir.semanticVersion();
 
         return String.format(
             indent + INDENT + "public const %1$s BlockLength = %2$s;\n" +

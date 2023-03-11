@@ -1894,7 +1894,7 @@ public class CGenerator implements CodeGenerator
         final String schemaVersionType = cTypeName(ir.headerStructure().schemaVersionType());
         final String semanticType = token.encoding().semanticType() == null ? "" : token.encoding().semanticType();
         final String messageHeaderStruct = formatScopedName(scope, "messageHeader");
-        final String semanticVersion = ir.semanticVersion();
+        final String semanticVersion = ir.semanticVersion() == null ? "" : ir.semanticVersion();
 
         return String.format("\n" +
             "SBE_ONE_DEF uint64_t %10$s_sbe_position(\n" +

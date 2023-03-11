@@ -331,7 +331,7 @@ TEST_F(CodeGenTest, shouldReturnCorrectValuesForCarStaticFields)
     EXPECT_EQ(Car::sbeSchemaId(), 6u);
     EXPECT_EQ(Car::sbeSchemaVersion(), 0u);
     EXPECT_EQ(std::string(Car::sbeSemanticType()), std::string(""));
-    EXPECT_EQ(std::string(Car::sbeSemanticVersion()), std::string("5.2"));
+    EXPECT_EQ(Car::sbeSemanticVersion(), "5.2");
 }
 
 TEST_F(CodeGenTest, shouldBeAbleToEncodeMessageHeaderCorrectly)

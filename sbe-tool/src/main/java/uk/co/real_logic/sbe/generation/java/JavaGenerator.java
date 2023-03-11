@@ -2611,7 +2611,7 @@ public class JavaGenerator implements CodeGenerator
         final String schemaIdAccessorType = shouldGenerateInterfaces ? "int" : schemaIdType;
         final String schemaVersionType = javaTypeName(ir.headerStructure().schemaVersionType());
         final String schemaVersionAccessorType = shouldGenerateInterfaces ? "int" : schemaVersionType;
-        final String semanticVersion = ir.semanticVersion();
+        final String semanticVersion = ir.semanticVersion() == null ? "" : ir.semanticVersion();
 
         return String.format(
             "    public static final %5$s SCHEMA_ID = %6$s;\n" +
@@ -2738,7 +2738,7 @@ public class JavaGenerator implements CodeGenerator
         final String schemaVersionType = javaTypeName(headerStructure.schemaVersionType());
         final String schemaVersionAccessorType = shouldGenerateInterfaces ? "int" : schemaVersionType;
         final String semanticType = token.encoding().semanticType() == null ? "" : token.encoding().semanticType();
-        final String semanticVersion = ir.semanticVersion();
+        final String semanticVersion = ir.semanticVersion() == null ? "" : ir.semanticVersion();
         final String actingFields = codecType == CodecType.ENCODER ?
             "" :
             "    int actingBlockLength;\n" +

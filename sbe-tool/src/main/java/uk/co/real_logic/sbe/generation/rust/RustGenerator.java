@@ -157,7 +157,7 @@ public class RustGenerator implements CodeGenerator
                 final String templateIdType = rustTypeName(ir.headerStructure().templateIdType());
                 final String schemaIdType = rustTypeName(ir.headerStructure().schemaIdType());
                 final String schemaVersionType = schemaVersionType();
-                final String semanticVersion = ir.semanticVersion();
+                final String semanticVersion = ir.semanticVersion() == null ? "" : ir.semanticVersion();
                 indent(out, 0, "pub const SBE_BLOCK_LENGTH: %s = %d;\n", blockLengthType, msgToken.encodedLength());
                 indent(out, 0, "pub const SBE_TEMPLATE_ID: %s = %d;\n", templateIdType, msgToken.id());
                 indent(out, 0, "pub const SBE_SCHEMA_ID: %s = %d;\n", schemaIdType, ir.id());
