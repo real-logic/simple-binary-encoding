@@ -1995,7 +1995,7 @@ public class CppGenerator implements CodeGenerator
             "    static const %3$s SBE_TEMPLATE_ID = %4$s;\n" +
             "    static const %5$s SBE_SCHEMA_ID = %6$s;\n" +
             "    static const %7$s SBE_SCHEMA_VERSION = %8$s;\n" +
-            "    static const std::string SBE_SEMANTIC_VERSION;\n\n" +
+            "    static const char* SBE_SEMANTIC_VERSION;\n\n" +
 
             "    enum MetaAttribute\n" +
             "    {\n" +
@@ -2042,7 +2042,7 @@ public class CppGenerator implements CodeGenerator
             "        return %8$s;\n" +
             "    }\n\n" +
 
-            "    SBE_NODISCARD static const std::string sbeSemanticVersion() SBE_NOEXCEPT\n" +
+            "    SBE_NODISCARD static const char *sbeSemanticVersion() SBE_NOEXCEPT\n" +
             "    {\n" +
             "        return \"%13$s\";\n" +
             "    }\n\n" +
@@ -3200,7 +3200,7 @@ public class CppGenerator implements CodeGenerator
 
         return String.format(
             "\n" +
-            "const std::string %1$s::SBE_SEMANTIC_VERSION = \"%2$s\";\n\n",
+            "const char* %1$s::SBE_SEMANTIC_VERSION = \"%2$s\";\n\n",
             className,
             semanticVersion);
     }
