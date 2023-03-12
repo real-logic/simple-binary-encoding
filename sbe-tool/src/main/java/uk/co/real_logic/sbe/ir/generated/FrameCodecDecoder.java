@@ -15,6 +15,7 @@ public final class FrameCodecDecoder
     public static final int TEMPLATE_ID = 1;
     public static final int SCHEMA_ID = 1;
     public static final int SCHEMA_VERSION = 0;
+    public static final String SEMANTIC_VERSION = "";
     public static final java.nio.ByteOrder BYTE_ORDER = java.nio.ByteOrder.LITTLE_ENDIAN;
 
     private final FrameCodecDecoder parentMessage = this;

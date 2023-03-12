@@ -1163,13 +1163,15 @@ public class CSharpGenerator implements CodeGenerator
         final String schemaIdType = cSharpTypeName(ir.headerStructure().schemaIdType());
         final String schemaVersionType = cSharpTypeName(ir.headerStructure().schemaVersionType());
         final String semanticType = token.encoding().semanticType() == null ? "" : token.encoding().semanticType();
+        final String semanticVersion = ir.semanticVersion() == null ? "" : ir.semanticVersion();
 
         return String.format(
             indent + INDENT + "public const %1$s BlockLength = %2$s;\n" +
             indent + INDENT + "public const %3$s TemplateId = %4$s;\n" +
             indent + INDENT + "public const %5$s SchemaId = %6$s;\n" +
             indent + INDENT + "public const %7$s SchemaVersion = %8$s;\n" +
-            indent + INDENT + "public const string SemanticType = \"%9$s\";\n\n" +
+            indent + INDENT + "public const string SemanticType = \"%9$s\";\n" +
+            indent + INDENT + "public const string SemanticVersion = \"%11$s\";\n\n" +
             indent + INDENT + "private readonly %10$s _parentMessage;\n" +
             indent + INDENT + "private DirectBuffer _buffer;\n" +
             indent + INDENT + "private int _offset;\n" +
@@ -1238,7 +1240,8 @@ public class CSharpGenerator implements CodeGenerator
             schemaVersionType,
             generateLiteral(ir.headerStructure().schemaVersionType(), Integer.toString(ir.version())),
             semanticType,
-            className);
+            className,
+            semanticVersion);
     }
 
     private CharSequence generateFields(final List<Token> tokens, final String indent)

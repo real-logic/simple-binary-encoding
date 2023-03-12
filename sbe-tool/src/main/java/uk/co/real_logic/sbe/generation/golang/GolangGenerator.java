@@ -2099,6 +2099,7 @@ public class GolangGenerator implements CodeGenerator
         final String templateIdType = golangTypeName(ir.headerStructure().templateIdType());
         final String schemaIdType = golangTypeName(ir.headerStructure().schemaIdType());
         final String schemaVersionType = golangTypeName(ir.headerStructure().schemaVersionType());
+        final String semanticVersion = ir.semanticVersion() == null ? "" : ir.semanticVersion();
 
         generateEncodeDecode(sb, typeName, tokens, true, true);
 
@@ -2117,6 +2118,9 @@ public class GolangGenerator implements CodeGenerator
             "}\n" +
             "\nfunc (*%1$s) SbeSemanticType() (semanticType []byte) {\n" +
             "\treturn []byte(\"%10$s\")\n" +
+            "}\n" +
+            "\nfunc (*%1$s) SbeSemanticVersion() (semanticVersion string) {\n" +
+            "\treturn \"%11$s\"\n" +
             "}\n",
             typeName,
             blockLengthType,
@@ -2127,7 +2131,8 @@ public class GolangGenerator implements CodeGenerator
             generateLiteral(ir.headerStructure().schemaIdType(), Integer.toString(ir.id())),
             schemaVersionType,
             generateLiteral(ir.headerStructure().schemaVersionType(), Integer.toString(ir.version())),
-            semanticType));
+            semanticType,
+            semanticVersion));
     }
 
     // Used for groups which need to know the schema's definition

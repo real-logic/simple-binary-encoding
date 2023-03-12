@@ -169,6 +169,7 @@ public class CppGenerator implements CodeGenerator
                 generateDisplay(sb, msgToken.name(), fields, groups, varData);
                 sb.append(generateMessageLength(groups, varData, BASE_INDENT));
                 sb.append("};\n");
+                sb.append(generateStaticVariablesInitialization(className));
                 sb.append(CppUtil.closingBraces(ir.namespaces().length)).append("#endif\n");
                 out.append(sb);
             }
@@ -1973,6 +1974,7 @@ public class CppGenerator implements CodeGenerator
         final String schemaVersionType = cppTypeName(ir.headerStructure().schemaVersionType());
         final String semanticType = token.encoding().semanticType() == null ? "" : token.encoding().semanticType();
         final String headerType = ir.headerStructure().tokens().get(0).name();
+        final String semanticVersion = ir.semanticVersion() == null ? "" : ir.semanticVersion();
 
         return String.format(
             "private:\n" +
@@ -1992,7 +1994,8 @@ public class CppGenerator implements CodeGenerator
             "    static const %1$s SBE_BLOCK_LENGTH = %2$s;\n" +
             "    static const %3$s SBE_TEMPLATE_ID = %4$s;\n" +
             "    static const %5$s SBE_SCHEMA_ID = %6$s;\n" +
-            "    static const %7$s SBE_SCHEMA_VERSION = %8$s;\n\n" +
+            "    static const %7$s SBE_SCHEMA_VERSION = %8$s;\n" +
+            "    static const char* SBE_SEMANTIC_VERSION;\n\n" +
 
             "    enum MetaAttribute\n" +
             "    {\n" +
@@ -2037,6 +2040,11 @@ public class CppGenerator implements CodeGenerator
             "    SBE_NODISCARD static SBE_CONSTEXPR %7$s sbeSchemaVersion() SBE_NOEXCEPT\n" +
             "    {\n" +
             "        return %8$s;\n" +
+            "    }\n\n" +
+
+            "    SBE_NODISCARD static const char *sbeSemanticVersion() SBE_NOEXCEPT\n" +
+            "    {\n" +
+            "        return \"%13$s\";\n" +
             "    }\n\n" +
 
             "    SBE_NODISCARD static SBE_CONSTEXPR const char *sbeSemanticType() SBE_NOEXCEPT\n" +
@@ -2151,7 +2159,8 @@ public class CppGenerator implements CodeGenerator
             semanticType,
             className,
             generateConstructorsAndOperators(className),
-            formatClassName(headerType));
+            formatClassName(headerType),
+            semanticVersion);
     }
 
     private void generateFields(
@@ -3183,5 +3192,16 @@ public class CppGenerator implements CodeGenerator
             generateMessageLengthArgs(groups, varData, indent + INDENT, true)[0]);
 
         return sb;
+    }
+
+    private CharSequence generateStaticVariablesInitialization(final String className)
+    {
+        final String semanticVersion = ir.semanticVersion() == null ? "" : ir.semanticVersion();
+
+        return String.format(
+            "\n" +
+            "const char* %1$s::SBE_SEMANTIC_VERSION = \"%2$s\";\n\n",
+            className,
+            semanticVersion);
     }
 }

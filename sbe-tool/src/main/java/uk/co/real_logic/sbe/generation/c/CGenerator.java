@@ -1894,6 +1894,7 @@ public class CGenerator implements CodeGenerator
         final String schemaVersionType = cTypeName(ir.headerStructure().schemaVersionType());
         final String semanticType = token.encoding().semanticType() == null ? "" : token.encoding().semanticType();
         final String messageHeaderStruct = formatScopedName(scope, "messageHeader");
+        final String semanticVersion = ir.semanticVersion() == null ? "" : ir.semanticVersion();
 
         return String.format("\n" +
             "SBE_ONE_DEF uint64_t %10$s_sbe_position(\n" +
@@ -1972,6 +1973,11 @@ public class CGenerator implements CodeGenerator
             "SBE_ONE_DEF %7$s %10$s_sbe_schema_version(void)\n" +
             "{\n" +
             "    return %8$s;\n" +
+            "}\n\n" +
+
+            "SBE_ONE_DEF const char* %10$s_sbe_semantic_version(void)\n" +
+            "{\n" +
+            "    return \"%12$s\";\n" +
             "}\n\n" +
 
             "SBE_ONE_DEF const char *%10$s_sbe_semantic_type(void)\n" +
@@ -2093,7 +2099,8 @@ public class CGenerator implements CodeGenerator
             generateLiteral(ir.headerStructure().schemaVersionType(), Integer.toString(ir.version())),
             semanticType,
             structName,
-            messageHeaderStruct);
+            messageHeaderStruct,
+            semanticVersion);
     }
 
     private CharSequence generateFieldFunctions(
