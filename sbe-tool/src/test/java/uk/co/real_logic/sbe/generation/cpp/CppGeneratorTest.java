@@ -52,4 +52,24 @@ class CppGeneratorTest
             assertThat(source, containsString("UINT64_C(0x1) << "));
         }
     }
+
+    @Test
+    void shouldUseConstexprWhenInitializingSemanticVersion() throws Exception
+    {
+        try (InputStream in = Tests.getLocalResource("code-generation-schema.xml"))
+        {
+            final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
+            final MessageSchema schema = parse(in, options);
+            final IrGenerator irg = new IrGenerator();
+            final Ir ir = irg.generate(schema);
+            final StringWriterOutputManager outputManager = new StringWriterOutputManager();
+            outputManager.setPackageName(ir.applicableNamespace());
+
+            final CppGenerator generator = new CppGenerator(ir, false, outputManager);
+            generator.generate();
+
+            final String source = outputManager.getSource("code.generation.test.Car").toString();
+            assertThat(source, containsString("static constexpr const char* SBE_SEMANTIC_VERSION = \"5.2\""));
+        }
+    }
 }

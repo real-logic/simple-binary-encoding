@@ -169,7 +169,6 @@ public class CppGenerator implements CodeGenerator
                 generateDisplay(sb, msgToken.name(), fields, groups, varData);
                 sb.append(generateMessageLength(groups, varData, BASE_INDENT));
                 sb.append("};\n");
-                sb.append(generateStaticVariablesInitialization(className));
                 sb.append(CppUtil.closingBraces(ir.namespaces().length)).append("#endif\n");
                 out.append(sb);
             }
@@ -1995,7 +1994,7 @@ public class CppGenerator implements CodeGenerator
             "    static const %3$s SBE_TEMPLATE_ID = %4$s;\n" +
             "    static const %5$s SBE_SCHEMA_ID = %6$s;\n" +
             "    static const %7$s SBE_SCHEMA_VERSION = %8$s;\n" +
-            "    static const char* SBE_SEMANTIC_VERSION;\n\n" +
+            "    static constexpr const char* SBE_SEMANTIC_VERSION = \"%13$s\";\n\n" +
 
             "    enum MetaAttribute\n" +
             "    {\n" +
@@ -3192,16 +3191,5 @@ public class CppGenerator implements CodeGenerator
             generateMessageLengthArgs(groups, varData, indent + INDENT, true)[0]);
 
         return sb;
-    }
-
-    private CharSequence generateStaticVariablesInitialization(final String className)
-    {
-        final String semanticVersion = ir.semanticVersion() == null ? "" : ir.semanticVersion();
-
-        return String.format(
-            "\n" +
-            "const char* %1$s::SBE_SEMANTIC_VERSION = \"%2$s\";\n\n",
-            className,
-            semanticVersion);
     }
 }
