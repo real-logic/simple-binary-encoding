@@ -23,6 +23,8 @@ import uk.co.real_logic.sbe.generation.cpp.NamespaceOutputManager;
 import uk.co.real_logic.sbe.generation.golang.GolangGenerator;
 import uk.co.real_logic.sbe.generation.golang.GolangOutputManager;
 import uk.co.real_logic.sbe.generation.java.JavaGenerator;
+import uk.co.real_logic.sbe.generation.python.RustPythonGenerator;
+import uk.co.real_logic.sbe.generation.python.RustPythonOutputManager;
 import uk.co.real_logic.sbe.generation.rust.RustGenerator;
 import uk.co.real_logic.sbe.generation.rust.RustOutputManager;
 import uk.co.real_logic.sbe.ir.Ir;
@@ -115,6 +117,19 @@ public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
             return new RustGenerator(
                 ir,
                 new RustOutputManager(outputDir, ir.packageName()));
+        }
+    },
+
+    PYTHON()
+    {
+        /**
+         * {@inheritDoc}
+         */
+        public CodeGenerator newInstance(final Ir ir, final String outputDir)
+        {
+            return new RustPythonGenerator(
+                    ir,
+                    new RustPythonOutputManager(outputDir, ir.packageName()));
         }
     };
 

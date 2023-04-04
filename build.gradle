@@ -565,7 +565,7 @@ tasks.register('generateRustPythonExamples', JavaExec) {
     systemProperties(
             'sbe.output.dir': 'generated/python',
             'sbe.xinclude.aware': 'true',
-            'sbe.target.language': 'Rust',
+            'sbe.target.language': 'Python',
             'sbe.target.namespace': 'examples')
     args = ['sbe-samples/src/main/resources/example-schema.xml',
             'sbe-samples/src/main/resources/example-extension-schema.xml',
@@ -595,7 +595,7 @@ tasks.register('generateRustPythonTestCodecs', JavaExec) {
     systemProperties(
             'sbe.output.dir': 'generated/python',
             'sbe.xinclude.aware': 'true',
-            'sbe.target.language': 'Rust',
+            'sbe.target.language': 'Python',
             'sbe.validation.xsd': validationXsdPath)
     args = ['sbe-tool/src/test/resources/issue435.xml',
             'sbe-tool/src/test/resources/issue895.xml',
