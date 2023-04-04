@@ -128,8 +128,8 @@ public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
         public CodeGenerator newInstance(final Ir ir, final String outputDir)
         {
             return new RustPythonGenerator(
-                    ir,
-                    new RustPythonOutputManager(outputDir, ir.packageName()));
+                ir,
+                new RustPythonOutputManager(outputDir, ir.packageName()));
         }
     };
 

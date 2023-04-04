@@ -45,33 +45,6 @@ public class RustPythonGenerator implements CodeGenerator
     static final String WRITE_BUF_TYPE = "WriteBuf";
     static final String READ_BUF_TYPE = "ReadBuf";
     static final String BUF_LIFETIME = "'a";
-
-    enum CodecType
-    {
-        Decoder
-        {
-            String bufType()
-            {
-                return READ_BUF_TYPE;
-            }
-        },
-
-        Encoder
-        {
-            String bufType()
-            {
-                return WRITE_BUF_TYPE;
-            }
-        };
-
-        abstract String bufType();
-    }
-
-    interface ParentDef
-    {
-        SubGroup addSubGroup(String name, int level, Token groupToken);
-    }
-
     private final Ir ir;
     private final RustPythonOutputManager outputManager;
 
@@ -83,148 +56,13 @@ public class RustPythonGenerator implements CodeGenerator
      */
     public RustPythonGenerator(
         final Ir ir,
-        final OutputManager outputManager) {
+        final OutputManager outputManager)
+    {
         Verify.notNull(ir, "ir");
         Verify.notNull(outputManager, "outputManager");
 
         this.ir = ir;
-        this.outputManager = (RustPythonOutputManager) outputManager;
-    }
-
-    @Override
-    public void generate() throws IOException
-    {
-        final String namespace = determineNamespace();
-
-        // create Cargo.toml
-        try (Writer writer = outputManager.createCargoToml())
-        {
-            // Package
-            indent(writer, 0, "[package]\n");
-            indent(writer, 0, "name = \"%s\"\n", namespace);
-            // TODO: Correct version (from console?)
-            indent(writer, 0, "version = \"0.1.0\"\n");
-            indent(writer, 0, "description = \"%s\"\n", ir.description());
-            // TODO: Authors? Maintainers?
-            indent(writer, 0, "authors = [\"sbetool\"]\n");
-            indent(writer, 0, "edition = \"2018\"\n\n");
-
-            // Lib
-            indent(writer, 0, "[lib]\n");
-            indent(writer, 0, "name = \"%s\"\n", namespace);
-            indent(writer, 0, "crate-type = [\"cdylib\"]\n");
-            indent(writer, 0, "path = \"src/lib.rs\"\n\n");
-
-            // Dependencies
-            indent(writer, 0, "[dependencies]\n");
-            indent(writer, 0, "pyo3 = \"*\"\n");
-        }
-
-        // create pyproject.toml
-        try (Writer writer = outputManager.createPyProjectToml())
-        {
-            // Package
-            indent(writer, 0, "[tool.poetry]\n");
-            indent(writer, 0, "name = \"%s\"\n", namespace);
-            // TODO: Correct version (from console?)
-            indent(writer, 0, "version = \"0.1.0\"\n");
-            indent(writer, 0, "description = \"%s\"\n", ir.description());
-            // TODO: Authors? Maintainers?
-            indent(writer, 0, "authors = [\"sbetool\"]\n\n");
-
-            // Project
-            indent(writer, 0, "[project]\n");
-            indent(writer, 0, "name = \"%s\"\n", namespace);
-            indent(writer, 0, "requires-python = \">=3.9\"\n\n");
-
-            // Maturin
-            indent(writer, 0, "[tool.maturin]\n");
-            indent(writer, 0, "features = [\"pyo3/extension-module\"]\n\n");
-
-            // Dependencies
-            indent(writer, 0, "[tool.poetry.dependencies]\n");
-            indent(writer, 0, "python = \"^3.9\"\n");
-            indent(writer, 0, "maturin = \"*\"\n\n");
-
-            // Build system
-            indent(writer, 0, "[build-system]\n");
-            indent(writer, 0, "requires = [\"maturin\"]\n");
-            indent(writer, 0, "build-backend = \"maturin\"\n");
-        }
-
-        // lib.rs
-        final LibRsDef libRsDef = new LibRsDef(outputManager, ir.byteOrder());
-
-        generateEnums(ir, outputManager);
-        generateBitSets(ir, outputManager);
-        generateComposites(ir, outputManager);
-
-        for (final List<Token> tokens : ir.messages())
-        {
-            final Token msgToken = tokens.get(0);
-            final String codecModName = codecModName(msgToken.name());
-            final List<Token> messageBody = tokens.subList(1, tokens.size() - 1);
-
-            int i = 0;
-            final List<Token> fields = new ArrayList<>();
-            i = collectFields(messageBody, i, fields);
-
-            final List<Token> groups = new ArrayList<>();
-            i = collectGroups(messageBody, i, groups);
-
-            final List<Token> varData = new ArrayList<>();
-            collectVarData(messageBody, i, varData);
-
-            try (Writer out = outputManager.createOutput(codecModName))
-            {
-                indent(out, 0, "use pyo3::types::PyType;\n");
-                indent(out, 0, "use crate::*;\n\n");
-                indent(out, 0, "pub use encoder::*;\n");
-                indent(out, 0, "pub use decoder::*;\n\n");
-                final String blockLengthType = blockLengthType();
-                final String templateIdType = rustTypeName(ir.headerStructure().templateIdType());
-                final String schemaIdType = rustTypeName(ir.headerStructure().schemaIdType());
-                final String schemaVersionType = schemaVersionType();
-                final String semanticVersion = ir.semanticVersion() == null ? "" : ir.semanticVersion();
-                indent(out, 0, "pub const SBE_BLOCK_LENGTH: %s = %d;\n", blockLengthType, msgToken.encodedLength());
-                indent(out, 0, "pub const SBE_TEMPLATE_ID: %s = %d;\n", templateIdType, msgToken.id());
-                indent(out, 0, "pub const SBE_SCHEMA_ID: %s = %d;\n", schemaIdType, ir.id());
-                indent(out, 0, "pub const SBE_SCHEMA_VERSION: %s = %d;\n", schemaVersionType, ir.version());
-                indent(out, 0, "pub const SBE_SEMANTIC_VERSION: &str = \"%s\";\n\n", semanticVersion);
-
-                MessageCoderDef.generateStruct(fields, formatStructName(msgToken.name()), out);
-                MessageCoderDef.generateEncoder(ir, out, msgToken, fields, groups, varData);
-                MessageCoderDef.generateDecoder(ir, out, msgToken, fields, groups, varData);
-            }
-        }
-
-        libRsDef.generate();
-    }
-
-    String blockLengthType()
-    {
-        return rustTypeName(ir.headerStructure().blockLengthType());
-    }
-
-    String schemaVersionType()
-    {
-        return rustTypeName(ir.headerStructure().schemaVersionType());
-    }
-
-    String determineNamespace()
-    {
-        final String packageName = toLowerSnakeCase(ir.packageName()).replaceAll("[.-]", "_");
-        final String namespace;
-        if (ir.namespaceName() == null || ir.namespaceName().equalsIgnoreCase(packageName))
-        {
-            namespace = packageName.toLowerCase();
-        }
-        else
-        {
-            namespace = (ir.namespaceName() + "_" + packageName).toLowerCase();
-        }
-
-        return namespace;
+        this.outputManager = (RustPythonOutputManager)outputManager;
     }
 
     static String withLifetime(final String typeName)
@@ -391,11 +229,12 @@ public class RustPythonGenerator implements CodeGenerator
     }
 
     static void generatePrimitiveField(
-            final StringBuilder sb,
-            final int level,
-            final Token typeToken,
-            final String name
-    ) throws IOException {
+        final StringBuilder sb,
+        final int level,
+        final Token typeToken,
+        final String name
+    ) throws IOException
+    {
         final Encoding encoding = typeToken.encoding();
         final PrimitiveType primitiveType = encoding.primitiveType();
         final String rustPrimitiveType = rustTypeName(primitiveType);
@@ -416,8 +255,7 @@ public class RustPythonGenerator implements CodeGenerator
             indent(sb, level, "#[pyo3(get)]\n");
             indent(sb, level, "%s: [%s; %d],\n\n", toLowerSnakeCase(name), rustPrimitiveType, arrayLength);
         }
-        else if (typeToken.isConstantEncoding()) {}
-        else
+        else if (!typeToken.isConstantEncoding())
         {
             indent(sb, level, "/// primitive field '%s'\n", name);
             indent(sb, level, "/// - min value: %s\n", encoding.applicableMinValue());
@@ -510,11 +348,12 @@ public class RustPythonGenerator implements CodeGenerator
     }
 
     static void generateEnumField(
-            final StringBuilder sb,
-            final int level,
-            final Token typeToken,
-            final String name
-    ) throws IOException {
+        final StringBuilder sb,
+        final int level,
+        final Token typeToken,
+        final String name
+    ) throws IOException
+    {
         final String referencedName = typeToken.referencedName();
         final String enumType = formatStructName(referencedName == null ? typeToken.name() : referencedName);
 
@@ -554,11 +393,12 @@ public class RustPythonGenerator implements CodeGenerator
     }
 
     static void generateBitSetField(
-            final StringBuilder sb,
-            final int level,
-            final Token bitsetToken,
-            final String name
-    ) throws IOException {
+        final StringBuilder sb,
+        final int level,
+        final Token bitsetToken,
+        final String name
+    ) throws IOException
+    {
         final String structTypeName = formatStructName(bitsetToken.applicableTypeName());
 
         indent(sb, level, "#[pyo3(get)]\n");
@@ -584,11 +424,12 @@ public class RustPythonGenerator implements CodeGenerator
     }
 
     static void generateCompositeField(
-            final StringBuilder sb,
-            final int level,
-            final Token typeToken,
-            final String name
-    ) throws IOException {
+        final StringBuilder sb,
+        final int level,
+        final Token typeToken,
+        final String name
+    ) throws IOException
+    {
         final String fieldName = toLowerSnakeCase(name);
         final String structTypeName = formatStructName(name);
 
@@ -618,11 +459,12 @@ public class RustPythonGenerator implements CodeGenerator
     }
 
     static void generateGroupField(
-            final StringBuilder sb,
-            final int level,
-            final Token groupToken,
-            final String name
-    ) throws IOException {
+        final StringBuilder sb,
+        final int level,
+        final Token groupToken,
+        final String name
+    ) throws IOException
+    {
         final String fieldName = toLowerSnakeCase(name);
         final String structTypeName = formatStructName(name);
 
@@ -1494,8 +1336,8 @@ public class RustPythonGenerator implements CodeGenerator
     }
 
     private static void appendCompositeFromBuf(
-            final String structName,
-            final Writer out
+        final String structName,
+        final Writer out
     ) throws IOException
     {
         indent(out, 1, "#[classmethod]\n");
@@ -1507,8 +1349,8 @@ public class RustPythonGenerator implements CodeGenerator
     }
 
     private static void appendCompositeToBuf(
-            final String structName,
-            final Writer out
+        final String structName,
+        final Writer out
     ) throws IOException
     {
         indent(out, 1, "pub fn to_buf(&self) -> Vec<u8> {\n", structName);
@@ -1521,45 +1363,63 @@ public class RustPythonGenerator implements CodeGenerator
     }
 
     private static void appendCompositeNew(
-            final List<Token> tokens,
-            final Writer out
+        final List<Token> tokens,
+        final Writer out
     ) throws IOException
     {
         indent(out, 1, "#[new]\n");
         indent(out, 1, "pub fn new(\n");
-        for (int i = 1, end = tokens.size() - 1; i < end; ) {
+        for (int i = 1, end = tokens.size() - 1; i < end; )
+        {
             final Token encodingToken = tokens.get(i);
-            switch (encodingToken.signal()) {
-                case ENCODING -> {
+            switch (encodingToken.signal())
+            {
+                case ENCODING ->
+                {
                     if (encodingToken.arrayLength() > 1)
-                        indent(out, 2, "%s: [%s; %d],\n", toLowerSnakeCase(encodingToken.name()), rustTypeName(encodingToken.encoding().primitiveType()), encodingToken.arrayLength());
+                    {
+                        indent(out, 2, "%s: [%s; %d],\n", toLowerSnakeCase(encodingToken.name()),
+                            rustTypeName(encodingToken.encoding().primitiveType()), encodingToken.arrayLength());
+                    }
                     else if (!encodingToken.isConstantEncoding())
-                        indent(out, 2, "%s: %s,\n", toLowerSnakeCase(encodingToken.name()), rustTypeName(encodingToken.encoding().primitiveType()));
+                    {
+                        indent(out, 2, "%s: %s,\n", toLowerSnakeCase(encodingToken.name()),
+                            rustTypeName(encodingToken.encoding().primitiveType()));
+                    }
                 }
-                case BEGIN_ENUM -> {
+                case BEGIN_ENUM ->
+                {
                     final String referencedName = encodingToken.referencedName();
-                    final String enumType = formatStructName(referencedName == null ? encodingToken.name() : referencedName);
+                    final String enumType =
+                        formatStructName(referencedName == null ? encodingToken.name() : referencedName);
                     indent(out, 2, "%s: %s,\n", formatFunctionName(encodingToken.name()), enumType);
                 }
-                case BEGIN_SET -> {
+                case BEGIN_SET ->
+                {
                     final String structTypeName = formatStructName(encodingToken.applicableTypeName());
                     indent(out, 2, "%s: %s,\n", toLowerSnakeCase(encodingToken.name()), structTypeName);
                 }
-                case BEGIN_COMPOSITE -> {
+                case BEGIN_COMPOSITE ->
+                {
                     final String structTypeName = formatStructName(encodingToken.name());
                     indent(out, 2, "%s: %s,\n", toLowerSnakeCase(encodingToken.name()), structTypeName);
                 }
-                default -> {}
+                default ->
+                {
+                }
             }
             i += encodingToken.componentTokenCount();
         }
 
         indent(out, 1, ") -> Self {\n");
         indent(out, 2, "Self {\n");
-        for (int i = 1, end = tokens.size() - 1; i < end; ) {
+        for (int i = 1, end = tokens.size() - 1; i < end; )
+        {
             final Token encodingToken = tokens.get(i);
             if (!encodingToken.isConstantEncoding())
+            {
                 indent(out, 3, "%s,\n", toLowerSnakeCase(encodingToken.name()));
+            }
             i += encodingToken.componentTokenCount();
         }
         indent(out, 2, "}\n");
@@ -1567,9 +1427,9 @@ public class RustPythonGenerator implements CodeGenerator
     }
 
     private static void appendCompositePythonImpl(
-            final List<Token> tokens,
-            final String structName,
-            final Writer out
+        final List<Token> tokens,
+        final String structName,
+        final Writer out
     ) throws IOException
     {
         indent(out, 0, "#[pymethods]\n");
@@ -1581,13 +1441,15 @@ public class RustPythonGenerator implements CodeGenerator
     }
 
     private static void appendCompositeWriteToEncoder(
-            final List<Token> tokens,
-            final String structName,
-            final Writer out
+        final List<Token> tokens,
+        final String structName,
+        final Writer out
     ) throws IOException
     {
-        indent(out, 1, "pub fn write_to_encoder<%s, P: Writer<%1$s> + Default>(&self, mut encoder: %2$s<P>) {\n", BUF_LIFETIME, encoderName(structName));
-        for (int i = 1, end = tokens.size() - 1; i < end; ) {
+        indent(out, 1, "pub fn write_to_encoder<%s, P: Writer<%1$s> + Default>(&self, mut encoder: %2$s<P>) {\n",
+            BUF_LIFETIME, encoderName(structName));
+        for (int i = 1, end = tokens.size() - 1; i < end; )
+        {
             final Token encodingToken = tokens.get(i);
             if (encodingToken.isConstantEncoding())
             {
@@ -1596,9 +1458,14 @@ public class RustPythonGenerator implements CodeGenerator
             }
 
             if (Objects.requireNonNull(encodingToken.signal()) == Signal.BEGIN_COMPOSITE)
-                indent(out, 2, "self.%s.write_to_encoder(encoder.%1$s_encoder());\n", formatFunctionName(encodingToken.name()));
+            {
+                indent(out, 2, "self.%s.write_to_encoder(encoder.%1$s_encoder());\n",
+                    formatFunctionName(encodingToken.name()));
+            }
             else
+            {
                 indent(out, 2, "encoder.%s(self.%1$s);\n", formatFunctionName(encodingToken.name()));
+            }
 
             i += encodingToken.componentTokenCount();
         }
@@ -1606,14 +1473,16 @@ public class RustPythonGenerator implements CodeGenerator
     }
 
     private static void appendCompositeReadFromEncoder(
-            final List<Token> tokens,
-            final String structName,
-            final Writer out
+        final List<Token> tokens,
+        final String structName,
+        final Writer out
     ) throws IOException
     {
-        indent(out, 1, "pub fn read_from_decoder<P: Reader + Default>(decoder: %s<P>) -> Self {\n", decoderName(structName));
+        indent(out, 1, "pub fn read_from_decoder<P: Reader + Default>(decoder: %s<P>) -> Self {\n",
+            decoderName(structName));
         indent(out, 2, "Self {\n");
-        for (int i = 1, end = tokens.size() - 1; i < end; ) {
+        for (int i = 1, end = tokens.size() - 1; i < end; )
+        {
             final Token encodingToken = tokens.get(i);
             if (encodingToken.isConstantEncoding())
             {
@@ -1622,9 +1491,14 @@ public class RustPythonGenerator implements CodeGenerator
             }
 
             if (Objects.requireNonNull(encodingToken.signal()) == Signal.BEGIN_COMPOSITE)
-                indent(out, 3, "%s: %s::read_from_decoder(decoder.%1$s_decoder()),\n", toLowerSnakeCase(encodingToken.name()), formatStructName(encodingToken.name()));
+            {
+                indent(out, 3, "%s: %s::read_from_decoder(decoder.%1$s_decoder()),\n",
+                    toLowerSnakeCase(encodingToken.name()), formatStructName(encodingToken.name()));
+            }
             else
+            {
                 indent(out, 3, "%s: decoder.%1$s(),\n", toLowerSnakeCase(encodingToken.name()));
+            }
 
             i += encodingToken.componentTokenCount();
         }
@@ -1633,9 +1507,9 @@ public class RustPythonGenerator implements CodeGenerator
     }
 
     private static void appendCompositeRustImpl(
-            final List<Token> tokens,
-            final String structName,
-            final Writer out
+        final List<Token> tokens,
+        final String structName,
+        final Writer out
     ) throws IOException
     {
         indent(out, 0, "impl %s {\n", structName);
@@ -1644,27 +1518,30 @@ public class RustPythonGenerator implements CodeGenerator
         indent(out, 0, "}\n\n");
     }
 
-
     private static void generateCompositeStruct(
-            final List<Token> tokens,
-            final String structName,
-            final Writer out
+        final List<Token> tokens,
+        final String structName,
+        final Writer out
     ) throws IOException
     {
         // define struct...
         indent(out, 0, "#[derive(Debug, Default, Clone)]\n");
         indent(out, 0, "#[pyclass]\n");
         indent(out, 0, "pub struct %s {\n", structName);
-        for (int i = 1, end = tokens.size() - 1; i < end; ) {
+        for (int i = 1, end = tokens.size() - 1; i < end; )
+        {
             final Token encodingToken = tokens.get(i);
             final StringBuilder sb = new StringBuilder();
 
-            switch (encodingToken.signal()) {
+            switch (encodingToken.signal())
+            {
                 case ENCODING -> generatePrimitiveField(sb, 1, encodingToken, encodingToken.name());
                 case BEGIN_ENUM -> generateEnumField(sb, 1, encodingToken, encodingToken.name());
                 case BEGIN_SET -> generateBitSetField(sb, 1, encodingToken, encodingToken.name());
                 case BEGIN_COMPOSITE -> generateCompositeField(sb, 1, encodingToken, encodingToken.name());
-                default -> {}
+                default ->
+                {
+                }
             }
 
             out.append(sb);
@@ -1777,14 +1654,16 @@ public class RustPythonGenerator implements CodeGenerator
             final Token encodingToken = tokens.get(i);
             final StringBuilder sb = new StringBuilder();
 
-            switch (encodingToken.signal()) {
+            switch (encodingToken.signal())
+            {
                 case ENCODING -> generatePrimitiveDecoder(
-                        sb, 2, encodingToken, encodingToken, encodingToken.name(), encodingToken.encoding());
+                    sb, 2, encodingToken, encodingToken, encodingToken.name(), encodingToken.encoding());
                 case BEGIN_ENUM -> generateEnumDecoder(sb, 2, encodingToken, encodingToken, encodingToken.name());
                 case BEGIN_SET -> generateBitSetDecoder(sb, 2, encodingToken, encodingToken.name());
                 case BEGIN_COMPOSITE ->
-                        generateCompositeDecoder(sb, 2, encodingToken, encodingToken, encodingToken.name());
-                default -> {
+                    generateCompositeDecoder(sb, 2, encodingToken, encodingToken, encodingToken.name());
+                default ->
+                {
                 }
             }
 
@@ -1807,5 +1686,178 @@ public class RustPythonGenerator implements CodeGenerator
         indent(writer, level, "pub fn %s(&self) -> %s {\n", formatFunctionName(name), rustTypeName);
         indent(writer, level + 1, rustExpression + "\n");
         indent(writer, level, "}\n\n");
+    }
+
+    private void generateCargoToml(
+        final String namespace
+    ) throws IOException
+    {
+        try (Writer writer = outputManager.createCargoToml())
+        {
+            // Package
+            indent(writer, 0, "[package]\n");
+            indent(writer, 0, "name = \"%s\"\n", namespace);
+            // TODO: Correct version (from console?)
+            indent(writer, 0, "version = \"0.1.0\"\n");
+            indent(writer, 0, "description = \"%s\"\n", ir.description());
+            // TODO: Authors? Maintainers?
+            indent(writer, 0, "authors = [\"sbetool\"]\n");
+            indent(writer, 0, "edition = \"2018\"\n\n");
+
+            // Lib
+            indent(writer, 0, "[lib]\n");
+            indent(writer, 0, "name = \"%s\"\n", namespace);
+            indent(writer, 0, "crate-type = [\"cdylib\"]\n");
+            indent(writer, 0, "path = \"src/lib.rs\"\n\n");
+
+            // Dependencies
+            indent(writer, 0, "[dependencies]\n");
+            indent(writer, 0, "pyo3 = \"*\"\n");
+        }
+    }
+
+    private void generatePyProjectToml(
+        final String namespace
+    ) throws IOException
+    {
+        try (Writer writer = outputManager.createPyProjectToml())
+        {
+            // Package
+            indent(writer, 0, "[tool.poetry]\n");
+            indent(writer, 0, "name = \"%s\"\n", namespace);
+            // TODO: Correct version (from console?)
+            indent(writer, 0, "version = \"0.1.0\"\n");
+            indent(writer, 0, "description = \"%s\"\n", ir.description());
+            // TODO: Authors? Maintainers?
+            indent(writer, 0, "authors = [\"sbetool\"]\n\n");
+
+            // Project
+            indent(writer, 0, "[project]\n");
+            indent(writer, 0, "name = \"%s\"\n", namespace);
+            indent(writer, 0, "requires-python = \">=3.9\"\n\n");
+
+            // Maturin
+            indent(writer, 0, "[tool.maturin]\n");
+            indent(writer, 0, "features = [\"pyo3/extension-module\"]\n\n");
+
+            // Dependencies
+            indent(writer, 0, "[tool.poetry.dependencies]\n");
+            indent(writer, 0, "python = \"^3.9\"\n");
+            indent(writer, 0, "maturin = \"*\"\n\n");
+
+            // Build system
+            indent(writer, 0, "[build-system]\n");
+            indent(writer, 0, "requires = [\"maturin\"]\n");
+            indent(writer, 0, "build-backend = \"maturin\"\n");
+        }
+    }
+
+    @Override
+    public void generate() throws IOException
+    {
+        final String namespace = determineNamespace();
+
+        generateCargoToml(namespace);
+        generatePyProjectToml(namespace);
+
+        // lib.rs
+        final LibRsDef libRsDef = new LibRsDef(outputManager, ir.byteOrder());
+
+        generateEnums(ir, outputManager);
+        generateBitSets(ir, outputManager);
+        generateComposites(ir, outputManager);
+
+        for (final List<Token> tokens : ir.messages())
+        {
+            final Token msgToken = tokens.get(0);
+            final String codecModName = codecModName(msgToken.name());
+            final List<Token> messageBody = tokens.subList(1, tokens.size() - 1);
+
+            int i = 0;
+            final List<Token> fields = new ArrayList<>();
+            i = collectFields(messageBody, i, fields);
+
+            final List<Token> groups = new ArrayList<>();
+            i = collectGroups(messageBody, i, groups);
+
+            final List<Token> varData = new ArrayList<>();
+            collectVarData(messageBody, i, varData);
+
+            try (Writer out = outputManager.createOutput(codecModName))
+            {
+                indent(out, 0, "use pyo3::types::PyType;\n");
+                indent(out, 0, "use crate::*;\n\n");
+                indent(out, 0, "pub use encoder::*;\n");
+                indent(out, 0, "pub use decoder::*;\n\n");
+                final String blockLengthType = blockLengthType();
+                final String templateIdType = rustTypeName(ir.headerStructure().templateIdType());
+                final String schemaIdType = rustTypeName(ir.headerStructure().schemaIdType());
+                final String schemaVersionType = schemaVersionType();
+                final String semanticVersion = ir.semanticVersion() == null ? "" : ir.semanticVersion();
+                indent(out, 0, "pub const SBE_BLOCK_LENGTH: %s = %d;\n", blockLengthType, msgToken.encodedLength());
+                indent(out, 0, "pub const SBE_TEMPLATE_ID: %s = %d;\n", templateIdType, msgToken.id());
+                indent(out, 0, "pub const SBE_SCHEMA_ID: %s = %d;\n", schemaIdType, ir.id());
+                indent(out, 0, "pub const SBE_SCHEMA_VERSION: %s = %d;\n", schemaVersionType, ir.version());
+                indent(out, 0, "pub const SBE_SEMANTIC_VERSION: &str = \"%s\";\n\n", semanticVersion);
+
+                MessageCoderDef.generateStruct(fields, formatStructName(msgToken.name()), out);
+                MessageCoderDef.generateEncoder(ir, out, msgToken, fields, groups, varData);
+                MessageCoderDef.generateDecoder(ir, out, msgToken, fields, groups, varData);
+            }
+        }
+
+        libRsDef.generate();
+    }
+
+    String blockLengthType()
+    {
+        return rustTypeName(ir.headerStructure().blockLengthType());
+    }
+
+    String schemaVersionType()
+    {
+        return rustTypeName(ir.headerStructure().schemaVersionType());
+    }
+
+    String determineNamespace()
+    {
+        final String packageName = toLowerSnakeCase(ir.packageName()).replaceAll("[.-]", "_");
+        final String namespace;
+        if (ir.namespaceName() == null || ir.namespaceName().equalsIgnoreCase(packageName))
+        {
+            namespace = packageName.toLowerCase();
+        }
+        else
+        {
+            namespace = (ir.namespaceName() + "_" + packageName).toLowerCase();
+        }
+
+        return namespace;
+    }
+
+    enum CodecType
+    {
+        Decoder
+        {
+            String bufType()
+            {
+                return READ_BUF_TYPE;
+            }
+        },
+
+        Encoder
+        {
+            String bufType()
+            {
+                return WRITE_BUF_TYPE;
+            }
+        };
+
+        abstract String bufType();
+    }
+
+    interface ParentDef
+    {
+        SubGroup addSubGroup(String name, int level, Token groupToken);
     }
 }

@@ -16,29 +16,26 @@
 package uk.co.real_logic.sbe.generation.python;
 
 import uk.co.real_logic.sbe.ir.Ir;
-import uk.co.real_logic.sbe.ir.Signal;
 import uk.co.real_logic.sbe.ir.Token;
 
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
+import static uk.co.real_logic.sbe.generation.python.RustPythonGenerator.*;
 import static uk.co.real_logic.sbe.generation.python.RustPythonGenerator.CodecType.Decoder;
 import static uk.co.real_logic.sbe.generation.python.RustPythonGenerator.CodecType.Encoder;
-import static uk.co.real_logic.sbe.generation.python.RustPythonGenerator.*;
 import static uk.co.real_logic.sbe.generation.python.RustUtil.*;
 
 class MessageCoderDef implements RustPythonGenerator.ParentDef
 {
-    private final StringBuilder sb = new StringBuilder();
-    private final ArrayList<SubGroup> subGroups = new ArrayList<>();
-
-    private final Ir ir;
-    private final Token msgToken;
     final String name;
     final CodecType codecType;
+    private final StringBuilder sb = new StringBuilder();
+    private final ArrayList<SubGroup> subGroups = new ArrayList<>();
+    private final Ir ir;
+    private final Token msgToken;
 
     MessageCoderDef(final Ir ir, final Token msgToken, final CodecType codecType)
     {
@@ -50,25 +47,28 @@ class MessageCoderDef implements RustPythonGenerator.ParentDef
 
     public static void generateStruct(
         final List<Token> members,
-        String structName,
-        Writer out
-    ) throws IOException {
+        final String structName,
+        final Writer out
+    ) throws IOException
+    {
         // define struct...
         indent(out, 0, "#[derive(Debug, Default, Clone)]\n");
         indent(out, 0, "#[pyclass]\n");
         indent(out, 0, "pub struct %s {\n", structName);
-        for (int i = 1, end = members.size() - 1; i < end; ) {
+        for (int i = 1, end = members.size() - 1; i < end; )
+        {
             final Token encodingToken = members.get(i);
             final StringBuilder sb = new StringBuilder();
 
-//            System.out.println(format("Token '%s': Signal = %s", encodingToken.name(), encodingToken.signal().name()));
-            switch (encodingToken.signal()) {
+            switch (encodingToken.signal())
+            {
                 case ENCODING -> generatePrimitiveField(sb, 1, encodingToken, encodingToken.name());
                 case BEGIN_ENUM -> generateEnumField(sb, 1, encodingToken, encodingToken.name());
                 case BEGIN_SET -> generateBitSetField(sb, 1, encodingToken, encodingToken.name());
                 case BEGIN_COMPOSITE -> generateCompositeField(sb, 1, encodingToken, encodingToken.name());
                 case BEGIN_GROUP -> generateGroupField(sb, 1, encodingToken, encodingToken.name());
-                default -> {
+                default ->
+                {
                 }
             }
 
@@ -77,6 +77,33 @@ class MessageCoderDef implements RustPythonGenerator.ParentDef
         }
         indent(out, 0, "}\n\n");
 
+        // TODO: Generate the rest of the struct
+    }
+
+    static void generateEncoder(
+        final Ir ir,
+        final Writer out,
+        final Token msgToken,
+        final List<Token> fields,
+        final List<Token> groups,
+        final List<Token> varData) throws IOException
+    {
+        final MessageCoderDef coderDef = new MessageCoderDef(ir, msgToken, Encoder);
+        coderDef.generate(fields, groups, varData);
+        coderDef.appendTo(out);
+    }
+
+    static void generateDecoder(
+        final Ir ir,
+        final Writer out,
+        final Token msgToken,
+        final List<Token> fields,
+        final List<Token> groups,
+        final List<Token> varData) throws IOException
+    {
+        final MessageCoderDef coderDef = new MessageCoderDef(ir, msgToken, Decoder);
+        coderDef.generate(fields, groups, varData);
+        coderDef.appendTo(out);
     }
 
     String blockLengthType()
@@ -232,156 +259,5 @@ class MessageCoderDef implements RustPythonGenerator.ParentDef
         }
         indent(out, 3, "self\n");
         indent(out, 2, "}\n\n");
-    }
-
-    static void generateEncoder(
-        final Ir ir,
-        final Writer out,
-        final Token msgToken,
-        final List<Token> fields,
-        final List<Token> groups,
-        final List<Token> varData) throws IOException
-    {
-        final MessageCoderDef coderDef = new MessageCoderDef(ir, msgToken, Encoder);
-        coderDef.generate(fields, groups, varData);
-        coderDef.appendTo(out);
-    }
-
-    static void generateDecoder(
-        final Ir ir,
-        final Writer out,
-        final Token msgToken,
-        final List<Token> fields,
-        final List<Token> groups,
-        final List<Token> varData) throws IOException
-    {
-        final MessageCoderDef coderDef = new MessageCoderDef(ir, msgToken, Decoder);
-        coderDef.generate(fields, groups, varData);
-        coderDef.appendTo(out);
-    }
-
-    static void generateCompositeStruct(
-            final List<Token> tokens,
-            final String structName,
-            final Writer out
-    ) throws IOException
-    {
-        // define struct...
-        indent(out, 0, "#[derive(Debug, Default)]\n");
-        indent(out, 0, "#[pyclass]\n");
-        indent(out, 0, "pub struct %s {\n", structName);
-        for (int i = 1, end = tokens.size() - 1; i < end; ) {
-            final Token encodingToken = tokens.get(i);
-            final StringBuilder sb = new StringBuilder();
-
-//            System.out.println(format("Token '%s': Signal = %s", encodingToken.name(), encodingToken.signal().name()));
-            switch (encodingToken.signal()) {
-                case ENCODING -> generatePrimitiveField(sb, 1, encodingToken, encodingToken.name());
-                case BEGIN_ENUM -> generateEnumField(sb, 1, encodingToken, encodingToken.name());
-                case BEGIN_SET -> generateBitSetField(sb, 1, encodingToken, encodingToken.name());
-                case BEGIN_COMPOSITE -> generateCompositeField(sb, 1, encodingToken, encodingToken.name());
-                default -> {
-                }
-            }
-
-            out.append(sb);
-            i += encodingToken.componentTokenCount();
-        }
-        indent(out, 0, "}\n\n");
-
-        // IMPL BLOCK
-        indent(out, 0, "#[pymethods]\n");
-        indent(out, 0, "impl %s {\n", structName);
-
-        // new
-        indent(out, 1, "#[new]\n");
-        indent(out, 1, "pub fn new(\n");
-        for (int i = 1, end = tokens.size() - 1; i < end; ) {
-            final Token encodingToken = tokens.get(i);
-            switch (encodingToken.signal()) {
-                case ENCODING -> {
-                    if (encodingToken.arrayLength() > 1)
-                        indent(out, 2, "%s: [%s; %d],\n", toLowerSnakeCase(encodingToken.name()), rustTypeName(encodingToken.encoding().primitiveType()), encodingToken.arrayLength());
-                    else if (encodingToken.isConstantEncoding());
-                    else
-                        indent(out, 2, "%s: %s,\n", toLowerSnakeCase(encodingToken.name()), rustTypeName(encodingToken.encoding().primitiveType()));
-                }
-                case BEGIN_ENUM -> {
-                    final String referencedName = encodingToken.referencedName();
-                    final String enumType = formatStructName(referencedName == null ? encodingToken.name() : referencedName);
-                    indent(out, 2, "%s: %s,\n", formatFunctionName(encodingToken.name()), enumType);
-                }
-                case BEGIN_SET -> {
-                    final String structTypeName = formatStructName(encodingToken.applicableTypeName());
-                    indent(out, 2, "%s: %s,\n", toLowerSnakeCase(encodingToken.name()), structTypeName);
-                }
-                case BEGIN_COMPOSITE -> {
-                    final String structTypeName = formatStructName(encodingToken.name());
-                    indent(out, 2, "%s: %s,\n", toLowerSnakeCase(encodingToken.name()), structTypeName);
-                }
-                default -> {}
-            }
-            i += encodingToken.componentTokenCount();
-        }
-        indent(out, 1, ") -> Self {\n");
-        indent(out, 2, "Self {\n");
-        for (int i = 1, end = tokens.size() - 1; i < end; ) {
-            final Token encodingToken = tokens.get(i);
-            if (!encodingToken.isConstantEncoding())
-                indent(out, 3, "%s,\n", toLowerSnakeCase(encodingToken.name()));
-            i += encodingToken.componentTokenCount();
-        }
-        indent(out, 2, "}\n");
-        indent(out, 1, "}\n\n");
-
-        // from_buf
-        indent(out, 1, "#[classmethod]\n");
-        indent(out, 1, "pub fn from_buf(_cls: &PyType, buf: &[u8], offset: usize) -> Self {\n", structName);
-        indent(out, 2, "let read_buf = ReadBuf::new(buf);\n");
-        indent(out, 2, "let decoder = %s::default().wrap(read_buf, offset);\n\n", decoderName(structName));
-        indent(out, 2, "Self {\n");
-        for (int i = 1, end = tokens.size() - 1; i < end; ) {
-            final Token encodingToken = tokens.get(i);
-            if (!encodingToken.isConstantEncoding())
-                indent(out, 3, "%s: decoder.%1$s(),\n", formatFunctionName(encodingToken.name()));
-            i += encodingToken.componentTokenCount();
-        }
-        indent(out, 2, "}\n");
-        indent(out, 1, "}\n\n");
-
-        // to_buf
-        indent(out, 1, "pub fn to_buf(&self) -> Vec<u8> {\n", structName);
-        indent(out, 2, "let mut buf = vec![0u8; ENCODED_LENGTH];\n");
-        indent(out, 2, "let write_buf = WriteBuf::new(&mut buf);\n");
-        indent(out, 2, "let mut encoder = %s::default().wrap(write_buf, 0);\n", encoderName(structName));
-        indent(out, 2, "self.write_to_encoder(encoder);\n\n", encoderName(structName));
-        indent(out, 2, "buf\n");
-        indent(out, 1, "}\n");
-        indent(out, 0, "}\n\n");
-
-
-        // RUST IMPL
-        indent(out, 0, "impl %s {\n", structName);
-
-        // write_to_encoder
-        indent(out, 1, "pub fn write_to_encoder<P>(&self, mut encoder: %s<P>) {\n", encoderName(structName));
-
-        for (int i = 1, end = tokens.size() - 1; i < end; ) {
-            final Token encodingToken = tokens.get(i);
-            if (encodingToken.isConstantEncoding())
-            {
-                i += encodingToken.componentTokenCount();
-                continue;
-            }
-
-            if (Objects.requireNonNull(encodingToken.signal()) == Signal.BEGIN_COMPOSITE)
-                indent(out, 2, "self.%s.write_to_encoder(encoder.%1$s_encoder());\n", formatFunctionName(encodingToken.name()));
-            else
-                indent(out, 2, "encoder.%s(self.%1$s);\n", formatFunctionName(encodingToken.name()));
-
-            i += encodingToken.componentTokenCount();
-        }
-        indent(out, 1, "}\n");
-        indent(out, 0, "}\n\n");
     }
 }

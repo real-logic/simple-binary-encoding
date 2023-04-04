@@ -40,7 +40,7 @@ class LibRsDef
      * Create a new 'lib.rs' for the library being generated
      *
      * @param outputManager for generating the codecs to.
-     * @param byteOrder for the Encoding.
+     * @param byteOrder     for the Encoding.
      */
     LibRsDef(
         final RustPythonOutputManager outputManager,
@@ -48,60 +48,6 @@ class LibRsDef
     {
         this.outputManager = outputManager;
         this.byteOrder = byteOrder;
-    }
-
-    void generate() throws IOException
-    {
-        try (Writer encoderRs = outputManager.createOutput("encoder"))
-        {
-            generateEncoderTraits(encoderRs);
-            generateWriteBuf(encoderRs, byteOrder);
-        }
-
-        try (Writer decoderRs = outputManager.createOutput("decoder"))
-        {
-            generateDecoderTraits(decoderRs);
-            generateReadBuf(decoderRs, byteOrder);
-        }
-
-        try (Writer utilsRs = outputManager.createOutput("utils")) {
-            generateSbeErrorEnum(utilsRs);
-            generateEitherEnum(utilsRs);
-        }
-
-        try (Writer libRs = outputManager.createOutput("lib"))
-        {
-            indent(libRs, 0, "#![forbid(unsafe_code)]\n");
-            indent(libRs, 0, "#![allow(clippy::upper_case_acronyms)]\n");
-            indent(libRs, 0, "#![allow(non_camel_case_types)]\n");
-            indent(libRs, 0, "use pyo3::prelude::*;\n");
-
-            final ArrayList<String> modules = new ArrayList<>();
-            try (Stream<Path> walk = Files.walk(outputManager.getSrcDirPath()))
-            {
-                walk
-                    .filter(Files::isRegularFile)
-                    .map((path) -> path.getFileName().toString())
-                    .filter((fileName) -> fileName.endsWith(".rs"))
-                    .filter((fileName) -> !fileName.equals("lib.rs"))
-                    .map((fileName) -> fileName.substring(0, fileName.length() - 3))
-                    .forEach(modules::add);
-            }
-
-            // add modules
-            for (final String mod : modules)
-            {
-                indent(libRs, 0, "pub mod %s;\n", toLowerSnakeCase(mod));
-            }
-            indent(libRs, 0, "\n");
-
-            // add re-export of modules
-            for (final String module : modules)
-            {
-                indent(libRs, 0, "pub use %s::*;\n", toLowerSnakeCase(module));
-            }
-            indent(libRs, 0, "\n");
-        }
     }
 
     static void generateEncoderTraits(final Writer writer) throws IOException
@@ -264,5 +210,60 @@ class LibRsDef
         indent(writer, 1, "}\n");
 
         indent(writer, 0, "}\n\n");
+    }
+
+    void generate() throws IOException
+    {
+        try (Writer encoderRs = outputManager.createOutput("encoder"))
+        {
+            generateEncoderTraits(encoderRs);
+            generateWriteBuf(encoderRs, byteOrder);
+        }
+
+        try (Writer decoderRs = outputManager.createOutput("decoder"))
+        {
+            generateDecoderTraits(decoderRs);
+            generateReadBuf(decoderRs, byteOrder);
+        }
+
+        try (Writer utilsRs = outputManager.createOutput("utils"))
+        {
+            generateSbeErrorEnum(utilsRs);
+            generateEitherEnum(utilsRs);
+        }
+
+        try (Writer libRs = outputManager.createOutput("lib"))
+        {
+            indent(libRs, 0, "#![forbid(unsafe_code)]\n");
+            indent(libRs, 0, "#![allow(clippy::upper_case_acronyms)]\n");
+            indent(libRs, 0, "#![allow(non_camel_case_types)]\n");
+            indent(libRs, 0, "use pyo3::prelude::*;\n");
+
+            final ArrayList<String> modules = new ArrayList<>();
+            try (Stream<Path> walk = Files.walk(outputManager.getSrcDirPath()))
+            {
+                walk
+                    .filter(Files::isRegularFile)
+                    .map((path) -> path.getFileName().toString())
+                    .filter((fileName) -> fileName.endsWith(".rs"))
+                    .filter((fileName) -> !fileName.equals("lib.rs"))
+                    .map((fileName) -> fileName.substring(0, fileName.length() - 3))
+                    .forEach(modules::add);
+            }
+
+            // add modules
+            for (final String mod : modules)
+            {
+                indent(libRs, 0, "pub mod %s;\n", toLowerSnakeCase(mod));
+            }
+            indent(libRs, 0, "\n");
+
+            // add re-export of modules
+            for (final String module : modules)
+            {
+                indent(libRs, 0, "pub use %s::*;\n", toLowerSnakeCase(module));
+            }
+            indent(libRs, 0, "\n");
+        }
     }
 }

@@ -37,17 +37,6 @@ public class RustPythonOutputManager implements OutputManager
     private final File rootDir;
     private final File srcDir;
 
-    static File createDir(final String dirName)
-    {
-        final File dir = new File(dirName);
-        if (!dir.exists() && !dir.mkdirs())
-        {
-            throw new IllegalStateException("Unable to create directory: " + dirName);
-        }
-
-        return dir;
-    }
-
     /**
      * Create a new {@link OutputManager} for generating rust source files into a given module.
      *
@@ -59,13 +48,26 @@ public class RustPythonOutputManager implements OutputManager
         Verify.notNull(baseDirName, "baseDirName");
         Verify.notNull(packageName, "packageName");
 
-        String dirName = baseDirName.endsWith("" + separatorChar) ? baseDirName : baseDirName + separatorChar;
+        String dirName = baseDirName.endsWith(String.valueOf(separatorChar)) ?
+            baseDirName :
+            baseDirName + separatorChar;
         dirName += packageName.replaceAll("\\.", "_").toLowerCase() + separatorChar;
         final String libDirName = dirName;
         rootDir = new File(libDirName);
 
         final String srcDirName = libDirName + separatorChar + "src";
         srcDir = createDir(srcDirName);
+    }
+
+    static File createDir(final String dirName)
+    {
+        final File dir = new File(dirName);
+        if (!dir.exists() && !dir.mkdirs())
+        {
+            throw new IllegalStateException("Unable to create directory: " + dirName);
+        }
+
+        return dir;
     }
 
     /**
@@ -88,6 +90,7 @@ public class RustPythonOutputManager implements OutputManager
     /**
      * Creates a new Cargo.toml file.
      * <p>
+     *
      * @return a {@link Writer} to which the crate definition should be written.
      * @throws IOException if an issue occurs when creating the file.
      */
@@ -101,6 +104,7 @@ public class RustPythonOutputManager implements OutputManager
     /**
      * Creates a new pyproject.toml file.
      * <p>
+     *
      * @return a {@link Writer} to which the Python project definition should be written.
      * @throws IOException if an issue occurs when creating the file.
      */
