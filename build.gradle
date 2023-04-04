@@ -559,11 +559,41 @@ tasks.register('generateRustExamples', JavaExec) {
     ]
 }
 
+tasks.register('generateRustPythonExamples', JavaExec) {
+    mainClass.set('uk.co.real_logic.sbe.SbeTool')
+    classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
+    systemProperties(
+            'sbe.output.dir': 'generated/python',
+            'sbe.xinclude.aware': 'true',
+            'sbe.target.language': 'Rust',
+            'sbe.target.namespace': 'examples')
+    args = ['sbe-samples/src/main/resources/example-schema.xml',
+            'sbe-samples/src/main/resources/example-extension-schema.xml',
+            'sbe-benchmarks/src/main/resources/car.xml',
+            'sbe-benchmarks/src/main/resources/fix-message-samples.xml'
+    ]
+}
+
 tasks.register('generateRustTestCodecs', JavaExec) {
     mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
     systemProperties(
             'sbe.output.dir': 'generated/rust',
+            'sbe.xinclude.aware': 'true',
+            'sbe.target.language': 'Rust',
+            'sbe.validation.xsd': validationXsdPath)
+    args = ['sbe-tool/src/test/resources/issue435.xml',
+            'sbe-tool/src/test/resources/issue895.xml',
+            'sbe-tool/src/test/resources/example-bigendian-test-schema.xml',
+            'sbe-tool/src/test/resources/nested-composite-name.xml',
+    ]
+}
+
+tasks.register('generateRustPythonTestCodecs', JavaExec) {
+    mainClass.set('uk.co.real_logic.sbe.SbeTool')
+    classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
+    systemProperties(
+            'sbe.output.dir': 'generated/python',
             'sbe.xinclude.aware': 'true',
             'sbe.target.language': 'Rust',
             'sbe.validation.xsd': validationXsdPath)
@@ -593,6 +623,12 @@ tasks.register('generateCarExampleExtensionDataFile', JavaExec) {
 tasks.register('generateRustCodecs') {
     description = 'Generate rust test codecs'
     dependsOn 'generateRustExamples', 'generateRustTestCodecs',
+            'generateCarExampleDataFile', 'generateCarExampleExtensionDataFile'
+}
+
+tasks.register('generateRustPythonCodecs') {
+    description = 'Generate Python codecs using PyO3'
+    dependsOn 'generateRustPythonExamples', 'generateRustPythonTestCodecs',
             'generateCarExampleDataFile', 'generateCarExampleExtensionDataFile'
 }
 
