@@ -117,8 +117,7 @@ public class RustPythonGenerator implements CodeGenerator
 
             // Dependencies
             indent(writer, 0, "[dependencies]\n");
-            // TODO: Keep up-to-date
-            indent(writer, 0, "pyo3 = \"0.18.1\"\n");
+            indent(writer, 0, "pyo3 = \"*\"\n");
         }
 
         // create pyproject.toml
@@ -145,13 +144,11 @@ public class RustPythonGenerator implements CodeGenerator
             // Dependencies
             indent(writer, 0, "[tool.poetry.dependencies]\n");
             indent(writer, 0, "python = \"^3.9\"\n");
-            // TODO: Keep up-to-date
-            indent(writer, 0, "maturin = \"^0.14.15\"\n\n");
+            indent(writer, 0, "maturin = \"*\"\n\n");
 
             // Build system
             indent(writer, 0, "[build-system]\n");
-            // TODO: Keep up-to-date
-            indent(writer, 0, "requires = [\"maturin>=0.14,<0.15\"]\n");
+            indent(writer, 0, "requires = [\"maturin\"]\n");
             indent(writer, 0, "build-backend = \"maturin\"\n");
         }
 
