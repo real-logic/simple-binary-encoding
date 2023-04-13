@@ -157,7 +157,6 @@ class SubGroup implements RustGenerator.ParentDef
         indent(sb, level - 1, "pub struct %s<P> {\n", name);
         indent(sb, level, "parent: Option<P>,\n");
         indent(sb, level, "block_length: usize,\n");
-        indent(sb, level, "acting_version: usize,\n");
         indent(sb, level, "count: %s,\n", rustTypeName(numInGroupPrimitiveType));
         indent(sb, level, "index: usize,\n");
         indent(sb, level, "offset: usize,\n");
@@ -174,7 +173,6 @@ class SubGroup implements RustGenerator.ParentDef
         indent(sb, level, "pub fn wrap(\n");
         indent(sb, level + 1, "mut self,\n");
         indent(sb, level + 1, "mut parent: P,\n");
-        indent(sb, level + 1, "acting_version: usize,\n");
         indent(sb, level, ") -> Self {\n");
         indent(sb, level + 1, "let initial_offset = parent.get_limit();\n");
         indent(sb, level + 1, "let block_length = parent.get_buf().get_%s_at(initial_offset) as usize;\n",
@@ -186,7 +184,6 @@ class SubGroup implements RustGenerator.ParentDef
 
         indent(sb, level + 1, "self.parent = Some(parent);\n");
         indent(sb, level + 1, "self.block_length = block_length;\n");
-        indent(sb, level + 1, "self.acting_version = acting_version;\n");
         indent(sb, level + 1, "self.count = count;\n");
         indent(sb, level + 1, "self.index = usize::MAX;\n");
         indent(sb, level + 1, "self.offset = 0;\n");

@@ -119,7 +119,7 @@ public class RustGenerator implements CodeGenerator
             indent(writer, 0, "version = \"0.1.0\"\n");
             indent(writer, 0, "authors = [\"sbetool\"]\n");
             indent(writer, 0, "description = \"%s\"\n", ir.description());
-            indent(writer, 0, "edition = \"2018\"\n\n");
+            indent(writer, 0, "edition = \"2021\"\n\n");
             indent(writer, 0, "[lib]\n");
             indent(writer, 0, "name = \"%s\"\n", namespace);
             indent(writer, 0, "path = \"src/lib.rs\"\n");
@@ -910,18 +910,14 @@ public class RustGenerator implements CodeGenerator
                 indent(sb, level + 2, "return None;\n");
                 indent(sb, level + 1, "}\n\n");
 
-                indent(sb, level + 1, "let acting_version = self.acting_version;\n");
-                indent(sb, level + 1, "Some(%s::default().wrap(self, acting_version as usize))\n",
-                    groupName);
+                indent(sb, level + 1, "Some(%s::default().wrap(self))\n", groupName);
             }
             else
             {
                 indent(sb, level, "pub fn %s(self) -> %2$s<Self> {\n",
                     formatFunctionName(groupName), groupName);
 
-                indent(sb, level + 1, "let acting_version = self.acting_version;\n");
-                indent(sb, level + 1, "%s::default().wrap(self, acting_version as usize)\n",
-                    groupName);
+                indent(sb, level + 1, "%s::default().wrap(self)\n", groupName);
             }
             indent(sb, level, "}\n\n");
 
