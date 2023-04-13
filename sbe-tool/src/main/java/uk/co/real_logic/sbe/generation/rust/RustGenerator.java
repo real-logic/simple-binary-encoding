@@ -1195,7 +1195,7 @@ public class RustGenerator implements CodeGenerator
             throw new IllegalArgumentException("No valid values provided for enum " + originalEnumName);
         }
 
-        indent(writer, 0, "#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]\n");
+        indent(writer, 0, "#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]\n");
         final String primitiveType = rustTypeName(messageBody.get(0).encoding().primitiveType());
         indent(writer, 0, "#[repr(%s)]\n", primitiveType);
         indent(writer, 0, "pub enum %s {\n", enumRustName);
@@ -1212,14 +1212,9 @@ public class RustGenerator implements CodeGenerator
             final Encoding encoding = messageBody.get(0).encoding();
             final CharSequence nullVal = generateRustLiteral(encoding.primitiveType(),
                 encoding.applicableNullValue().toString());
+            indent(writer, 1, "#[default]\n");
             indent(writer, 1, "NullVal = %s, \n", nullVal);
         }
-        indent(writer, 0, "}\n");
-
-        // Default implementation to support Default in other structs
-        indent(writer, 0, "impl Default for %s {\n", enumRustName);
-        indent(writer, 1, "#[inline]\n");
-        indent(writer, 1, "fn default() -> Self { %s::%s }\n", enumRustName, "NullVal");
         indent(writer, 0, "}\n");
 
         // From impl
