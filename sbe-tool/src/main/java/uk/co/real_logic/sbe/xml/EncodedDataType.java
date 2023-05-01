@@ -69,6 +69,7 @@ public class EncodedDataType extends Type
      * @param givenName      for this node.
      * @param referencedName of the type when created from a ref in a composite.
      */
+    @SuppressWarnings("this-escape")
     public EncodedDataType(final Node node, final String givenName, final String referencedName)
     {
         super(node, givenName, referencedName);
