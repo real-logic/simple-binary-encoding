@@ -2564,7 +2564,7 @@ public class CppGenerator implements CodeGenerator
         new Formatter(sb).format("\n" +
             "template<typename CharT, typename Traits>\n" +
             "friend std::basic_ostream<CharT, Traits> & operator << (\n" +
-            "    std::basic_ostream<CharT, Traits> &builder, %1$s &_writer)\n" +
+            "    std::basic_ostream<CharT, Traits> &builder, const %1$s &_writer)\n" +
             "{\n" +
             "    %1$s writer(\n" +
             "        _writer.m_buffer,\n" +
