@@ -155,7 +155,15 @@ class MessageCoderDef implements RustGenerator.ParentDef
 
     void appendMessageStruct(final Appendable out, final String structName) throws IOException
     {
-        indent(out, 1, "#[derive(Debug, Default)]\n");
+        if (this.codecType == Decoder)
+        {
+            indent(out, 1, "#[derive(Clone, Copy, Debug, Default)]\n");
+        }
+        else
+        {
+            indent(out, 1, "#[derive(Debug, Default)]\n");
+        }
+
         indent(out, 1, "pub struct %s {\n", withLifetime(structName));
         indent(out, 2, "buf: %s,\n", withLifetime(this.codecType.bufType()));
         indent(out, 2, "initial_offset: usize,\n");
