@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<sbe:messageSchema xmlns:sbe="http://fixprotocol.io/2016/sbe"
+                   package="order.check"
+                   id="1"
+                   description="Unit Test"
+                   byteOrder="littleEndian"
+                   version="0">
+    <types>
+        <composite name="messageHeader" description="Message identifiers and length of message root">
+            <type name="blockLength" primitiveType="uint16"/>
+            <type name="templateId" primitiveType="uint16"/>
+            <type name="schemaId" primitiveType="uint16"/>
+            <type name="version" primitiveType="uint16"/>
+        </composite>
+        <composite name="groupSizeEncoding" description="Repeating group dimensions">
+            <type name="blockLength" primitiveType="uint8"/>
+            <type name="numInGroup" primitiveType="uint8"/>
+        </composite>
+        <composite name="varDataEncoding" semanticType="Length">
+            <type name="length" primitiveType="uint8" semanticType="Length"/>
+            <type name="varData" primitiveType="char" semanticType="data"/>
+        </composite>
+        <composite name="point" semanticType="Point">
+            <type name="x" primitiveType="int32"/>
+            <type name="y" primitiveType="int32"/>
+        </composite>
+    </types>
+
+    <sbe:message name="MultipleVarLength" id="1">
+        <field name="a" id="1" type="int32"/>
+        <data name="b" id="2" type="varDataEncoding"/>
+        <data name="c" id="3" type="varDataEncoding"/>
+    </sbe:message>
+
+    <sbe:message name="GroupAndVarLength" id="2">
+        <field name="a" id="1" type="int32"/>
+        <group name="b" id="2">
+            <field name="c" id="3" type="int32"/>
+        </group>
+        <data name="d" id="4" type="varDataEncoding"/>
+    </sbe:message>
+
+    <sbe:message name="VarLengthInsideGroup" id="3">
+        <field name="a" id="1" type="int32"/>
+        <group name="b" id="2">
+            <field name="c" id="3" type="int32"/>
+            <data name="d" id="4" type="varDataEncoding"/>
+        </group>
+        <data name="e" id="5" type="varDataEncoding"/>
+    </sbe:message>
+
+    <sbe:message name="NestedGroups" id="4">
+        <field name="a" id="1" type="int32"/>
+        <group name="b" id="2">
+            <field name="c" id="3" type="int32"/>
+            <group name="d" id="4">
+                <field name="e" id="5" type="int32"/>
+            </group>
+            <group name="f" id="6">
+                <field name="g" id="7" type="int32"/>
+            </group>
+        </group>
+        <group name="h" id="8">
+            <field name="i" id="9" type="int32"/>
+        </group>
+    </sbe:message>
+
+    <sbe:message name="CompositeInsideGroup" id="5">
+        <field name="a" id="1" type="point"/>
+        <group name="b" id="2">
+            <field name="c" id="3" type="point"/>
+        </group>
+    </sbe:message>
+</sbe:messageSchema>

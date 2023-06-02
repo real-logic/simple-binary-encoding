@@ -281,7 +281,8 @@ project(':sbe-tool') {
                 'sbe.validation.stop.on.error': 'true',
                 'sbe.validation.xsd': validationXsdPath)
         args = ['src/test/resources/json-printer-test-schema.xml',
-                'src/test/resources/composite-elements-schema.xml']
+                'src/test/resources/composite-elements-schema.xml',
+                'src/test/resources/field-order-check-schema.xml']
     }
 
     jar {
