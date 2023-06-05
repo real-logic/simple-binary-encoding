@@ -15,25 +15,20 @@
  */
 package uk.co.real_logic.sbe.generation.java;
 
+import uk.co.real_logic.sbe.PrimitiveType;
+import uk.co.real_logic.sbe.generation.CodeGenerator;
+import uk.co.real_logic.sbe.generation.Generators;
+import uk.co.real_logic.sbe.ir.*;
 import org.agrona.DirectBuffer;
 import org.agrona.MutableDirectBuffer;
 import org.agrona.Strings;
 import org.agrona.Verify;
 import org.agrona.generation.DynamicPackageOutputManager;
 import org.agrona.sbe.*;
-import uk.co.real_logic.sbe.PrimitiveType;
-import uk.co.real_logic.sbe.generation.CodeGenerator;
-import uk.co.real_logic.sbe.generation.Generators;
-import uk.co.real_logic.sbe.ir.*;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Formatter;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 
 import static uk.co.real_logic.sbe.SbeTool.JAVA_INTERFACE_PACKAGE;
@@ -255,18 +250,186 @@ public class JavaGenerator implements CodeGenerator
                 generateAnnotations(BASE_INDENT, className, groups, out, this::encoderName);
             }
             out.append(generateDeclaration(className, implementsString, msgToken));
-            out.append(generateEncoderFlyweightCode(className, msgToken));
+            final FieldOrderModel fieldOrderModel = new FieldOrderModel();
+            fieldOrderModel.findTransitions(fields, groups, varData);
+            out.append(generateFieldOrderStates(fieldOrderModel));
+            out.append(generateEncoderFlyweightCode(className, fieldOrderModel, msgToken));
 
             final StringBuilder sb = new StringBuilder();
-            generateEncoderFields(sb, className, fields, BASE_INDENT);
-            generateEncoderGroups(sb, className, groups, BASE_INDENT, false);
-            generateEncoderVarData(sb, className, varData, BASE_INDENT);
+            generateEncoderFields(sb, className, fieldOrderModel, fields, BASE_INDENT);
+            generateEncoderGroups(sb, className, fieldOrderModel, groups, BASE_INDENT, false);
+            generateEncoderVarData(sb, className, fieldOrderModel, varData, BASE_INDENT);
 
             generateEncoderDisplay(sb, decoderName(msgToken.name()));
 
             out.append(sb);
             out.append("}\n");
         }
+    }
+
+    private CharSequence stateFieldName(final FieldOrderModel.State state)
+    {
+        return "ACCESS_STATE_" + state.name();
+    }
+
+    private CharSequence generateFieldOrderStates(final FieldOrderModel fieldOrderModel)
+    {
+        final StringBuilder sb = new StringBuilder();
+
+        sb.append("    private static final boolean DEBUG_MODE = ")
+            .append("!Boolean.getBoolean(\"agrona.disable.bounds.checks\");\n\n");
+
+        fieldOrderModel.forEachState(state ->
+        {
+            sb.append("    private static final int ").append(stateFieldName(state)).append(" = ")
+                .append(state.number()).append(";\n\n");
+        });
+
+        sb.append("    private int fieldOrderState = ")
+            .append(stateFieldName(fieldOrderModel.notWrappedState()))
+            .append(";\n\n");
+
+        sb.append("    private int fieldOrderState()\n")
+            .append("    {\n")
+            .append("        return fieldOrderState;\n")
+            .append("    }\n\n");
+
+        sb.append("    private void fieldOrderState(int newState)\n")
+            .append("    {\n")
+            .append("        fieldOrderState = newState;\n")
+            .append("    }\n\n");
+
+        return sb;
+    }
+
+    private CharSequence generateFieldOrderStateTransitions(
+        final FieldOrderModel fieldOrderModel,
+        final String indent,
+        final Token token)
+    {
+        if (fieldOrderModel == null)
+        {
+            return "";
+        }
+
+        final StringBuilder sb = new StringBuilder();
+
+        sb.append(indent).append("if (DEBUG_MODE)\n")
+            .append(indent).append("{\n");
+
+        generateFieldOrderStateTransitions(
+            sb,
+            indent + "    ",
+            fieldOrderModel,
+            FieldOrderModel.TransitionContext.NONE,
+            token);
+
+        sb.append(indent).append("}\n\n");
+
+        return sb;
+    }
+
+    private CharSequence generateFieldOrderStateTransitions(
+        final FieldOrderModel fieldOrderModel,
+        final String indent,
+        final Token token,
+        final String remainingExpression)
+    {
+        final StringBuilder sb = new StringBuilder();
+
+        sb.append(indent).append("if (DEBUG_MODE)\n")
+            .append(indent).append("{\n")
+            .append(indent).append("    final int remaining = ").append(remainingExpression).append(";\n")
+            .append(indent).append("    if (remaining == 0)\n")
+            .append(indent).append("    {\n");
+
+        generateFieldOrderStateTransitions(
+            sb,
+            indent + "        ",
+            fieldOrderModel,
+            FieldOrderModel.TransitionContext.SELECT_EMPTY_GROUP,
+            token);
+
+        sb.append(indent).append("    }\n")
+            .append(indent).append("    else\n")
+            .append(indent).append("    {\n");
+
+        generateFieldOrderStateTransitions(
+            sb,
+            indent + "            ",
+            fieldOrderModel,
+            FieldOrderModel.TransitionContext.SELECT_MULTI_ELEMENT_GROUP,
+            token);
+
+        sb.append(indent).append("    }\n")
+            .append(indent).append("}\n\n");
+
+        return sb;
+    }
+
+    private void generateFieldOrderStateTransitions(
+        final StringBuilder sb,
+        final String indent,
+        final FieldOrderModel fieldOrderModel,
+        final FieldOrderModel.TransitionContext context,
+        final Token token)
+    {
+        sb.append(indent).append("switch (fieldOrderState())\n")
+            .append(indent).append("{\n");
+
+        final List<FieldOrderModel.Transition> transitions = fieldOrderModel.getTransitions(context, token);
+
+        transitions.forEach(transition ->
+        {
+            transition.forEachStartState(startState ->
+                sb.append(indent).append("    case ").append(stateFieldName(startState)).append(":\n"));
+            sb.append(indent).append("        fieldOrderState(")
+                .append(stateFieldName(transition.endState())).append(");\n")
+                .append(indent).append("        break;\n");
+        });
+
+        sb.append(indent).append("    default:\n")
+            .append(indent).append("        throw new IllegalStateException(")
+            .append("\"Unexpected state: \" + fieldOrderState());\n")
+            .append(indent).append("}\n");
+    }
+
+    private CharSequence generateFieldOrderStateTransitionsForNextGroupElement(
+        final FieldOrderModel fieldOrderModel,
+        final String indent,
+        final Token token,
+        final String remainingExpression)
+    {
+        final StringBuilder sb = new StringBuilder();
+
+        sb.append(indent).append("if (DEBUG_MODE)\n")
+            .append(indent).append("{\n")
+            .append(indent).append("    final int remaining = ").append(remainingExpression).append(";\n")
+            .append(indent).append("    if (remaining > 1)\n")
+            .append(indent).append("    {\n");
+
+        generateFieldOrderStateTransitions(
+            sb,
+            indent + "       ",
+            fieldOrderModel,
+            FieldOrderModel.TransitionContext.NEXT_ELEMENT_IN_GROUP,
+            token);
+
+        sb.append(indent).append("   }\n")
+            .append(indent).append("    else if (remaining == 1)\n")
+            .append(indent).append("    {\n");
+
+        generateFieldOrderStateTransitions(
+            sb,
+            indent + "        ",
+            fieldOrderModel,
+            FieldOrderModel.TransitionContext.LAST_ELEMENT_IN_GROUP,
+            token);
+
+        sb.append(indent).append("    }\n")
+            .append(indent).append("}\n\n");
+
+        return sb;
     }
 
     private void generateDecoder(
@@ -358,6 +521,7 @@ public class JavaGenerator implements CodeGenerator
     private void generateEncoderGroups(
         final StringBuilder sb,
         final String outerClassName,
+        final FieldOrderModel fieldOrderModel,
         final List<Token> tokens,
         final String indent,
         final boolean isSubGroup) throws IOException
@@ -387,18 +551,19 @@ public class JavaGenerator implements CodeGenerator
             final List<Token> varData = new ArrayList<>();
             i = collectVarData(tokens, i, varData);
 
-            generateGroupEncoderProperty(sb, groupName, groupToken, indent, isSubGroup);
+            generateGroupEncoderProperty(sb, groupName, fieldOrderModel, groupToken, indent, isSubGroup);
             generateTypeJavadoc(sb, indent + INDENT, groupToken);
 
             if (shouldGenerateGroupOrderAnnotation)
             {
                 generateAnnotations(indent + INDENT, groupClassName, groups, sb, this::encoderName);
             }
-            generateGroupEncoderClassHeader(sb, groupName, outerClassName, tokens, groups, index, indent + INDENT);
+            generateGroupEncoderClassHeader(
+                sb, groupName, outerClassName, fieldOrderModel, groupToken, tokens, groups, index, indent + INDENT);
 
-            generateEncoderFields(sb, groupClassName, fields, indent + INDENT);
-            generateEncoderGroups(sb, outerClassName, groups, indent + INDENT, true);
-            generateEncoderVarData(sb, groupClassName, varData, indent + INDENT);
+            generateEncoderFields(sb, groupClassName, fieldOrderModel, fields, indent + INDENT);
+            generateEncoderGroups(sb, outerClassName, fieldOrderModel, groups, indent + INDENT, true);
+            generateEncoderVarData(sb, groupClassName, fieldOrderModel, varData, indent + INDENT);
 
             sb.append(indent).append("    }\n");
         }
@@ -514,6 +679,8 @@ public class JavaGenerator implements CodeGenerator
         final StringBuilder sb,
         final String groupName,
         final String parentMessageClassName,
+        final FieldOrderModel fieldOrderModel,
+        final Token groupToken,
         final List<Token> tokens,
         final List<Token> subGroupTokens,
         final int index,
@@ -577,6 +744,8 @@ public class JavaGenerator implements CodeGenerator
         sb.append("\n")
             .append(ind).append("    public ").append(encoderName(groupName)).append(" next()\n")
             .append(ind).append("    {\n")
+            .append(generateFieldOrderStateTransitionsForNextGroupElement(
+                fieldOrderModel, ind + "        ", groupToken, "count - index"))
             .append(ind).append("        if (index >= count)\n")
             .append(ind).append("        {\n")
             .append(ind).append("            throw new java.util.NoSuchElementException();\n")
@@ -617,6 +786,18 @@ public class JavaGenerator implements CodeGenerator
             .append(ind).append("    public static int sbeBlockLength()\n")
             .append(ind).append("    {\n")
             .append(ind).append("        return ").append(blockLength).append(";\n")
+            .append(ind).append("    }\n");
+
+        sb.append("\n")
+            .append(ind).append("    private int fieldOrderState()\n")
+            .append(ind).append("    {\n")
+            .append(ind).append("        return parentMessage.fieldOrderState();\n")
+            .append(ind).append("    }\n");
+
+        sb.append("\n")
+            .append(ind).append("    private void fieldOrderState(final int newState)\n")
+            .append(ind).append("    {\n")
+            .append(ind).append("        parentMessage.fieldOrderState(newState);\n")
             .append(ind).append("    }\n");
     }
 
@@ -788,6 +969,7 @@ public class JavaGenerator implements CodeGenerator
     private void generateGroupEncoderProperty(
         final StringBuilder sb,
         final String groupName,
+        final FieldOrderModel fieldOrderModel,
         final Token token,
         final String indent,
         final boolean isSubGroup)
@@ -816,6 +998,7 @@ public class JavaGenerator implements CodeGenerator
         new Formatter(sb).format("\n" +
             indent + "    public %1$s %2$sCount(final int count)\n" +
             indent + "    {\n" +
+            generateFieldOrderStateTransitions(fieldOrderModel, indent + "        ", token, "count") +
             indent + "        %2$s.wrap(buffer, count);\n" +
             indent + "        return %2$s;\n" +
             indent + "    }\n",
@@ -872,7 +1055,11 @@ public class JavaGenerator implements CodeGenerator
     }
 
     private void generateEncoderVarData(
-        final StringBuilder sb, final String className, final List<Token> tokens, final String indent)
+        final StringBuilder sb,
+        final String className,
+        final FieldOrderModel fieldOrderModel,
+        final List<Token> tokens,
+        final String indent)
     {
         for (int i = 0, size = tokens.size(); i < size;)
         {
@@ -906,6 +1093,8 @@ public class JavaGenerator implements CodeGenerator
             generateDataEncodeMethods(
                 sb,
                 propertyName,
+                fieldOrderModel,
+                token,
                 sizeOfLengthField,
                 maxLengthValue,
                 lengthEncoding.primitiveType(),
@@ -1045,6 +1234,8 @@ public class JavaGenerator implements CodeGenerator
     private void generateDataEncodeMethods(
         final StringBuilder sb,
         final String propertyName,
+        final FieldOrderModel fieldOrderModel,
+        final Token fieldToken,
         final int sizeOfLengthField,
         final int maxLengthValue,
         final PrimitiveType lengthType,
@@ -1057,6 +1248,8 @@ public class JavaGenerator implements CodeGenerator
             sb,
             className,
             propertyName,
+            fieldOrderModel,
+            fieldToken,
             sizeOfLengthField,
             maxLengthValue,
             readOnlyBuffer,
@@ -1068,6 +1261,8 @@ public class JavaGenerator implements CodeGenerator
             sb,
             className,
             propertyName,
+            fieldOrderModel,
+            fieldToken,
             sizeOfLengthField,
             maxLengthValue,
             "byte[]",
@@ -1080,6 +1275,8 @@ public class JavaGenerator implements CodeGenerator
             generateCharArrayEncodeMethods(
                 sb,
                 propertyName,
+                fieldOrderModel,
+                fieldToken,
                 sizeOfLengthField,
                 maxLengthValue,
                 lengthType,
@@ -1093,6 +1290,8 @@ public class JavaGenerator implements CodeGenerator
     private void generateCharArrayEncodeMethods(
         final StringBuilder sb,
         final String propertyName,
+        final FieldOrderModel fieldOrderModel,
+        final Token fieldToken,
         final int sizeOfLengthField,
         final int maxLengthValue,
         final PrimitiveType lengthType,
@@ -1113,6 +1312,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "        {\n" +
                 indent + "            throw new IllegalStateException(\"length > maxValue for type: \" + length);\n" +
                 indent + "        }\n\n" +
+                generateFieldOrderStateTransitions(fieldOrderModel, indent + "        ", fieldToken) +
                 indent + "        final int headerLength = %4$d;\n" +
                 indent + "        final int limit = parentMessage.limit();\n" +
                 indent + "        parentMessage.limit(limit + headerLength + length);\n" +
@@ -1134,6 +1334,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "        {\n" +
                 indent + "            throw new IllegalStateException(\"length > maxValue for type: \" + length);\n" +
                 indent + "        }\n\n" +
+                generateFieldOrderStateTransitions(fieldOrderModel, indent + "        ", fieldToken) +
                 indent + "        final int headerLength = %4$d;\n" +
                 indent + "        final int limit = parentMessage.limit();\n" +
                 indent + "        parentMessage.limit(limit + headerLength + length);\n" +
@@ -1159,6 +1360,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "        {\n" +
                 indent + "            throw new IllegalStateException(\"length > maxValue for type: \" + length);\n" +
                 indent + "        }\n\n" +
+                generateFieldOrderStateTransitions(fieldOrderModel, indent + "        ", fieldToken) +
                 indent + "        final int headerLength = %5$d;\n" +
                 indent + "        final int limit = parentMessage.limit();\n" +
                 indent + "        parentMessage.limit(limit + headerLength + length);\n" +
@@ -1209,6 +1411,8 @@ public class JavaGenerator implements CodeGenerator
         final StringBuilder sb,
         final String className,
         final String propertyName,
+        final FieldOrderModel fieldOrderModel,
+        final Token fieldToken,
         final int sizeOfLengthField,
         final int maxLengthValue,
         final String exchangeType,
@@ -1225,6 +1429,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "        {\n" +
             indent + "            throw new IllegalStateException(\"length > maxValue for type: \" + length);\n" +
             indent + "        }\n\n" +
+            generateFieldOrderStateTransitions(fieldOrderModel, indent + "        ", fieldToken) +
             indent + "        final int headerLength = %5$d;\n" +
             indent + "        final int limit = parentMessage.limit();\n" +
             indent + "        parentMessage.limit(limit + headerLength + length);\n" +
@@ -1373,12 +1578,12 @@ public class JavaGenerator implements CodeGenerator
 
                     case BEGIN_SET:
                         generateBitSetProperty(
-                            sb, true, DECODER, propertyName, encodingToken, encodingToken, BASE_INDENT, typeName);
+                            sb, true, DECODER, propertyName, null, encodingToken, encodingToken, BASE_INDENT, typeName);
                         break;
 
                     case BEGIN_COMPOSITE:
                         generateCompositeProperty(
-                            sb, true, DECODER, propertyName, encodingToken, encodingToken, BASE_INDENT, typeName);
+                            sb, true, DECODER, propertyName, null, encodingToken, encodingToken, BASE_INDENT, typeName);
                         break;
 
                     default:
@@ -1414,21 +1619,23 @@ public class JavaGenerator implements CodeGenerator
                 switch (encodingToken.signal())
                 {
                     case ENCODING:
-                        generatePrimitiveEncoder(sb, encoderName, encodingToken.name(), encodingToken, BASE_INDENT);
+                        generatePrimitiveEncoder(sb, encoderName, encodingToken.name(),
+                            null, null, encodingToken, BASE_INDENT);
                         break;
 
                     case BEGIN_ENUM:
-                        generateEnumEncoder(sb, encoderName, encodingToken, propertyName, encodingToken, BASE_INDENT);
+                        generateEnumEncoder(sb, encoderName, null,
+                            encodingToken, propertyName, encodingToken, BASE_INDENT);
                         break;
 
                     case BEGIN_SET:
                         generateBitSetProperty(
-                            sb, true, ENCODER, propertyName, encodingToken, encodingToken, BASE_INDENT, typeName);
+                            sb, true, ENCODER, propertyName, null, encodingToken, encodingToken, BASE_INDENT, typeName);
                         break;
 
                     case BEGIN_COMPOSITE:
                         generateCompositeProperty(
-                            sb, true, ENCODER, propertyName, encodingToken, encodingToken, BASE_INDENT, typeName);
+                            sb, true, ENCODER, propertyName, null, encodingToken, encodingToken, BASE_INDENT, typeName);
                         break;
 
                     default:
@@ -1878,21 +2085,23 @@ public class JavaGenerator implements CodeGenerator
         final StringBuilder sb,
         final String containingClassName,
         final String propertyName,
-        final Token token,
+        final FieldOrderModel fieldOrderModel,
+        final Token fieldToken,
+        final Token typeToken,
         final String indent)
     {
         final String formattedPropertyName = formatPropertyName(propertyName);
 
-        generatePrimitiveFieldMetaMethod(sb, formattedPropertyName, token, indent);
+        generatePrimitiveFieldMetaMethod(sb, formattedPropertyName, typeToken, indent);
 
-        if (!token.isConstantEncoding())
+        if (!typeToken.isConstantEncoding())
         {
             sb.append(generatePrimitivePropertyEncodeMethods(
-                containingClassName, formattedPropertyName, token, indent));
+                containingClassName, formattedPropertyName, fieldOrderModel, fieldToken, typeToken, indent));
         }
         else
         {
-            generateConstPropertyMethods(sb, formattedPropertyName, token, indent);
+            generateConstPropertyMethods(sb, formattedPropertyName, typeToken, indent);
         }
     }
 
@@ -1910,11 +2119,18 @@ public class JavaGenerator implements CodeGenerator
     }
 
     private CharSequence generatePrimitivePropertyEncodeMethods(
-        final String containingClassName, final String propertyName, final Token token, final String indent)
+        final String containingClassName,
+        final String propertyName,
+        final FieldOrderModel fieldOrderModel,
+        final Token fieldToken,
+        final Token typeToken,
+        final String indent)
     {
-        return token.matchOnLength(
-            () -> generatePrimitivePropertyEncode(containingClassName, propertyName, token, indent),
-            () -> generatePrimitiveArrayPropertyEncode(containingClassName, propertyName, token, indent));
+        return typeToken.matchOnLength(
+            () -> generatePrimitivePropertyEncode(
+                containingClassName, propertyName, fieldOrderModel, fieldToken, typeToken, indent),
+            () -> generatePrimitiveArrayPropertyEncode(
+                containingClassName, propertyName, fieldOrderModel, fieldToken, typeToken, indent));
     }
 
     private void generatePrimitiveFieldMetaMethod(
@@ -1977,17 +2193,23 @@ public class JavaGenerator implements CodeGenerator
     }
 
     private CharSequence generatePrimitivePropertyEncode(
-        final String containingClassName, final String propertyName, final Token token, final String indent)
+        final String containingClassName,
+        final String propertyName,
+        final FieldOrderModel fieldOrderModel,
+        final Token fieldToken,
+        final Token typeToken,
+        final String indent)
     {
-        final Encoding encoding = token.encoding();
+        final Encoding encoding = typeToken.encoding();
         final String javaTypeName = javaTypeName(encoding.primitiveType());
-        final int offset = token.offset();
+        final int offset = typeToken.offset();
         final String byteOrderStr = byteOrderString(encoding);
 
         return String.format(
             "\n" +
             indent + "    public %s %s(final %s value)\n" +
             indent + "    {\n" +
+            generateFieldOrderStateTransitions(fieldOrderModel, indent + "        ", fieldToken) +
             indent + "        %s;\n" +
             indent + "        return this;\n" +
             indent + "    }\n\n",
@@ -2260,14 +2482,19 @@ public class JavaGenerator implements CodeGenerator
     }
 
     private CharSequence generatePrimitiveArrayPropertyEncode(
-        final String containingClassName, final String propertyName, final Token token, final String indent)
+        final String containingClassName,
+        final String propertyName,
+        final FieldOrderModel fieldOrderModel,
+        final Token fieldToken,
+        final Token typeToken,
+        final String indent)
     {
-        final Encoding encoding = token.encoding();
+        final Encoding encoding = typeToken.encoding();
         final PrimitiveType primitiveType = encoding.primitiveType();
         final String javaTypeName = javaTypeName(primitiveType);
-        final int offset = token.offset();
+        final int offset = typeToken.offset();
         final String byteOrderStr = byteOrderString(encoding);
-        final int arrayLength = token.arrayLength();
+        final int arrayLength = typeToken.arrayLength();
         final int typeSize = sizeOfPrimitive(encoding);
 
         final StringBuilder sb = new StringBuilder();
@@ -2278,6 +2505,7 @@ public class JavaGenerator implements CodeGenerator
         new Formatter(sb).format("\n" +
             indent + "    public %s %s(final int index, final %s value)\n" +
             indent + "    {\n" +
+            generateFieldOrderStateTransitions(fieldOrderModel, indent + "        ", fieldToken) +
             indent + "        if (index < 0 || index >= %d)\n" +
             indent + "        {\n" +
             indent + "            throw new IndexOutOfBoundsException(\"index out of range: index=\" + index);\n" +
@@ -2310,6 +2538,8 @@ public class JavaGenerator implements CodeGenerator
             sb.append(")\n");
             sb.append(indent).append("    {\n");
 
+            sb.append(generateFieldOrderStateTransitions(fieldOrderModel, indent + "        ", fieldToken));
+
             for (int i = 0; i < arrayLength; i++)
             {
                 final String indexStr = "offset + " + (offset + (typeSize * i));
@@ -2327,12 +2557,27 @@ public class JavaGenerator implements CodeGenerator
         if (primitiveType == PrimitiveType.CHAR)
         {
             generateCharArrayEncodeMethods(
-                containingClassName, propertyName, indent, encoding, offset, arrayLength, sb);
+                containingClassName,
+                propertyName,
+                indent,
+                fieldOrderModel,
+                fieldToken,
+                encoding,
+                offset,
+                arrayLength,
+                sb);
         }
         else if (primitiveType == PrimitiveType.UINT8)
         {
             generateByteArrayEncodeMethods(
-                containingClassName, propertyName, indent, offset, arrayLength, sb);
+                containingClassName,
+                propertyName,
+                indent,
+                fieldOrderModel,
+                fieldToken,
+                offset,
+                arrayLength,
+                sb);
         }
 
         return sb;
@@ -2342,6 +2587,8 @@ public class JavaGenerator implements CodeGenerator
         final String containingClassName,
         final String propertyName,
         final String indent,
+        final FieldOrderModel fieldOrderModel,
+        final Token fieldToken,
         final Encoding encoding,
         final int offset,
         final int fieldLength,
@@ -2352,6 +2599,7 @@ public class JavaGenerator implements CodeGenerator
         new Formatter(sb).format("\n" +
             indent + "    public %s put%s(final byte[] src, final int srcOffset)\n" +
             indent + "    {\n" +
+            generateFieldOrderStateTransitions(fieldOrderModel, indent + "        ", fieldToken) +
             indent + "        final int length = %d;\n" +
             indent + "        if (srcOffset < 0 || srcOffset > (src.length - length))\n" +
             indent + "        {\n" +
@@ -2371,6 +2619,7 @@ public class JavaGenerator implements CodeGenerator
             new Formatter(sb).format("\n" +
                 indent + "    public %1$s %2$s(final String src)\n" +
                 indent + "    {\n" +
+                generateFieldOrderStateTransitions(fieldOrderModel, indent + "        ", fieldToken) +
                 indent + "        final int length = %3$d;\n" +
                 indent + "        final int srcLength = null == src ? 0 : src.length();\n" +
                 indent + "        if (srcLength > length)\n" +
@@ -2393,6 +2642,7 @@ public class JavaGenerator implements CodeGenerator
             new Formatter(sb).format("\n" +
                 indent + "    public %1$s %2$s(final CharSequence src)\n" +
                 indent + "    {\n" +
+                generateFieldOrderStateTransitions(fieldOrderModel, indent + "        ", fieldToken) +
                 indent + "        final int length = %3$d;\n" +
                 indent + "        final int srcLength = null == src ? 0 : src.length();\n" +
                 indent + "        if (srcLength > length)\n" +
@@ -2417,6 +2667,7 @@ public class JavaGenerator implements CodeGenerator
             new Formatter(sb).format("\n" +
                 indent + "    public %s %s(final String src)\n" +
                 indent + "    {\n" +
+                generateFieldOrderStateTransitions(fieldOrderModel, indent + "        ", fieldToken) +
                 indent + "        final int length = %d;\n" +
                 indent + "        final byte[] bytes = (null == src || src.isEmpty()) ?" +
                 " org.agrona.collections.ArrayUtil.EMPTY_BYTE_ARRAY : src.getBytes(%s);\n" +
@@ -2445,6 +2696,8 @@ public class JavaGenerator implements CodeGenerator
         final String containingClassName,
         final String propertyName,
         final String indent,
+        final FieldOrderModel fieldOrderModel,
+        final Token fieldToken,
         final int offset,
         final int fieldLength,
         final StringBuilder sb)
@@ -2452,6 +2705,7 @@ public class JavaGenerator implements CodeGenerator
         new Formatter(sb).format("\n" +
             indent + "    public %s put%s(final byte[] src, final int srcOffset, final int length)\n" +
             indent + "    {\n" +
+            generateFieldOrderStateTransitions(fieldOrderModel, indent + "        ", fieldToken) +
             indent + "        if (length > %d)\n" +
             indent + "        {\n" +
             indent + "            throw new IllegalStateException(" +
@@ -2474,6 +2728,7 @@ public class JavaGenerator implements CodeGenerator
         new Formatter(sb).format("\n" +
             indent + "    public %s put%s(final %s src, final int srcOffset, final int length)\n" +
             indent + "    {\n" +
+            generateFieldOrderStateTransitions(fieldOrderModel, indent + "        ", fieldToken) +
             indent + "        if (length > %d)\n" +
             indent + "        {\n" +
             indent + "            throw new IllegalStateException(" +
@@ -2829,7 +3084,10 @@ public class JavaGenerator implements CodeGenerator
             semanticVersion);
     }
 
-    private CharSequence generateEncoderFlyweightCode(final String className, final Token token)
+    private CharSequence generateEncoderFlyweightCode(
+        final String className,
+        final FieldOrderModel fieldOrderModel,
+        final Token token)
     {
         final String wrapMethod =
             "    public " + className + " wrap(final " + mutableBuffer + " buffer, final int offset)\n" +
@@ -2841,6 +3099,10 @@ public class JavaGenerator implements CodeGenerator
             "        this.initialOffset = offset;\n" +
             "        this.offset = offset;\n" +
             "        limit(offset + BLOCK_LENGTH);\n\n" +
+            "        if (DEBUG_MODE)\n" +
+            "        {\n" +
+            "            fieldOrderState(" + stateFieldName(fieldOrderModel.wrappedState()) + ");\n" +
+            "        }\n\n" +
             "        return this;\n" +
             "    }\n\n";
 
@@ -2889,7 +3151,11 @@ public class JavaGenerator implements CodeGenerator
     }
 
     private void generateEncoderFields(
-        final StringBuilder sb, final String containingClassName, final List<Token> tokens, final String indent)
+        final StringBuilder sb,
+        final String containingClassName,
+        final FieldOrderModel fieldOrderModel,
+        final List<Token> tokens,
+        final String indent)
     {
         Generators.forEachField(
             tokens,
@@ -2907,21 +3173,23 @@ public class JavaGenerator implements CodeGenerator
                 switch (typeToken.signal())
                 {
                     case ENCODING:
-                        generatePrimitiveEncoder(sb, containingClassName, propertyName, typeToken, indent);
+                        generatePrimitiveEncoder(sb, containingClassName, propertyName,
+                            fieldOrderModel, fieldToken, typeToken, indent);
                         break;
 
                     case BEGIN_ENUM:
-                        generateEnumEncoder(sb, containingClassName, fieldToken, propertyName, typeToken, indent);
+                        generateEnumEncoder(sb, containingClassName,
+                            fieldOrderModel, fieldToken, propertyName, typeToken, indent);
                         break;
 
                     case BEGIN_SET:
                         generateBitSetProperty(
-                            sb, false, ENCODER, propertyName, fieldToken, typeToken, indent, typeName);
+                            sb, false, ENCODER, propertyName, fieldOrderModel, fieldToken, typeToken, indent, typeName);
                         break;
 
                     case BEGIN_COMPOSITE:
                         generateCompositeProperty(
-                            sb, false, ENCODER, propertyName, fieldToken, typeToken, indent, typeName);
+                            sb, false, ENCODER, propertyName, fieldOrderModel, fieldToken, typeToken, indent, typeName);
                         break;
 
                     default:
@@ -2957,12 +3225,12 @@ public class JavaGenerator implements CodeGenerator
 
                     case BEGIN_SET:
                         generateBitSetProperty(
-                            sb, false, DECODER, propertyName, fieldToken, typeToken, indent, typeName);
+                            sb, false, DECODER, propertyName, /* TODO */ null, fieldToken, typeToken, indent, typeName);
                         break;
 
                     case BEGIN_COMPOSITE:
                         generateCompositeProperty(
-                            sb, false, DECODER, propertyName, fieldToken, typeToken, indent, typeName);
+                            sb, false, DECODER, propertyName, /* TODO */ null, fieldToken, typeToken, indent, typeName);
                         break;
 
                     default:
@@ -3131,6 +3399,7 @@ public class JavaGenerator implements CodeGenerator
     private void generateEnumEncoder(
         final StringBuilder sb,
         final String containingClassName,
+        final FieldOrderModel fieldOrderModel,
         final Token fieldToken,
         final String propertyName,
         final Token typeToken,
@@ -3146,6 +3415,7 @@ public class JavaGenerator implements CodeGenerator
             new Formatter(sb).format("\n" +
                 indent + "    public %s %s(final %s value)\n" +
                 indent + "    {\n" +
+                generateFieldOrderStateTransitions(fieldOrderModel, indent + "        ", fieldToken) +
                 indent + "        %s;\n" +
                 indent + "        return this;\n" +
                 indent + "    }\n",
@@ -3161,6 +3431,7 @@ public class JavaGenerator implements CodeGenerator
         final boolean inComposite,
         final CodecType codecType,
         final String propertyName,
+        final FieldOrderModel fieldOrderModel,
         final Token propertyToken,
         final Token bitsetToken,
         final String indent,
@@ -3176,6 +3447,7 @@ public class JavaGenerator implements CodeGenerator
         new Formatter(sb).format("\n" +
             indent + "    public %s %s()\n" +
             indent + "    {\n" +
+            generateFieldOrderStateTransitions(fieldOrderModel, indent + "        ", propertyToken) +
             "%s" +
             indent + "        %s.wrap(buffer, offset + %d);\n" +
             indent + "        return %s;\n" +
@@ -3193,6 +3465,7 @@ public class JavaGenerator implements CodeGenerator
         final boolean inComposite,
         final CodecType codecType,
         final String propertyName,
+        final FieldOrderModel fieldOrderModel,
         final Token propertyToken,
         final Token compositeToken,
         final String indent,
@@ -3208,6 +3481,7 @@ public class JavaGenerator implements CodeGenerator
         new Formatter(sb).format("\n" +
             indent + "    public %s %s()\n" +
             indent + "    {\n" +
+            generateFieldOrderStateTransitions(fieldOrderModel, indent + "        ", propertyToken) +
             "%s" +
             indent + "        %s.wrap(buffer, offset + %d);\n" +
             indent + "        return %s;\n" +

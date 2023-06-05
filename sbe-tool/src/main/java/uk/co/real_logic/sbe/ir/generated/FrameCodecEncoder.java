@@ -11,6 +11,30 @@ import org.agrona.DirectBuffer;
 @SuppressWarnings("all")
 public final class FrameCodecEncoder
 {
+    private static final boolean DEBUG_MODE = !Boolean.getBoolean("agrona.disable.bounds.checks");
+
+    private static final int ACCESS_STATE_NOT_WRAPPED = 1;
+
+    private static final int ACCESS_STATE_WRAPPED = 2;
+
+    private static final int ACCESS_STATE_FILLED__PACKAGENAME = 3;
+
+    private static final int ACCESS_STATE_FILLED__NAMESPACENAME = 4;
+
+    private static final int ACCESS_STATE_FILLED__SEMANTICVERSION = 5;
+
+    private int fieldOrderState = ACCESS_STATE_NOT_WRAPPED;
+
+    private int fieldOrderState()
+    {
+        return fieldOrderState;
+    }
+
+    private void fieldOrderState(int newState)
+    {
+        fieldOrderState = newState;
+    }
+
     public static final int BLOCK_LENGTH = 12;
     public static final int TEMPLATE_ID = 1;
     public static final int SCHEMA_ID = 1;
@@ -73,6 +97,11 @@ public final class FrameCodecEncoder
         this.initialOffset = offset;
         this.offset = offset;
         limit(offset + BLOCK_LENGTH);
+
+        if (DEBUG_MODE)
+        {
+            fieldOrderState(ACCESS_STATE_WRAPPED);
+        }
 
         return this;
     }
@@ -152,6 +181,18 @@ public final class FrameCodecEncoder
 
     public FrameCodecEncoder irId(final int value)
     {
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_WRAPPED:
+                    fieldOrderState(ACCESS_STATE_WRAPPED);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
+        }
+
         buffer.putInt(offset + 0, value, java.nio.ByteOrder.LITTLE_ENDIAN);
         return this;
     }
@@ -204,6 +245,18 @@ public final class FrameCodecEncoder
 
     public FrameCodecEncoder irVersion(final int value)
     {
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_WRAPPED:
+                    fieldOrderState(ACCESS_STATE_WRAPPED);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
+        }
+
         buffer.putInt(offset + 4, value, java.nio.ByteOrder.LITTLE_ENDIAN);
         return this;
     }
@@ -256,6 +309,18 @@ public final class FrameCodecEncoder
 
     public FrameCodecEncoder schemaVersion(final int value)
     {
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_WRAPPED:
+                    fieldOrderState(ACCESS_STATE_WRAPPED);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
+        }
+
         buffer.putInt(offset + 8, value, java.nio.ByteOrder.LITTLE_ENDIAN);
         return this;
     }
@@ -293,6 +358,18 @@ public final class FrameCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_WRAPPED:
+                    fieldOrderState(ACCESS_STATE_FILLED__PACKAGENAME);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
@@ -307,6 +384,18 @@ public final class FrameCodecEncoder
         if (length > 65534)
         {
             throw new IllegalStateException("length > maxValue for type: " + length);
+        }
+
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_WRAPPED:
+                    fieldOrderState(ACCESS_STATE_FILLED__PACKAGENAME);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
         }
 
         final int headerLength = 2;
@@ -326,6 +415,18 @@ public final class FrameCodecEncoder
         if (length > 65534)
         {
             throw new IllegalStateException("length > maxValue for type: " + length);
+        }
+
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_WRAPPED:
+                    fieldOrderState(ACCESS_STATE_FILLED__PACKAGENAME);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
         }
 
         final int headerLength = 2;
@@ -369,6 +470,18 @@ public final class FrameCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_FILLED__PACKAGENAME:
+                    fieldOrderState(ACCESS_STATE_FILLED__NAMESPACENAME);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
@@ -383,6 +496,18 @@ public final class FrameCodecEncoder
         if (length > 65534)
         {
             throw new IllegalStateException("length > maxValue for type: " + length);
+        }
+
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_FILLED__PACKAGENAME:
+                    fieldOrderState(ACCESS_STATE_FILLED__NAMESPACENAME);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
         }
 
         final int headerLength = 2;
@@ -402,6 +527,18 @@ public final class FrameCodecEncoder
         if (length > 65534)
         {
             throw new IllegalStateException("length > maxValue for type: " + length);
+        }
+
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_FILLED__PACKAGENAME:
+                    fieldOrderState(ACCESS_STATE_FILLED__NAMESPACENAME);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
         }
 
         final int headerLength = 2;
@@ -445,6 +582,18 @@ public final class FrameCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_FILLED__NAMESPACENAME:
+                    fieldOrderState(ACCESS_STATE_FILLED__SEMANTICVERSION);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
@@ -459,6 +608,18 @@ public final class FrameCodecEncoder
         if (length > 65534)
         {
             throw new IllegalStateException("length > maxValue for type: " + length);
+        }
+
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_FILLED__NAMESPACENAME:
+                    fieldOrderState(ACCESS_STATE_FILLED__SEMANTICVERSION);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
         }
 
         final int headerLength = 2;
@@ -478,6 +639,18 @@ public final class FrameCodecEncoder
         if (length > 65534)
         {
             throw new IllegalStateException("length > maxValue for type: " + length);
+        }
+
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_FILLED__NAMESPACENAME:
+                    fieldOrderState(ACCESS_STATE_FILLED__SEMANTICVERSION);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
         }
 
         final int headerLength = 2;

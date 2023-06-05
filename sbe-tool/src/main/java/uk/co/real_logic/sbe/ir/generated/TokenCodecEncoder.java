@@ -11,6 +11,46 @@ import org.agrona.DirectBuffer;
 @SuppressWarnings("all")
 public final class TokenCodecEncoder
 {
+    private static final boolean DEBUG_MODE = !Boolean.getBoolean("agrona.disable.bounds.checks");
+
+    private static final int ACCESS_STATE_NOT_WRAPPED = 1;
+
+    private static final int ACCESS_STATE_WRAPPED = 2;
+
+    private static final int ACCESS_STATE_FILLED__NAME = 3;
+
+    private static final int ACCESS_STATE_FILLED__CONSTVALUE = 4;
+
+    private static final int ACCESS_STATE_FILLED__MINVALUE = 5;
+
+    private static final int ACCESS_STATE_FILLED__MAXVALUE = 6;
+
+    private static final int ACCESS_STATE_FILLED__NULLVALUE = 7;
+
+    private static final int ACCESS_STATE_FILLED__CHARACTERENCODING = 8;
+
+    private static final int ACCESS_STATE_FILLED__EPOCH = 9;
+
+    private static final int ACCESS_STATE_FILLED__TIMEUNIT = 10;
+
+    private static final int ACCESS_STATE_FILLED__SEMANTICTYPE = 11;
+
+    private static final int ACCESS_STATE_FILLED__DESCRIPTION = 12;
+
+    private static final int ACCESS_STATE_FILLED__REFERENCEDNAME = 13;
+
+    private int fieldOrderState = ACCESS_STATE_NOT_WRAPPED;
+
+    private int fieldOrderState()
+    {
+        return fieldOrderState;
+    }
+
+    private void fieldOrderState(int newState)
+    {
+        fieldOrderState = newState;
+    }
+
     public static final int BLOCK_LENGTH = 28;
     public static final int TEMPLATE_ID = 2;
     public static final int SCHEMA_ID = 1;
@@ -73,6 +113,11 @@ public final class TokenCodecEncoder
         this.initialOffset = offset;
         this.offset = offset;
         limit(offset + BLOCK_LENGTH);
+
+        if (DEBUG_MODE)
+        {
+            fieldOrderState(ACCESS_STATE_WRAPPED);
+        }
 
         return this;
     }
@@ -152,6 +197,18 @@ public final class TokenCodecEncoder
 
     public TokenCodecEncoder tokenOffset(final int value)
     {
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_WRAPPED:
+                    fieldOrderState(ACCESS_STATE_WRAPPED);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
+        }
+
         buffer.putInt(offset + 0, value, java.nio.ByteOrder.LITTLE_ENDIAN);
         return this;
     }
@@ -204,6 +261,18 @@ public final class TokenCodecEncoder
 
     public TokenCodecEncoder tokenSize(final int value)
     {
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_WRAPPED:
+                    fieldOrderState(ACCESS_STATE_WRAPPED);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
+        }
+
         buffer.putInt(offset + 4, value, java.nio.ByteOrder.LITTLE_ENDIAN);
         return this;
     }
@@ -256,6 +325,18 @@ public final class TokenCodecEncoder
 
     public TokenCodecEncoder fieldId(final int value)
     {
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_WRAPPED:
+                    fieldOrderState(ACCESS_STATE_WRAPPED);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
+        }
+
         buffer.putInt(offset + 8, value, java.nio.ByteOrder.LITTLE_ENDIAN);
         return this;
     }
@@ -308,6 +389,18 @@ public final class TokenCodecEncoder
 
     public TokenCodecEncoder tokenVersion(final int value)
     {
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_WRAPPED:
+                    fieldOrderState(ACCESS_STATE_WRAPPED);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
+        }
+
         buffer.putInt(offset + 12, value, java.nio.ByteOrder.LITTLE_ENDIAN);
         return this;
     }
@@ -360,6 +453,18 @@ public final class TokenCodecEncoder
 
     public TokenCodecEncoder componentTokenCount(final int value)
     {
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_WRAPPED:
+                    fieldOrderState(ACCESS_STATE_WRAPPED);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
+        }
+
         buffer.putInt(offset + 16, value, java.nio.ByteOrder.LITTLE_ENDIAN);
         return this;
     }
@@ -397,6 +502,18 @@ public final class TokenCodecEncoder
 
     public TokenCodecEncoder signal(final SignalCodec value)
     {
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_WRAPPED:
+                    fieldOrderState(ACCESS_STATE_WRAPPED);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
+        }
+
         buffer.putByte(offset + 20, (byte)value.value());
         return this;
     }
@@ -433,6 +550,18 @@ public final class TokenCodecEncoder
 
     public TokenCodecEncoder primitiveType(final PrimitiveTypeCodec value)
     {
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_WRAPPED:
+                    fieldOrderState(ACCESS_STATE_WRAPPED);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
+        }
+
         buffer.putByte(offset + 21, (byte)value.value());
         return this;
     }
@@ -469,6 +598,18 @@ public final class TokenCodecEncoder
 
     public TokenCodecEncoder byteOrder(final ByteOrderCodec value)
     {
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_WRAPPED:
+                    fieldOrderState(ACCESS_STATE_WRAPPED);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
+        }
+
         buffer.putByte(offset + 22, (byte)value.value());
         return this;
     }
@@ -505,6 +646,18 @@ public final class TokenCodecEncoder
 
     public TokenCodecEncoder presence(final PresenceCodec value)
     {
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_WRAPPED:
+                    fieldOrderState(ACCESS_STATE_WRAPPED);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
+        }
+
         buffer.putByte(offset + 23, (byte)value.value());
         return this;
     }
@@ -556,6 +709,18 @@ public final class TokenCodecEncoder
 
     public TokenCodecEncoder deprecated(final int value)
     {
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_WRAPPED:
+                    fieldOrderState(ACCESS_STATE_WRAPPED);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
+        }
+
         buffer.putInt(offset + 24, value, java.nio.ByteOrder.LITTLE_ENDIAN);
         return this;
     }
@@ -593,6 +758,18 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_WRAPPED:
+                    fieldOrderState(ACCESS_STATE_FILLED__NAME);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
@@ -607,6 +784,18 @@ public final class TokenCodecEncoder
         if (length > 65534)
         {
             throw new IllegalStateException("length > maxValue for type: " + length);
+        }
+
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_WRAPPED:
+                    fieldOrderState(ACCESS_STATE_FILLED__NAME);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
         }
 
         final int headerLength = 2;
@@ -626,6 +815,18 @@ public final class TokenCodecEncoder
         if (length > 65534)
         {
             throw new IllegalStateException("length > maxValue for type: " + length);
+        }
+
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_WRAPPED:
+                    fieldOrderState(ACCESS_STATE_FILLED__NAME);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
         }
 
         final int headerLength = 2;
@@ -669,6 +870,18 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_FILLED__NAME:
+                    fieldOrderState(ACCESS_STATE_FILLED__CONSTVALUE);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
@@ -683,6 +896,18 @@ public final class TokenCodecEncoder
         if (length > 65534)
         {
             throw new IllegalStateException("length > maxValue for type: " + length);
+        }
+
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_FILLED__NAME:
+                    fieldOrderState(ACCESS_STATE_FILLED__CONSTVALUE);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
         }
 
         final int headerLength = 2;
@@ -702,6 +927,18 @@ public final class TokenCodecEncoder
         if (length > 65534)
         {
             throw new IllegalStateException("length > maxValue for type: " + length);
+        }
+
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_FILLED__NAME:
+                    fieldOrderState(ACCESS_STATE_FILLED__CONSTVALUE);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
         }
 
         final int headerLength = 2;
@@ -745,6 +982,18 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_FILLED__CONSTVALUE:
+                    fieldOrderState(ACCESS_STATE_FILLED__MINVALUE);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
@@ -759,6 +1008,18 @@ public final class TokenCodecEncoder
         if (length > 65534)
         {
             throw new IllegalStateException("length > maxValue for type: " + length);
+        }
+
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_FILLED__CONSTVALUE:
+                    fieldOrderState(ACCESS_STATE_FILLED__MINVALUE);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
         }
 
         final int headerLength = 2;
@@ -778,6 +1039,18 @@ public final class TokenCodecEncoder
         if (length > 65534)
         {
             throw new IllegalStateException("length > maxValue for type: " + length);
+        }
+
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_FILLED__CONSTVALUE:
+                    fieldOrderState(ACCESS_STATE_FILLED__MINVALUE);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
         }
 
         final int headerLength = 2;
@@ -821,6 +1094,18 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_FILLED__MINVALUE:
+                    fieldOrderState(ACCESS_STATE_FILLED__MAXVALUE);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
@@ -835,6 +1120,18 @@ public final class TokenCodecEncoder
         if (length > 65534)
         {
             throw new IllegalStateException("length > maxValue for type: " + length);
+        }
+
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_FILLED__MINVALUE:
+                    fieldOrderState(ACCESS_STATE_FILLED__MAXVALUE);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
         }
 
         final int headerLength = 2;
@@ -854,6 +1151,18 @@ public final class TokenCodecEncoder
         if (length > 65534)
         {
             throw new IllegalStateException("length > maxValue for type: " + length);
+        }
+
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_FILLED__MINVALUE:
+                    fieldOrderState(ACCESS_STATE_FILLED__MAXVALUE);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
         }
 
         final int headerLength = 2;
@@ -897,6 +1206,18 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_FILLED__MAXVALUE:
+                    fieldOrderState(ACCESS_STATE_FILLED__NULLVALUE);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
@@ -911,6 +1232,18 @@ public final class TokenCodecEncoder
         if (length > 65534)
         {
             throw new IllegalStateException("length > maxValue for type: " + length);
+        }
+
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_FILLED__MAXVALUE:
+                    fieldOrderState(ACCESS_STATE_FILLED__NULLVALUE);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
         }
 
         final int headerLength = 2;
@@ -930,6 +1263,18 @@ public final class TokenCodecEncoder
         if (length > 65534)
         {
             throw new IllegalStateException("length > maxValue for type: " + length);
+        }
+
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_FILLED__MAXVALUE:
+                    fieldOrderState(ACCESS_STATE_FILLED__NULLVALUE);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
         }
 
         final int headerLength = 2;
@@ -973,6 +1318,18 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_FILLED__NULLVALUE:
+                    fieldOrderState(ACCESS_STATE_FILLED__CHARACTERENCODING);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
@@ -987,6 +1344,18 @@ public final class TokenCodecEncoder
         if (length > 65534)
         {
             throw new IllegalStateException("length > maxValue for type: " + length);
+        }
+
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_FILLED__NULLVALUE:
+                    fieldOrderState(ACCESS_STATE_FILLED__CHARACTERENCODING);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
         }
 
         final int headerLength = 2;
@@ -1006,6 +1375,18 @@ public final class TokenCodecEncoder
         if (length > 65534)
         {
             throw new IllegalStateException("length > maxValue for type: " + length);
+        }
+
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_FILLED__NULLVALUE:
+                    fieldOrderState(ACCESS_STATE_FILLED__CHARACTERENCODING);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
         }
 
         final int headerLength = 2;
@@ -1049,6 +1430,18 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_FILLED__CHARACTERENCODING:
+                    fieldOrderState(ACCESS_STATE_FILLED__EPOCH);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
@@ -1063,6 +1456,18 @@ public final class TokenCodecEncoder
         if (length > 65534)
         {
             throw new IllegalStateException("length > maxValue for type: " + length);
+        }
+
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_FILLED__CHARACTERENCODING:
+                    fieldOrderState(ACCESS_STATE_FILLED__EPOCH);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
         }
 
         final int headerLength = 2;
@@ -1082,6 +1487,18 @@ public final class TokenCodecEncoder
         if (length > 65534)
         {
             throw new IllegalStateException("length > maxValue for type: " + length);
+        }
+
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_FILLED__CHARACTERENCODING:
+                    fieldOrderState(ACCESS_STATE_FILLED__EPOCH);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
         }
 
         final int headerLength = 2;
@@ -1125,6 +1542,18 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_FILLED__EPOCH:
+                    fieldOrderState(ACCESS_STATE_FILLED__TIMEUNIT);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
@@ -1139,6 +1568,18 @@ public final class TokenCodecEncoder
         if (length > 65534)
         {
             throw new IllegalStateException("length > maxValue for type: " + length);
+        }
+
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_FILLED__EPOCH:
+                    fieldOrderState(ACCESS_STATE_FILLED__TIMEUNIT);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
         }
 
         final int headerLength = 2;
@@ -1158,6 +1599,18 @@ public final class TokenCodecEncoder
         if (length > 65534)
         {
             throw new IllegalStateException("length > maxValue for type: " + length);
+        }
+
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_FILLED__EPOCH:
+                    fieldOrderState(ACCESS_STATE_FILLED__TIMEUNIT);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
         }
 
         final int headerLength = 2;
@@ -1201,6 +1654,18 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_FILLED__TIMEUNIT:
+                    fieldOrderState(ACCESS_STATE_FILLED__SEMANTICTYPE);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
@@ -1215,6 +1680,18 @@ public final class TokenCodecEncoder
         if (length > 65534)
         {
             throw new IllegalStateException("length > maxValue for type: " + length);
+        }
+
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_FILLED__TIMEUNIT:
+                    fieldOrderState(ACCESS_STATE_FILLED__SEMANTICTYPE);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
         }
 
         final int headerLength = 2;
@@ -1234,6 +1711,18 @@ public final class TokenCodecEncoder
         if (length > 65534)
         {
             throw new IllegalStateException("length > maxValue for type: " + length);
+        }
+
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_FILLED__TIMEUNIT:
+                    fieldOrderState(ACCESS_STATE_FILLED__SEMANTICTYPE);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
         }
 
         final int headerLength = 2;
@@ -1277,6 +1766,18 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_FILLED__SEMANTICTYPE:
+                    fieldOrderState(ACCESS_STATE_FILLED__DESCRIPTION);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
@@ -1291,6 +1792,18 @@ public final class TokenCodecEncoder
         if (length > 65534)
         {
             throw new IllegalStateException("length > maxValue for type: " + length);
+        }
+
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_FILLED__SEMANTICTYPE:
+                    fieldOrderState(ACCESS_STATE_FILLED__DESCRIPTION);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
         }
 
         final int headerLength = 2;
@@ -1310,6 +1823,18 @@ public final class TokenCodecEncoder
         if (length > 65534)
         {
             throw new IllegalStateException("length > maxValue for type: " + length);
+        }
+
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_FILLED__SEMANTICTYPE:
+                    fieldOrderState(ACCESS_STATE_FILLED__DESCRIPTION);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
         }
 
         final int headerLength = 2;
@@ -1353,6 +1878,18 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_FILLED__DESCRIPTION:
+                    fieldOrderState(ACCESS_STATE_FILLED__REFERENCEDNAME);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
@@ -1367,6 +1904,18 @@ public final class TokenCodecEncoder
         if (length > 65534)
         {
             throw new IllegalStateException("length > maxValue for type: " + length);
+        }
+
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_FILLED__DESCRIPTION:
+                    fieldOrderState(ACCESS_STATE_FILLED__REFERENCEDNAME);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
         }
 
         final int headerLength = 2;
@@ -1386,6 +1935,18 @@ public final class TokenCodecEncoder
         if (length > 65534)
         {
             throw new IllegalStateException("length > maxValue for type: " + length);
+        }
+
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case ACCESS_STATE_FILLED__DESCRIPTION:
+                    fieldOrderState(ACCESS_STATE_FILLED__REFERENCEDNAME);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
         }
 
         final int headerLength = 2;

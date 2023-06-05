@@ -28,7 +28,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
-@Disabled
 public class FieldOrderCheckTest
 {
     private static final Class<IllegalStateException> INCORRECT_ORDER_EXCEPTION_CLASS = IllegalStateException.class;
@@ -61,6 +60,7 @@ public class FieldOrderCheckTest
     }
 
     @Test
+    @Disabled("Our access checks are too strict to allow the behaviour in this test.")
     void allowsReEncodingTopLevelPrimitiveFields()
     {
         final MultipleVarLengthEncoder encoder = new MultipleVarLengthEncoder()
@@ -109,6 +109,7 @@ public class FieldOrderCheckTest
     }
 
     @Test
+    @Disabled("Decoding checks not implemented yet.")
     void disallowsSkippingDecodingOfVariableLengthField()
     {
         final MultipleVarLengthEncoder encoder = new MultipleVarLengthEncoder()
@@ -124,6 +125,7 @@ public class FieldOrderCheckTest
     }
 
     @Test
+    @Disabled("Decoding checks not implemented yet.")
     void disallowsReDecodingEarlierVariableLengthField()
     {
         final MultipleVarLengthEncoder encoder = new MultipleVarLengthEncoder()
@@ -141,6 +143,7 @@ public class FieldOrderCheckTest
     }
 
     @Test
+    @Disabled("Decoding checks not implemented yet.")
     void disallowsReDecodingLatestVariableLengthField()
     {
         final MultipleVarLengthEncoder encoder = new MultipleVarLengthEncoder()
@@ -198,6 +201,7 @@ public class FieldOrderCheckTest
     }
 
     @Test
+    @Disabled("Our access checks are too strict to allow the behaviour in this test.")
     void allowsReEncodingPrimitiveFieldInGroupElementAfterTopLevelVariableLengthField()
     {
         final GroupAndVarLengthEncoder encoder = new GroupAndVarLengthEncoder()
@@ -271,6 +275,7 @@ public class FieldOrderCheckTest
     }
 
     @Test
+    @Disabled("Our access checks are too strict to allow the behaviour in this test.")
     void allowsReEncodingGroupElementBlockFieldAfterTopLevelVariableLengthField()
     {
         final GroupAndVarLengthEncoder encoder = new GroupAndVarLengthEncoder()
@@ -295,6 +300,7 @@ public class FieldOrderCheckTest
     }
 
     @Test
+    @Disabled("Decoding checks not implemented yet.")
     void disallowsSkippingDecodingOfGroupBeforeVariableLengthField()
     {
         final GroupAndVarLengthEncoder encoder = new GroupAndVarLengthEncoder()
@@ -314,6 +320,7 @@ public class FieldOrderCheckTest
     }
 
     @Test
+    @Disabled("Decoding checks not implemented yet.")
     void disallowsReDecodingVariableLengthFieldAfterGroup()
     {
         final GroupAndVarLengthEncoder encoder = new GroupAndVarLengthEncoder()
@@ -338,6 +345,7 @@ public class FieldOrderCheckTest
     }
 
     @Test
+    @Disabled("Decoding checks not implemented yet.")
     void disallowsReDecodingGroupBeforeVariableLengthField()
     {
         final GroupAndVarLengthEncoder encoder = new GroupAndVarLengthEncoder()
@@ -389,6 +397,7 @@ public class FieldOrderCheckTest
     }
 
     @Test
+    @Disabled("Our access checks are too strict to allow the behaviour in this test.")
     void allowsReEncodingGroupElementPrimitiveFieldAfterElementVariableLengthField()
     {
         final VarLengthInsideGroupEncoder encoder = new VarLengthInsideGroupEncoder()
@@ -461,6 +470,7 @@ public class FieldOrderCheckTest
     }
 
     @Test
+    @Disabled("Decoding checks not implemented yet.")
     void disallowsReDecodingGroupElementVariableLengthField()
     {
         final VarLengthInsideGroupEncoder encoder = new VarLengthInsideGroupEncoder()
@@ -485,6 +495,7 @@ public class FieldOrderCheckTest
     }
 
     @Test
+    @Disabled("Decoding checks not implemented yet.")
     void disallowsSkippingDecodingOfGroupElementVariableLengthFieldToNextElement()
     {
         final VarLengthInsideGroupEncoder encoder = new VarLengthInsideGroupEncoder()
@@ -509,6 +520,7 @@ public class FieldOrderCheckTest
     }
 
     @Test
+    @Disabled("Decoding checks not implemented yet.")
     void disallowsSkippingDecodingOfGroupElementVariableLengthFieldToTopLevel()
     {
         final VarLengthInsideGroupEncoder encoder = new VarLengthInsideGroupEncoder()
@@ -524,12 +536,13 @@ public class FieldOrderCheckTest
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
         assertThat(decoder.a(), equalTo(42));
         final VarLengthInsideGroupDecoder.BDecoder bs = decoder.b();
-        assertThat(bs.count(), equalTo(2));
+        assertThat(bs.count(), equalTo(1));
         assertThat(bs.next().c(), equalTo(1));
         assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, decoder::e);
     }
 
     @Test
+    @Disabled("Decoding checks not implemented yet.")
     void disallowsSkippingDecodingOfGroupElement()
     {
         final VarLengthInsideGroupEncoder encoder = new VarLengthInsideGroupEncoder()
@@ -662,6 +675,7 @@ public class FieldOrderCheckTest
     }
 
     @Test
+    @Disabled("Our access checks are too strict to allow the behaviour in this test.")
     void allowsReEncodingTopLevelCompositeViaReWrap()
     {
         final CompositeInsideGroupEncoder encoder = new CompositeInsideGroupEncoder()
@@ -840,4 +854,10 @@ public class FieldOrderCheckTest
         assertThat(c.x(), equalTo(3));
         assertThat(c.y(), equalTo(4));
     }
+
+    // TODO test more of SBE:
+    //    - array setters
+    //    - alternative varData setters
+    //    - bitset setters
+    //    - versioning
 }
