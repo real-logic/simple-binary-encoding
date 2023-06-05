@@ -31,12 +31,23 @@ import static uk.co.real_logic.sbe.ir.GenerationUtil.collectVarData;
 final class FieldOrderModel
 {
     private static final boolean BLOCK_SKIP_CHECK_ENABLED = Boolean.getBoolean("sbe.block.skip.check.enabled");
+    private static final String PRINT_STATE_MACHINE = System.getProperty("sbe.print.state.machine");
     private final Int2ObjectHashMap<State> states = new Int2ObjectHashMap<>();
     private final Map<Token, TransitionGroup> transitions = new LinkedHashMap<>();
     private final Set<String> reservedNames = new HashSet<>();
     private final State notWrappedState = allocateState("NOT_WRAPPED");
     private final State wrappedState = allocateState("WRAPPED");
-    private int transitionNumber;
+
+    FieldOrderModel()
+    {
+        allocateTransition(
+            TransitionContext.NONE,
+            ".wrap(...)",
+            null,
+            Collections.singletonList(notWrappedState),
+            wrappedState
+        );
+    }
 
     public State notWrappedState()
     {
@@ -68,6 +79,7 @@ final class FieldOrderModel
     }
 
     public void findTransitions(
+        final String msgName,
         final List<Token> fields,
         final List<Token> groups,
         final List<Token> varData)
@@ -80,6 +92,33 @@ final class FieldOrderModel
             groups,
             varData
         );
+
+        if (Objects.equals(PRINT_STATE_MACHINE, msgName))
+        {
+            final StringBuilder sb = new StringBuilder();
+            sb.append("digraph G {\n");
+            writeTransitions(sb);
+            sb.append("}\n");
+            System.out.println(sb);
+        }
+    }
+
+    @SuppressWarnings("CodeBlock2Expr") // lambdas without braces tend to conflict with checkstyle
+    private void writeTransitions(final StringBuilder sb)
+    {
+        transitions.values().forEach(transitionGroup ->
+        {
+            transitionGroup.transitions.forEach((context, transitions) ->
+            {
+                transitions.forEach(transition ->
+                    transition.forEachStartState(startState ->
+                    {
+                        sb.append("  ").append(startState.name).append(" -> ").append(transition.endState().name);
+                        sb.append(" [label=\"").append(transition.description).append("\"];\n");
+                    })
+                );
+            });
+        });
     }
 
     @SuppressWarnings("checkstyle:MethodLength")
@@ -106,7 +145,7 @@ final class FieldOrderModel
 
             allocateTransition(
                 TransitionContext.NONE,
-                "FILL_" + prefix + token.name().toUpperCase(),
+                "  ." + token.name() + "(value)  ",
                 token,
                 fromStates,
                 blockState.get());
@@ -150,7 +189,7 @@ final class FieldOrderModel
             // fooCount(0)
             allocateTransition(
                 TransitionContext.SELECT_EMPTY_GROUP,
-                "ZERO_" + groupPrefix,
+                "." + token.name() + "Length(0)",
                 token,
                 beginGroupStates,
                 emptyGroup);
@@ -158,7 +197,7 @@ final class FieldOrderModel
             // fooCount(N) where N > 0
             allocateTransition(
                 TransitionContext.SELECT_MULTI_ELEMENT_GROUP,
-                "MANY_" + groupPrefix,
+                "." + token.name() + "Length(N) where N > 0",
                 token,
                 beginGroupStates,
                 nRemainingGroup);
@@ -180,7 +219,7 @@ final class FieldOrderModel
             // where more than one element remains in the group
             allocateTransition(
                 TransitionContext.NEXT_ELEMENT_IN_GROUP,
-                "NEXT_" + groupPrefix,
+                token.name() + ".next()\\n&& count - index > 1",
                 token,
                 fromStates,
                 nRemainingGroupElement);
@@ -192,7 +231,7 @@ final class FieldOrderModel
             // where only one element remains in the group
             allocateTransition(
                 TransitionContext.LAST_ELEMENT_IN_GROUP,
-                "LAST_" + groupPrefix,
+                token.name() + ".next()\\n&& count - index == 1",
                 token,
                 fromStates,
                 oneRemainingGroupElement);
@@ -225,7 +264,7 @@ final class FieldOrderModel
             final State state = allocateState("FILLED_" + prefix + "_" + token.name().toUpperCase());
             allocateTransition(
                 TransitionContext.NONE,
-                "FILL_" + prefix + "_" + token.name().toUpperCase(),
+                "." + token.name() + "(value)",
                 token,
                 fromStates,
                 state);
@@ -250,24 +289,14 @@ final class FieldOrderModel
 
     private void allocateTransition(
         final TransitionContext context,
-        final String name,
+        final String description,
         final Token token,
         final List<State> from,
         final State to)
     {
-        if (!reservedNames.add(name))
-        {
-            throw new IllegalStateException("Name is already reserved: " + name);
-        }
-
         final TransitionGroup transitionGroup = transitions.computeIfAbsent(token, ignored -> new TransitionGroup());
-        final Transition transition = new Transition(nextTransitionNumber(), name, from, to);
+        final Transition transition = new Transition(description, from, to);
         transitionGroup.add(context, transition);
-    }
-
-    private int nextTransitionNumber()
-    {
-        return transitionNumber++;
     }
 
     static final class State
@@ -294,15 +323,13 @@ final class FieldOrderModel
 
     static final class Transition
     {
-        private final int number;
-        private final String name;
+        private final String description;
         private final Set<State> from;
         private final State to;
 
-        private Transition(final int number, final String name, final List<State> from, final State to)
+        private Transition(final String description, final List<State> from, final State to)
         {
-            this.number = number;
-            this.name = name;
+            this.description = description;
             this.from = new HashSet<>(from);
             this.to = to;
         }

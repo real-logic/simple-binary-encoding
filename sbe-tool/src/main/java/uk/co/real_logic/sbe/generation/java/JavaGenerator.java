@@ -251,7 +251,7 @@ public class JavaGenerator implements CodeGenerator
             }
             out.append(generateDeclaration(className, implementsString, msgToken));
             final FieldOrderModel fieldOrderModel = new FieldOrderModel();
-            fieldOrderModel.findTransitions(fields, groups, varData);
+            fieldOrderModel.findTransitions(msgToken.name(), fields, groups, varData);
             out.append(generateFieldOrderStates(fieldOrderModel));
             out.append(generateEncoderFlyweightCode(className, fieldOrderModel, msgToken));
 
