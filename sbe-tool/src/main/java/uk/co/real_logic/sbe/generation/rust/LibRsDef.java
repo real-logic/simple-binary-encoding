@@ -149,7 +149,7 @@ class LibRsDef
 
     static void generateReadBuf(final Appendable writer, final ByteOrder byteOrder) throws IOException
     {
-        indent(writer, 0, "#[derive(Debug, Default)]\n");
+        indent(writer, 0, "#[derive(Clone, Copy, Debug, Default)]\n");
         indent(writer, 0, "pub struct %s<%s> {\n", READ_BUF_TYPE, BUF_LIFETIME);
         RustUtil.indent(writer, 1, "data: &%s [u8],\n", BUF_LIFETIME);
         indent(writer, 0, "}\n");
