@@ -131,7 +131,7 @@ class LibRsDef
         indent(writer, 0, "impl core::fmt::Display for SbeErr {\n");
         indent(writer, 1, "#[inline]\n");
         indent(writer, 1, "fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {\n");
-        indent(writer, 2, "write!(f, \"{:?}\", self)\n");
+        indent(writer, 2, "write!(f, \"{self:?}\")\n");
         indent(writer, 1, "}\n");
         indent(writer, 0, "}\n");
 
