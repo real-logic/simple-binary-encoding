@@ -19,10 +19,13 @@ import uk.co.real_logic.sbe.generation.Generators;
 import uk.co.real_logic.sbe.ir.Signal;
 import uk.co.real_logic.sbe.ir.Token;
 import org.agrona.collections.Int2ObjectHashMap;
+import org.agrona.collections.IntHashSet;
+import org.agrona.collections.IntObjConsumer;
 import org.agrona.collections.MutableReference;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectFields;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectGroups;
@@ -30,33 +33,32 @@ import static uk.co.real_logic.sbe.ir.GenerationUtil.collectVarData;
 
 final class FieldOrderModel
 {
-    private static final boolean BLOCK_SKIP_CHECK_ENABLED = Boolean.getBoolean("sbe.block.skip.check.enabled");
     private static final String PRINT_STATE_MACHINE = System.getProperty("sbe.print.state.machine");
     private final Int2ObjectHashMap<State> states = new Int2ObjectHashMap<>();
     private final Map<Token, TransitionGroup> transitions = new LinkedHashMap<>();
+    private final Int2ObjectHashMap<State> versionWrappedStates = new Int2ObjectHashMap<>();
     private final Set<String> reservedNames = new HashSet<>();
     private final State notWrappedState = allocateState("NOT_WRAPPED");
-    private final State wrappedState = allocateState("WRAPPED");
-
-    FieldOrderModel()
-    {
-        allocateTransition(
-            TransitionContext.NONE,
-            ".wrap(...)",
-            null,
-            Collections.singletonList(notWrappedState),
-            wrappedState
-        );
-    }
+    private State encoderWrappedState;
 
     public State notWrappedState()
     {
         return notWrappedState;
     }
 
-    public State wrappedState()
+    public State latestVersionWrappedState()
     {
-        return wrappedState;
+        return encoderWrappedState;
+    }
+
+    public void forEachDecoderWrappedState(final IntObjConsumer<State> consumer)
+    {
+        final Int2ObjectHashMap<State>.EntryIterator iterator = versionWrappedStates.entrySet().iterator();
+        while (iterator.hasNext())
+        {
+            iterator.next();
+            consumer.accept(iterator.getIntKey(), iterator.getValue());
+        }
     }
 
     public void forEachState(final Consumer<State> consumer)
@@ -78,28 +80,99 @@ final class FieldOrderModel
         return transitionGroup.transitions.get(context);
     }
 
-    public void findTransitions(
-        final String msgName,
+    public static FieldOrderModel findTransitions(
+        final Token msgToken,
         final List<Token> fields,
         final List<Token> groups,
         final List<Token> varData)
     {
-        findTransitions(
-            Collections.singletonList(wrappedState),
-            BLOCK_SKIP_CHECK_ENABLED ? null : wrappedState,
-            "",
-            fields,
-            groups,
-            varData
-        );
+        final FieldOrderModel model = new FieldOrderModel();
 
-        if (Objects.equals(PRINT_STATE_MACHINE, msgName))
+        final IntHashSet versions = new IntHashSet();
+        versions.add(msgToken.version());
+        findVersions(versions, fields, groups, varData);
+
+        versions.stream().sorted().forEach(version ->
+        {
+            final State versionWrappedState = model.allocateState("V" + version + "_BLOCK");
+
+            model.versionWrappedStates.put(version, versionWrappedState);
+
+            model.encoderWrappedState = versionWrappedState;
+
+            model.allocateTransition(
+                version,
+                ".wrap(...)",
+                null,
+                Collections.singletonList(model.notWrappedState),
+                versionWrappedState
+            );
+
+            model.findTransitions(
+                Collections.singletonList(versionWrappedState),
+                versionWrappedState,
+                "V" + version + "_",
+                fields,
+                groups,
+                varData,
+                token -> token.version() <= version
+            );
+        });
+
+        if (Objects.equals(PRINT_STATE_MACHINE, msgToken.name()))
         {
             final StringBuilder sb = new StringBuilder();
             sb.append("digraph G {\n");
-            writeTransitions(sb);
-            sb.append("}\n");
+            model.writeTransitions(sb);
+            sb.append("}\n\n");
             System.out.println(sb);
+        }
+
+        return model;
+    }
+
+    private static void findVersions(
+        final IntHashSet versions,
+        final List<Token> fields,
+        final List<Token> groups,
+        final List<Token> varData)
+    {
+        Generators.forEachField(fields, (token, ignored) -> versions.add(token.version()));
+
+        for (int i = 0; i < groups.size(); i++)
+        {
+            final Token token = groups.get(i);
+            if (token.signal() != Signal.BEGIN_GROUP)
+            {
+                throw new IllegalStateException("tokens must begin with BEGIN_GROUP: token=" + token);
+            }
+
+            versions.add(token.version());
+
+            ++i;
+            final int groupHeaderTokenCount = groups.get(i).componentTokenCount();
+            i += groupHeaderTokenCount;
+
+            final ArrayList<Token> groupFields = new ArrayList<>();
+            i = collectFields(groups, i, groupFields);
+            final ArrayList<Token> groupGroups = new ArrayList<>();
+            i = collectGroups(groups, i, groupGroups);
+            final ArrayList<Token> groupVarData = new ArrayList<>();
+            i = collectVarData(groups, i, groupVarData);
+
+            findVersions(versions, groupFields, groupGroups, groupVarData);
+        }
+
+        for (int i = 0; i < varData.size(); )
+        {
+            final Token token = varData.get(i);
+            if (token.signal() != Signal.BEGIN_VAR_DATA)
+            {
+                throw new IllegalStateException("tokens must begin with BEGIN_VAR_DATA: token=" + token);
+            }
+            i += token.componentTokenCount();
+
+            versions.add(token.version());
         }
     }
 
@@ -111,12 +184,13 @@ final class FieldOrderModel
             transitionGroup.transitions.forEach((context, transitions) ->
             {
                 transitions.forEach(transition ->
+                {
                     transition.forEachStartState(startState ->
                     {
                         sb.append("  ").append(startState.name).append(" -> ").append(transition.endState().name);
                         sb.append(" [label=\"").append(transition.description).append("\"];\n");
-                    })
-                );
+                    });
+                });
             });
         });
     }
@@ -128,8 +202,8 @@ final class FieldOrderModel
         final String prefix,
         final List<Token> fields,
         final List<Token> groups,
-        final List<Token> varData
-    )
+        final List<Token> varData,
+        final Predicate<Token> filter)
     {
         final MutableReference<State> blockState = new MutableReference<>(blockStateOrNull);
 
@@ -137,9 +211,14 @@ final class FieldOrderModel
 
         Generators.forEachField(fields, (token, ignored) ->
         {
+            if (!filter.test(token))
+            {
+                return;
+            }
+
             if (null == blockState.get())
             {
-                blockState.set(allocateState(prefix.isEmpty() ? "BLOCK" : prefix + "_BLOCK"));
+                blockState.set(allocateState(prefix + "BLOCK"));
                 fromStates.add(blockState.get());
             }
 
@@ -176,15 +255,20 @@ final class FieldOrderModel
             final ArrayList<Token> groupVarData = new ArrayList<>();
             i = collectVarData(groups, i, groupVarData);
 
+            if (!filter.test(token))
+            {
+                continue;
+            }
+
             final String groupName = token.name().toUpperCase();
-            final String groupPrefix = prefix.isEmpty() ? groupName : prefix + "_" + groupName;
+            final String groupPrefix = prefix + groupName + "_";
 
             final List<State> beginGroupStates = new ArrayList<>(fromStates);
 
-            final State nRemainingGroup = allocateState(groupPrefix + "_N");
-            final State nRemainingGroupElement = allocateState(groupPrefix + "_N_ELEMENT");
-            final State oneRemainingGroupElement = allocateState(groupPrefix + "_1_ELEMENT");
-            final State emptyGroup = allocateState(groupPrefix + "_0");
+            final State nRemainingGroup = allocateState(groupPrefix + "N");
+            final State nRemainingGroupElement = allocateState(groupPrefix + "N_BLOCK");
+            final State oneRemainingGroupElement = allocateState(groupPrefix + "1_BLOCK");
+            final State emptyGroup = allocateState(groupPrefix + "0");
 
             // fooCount(0)
             allocateTransition(
@@ -206,11 +290,12 @@ final class FieldOrderModel
             fromStates.add(nRemainingGroupElement);
             final List<State> nRemainingExitStates = findTransitions(
                 fromStates,
-                BLOCK_SKIP_CHECK_ENABLED ? null : nRemainingGroupElement,
-                groupPrefix + "_N",
+                nRemainingGroupElement,
+                groupPrefix + "N_",
                 groupFields,
                 groupGroups,
-                groupVarData);
+                groupVarData,
+                filter);
 
             fromStates.clear();
             fromStates.add(nRemainingGroup);
@@ -241,11 +326,12 @@ final class FieldOrderModel
 
             final List<State> oneRemainingExitStates = findTransitions(
                 fromStates,
-                BLOCK_SKIP_CHECK_ENABLED ? null : oneRemainingGroupElement,
-                groupPrefix + "_1",
+                oneRemainingGroupElement,
+                groupPrefix + "1_",
                 groupFields,
                 groupGroups,
-                groupVarData);
+                groupVarData,
+                filter);
 
             fromStates.clear();
             fromStates.add(emptyGroup);
@@ -261,7 +347,12 @@ final class FieldOrderModel
             }
             i += token.componentTokenCount();
 
-            final State state = allocateState("FILLED_" + prefix + "_" + token.name().toUpperCase());
+            if (!filter.test(token))
+            {
+                continue;
+            }
+
+            final State state = allocateState(prefix + token.name().toUpperCase() + "_FILLED");
             allocateTransition(
                 TransitionContext.NONE,
                 "." + token.name() + "(value)",
@@ -288,7 +379,7 @@ final class FieldOrderModel
     }
 
     private void allocateTransition(
-        final TransitionContext context,
+        final Object firingContext,
         final String description,
         final Token token,
         final List<State> from,
@@ -296,7 +387,7 @@ final class FieldOrderModel
     {
         final TransitionGroup transitionGroup = transitions.computeIfAbsent(token, ignored -> new TransitionGroup());
         final Transition transition = new Transition(description, from, to);
-        transitionGroup.add(context, transition);
+        transitionGroup.add(firingContext, transition);
     }
 
     static final class State
@@ -318,6 +409,15 @@ final class FieldOrderModel
         public String name()
         {
             return name;
+        }
+
+        @Override
+        public String toString()
+        {
+            return "State{" +
+                "number=" + number +
+                ", name='" + name + '\'' +
+                '}';
         }
     }
 
@@ -343,6 +443,16 @@ final class FieldOrderModel
         {
             return to;
         }
+
+        @Override
+        public String toString()
+        {
+            return "Transition{" +
+                "description='" + description + '\'' +
+                ", from=" + from +
+                ", to=" + to +
+                '}';
+        }
     }
 
     enum TransitionContext
@@ -356,9 +466,9 @@ final class FieldOrderModel
 
     private static final class TransitionGroup
     {
-        private final Map<TransitionContext, List<Transition>> transitions = new LinkedHashMap<>();
+        private final Map<Object, List<Transition>> transitions = new LinkedHashMap<>();
 
-        public void add(final TransitionContext context, final Transition transition)
+        public void add(final Object context, final Transition transition)
         {
             final List<Transition> transitionsForContext =
                 transitions.computeIfAbsent(context, ignored -> new ArrayList<>());
@@ -371,12 +481,14 @@ final class FieldOrderModel
                 throw new IllegalStateException("Duplicate end state: " + transition.to.name);
             }
 
-            final boolean conflictingStartState =
-                transitionsForContext.stream().anyMatch(t -> t.from.stream().anyMatch(transition.from::contains));
+            final Optional<Transition> conflictingTransition = transitionsForContext.stream()
+                .filter(t -> t.from.stream().anyMatch(transition.from::contains))
+                .findAny();
 
-            if (conflictingStartState)
+            if (conflictingTransition.isPresent())
             {
-                throw new IllegalStateException("Conflicting start states: " + transition.from);
+                throw new IllegalStateException(
+                    "Conflicting transition: " + transition + " conflicts with " + conflictingTransition.get());
             }
 
             transitionsForContext.add(transition);

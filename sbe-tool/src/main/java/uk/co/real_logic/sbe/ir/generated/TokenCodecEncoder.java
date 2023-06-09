@@ -13,33 +13,33 @@ public final class TokenCodecEncoder
 {
     private static final boolean DEBUG_MODE = !Boolean.getBoolean("agrona.disable.bounds.checks");
 
-    private static final int ACCESS_STATE_NOT_WRAPPED = 1;
+    private static final int STATE_NOT_WRAPPED = 1;
 
-    private static final int ACCESS_STATE_WRAPPED = 2;
+    private static final int STATE_V0_BLOCK = 2;
 
-    private static final int ACCESS_STATE_FILLED__NAME = 3;
+    private static final int STATE_V0_NAME_FILLED = 3;
 
-    private static final int ACCESS_STATE_FILLED__CONSTVALUE = 4;
+    private static final int STATE_V0_CONSTVALUE_FILLED = 4;
 
-    private static final int ACCESS_STATE_FILLED__MINVALUE = 5;
+    private static final int STATE_V0_MINVALUE_FILLED = 5;
 
-    private static final int ACCESS_STATE_FILLED__MAXVALUE = 6;
+    private static final int STATE_V0_MAXVALUE_FILLED = 6;
 
-    private static final int ACCESS_STATE_FILLED__NULLVALUE = 7;
+    private static final int STATE_V0_NULLVALUE_FILLED = 7;
 
-    private static final int ACCESS_STATE_FILLED__CHARACTERENCODING = 8;
+    private static final int STATE_V0_CHARACTERENCODING_FILLED = 8;
 
-    private static final int ACCESS_STATE_FILLED__EPOCH = 9;
+    private static final int STATE_V0_EPOCH_FILLED = 9;
 
-    private static final int ACCESS_STATE_FILLED__TIMEUNIT = 10;
+    private static final int STATE_V0_TIMEUNIT_FILLED = 10;
 
-    private static final int ACCESS_STATE_FILLED__SEMANTICTYPE = 11;
+    private static final int STATE_V0_SEMANTICTYPE_FILLED = 11;
 
-    private static final int ACCESS_STATE_FILLED__DESCRIPTION = 12;
+    private static final int STATE_V0_DESCRIPTION_FILLED = 12;
 
-    private static final int ACCESS_STATE_FILLED__REFERENCEDNAME = 13;
+    private static final int STATE_V0_REFERENCEDNAME_FILLED = 13;
 
-    private int fieldOrderState = ACCESS_STATE_NOT_WRAPPED;
+    private int fieldOrderState = STATE_NOT_WRAPPED;
 
     private int fieldOrderState()
     {
@@ -116,7 +116,7 @@ public final class TokenCodecEncoder
 
         if (DEBUG_MODE)
         {
-            fieldOrderState(ACCESS_STATE_WRAPPED);
+            fieldOrderState(STATE_V0_BLOCK);
         }
 
         return this;
@@ -201,8 +201,8 @@ public final class TokenCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_WRAPPED:
-                    fieldOrderState(ACCESS_STATE_WRAPPED);
+                case STATE_V0_BLOCK:
+                    fieldOrderState(STATE_V0_BLOCK);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -265,8 +265,8 @@ public final class TokenCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_WRAPPED:
-                    fieldOrderState(ACCESS_STATE_WRAPPED);
+                case STATE_V0_BLOCK:
+                    fieldOrderState(STATE_V0_BLOCK);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -329,8 +329,8 @@ public final class TokenCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_WRAPPED:
-                    fieldOrderState(ACCESS_STATE_WRAPPED);
+                case STATE_V0_BLOCK:
+                    fieldOrderState(STATE_V0_BLOCK);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -393,8 +393,8 @@ public final class TokenCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_WRAPPED:
-                    fieldOrderState(ACCESS_STATE_WRAPPED);
+                case STATE_V0_BLOCK:
+                    fieldOrderState(STATE_V0_BLOCK);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -457,8 +457,8 @@ public final class TokenCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_WRAPPED:
-                    fieldOrderState(ACCESS_STATE_WRAPPED);
+                case STATE_V0_BLOCK:
+                    fieldOrderState(STATE_V0_BLOCK);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -506,8 +506,8 @@ public final class TokenCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_WRAPPED:
-                    fieldOrderState(ACCESS_STATE_WRAPPED);
+                case STATE_V0_BLOCK:
+                    fieldOrderState(STATE_V0_BLOCK);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -554,8 +554,8 @@ public final class TokenCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_WRAPPED:
-                    fieldOrderState(ACCESS_STATE_WRAPPED);
+                case STATE_V0_BLOCK:
+                    fieldOrderState(STATE_V0_BLOCK);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -602,8 +602,8 @@ public final class TokenCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_WRAPPED:
-                    fieldOrderState(ACCESS_STATE_WRAPPED);
+                case STATE_V0_BLOCK:
+                    fieldOrderState(STATE_V0_BLOCK);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -650,8 +650,8 @@ public final class TokenCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_WRAPPED:
-                    fieldOrderState(ACCESS_STATE_WRAPPED);
+                case STATE_V0_BLOCK:
+                    fieldOrderState(STATE_V0_BLOCK);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -713,8 +713,8 @@ public final class TokenCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_WRAPPED:
-                    fieldOrderState(ACCESS_STATE_WRAPPED);
+                case STATE_V0_BLOCK:
+                    fieldOrderState(STATE_V0_BLOCK);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -762,8 +762,8 @@ public final class TokenCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_WRAPPED:
-                    fieldOrderState(ACCESS_STATE_FILLED__NAME);
+                case STATE_V0_BLOCK:
+                    fieldOrderState(STATE_V0_NAME_FILLED);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -790,8 +790,8 @@ public final class TokenCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_WRAPPED:
-                    fieldOrderState(ACCESS_STATE_FILLED__NAME);
+                case STATE_V0_BLOCK:
+                    fieldOrderState(STATE_V0_NAME_FILLED);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -821,8 +821,8 @@ public final class TokenCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_WRAPPED:
-                    fieldOrderState(ACCESS_STATE_FILLED__NAME);
+                case STATE_V0_BLOCK:
+                    fieldOrderState(STATE_V0_NAME_FILLED);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -874,8 +874,8 @@ public final class TokenCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_FILLED__NAME:
-                    fieldOrderState(ACCESS_STATE_FILLED__CONSTVALUE);
+                case STATE_V0_NAME_FILLED:
+                    fieldOrderState(STATE_V0_CONSTVALUE_FILLED);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -902,8 +902,8 @@ public final class TokenCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_FILLED__NAME:
-                    fieldOrderState(ACCESS_STATE_FILLED__CONSTVALUE);
+                case STATE_V0_NAME_FILLED:
+                    fieldOrderState(STATE_V0_CONSTVALUE_FILLED);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -933,8 +933,8 @@ public final class TokenCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_FILLED__NAME:
-                    fieldOrderState(ACCESS_STATE_FILLED__CONSTVALUE);
+                case STATE_V0_NAME_FILLED:
+                    fieldOrderState(STATE_V0_CONSTVALUE_FILLED);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -986,8 +986,8 @@ public final class TokenCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_FILLED__CONSTVALUE:
-                    fieldOrderState(ACCESS_STATE_FILLED__MINVALUE);
+                case STATE_V0_CONSTVALUE_FILLED:
+                    fieldOrderState(STATE_V0_MINVALUE_FILLED);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -1014,8 +1014,8 @@ public final class TokenCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_FILLED__CONSTVALUE:
-                    fieldOrderState(ACCESS_STATE_FILLED__MINVALUE);
+                case STATE_V0_CONSTVALUE_FILLED:
+                    fieldOrderState(STATE_V0_MINVALUE_FILLED);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -1045,8 +1045,8 @@ public final class TokenCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_FILLED__CONSTVALUE:
-                    fieldOrderState(ACCESS_STATE_FILLED__MINVALUE);
+                case STATE_V0_CONSTVALUE_FILLED:
+                    fieldOrderState(STATE_V0_MINVALUE_FILLED);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -1098,8 +1098,8 @@ public final class TokenCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_FILLED__MINVALUE:
-                    fieldOrderState(ACCESS_STATE_FILLED__MAXVALUE);
+                case STATE_V0_MINVALUE_FILLED:
+                    fieldOrderState(STATE_V0_MAXVALUE_FILLED);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -1126,8 +1126,8 @@ public final class TokenCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_FILLED__MINVALUE:
-                    fieldOrderState(ACCESS_STATE_FILLED__MAXVALUE);
+                case STATE_V0_MINVALUE_FILLED:
+                    fieldOrderState(STATE_V0_MAXVALUE_FILLED);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -1157,8 +1157,8 @@ public final class TokenCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_FILLED__MINVALUE:
-                    fieldOrderState(ACCESS_STATE_FILLED__MAXVALUE);
+                case STATE_V0_MINVALUE_FILLED:
+                    fieldOrderState(STATE_V0_MAXVALUE_FILLED);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -1210,8 +1210,8 @@ public final class TokenCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_FILLED__MAXVALUE:
-                    fieldOrderState(ACCESS_STATE_FILLED__NULLVALUE);
+                case STATE_V0_MAXVALUE_FILLED:
+                    fieldOrderState(STATE_V0_NULLVALUE_FILLED);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -1238,8 +1238,8 @@ public final class TokenCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_FILLED__MAXVALUE:
-                    fieldOrderState(ACCESS_STATE_FILLED__NULLVALUE);
+                case STATE_V0_MAXVALUE_FILLED:
+                    fieldOrderState(STATE_V0_NULLVALUE_FILLED);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -1269,8 +1269,8 @@ public final class TokenCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_FILLED__MAXVALUE:
-                    fieldOrderState(ACCESS_STATE_FILLED__NULLVALUE);
+                case STATE_V0_MAXVALUE_FILLED:
+                    fieldOrderState(STATE_V0_NULLVALUE_FILLED);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -1322,8 +1322,8 @@ public final class TokenCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_FILLED__NULLVALUE:
-                    fieldOrderState(ACCESS_STATE_FILLED__CHARACTERENCODING);
+                case STATE_V0_NULLVALUE_FILLED:
+                    fieldOrderState(STATE_V0_CHARACTERENCODING_FILLED);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -1350,8 +1350,8 @@ public final class TokenCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_FILLED__NULLVALUE:
-                    fieldOrderState(ACCESS_STATE_FILLED__CHARACTERENCODING);
+                case STATE_V0_NULLVALUE_FILLED:
+                    fieldOrderState(STATE_V0_CHARACTERENCODING_FILLED);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -1381,8 +1381,8 @@ public final class TokenCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_FILLED__NULLVALUE:
-                    fieldOrderState(ACCESS_STATE_FILLED__CHARACTERENCODING);
+                case STATE_V0_NULLVALUE_FILLED:
+                    fieldOrderState(STATE_V0_CHARACTERENCODING_FILLED);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -1434,8 +1434,8 @@ public final class TokenCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_FILLED__CHARACTERENCODING:
-                    fieldOrderState(ACCESS_STATE_FILLED__EPOCH);
+                case STATE_V0_CHARACTERENCODING_FILLED:
+                    fieldOrderState(STATE_V0_EPOCH_FILLED);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -1462,8 +1462,8 @@ public final class TokenCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_FILLED__CHARACTERENCODING:
-                    fieldOrderState(ACCESS_STATE_FILLED__EPOCH);
+                case STATE_V0_CHARACTERENCODING_FILLED:
+                    fieldOrderState(STATE_V0_EPOCH_FILLED);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -1493,8 +1493,8 @@ public final class TokenCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_FILLED__CHARACTERENCODING:
-                    fieldOrderState(ACCESS_STATE_FILLED__EPOCH);
+                case STATE_V0_CHARACTERENCODING_FILLED:
+                    fieldOrderState(STATE_V0_EPOCH_FILLED);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -1546,8 +1546,8 @@ public final class TokenCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_FILLED__EPOCH:
-                    fieldOrderState(ACCESS_STATE_FILLED__TIMEUNIT);
+                case STATE_V0_EPOCH_FILLED:
+                    fieldOrderState(STATE_V0_TIMEUNIT_FILLED);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -1574,8 +1574,8 @@ public final class TokenCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_FILLED__EPOCH:
-                    fieldOrderState(ACCESS_STATE_FILLED__TIMEUNIT);
+                case STATE_V0_EPOCH_FILLED:
+                    fieldOrderState(STATE_V0_TIMEUNIT_FILLED);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -1605,8 +1605,8 @@ public final class TokenCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_FILLED__EPOCH:
-                    fieldOrderState(ACCESS_STATE_FILLED__TIMEUNIT);
+                case STATE_V0_EPOCH_FILLED:
+                    fieldOrderState(STATE_V0_TIMEUNIT_FILLED);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -1658,8 +1658,8 @@ public final class TokenCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_FILLED__TIMEUNIT:
-                    fieldOrderState(ACCESS_STATE_FILLED__SEMANTICTYPE);
+                case STATE_V0_TIMEUNIT_FILLED:
+                    fieldOrderState(STATE_V0_SEMANTICTYPE_FILLED);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -1686,8 +1686,8 @@ public final class TokenCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_FILLED__TIMEUNIT:
-                    fieldOrderState(ACCESS_STATE_FILLED__SEMANTICTYPE);
+                case STATE_V0_TIMEUNIT_FILLED:
+                    fieldOrderState(STATE_V0_SEMANTICTYPE_FILLED);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -1717,8 +1717,8 @@ public final class TokenCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_FILLED__TIMEUNIT:
-                    fieldOrderState(ACCESS_STATE_FILLED__SEMANTICTYPE);
+                case STATE_V0_TIMEUNIT_FILLED:
+                    fieldOrderState(STATE_V0_SEMANTICTYPE_FILLED);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -1770,8 +1770,8 @@ public final class TokenCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_FILLED__SEMANTICTYPE:
-                    fieldOrderState(ACCESS_STATE_FILLED__DESCRIPTION);
+                case STATE_V0_SEMANTICTYPE_FILLED:
+                    fieldOrderState(STATE_V0_DESCRIPTION_FILLED);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -1798,8 +1798,8 @@ public final class TokenCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_FILLED__SEMANTICTYPE:
-                    fieldOrderState(ACCESS_STATE_FILLED__DESCRIPTION);
+                case STATE_V0_SEMANTICTYPE_FILLED:
+                    fieldOrderState(STATE_V0_DESCRIPTION_FILLED);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -1829,8 +1829,8 @@ public final class TokenCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_FILLED__SEMANTICTYPE:
-                    fieldOrderState(ACCESS_STATE_FILLED__DESCRIPTION);
+                case STATE_V0_SEMANTICTYPE_FILLED:
+                    fieldOrderState(STATE_V0_DESCRIPTION_FILLED);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -1882,8 +1882,8 @@ public final class TokenCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_FILLED__DESCRIPTION:
-                    fieldOrderState(ACCESS_STATE_FILLED__REFERENCEDNAME);
+                case STATE_V0_DESCRIPTION_FILLED:
+                    fieldOrderState(STATE_V0_REFERENCEDNAME_FILLED);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -1910,8 +1910,8 @@ public final class TokenCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_FILLED__DESCRIPTION:
-                    fieldOrderState(ACCESS_STATE_FILLED__REFERENCEDNAME);
+                case STATE_V0_DESCRIPTION_FILLED:
+                    fieldOrderState(STATE_V0_REFERENCEDNAME_FILLED);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -1941,8 +1941,8 @@ public final class TokenCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_FILLED__DESCRIPTION:
-                    fieldOrderState(ACCESS_STATE_FILLED__REFERENCEDNAME);
+                case STATE_V0_DESCRIPTION_FILLED:
+                    fieldOrderState(STATE_V0_REFERENCEDNAME_FILLED);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());

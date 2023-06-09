@@ -13,17 +13,17 @@ public final class FrameCodecEncoder
 {
     private static final boolean DEBUG_MODE = !Boolean.getBoolean("agrona.disable.bounds.checks");
 
-    private static final int ACCESS_STATE_NOT_WRAPPED = 1;
+    private static final int STATE_NOT_WRAPPED = 1;
 
-    private static final int ACCESS_STATE_WRAPPED = 2;
+    private static final int STATE_V0_BLOCK = 2;
 
-    private static final int ACCESS_STATE_FILLED__PACKAGENAME = 3;
+    private static final int STATE_V0_PACKAGENAME_FILLED = 3;
 
-    private static final int ACCESS_STATE_FILLED__NAMESPACENAME = 4;
+    private static final int STATE_V0_NAMESPACENAME_FILLED = 4;
 
-    private static final int ACCESS_STATE_FILLED__SEMANTICVERSION = 5;
+    private static final int STATE_V0_SEMANTICVERSION_FILLED = 5;
 
-    private int fieldOrderState = ACCESS_STATE_NOT_WRAPPED;
+    private int fieldOrderState = STATE_NOT_WRAPPED;
 
     private int fieldOrderState()
     {
@@ -100,7 +100,7 @@ public final class FrameCodecEncoder
 
         if (DEBUG_MODE)
         {
-            fieldOrderState(ACCESS_STATE_WRAPPED);
+            fieldOrderState(STATE_V0_BLOCK);
         }
 
         return this;
@@ -185,8 +185,8 @@ public final class FrameCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_WRAPPED:
-                    fieldOrderState(ACCESS_STATE_WRAPPED);
+                case STATE_V0_BLOCK:
+                    fieldOrderState(STATE_V0_BLOCK);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -249,8 +249,8 @@ public final class FrameCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_WRAPPED:
-                    fieldOrderState(ACCESS_STATE_WRAPPED);
+                case STATE_V0_BLOCK:
+                    fieldOrderState(STATE_V0_BLOCK);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -313,8 +313,8 @@ public final class FrameCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_WRAPPED:
-                    fieldOrderState(ACCESS_STATE_WRAPPED);
+                case STATE_V0_BLOCK:
+                    fieldOrderState(STATE_V0_BLOCK);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -362,8 +362,8 @@ public final class FrameCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_WRAPPED:
-                    fieldOrderState(ACCESS_STATE_FILLED__PACKAGENAME);
+                case STATE_V0_BLOCK:
+                    fieldOrderState(STATE_V0_PACKAGENAME_FILLED);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -390,8 +390,8 @@ public final class FrameCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_WRAPPED:
-                    fieldOrderState(ACCESS_STATE_FILLED__PACKAGENAME);
+                case STATE_V0_BLOCK:
+                    fieldOrderState(STATE_V0_PACKAGENAME_FILLED);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -421,8 +421,8 @@ public final class FrameCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_WRAPPED:
-                    fieldOrderState(ACCESS_STATE_FILLED__PACKAGENAME);
+                case STATE_V0_BLOCK:
+                    fieldOrderState(STATE_V0_PACKAGENAME_FILLED);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -474,8 +474,8 @@ public final class FrameCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_FILLED__PACKAGENAME:
-                    fieldOrderState(ACCESS_STATE_FILLED__NAMESPACENAME);
+                case STATE_V0_PACKAGENAME_FILLED:
+                    fieldOrderState(STATE_V0_NAMESPACENAME_FILLED);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -502,8 +502,8 @@ public final class FrameCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_FILLED__PACKAGENAME:
-                    fieldOrderState(ACCESS_STATE_FILLED__NAMESPACENAME);
+                case STATE_V0_PACKAGENAME_FILLED:
+                    fieldOrderState(STATE_V0_NAMESPACENAME_FILLED);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -533,8 +533,8 @@ public final class FrameCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_FILLED__PACKAGENAME:
-                    fieldOrderState(ACCESS_STATE_FILLED__NAMESPACENAME);
+                case STATE_V0_PACKAGENAME_FILLED:
+                    fieldOrderState(STATE_V0_NAMESPACENAME_FILLED);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -586,8 +586,8 @@ public final class FrameCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_FILLED__NAMESPACENAME:
-                    fieldOrderState(ACCESS_STATE_FILLED__SEMANTICVERSION);
+                case STATE_V0_NAMESPACENAME_FILLED:
+                    fieldOrderState(STATE_V0_SEMANTICVERSION_FILLED);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -614,8 +614,8 @@ public final class FrameCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_FILLED__NAMESPACENAME:
-                    fieldOrderState(ACCESS_STATE_FILLED__SEMANTICVERSION);
+                case STATE_V0_NAMESPACENAME_FILLED:
+                    fieldOrderState(STATE_V0_SEMANTICVERSION_FILLED);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());
@@ -645,8 +645,8 @@ public final class FrameCodecEncoder
         {
             switch (fieldOrderState())
             {
-                case ACCESS_STATE_FILLED__NAMESPACENAME:
-                    fieldOrderState(ACCESS_STATE_FILLED__SEMANTICVERSION);
+                case STATE_V0_NAMESPACENAME_FILLED:
+                    fieldOrderState(STATE_V0_SEMANTICVERSION_FILLED);
                     break;
                 default:
                     throw new IllegalStateException("Unexpected state: " + fieldOrderState());

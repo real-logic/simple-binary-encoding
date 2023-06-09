@@ -11,6 +11,30 @@ import org.agrona.DirectBuffer;
 @SuppressWarnings("all")
 public final class FrameCodecDecoder
 {
+    private static final boolean DEBUG_MODE = !Boolean.getBoolean("agrona.disable.bounds.checks");
+
+    private static final int STATE_NOT_WRAPPED = 1;
+
+    private static final int STATE_V0_BLOCK = 2;
+
+    private static final int STATE_V0_PACKAGENAME_FILLED = 3;
+
+    private static final int STATE_V0_NAMESPACENAME_FILLED = 4;
+
+    private static final int STATE_V0_SEMANTICVERSION_FILLED = 5;
+
+    private int fieldOrderState = STATE_NOT_WRAPPED;
+
+    private int fieldOrderState()
+    {
+        return fieldOrderState;
+    }
+
+    private void fieldOrderState(int newState)
+    {
+        fieldOrderState = newState;
+    }
+
     public static final int BLOCK_LENGTH = 12;
     public static final int TEMPLATE_ID = 1;
     public static final int SCHEMA_ID = 1;
@@ -81,6 +105,18 @@ public final class FrameCodecDecoder
         this.actingBlockLength = actingBlockLength;
         this.actingVersion = actingVersion;
         limit(offset + actingBlockLength);
+
+        if (DEBUG_MODE)
+        {
+            switch(actingVersion)            {
+                case 0:
+                    fieldOrderState(STATE_V0_BLOCK);
+                    break;
+                default:
+                    fieldOrderState(STATE_V0_BLOCK);
+                    break;
+            }
+        }
 
         return this;
     }
@@ -187,6 +223,18 @@ public final class FrameCodecDecoder
 
     public int irId()
     {
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case STATE_V0_BLOCK:
+                    fieldOrderState(STATE_V0_BLOCK);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
+        }
+
         return buffer.getInt(offset + 0, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
@@ -238,6 +286,18 @@ public final class FrameCodecDecoder
 
     public int irVersion()
     {
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case STATE_V0_BLOCK:
+                    fieldOrderState(STATE_V0_BLOCK);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
+        }
+
         return buffer.getInt(offset + 4, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
@@ -289,6 +349,18 @@ public final class FrameCodecDecoder
 
     public int schemaVersion()
     {
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case STATE_V0_BLOCK:
+                    fieldOrderState(STATE_V0_BLOCK);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
+        }
+
         return buffer.getInt(offset + 8, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
@@ -331,6 +403,18 @@ public final class FrameCodecDecoder
 
     public int skipPackageName()
     {
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case STATE_V0_BLOCK:
+                    fieldOrderState(STATE_V0_PACKAGENAME_FILLED);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -342,6 +426,18 @@ public final class FrameCodecDecoder
 
     public int getPackageName(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case STATE_V0_BLOCK:
+                    fieldOrderState(STATE_V0_PACKAGENAME_FILLED);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -354,6 +450,18 @@ public final class FrameCodecDecoder
 
     public int getPackageName(final byte[] dst, final int dstOffset, final int length)
     {
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case STATE_V0_BLOCK:
+                    fieldOrderState(STATE_V0_PACKAGENAME_FILLED);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -375,6 +483,18 @@ public final class FrameCodecDecoder
 
     public String packageName()
     {
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case STATE_V0_BLOCK:
+                    fieldOrderState(STATE_V0_PACKAGENAME_FILLED);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -429,6 +549,18 @@ public final class FrameCodecDecoder
 
     public int skipNamespaceName()
     {
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case STATE_V0_PACKAGENAME_FILLED:
+                    fieldOrderState(STATE_V0_NAMESPACENAME_FILLED);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -440,6 +572,18 @@ public final class FrameCodecDecoder
 
     public int getNamespaceName(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case STATE_V0_PACKAGENAME_FILLED:
+                    fieldOrderState(STATE_V0_NAMESPACENAME_FILLED);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -452,6 +596,18 @@ public final class FrameCodecDecoder
 
     public int getNamespaceName(final byte[] dst, final int dstOffset, final int length)
     {
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case STATE_V0_PACKAGENAME_FILLED:
+                    fieldOrderState(STATE_V0_NAMESPACENAME_FILLED);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -473,6 +629,18 @@ public final class FrameCodecDecoder
 
     public String namespaceName()
     {
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case STATE_V0_PACKAGENAME_FILLED:
+                    fieldOrderState(STATE_V0_NAMESPACENAME_FILLED);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -527,6 +695,18 @@ public final class FrameCodecDecoder
 
     public int skipSemanticVersion()
     {
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case STATE_V0_NAMESPACENAME_FILLED:
+                    fieldOrderState(STATE_V0_SEMANTICVERSION_FILLED);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -538,6 +718,18 @@ public final class FrameCodecDecoder
 
     public int getSemanticVersion(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case STATE_V0_NAMESPACENAME_FILLED:
+                    fieldOrderState(STATE_V0_SEMANTICVERSION_FILLED);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -550,6 +742,18 @@ public final class FrameCodecDecoder
 
     public int getSemanticVersion(final byte[] dst, final int dstOffset, final int length)
     {
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case STATE_V0_NAMESPACENAME_FILLED:
+                    fieldOrderState(STATE_V0_SEMANTICVERSION_FILLED);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -571,6 +775,18 @@ public final class FrameCodecDecoder
 
     public String semanticVersion()
     {
+        if (DEBUG_MODE)
+        {
+            switch (fieldOrderState())
+            {
+                case STATE_V0_NAMESPACENAME_FILLED:
+                    fieldOrderState(STATE_V0_SEMANTICVERSION_FILLED);
+                    break;
+                default:
+                    throw new IllegalStateException("Unexpected state: " + fieldOrderState());
+            }
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);

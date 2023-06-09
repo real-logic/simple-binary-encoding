@@ -109,7 +109,6 @@ public class FieldOrderCheckTest
     }
 
     @Test
-    @Disabled("Decoding checks not implemented yet.")
     void disallowsSkippingDecodingOfVariableLengthField()
     {
         final MultipleVarLengthEncoder encoder = new MultipleVarLengthEncoder()
@@ -125,7 +124,6 @@ public class FieldOrderCheckTest
     }
 
     @Test
-    @Disabled("Decoding checks not implemented yet.")
     void disallowsReDecodingEarlierVariableLengthField()
     {
         final MultipleVarLengthEncoder encoder = new MultipleVarLengthEncoder()
@@ -143,7 +141,6 @@ public class FieldOrderCheckTest
     }
 
     @Test
-    @Disabled("Decoding checks not implemented yet.")
     void disallowsReDecodingLatestVariableLengthField()
     {
         final MultipleVarLengthEncoder encoder = new MultipleVarLengthEncoder()
@@ -300,7 +297,6 @@ public class FieldOrderCheckTest
     }
 
     @Test
-    @Disabled("Decoding checks not implemented yet.")
     void disallowsSkippingDecodingOfGroupBeforeVariableLengthField()
     {
         final GroupAndVarLengthEncoder encoder = new GroupAndVarLengthEncoder()
@@ -320,7 +316,6 @@ public class FieldOrderCheckTest
     }
 
     @Test
-    @Disabled("Decoding checks not implemented yet.")
     void disallowsReDecodingVariableLengthFieldAfterGroup()
     {
         final GroupAndVarLengthEncoder encoder = new GroupAndVarLengthEncoder()
@@ -345,7 +340,6 @@ public class FieldOrderCheckTest
     }
 
     @Test
-    @Disabled("Decoding checks not implemented yet.")
     void disallowsReDecodingGroupBeforeVariableLengthField()
     {
         final GroupAndVarLengthEncoder encoder = new GroupAndVarLengthEncoder()
@@ -470,7 +464,6 @@ public class FieldOrderCheckTest
     }
 
     @Test
-    @Disabled("Decoding checks not implemented yet.")
     void disallowsReDecodingGroupElementVariableLengthField()
     {
         final VarLengthInsideGroupEncoder encoder = new VarLengthInsideGroupEncoder()
@@ -490,12 +483,12 @@ public class FieldOrderCheckTest
         assertThat(decoder.a(), equalTo(42));
         final VarLengthInsideGroupDecoder.BDecoder bs = decoder.b();
         assertThat(bs.count(), equalTo(2));
-        assertThat(bs.next().c(), equalTo("abc"));
+        assertThat(bs.next().c(), equalTo(1));
+        assertThat(bs.d(), equalTo("abc"));
         assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, bs::d);
     }
 
     @Test
-    @Disabled("Decoding checks not implemented yet.")
     void disallowsSkippingDecodingOfGroupElementVariableLengthFieldToNextElement()
     {
         final VarLengthInsideGroupEncoder encoder = new VarLengthInsideGroupEncoder()
@@ -520,7 +513,6 @@ public class FieldOrderCheckTest
     }
 
     @Test
-    @Disabled("Decoding checks not implemented yet.")
     void disallowsSkippingDecodingOfGroupElementVariableLengthFieldToTopLevel()
     {
         final VarLengthInsideGroupEncoder encoder = new VarLengthInsideGroupEncoder()
@@ -542,7 +534,6 @@ public class FieldOrderCheckTest
     }
 
     @Test
-    @Disabled("Decoding checks not implemented yet.")
     void disallowsSkippingDecodingOfGroupElement()
     {
         final VarLengthInsideGroupEncoder encoder = new VarLengthInsideGroupEncoder()
@@ -562,7 +553,7 @@ public class FieldOrderCheckTest
         assertThat(decoder.a(), equalTo(42));
         final VarLengthInsideGroupDecoder.BDecoder bs = decoder.b();
         assertThat(bs.count(), equalTo(2));
-        assertThat(bs.next().c(), equalTo("abc"));
+        assertThat(bs.next().c(), equalTo(1));
         assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, decoder::e);
     }
 
@@ -855,9 +846,12 @@ public class FieldOrderCheckTest
         assertThat(c.y(), equalTo(4));
     }
 
-    // TODO test more of SBE:
-    //    - array setters
-    //    - alternative varData setters
-    //    - bitset setters
+    // TODO
+    //    test more of SBE:
+    //    - array getters/setters
+    //    - alternative varData getters/setters
+    //    - bitset getters/setters
     //    - versioning
+    //    improve and test error message
+    //    - should include description of problem
 }
