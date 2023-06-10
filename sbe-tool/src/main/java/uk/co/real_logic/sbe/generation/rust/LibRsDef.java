@@ -183,7 +183,6 @@ class LibRsDef
             = new LinkedHashSet<>(TYPE_NAME_BY_PRIMITIVE_TYPE_MAP.values());
         final String endianness = byteOrder == LITTLE_ENDIAN ? "le" : "be";
 
-        // get_u8_at
         uniquePrimitiveTypes.remove("u8");
         indent(writer, 0, "\n");
         indent(writer, 1, "#[inline]\n");
@@ -234,6 +233,7 @@ class LibRsDef
         final LinkedHashSet<String> uniquePrimitiveTypes
             = new LinkedHashSet<>(TYPE_NAME_BY_PRIMITIVE_TYPE_MAP.values());
         final String endianness = byteOrder == LITTLE_ENDIAN ? "le" : "be";
+
         uniquePrimitiveTypes.remove("u8");
         indent(writer, 1, "#[inline]\n");
         indent(writer, 1, "pub fn put_u8_at(&mut self, index: usize, value: u8) {\n");
