@@ -175,7 +175,7 @@ class LibRsDef
         indent(writer, 1, "}\n\n");
 
         indent(writer, 1, "#[inline]\n");
-        indent(writer, 1, "pub fn get_bytes_at<const COUNT: usize>(slice: &[u8], index: usize) -> [u8; COUNT] {\n");
+        indent(writer, 1, "pub(crate) fn get_bytes_at<const COUNT: usize>(slice: &[u8], index: usize) -> [u8; COUNT] {\n");
         indent(writer, 2, "slice[index..index+COUNT].try_into().expect(\"slice with incorrect length\")\n");
         indent(writer, 1, "}\n");
 
