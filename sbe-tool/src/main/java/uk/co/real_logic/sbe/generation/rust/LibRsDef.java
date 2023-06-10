@@ -175,13 +175,21 @@ class LibRsDef
         indent(writer, 1, "}\n\n");
 
         indent(writer, 1, "#[inline]\n");
-        indent(writer, 1, "fn get_bytes_at<const COUNT: usize>(slice: &[u8], index: usize) -> [u8; COUNT] {\n");
-        indent(writer, 2, "Self::get_bytes(slice.split_at(index).1.split_at(COUNT).0)\n");
+        indent(writer, 1, "pub fn get_bytes_at<const COUNT: usize>(slice: &[u8], index: usize) -> [u8; COUNT] {\n");
+        indent(writer, 2, "slice[index..index+COUNT].try_into().expect(\"slice with incorrect length\")\n");
         indent(writer, 1, "}\n");
 
         final LinkedHashSet<String> uniquePrimitiveTypes
             = new LinkedHashSet<>(TYPE_NAME_BY_PRIMITIVE_TYPE_MAP.values());
         final String endianness = byteOrder == LITTLE_ENDIAN ? "le" : "be";
+
+        // get_u8_at
+        uniquePrimitiveTypes.remove("u8");
+        indent(writer, 0, "\n");
+        indent(writer, 1, "#[inline]\n");
+        indent(writer, 1, "pub fn get_u8_at(&self, index: usize) -> u8 {\n");
+        indent(writer, 2, "self.data[index]\n");
+        indent(writer, 1, "}\n");
 
         for (final String primitiveType : uniquePrimitiveTypes)
         {
@@ -197,7 +205,7 @@ class LibRsDef
         indent(writer, 0, "\n");
         indent(writer, 1, "#[inline]\n");
         indent(writer, 1, "pub fn get_slice_at(&self, index: usize, len: usize) -> &[u8] {\n");
-        indent(writer, 2, "self.data.split_at(index).1.split_at(len).0\n");
+        indent(writer, 2, "&self.data[index..index+len]\n");
         indent(writer, 1, "}\n\n");
 
         writer.append("}\n");
@@ -219,15 +227,18 @@ class LibRsDef
         indent(writer, 1, "#[inline]\n");
         indent(writer, 1,
             "pub fn put_bytes_at<const COUNT: usize>(&mut self, index: usize, bytes: [u8; COUNT]) -> usize {\n");
-        indent(writer, 2, "for (i, byte) in bytes.iter().enumerate() {\n");
-        indent(writer, 3, "self.data[index + i] = *byte;\n");
-        indent(writer, 2, "}\n");
+        indent(writer, 2, "self.data[index..index + COUNT].copy_from_slice(&bytes);\n");
         indent(writer, 2, "COUNT\n");
         indent(writer, 1, "}\n\n");
 
         final LinkedHashSet<String> uniquePrimitiveTypes
             = new LinkedHashSet<>(TYPE_NAME_BY_PRIMITIVE_TYPE_MAP.values());
         final String endianness = byteOrder == LITTLE_ENDIAN ? "le" : "be";
+        uniquePrimitiveTypes.remove("u8");
+        indent(writer, 1, "#[inline]\n");
+        indent(writer, 1, "pub fn put_u8_at(&mut self, index: usize, value: u8) {\n");
+        indent(writer, 2, "self.data[index] = value;\n");
+        indent(writer, 1, "}\n\n");
 
         for (final String primitiveType : uniquePrimitiveTypes)
         {
