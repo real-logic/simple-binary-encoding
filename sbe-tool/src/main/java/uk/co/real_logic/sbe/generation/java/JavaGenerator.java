@@ -1092,17 +1092,18 @@ public class JavaGenerator implements CodeGenerator
                 .append(indent).append("        return ").append(sizeOfLengthField).append(";\n")
                 .append(indent).append("    }\n");
 
+            final CharSequence stateTransition =
+                generateFieldOrderStateTransitions(fieldOrderModel, indent + "        ", token);
+
             sb.append("\n")
                 .append(indent).append("    public int ").append(methodPropName).append("Length()\n")
                 .append(indent).append("    {\n")
                 .append(generateArrayFieldNotPresentCondition(token.version(), indent))
+                .append(stateTransition)
                 .append(indent).append("        final int limit = parentMessage.limit();\n")
                 .append(indent).append("        return ").append(PrimitiveType.UINT32 == lengthType ? "(int)" : "")
                 .append(generateGet(lengthType, "limit", byteOrderStr)).append(";\n")
                 .append(indent).append("    }\n");
-
-            final CharSequence stateTransition =
-                generateFieldOrderStateTransitions(fieldOrderModel, indent + "        ", token);
 
             generateDataDecodeMethods(sb, token, propertyName, sizeOfLengthField, lengthType,
                 byteOrderStr, characterEncoding, stateTransition, indent);
@@ -1215,7 +1216,15 @@ public class JavaGenerator implements CodeGenerator
             stateTransition,
             indent);
 
-        generateVarDataWrapDecoder(sb, token, propertyName, sizeOfLengthField, lengthType, byteOrderStr, indent);
+        generateVarDataWrapDecoder(
+            sb,
+            token,
+            propertyName,
+            sizeOfLengthField,
+            lengthType,
+            byteOrderStr,
+            stateTransition,
+            indent);
 
         if (null != characterEncoding)
         {
@@ -1274,12 +1283,13 @@ public class JavaGenerator implements CodeGenerator
         final int sizeOfLengthField,
         final PrimitiveType lengthType,
         final String byteOrderStr,
-        final String indent)
+        final CharSequence stateTransition, final String indent)
     {
         new Formatter(sb).format("\n" +
             indent + "    public void wrap%s(final %s wrapBuffer)\n" +
             indent + "    {\n" +
             "%s" +
+            stateTransition +
             indent + "        final int headerLength = %d;\n" +
             indent + "        final int limit = parentMessage.limit();\n" +
             indent + "        final int dataLength = %s%s;\n" +
@@ -2252,8 +2262,8 @@ public class JavaGenerator implements CodeGenerator
             "\n" +
             indent + "    public %s %s()\n" +
             indent + "    {\n" +
-            stateTransition +
             "%s" +
+            stateTransition +
             indent + "        return %s;\n" +
             indent + "    }\n\n",
             javaTypeName,
@@ -2405,12 +2415,12 @@ public class JavaGenerator implements CodeGenerator
         new Formatter(sb).format("\n" +
             indent + "    public %s %s(final int index)\n" +
             indent + "    {\n" +
-            stateTransition +
             indent + "        if (index < 0 || index >= %d)\n" +
             indent + "        {\n" +
             indent + "            throw new IndexOutOfBoundsException(\"index out of range: index=\" + index);\n" +
             indent + "        }\n\n" +
             "%s" +
+            stateTransition +
             indent + "        final int pos = offset + %d + (index * %d);\n\n" +
             indent + "        return %s;\n" +
             indent + "    }\n\n",
@@ -3465,8 +3475,8 @@ public class JavaGenerator implements CodeGenerator
                 "\n" +
                 indent + "    public %s %sRaw()\n" +
                 indent + "    {\n" +
-                stateTransition +
                 "%s" +
+                stateTransition +
                 indent + "        return %s;\n" +
                 indent + "    }\n",
                 javaTypeName,
@@ -3478,8 +3488,8 @@ public class JavaGenerator implements CodeGenerator
                 "\n" +
                 indent + "    public %s %s()\n" +
                 indent + "    {\n" +
-                stateTransition +
                 "%s" +
+                stateTransition +
                 indent + "        return %s.get(%s);\n" +
                 indent + "    }\n\n",
                 enumName,
@@ -3541,8 +3551,8 @@ public class JavaGenerator implements CodeGenerator
         new Formatter(sb).format("\n" +
             indent + "    public %s %s()\n" +
             indent + "    {\n" +
-            generateFieldOrderStateTransitions(fieldOrderModel, indent + "        ", propertyToken) +
             "%s" +
+            generateFieldOrderStateTransitions(fieldOrderModel, indent + "        ", propertyToken) +
             indent + "        %s.wrap(buffer, offset + %d);\n" +
             indent + "        return %s;\n" +
             indent + "    }\n",
@@ -3575,8 +3585,8 @@ public class JavaGenerator implements CodeGenerator
         new Formatter(sb).format("\n" +
             indent + "    public %s %s()\n" +
             indent + "    {\n" +
-            generateFieldOrderStateTransitions(fieldOrderModel, indent + "        ", propertyToken) +
             "%s" +
+            generateFieldOrderStateTransitions(fieldOrderModel, indent + "        ", propertyToken) +
             indent + "        %s.wrap(buffer, offset + %d);\n" +
             indent + "        return %s;\n" +
             indent + "    }\n",
