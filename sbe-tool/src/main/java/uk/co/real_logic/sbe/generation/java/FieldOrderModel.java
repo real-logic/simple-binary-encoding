@@ -31,9 +31,9 @@ import static uk.co.real_logic.sbe.ir.GenerationUtil.collectFields;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectGroups;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectVarData;
 
+@SuppressWarnings("DuplicatedCode") // there is no abstraction for visiting fields, groups, and varData
 final class FieldOrderModel
 {
-    private static final String PRINT_STATE_MACHINE = System.getProperty("sbe.print.state.machine");
     private final Int2ObjectHashMap<State> states = new Int2ObjectHashMap<>();
     private final Map<Token, TransitionGroup> transitions = new LinkedHashMap<>();
     private final Int2ObjectHashMap<State> versionWrappedStates = new Int2ObjectHashMap<>();
@@ -119,16 +119,32 @@ final class FieldOrderModel
             );
         });
 
-        if (Objects.equals(PRINT_STATE_MACHINE, msgToken.name()))
-        {
-            final StringBuilder sb = new StringBuilder();
-            sb.append("digraph G {\n");
-            model.writeTransitions(sb);
-            sb.append("}\n\n");
-            System.out.println(sb);
-        }
-
         return model;
+    }
+
+    @SuppressWarnings("CodeBlock2Expr") // lambdas without braces tend to conflict with checkstyle
+    public void generateGraph(
+        final StringBuilder sb,
+        final String indent)
+    {
+        sb.append(indent).append("digraph G {\n");
+        transitions.values().forEach(transitionGroup ->
+            transitionGroup.transitions.forEach((context, transitions1) ->
+            {
+                transitions1.forEach(transition ->
+                {
+                    transition.forEachStartState(startState ->
+                    {
+                        sb.append(indent).append("    ")
+                            .append(startState.name)
+                            .append(" -> ")
+                            .append(transition.endState().name)
+                            .append(" [label=\"  ").append(transition.description).append("  \"];\n");
+                    });
+                });
+            })
+        );
+        sb.append(indent).append("}\n");
     }
 
     private static void findVersions(
@@ -176,25 +192,6 @@ final class FieldOrderModel
         }
     }
 
-    @SuppressWarnings("CodeBlock2Expr") // lambdas without braces tend to conflict with checkstyle
-    private void writeTransitions(final StringBuilder sb)
-    {
-        transitions.values().forEach(transitionGroup ->
-        {
-            transitionGroup.transitions.forEach((context, transitions) ->
-            {
-                transitions.forEach(transition ->
-                {
-                    transition.forEachStartState(startState ->
-                    {
-                        sb.append("  ").append(startState.name).append(" -> ").append(transition.endState().name);
-                        sb.append(" [label=\"").append(transition.description).append("\"];\n");
-                    });
-                });
-            });
-        });
-    }
-
     @SuppressWarnings("checkstyle:MethodLength")
     private List<State> findTransitions(
         final List<State> entryStates,
@@ -224,7 +221,7 @@ final class FieldOrderModel
 
             allocateTransition(
                 TransitionContext.NONE,
-                "  ." + token.name() + "(value)  ",
+                "." + token.name() + "(value)",
                 token,
                 fromStates,
                 blockState.get());
@@ -352,7 +349,7 @@ final class FieldOrderModel
                 continue;
             }
 
-            final State state = allocateState(prefix + token.name().toUpperCase() + "_FILLED");
+            final State state = allocateState(prefix + token.name().toUpperCase() + "_DONE");
             allocateTransition(
                 TransitionContext.NONE,
                 "." + token.name() + "(value)",
@@ -373,7 +370,7 @@ final class FieldOrderModel
             throw new IllegalStateException("Name is already reserved: " + name);
         }
 
-        final State state = new State(states.size() + 1, name);
+        final State state = new State(states.size(), name);
         states.put(state.number, state);
         return state;
     }

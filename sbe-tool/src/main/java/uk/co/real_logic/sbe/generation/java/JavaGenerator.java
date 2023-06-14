@@ -267,9 +267,14 @@ public class JavaGenerator implements CodeGenerator
         }
     }
 
-    private static CharSequence stateFieldName(final FieldOrderModel.State state)
+    private static CharSequence qualifiedStateCase(final FieldOrderModel.State state)
     {
-        return "STATE_" + state.name();
+        return "CodecState." + state.name();
+    }
+
+    private static CharSequence unqualifiedStateCase(final FieldOrderModel.State state)
+    {
+        return state.name();
     }
 
     private static CharSequence generateFieldOrderStates(final FieldOrderModel fieldOrderModel)
@@ -279,24 +284,35 @@ public class JavaGenerator implements CodeGenerator
         sb.append("    private static final boolean DEBUG_MODE = ")
             .append("!Boolean.getBoolean(\"agrona.disable.bounds.checks\");\n\n");
 
+        sb.append("    /**\n");
+        sb.append("     * The states in which a encoder/decoder/codec can live.\n");
+        sb.append("     *\n");
+        sb.append("     * <p>The state machine diagram below describes the valid state transitions\n");
+        sb.append("     * according to the order in which fields may be accessed safely.\n");
+        sb.append("     *\n");
+        sb.append("     * <pre>{@code\n");
+        fieldOrderModel.generateGraph(sb, "     *   ");
+        sb.append("     * }</pre>\n");
+        sb.append("     */\n");
+        sb.append("    private enum CodecState\n")
+            .append("    {\n");
         fieldOrderModel.forEachState(state ->
-        {
-            sb.append("    private static final int ").append(stateFieldName(state)).append(" = ")
-                .append(state.number()).append(";\n\n");
-        });
+            sb.append("        ").append(unqualifiedStateCase(state)).append(",\n"));
 
-        sb.append("    private int fieldOrderState = ")
-            .append(stateFieldName(fieldOrderModel.notWrappedState()))
+        sb.append("    }\n\n");
+
+        sb.append("    private CodecState codecState = ")
+            .append(qualifiedStateCase(fieldOrderModel.notWrappedState()))
             .append(";\n\n");
 
-        sb.append("    private int fieldOrderState()\n")
+        sb.append("    private CodecState codecState()\n")
             .append("    {\n")
-            .append("        return fieldOrderState;\n")
+            .append("        return codecState;\n")
             .append("    }\n\n");
 
-        sb.append("    private void fieldOrderState(int newState)\n")
+        sb.append("    private void codecState(CodecState newState)\n")
             .append("    {\n")
-            .append("        fieldOrderState = newState;\n")
+            .append("        codecState = newState;\n")
             .append("    }\n\n");
 
         return sb;
@@ -374,7 +390,7 @@ public class JavaGenerator implements CodeGenerator
         final FieldOrderModel.TransitionContext context,
         final Token token)
     {
-        sb.append(indent).append("switch (fieldOrderState())\n")
+        sb.append(indent).append("switch (codecState())\n")
             .append(indent).append("{\n");
 
         final List<FieldOrderModel.Transition> transitions = fieldOrderModel.getTransitions(context, token);
@@ -382,15 +398,16 @@ public class JavaGenerator implements CodeGenerator
         transitions.forEach(transition ->
         {
             transition.forEachStartState(startState ->
-                sb.append(indent).append("    case ").append(stateFieldName(startState)).append(":\n"));
-            sb.append(indent).append("        fieldOrderState(")
-                .append(stateFieldName(transition.endState())).append(");\n")
+                sb.append(indent).append("    case ").append(unqualifiedStateCase(startState)).append(":\n"));
+            sb.append(indent).append("        codecState(")
+                .append(qualifiedStateCase(transition.endState())).append(");\n")
                 .append(indent).append("        break;\n");
         });
 
         sb.append(indent).append("    default:\n")
             .append(indent).append("        throw new IllegalStateException(")
-            .append("\"Unexpected state: \" + fieldOrderState());\n")
+            .append("\"Cannot access field \\\"").append(token.name())
+            .append("\\\" in state: \" + codecState());\n")
             .append(indent).append("}\n");
     }
 
@@ -446,14 +463,14 @@ public class JavaGenerator implements CodeGenerator
         fieldOrderModel.forEachDecoderWrappedState((version, state) ->
         {
             sb.append(indent).append("        case ").append(version).append(":\n")
-                .append(indent).append("            fieldOrderState(")
-                .append(stateFieldName(state)).append(");\n")
+                .append(indent).append("            codecState(")
+                .append(qualifiedStateCase(state)).append(");\n")
                 .append(indent).append("            break;\n");
         });
 
         sb.append(indent).append("        default:\n")
-            .append(indent).append("            fieldOrderState(")
-            .append(stateFieldName(fieldOrderModel.latestVersionWrappedState())).append(");\n")
+            .append(indent).append("            codecState(")
+            .append(qualifiedStateCase(fieldOrderModel.latestVersionWrappedState())).append(");\n")
             .append(indent).append("            break;\n")
             .append(indent).append("    }\n")
             .append(indent).append("}\n\n");
@@ -713,15 +730,15 @@ public class JavaGenerator implements CodeGenerator
             .append(indent).append("    }\n");
 
         sb.append("\n")
-            .append(indent).append("    private int fieldOrderState()\n")
+            .append(indent).append("    private CodecState codecState()\n")
             .append(indent).append("    {\n")
-            .append(indent).append("        return parentMessage.fieldOrderState();\n")
+            .append(indent).append("        return parentMessage.codecState();\n")
             .append(indent).append("    }\n");
 
         sb.append("\n")
-            .append(indent).append("    private void fieldOrderState(final int newState)\n")
+            .append(indent).append("    private void codecState(final CodecState newState)\n")
             .append(indent).append("    {\n")
-            .append(indent).append("        parentMessage.fieldOrderState(newState);\n")
+            .append(indent).append("        parentMessage.codecState(newState);\n")
             .append(indent).append("    }\n");
     }
 
@@ -839,15 +856,15 @@ public class JavaGenerator implements CodeGenerator
             .append(ind).append("    }\n");
 
         sb.append("\n")
-            .append(ind).append("    private int fieldOrderState()\n")
+            .append(ind).append("    private CodecState codecState()\n")
             .append(ind).append("    {\n")
-            .append(ind).append("        return parentMessage.fieldOrderState();\n")
+            .append(ind).append("        return parentMessage.codecState();\n")
             .append(ind).append("    }\n");
 
         sb.append("\n")
-            .append(ind).append("    private void fieldOrderState(final int newState)\n")
+            .append(ind).append("    private void codecState(final CodecState newState)\n")
             .append(ind).append("    {\n")
-            .append(ind).append("        parentMessage.fieldOrderState(newState);\n")
+            .append(ind).append("        parentMessage.codecState(newState);\n")
             .append(ind).append("    }\n");
     }
 
@@ -3193,7 +3210,7 @@ public class JavaGenerator implements CodeGenerator
             "        limit(offset + BLOCK_LENGTH);\n\n" +
             "        if (DEBUG_MODE)\n" +
             "        {\n" +
-            "            fieldOrderState(" + stateFieldName(fieldOrderModel.latestVersionWrappedState()) + ");\n" +
+            "            codecState(" + qualifiedStateCase(fieldOrderModel.latestVersionWrappedState()) + ");\n" +
             "        }\n\n" +
             "        return this;\n" +
             "    }\n\n";
