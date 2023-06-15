@@ -41,15 +41,45 @@ final class ReflectionUtil
         return object.getClass().getMethod(fieldName).invoke(object);
     }
 
-    static void get(final Object object, final String fieldName, final Appendable arg) throws Exception
+    static Object get(final Object object, final String fieldName, final Appendable arg) throws Exception
     {
         final String methodName = "get" + Generators.toUpperFirstChar(fieldName);
-        object.getClass().getMethod(methodName, Appendable.class).invoke(object, arg);
+        return object.getClass().getMethod(methodName, Appendable.class).invoke(object, arg);
+    }
+
+    static void skipFuelFiguresGroup(final Object decoder) throws Exception
+    {
+        skipGroup(decoder, "fuelFigures");
+    }
+
+    static void skipPerformanceFiguresGroup(final Object decoder) throws Exception
+    {
+        skipGroup(decoder, "performanceFigures");
+    }
+
+    private static void skipGroup(final Object decoder, final String groupName) throws Exception
+    {
+        final Object group = get(decoder, groupName);
+        while ((boolean)get(group, "hasNext"))
+        {
+            get(group, "next");
+            get(group, "sbeSkip");
+        }
     }
 
     static String getManufacturer(final Object decoder) throws Exception
     {
         return (String)get(decoder, "manufacturer");
+    }
+
+    static void setEmptyFuelFiguresGroup(final Object encoder) throws Exception
+    {
+        encoder.getClass().getMethod("fuelFiguresCount", int.class).invoke(encoder, 0);
+    }
+
+    static void setEmptyPerformanceFiguresGroup(final Object encoder) throws Exception
+    {
+        encoder.getClass().getMethod("performanceFiguresCount", int.class).invoke(encoder, 0);
     }
 
     static void setManufacturer(final Object encoder, final String value) throws Exception

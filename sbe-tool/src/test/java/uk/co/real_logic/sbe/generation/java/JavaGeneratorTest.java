@@ -21,8 +21,9 @@ import org.agrona.concurrent.UnsafeBuffer;
 import org.agrona.generation.CompilerUtil;
 import org.agrona.generation.StringWriterOutputManager;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import uk.co.real_logic.sbe.Tests;
 import uk.co.real_logic.sbe.ir.Ir;
 import uk.co.real_logic.sbe.xml.IrGenerator;
@@ -36,10 +37,11 @@ import java.nio.ByteOrder;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.startsWith;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.co.real_logic.sbe.generation.java.JavaGenerator.MESSAGE_HEADER_DECODER_TYPE;
 import static uk.co.real_logic.sbe.generation.java.ReflectionUtil.*;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
@@ -289,7 +291,6 @@ class JavaGeneratorTest
     }
 
     @Test
-    @Disabled("TODO: invalid field encode order")
     void shouldGenerateVarDataCodecs() throws Exception
     {
         final String expectedManufacturer = "Ford";
@@ -300,8 +301,12 @@ class JavaGeneratorTest
         final Object encoder = wrap(buffer, compileCarEncoder().getConstructor().newInstance());
         final Object decoder = getCarDecoder(buffer, encoder);
 
+        setEmptyFuelFiguresGroup(encoder);
+        setEmptyPerformanceFiguresGroup(encoder);
         setManufacturer(encoder, expectedManufacturer);
 
+        skipFuelFiguresGroup(decoder);
+        skipPerformanceFiguresGroup(decoder);
         final String manufacturer = getManufacturer(decoder);
 
         assertEquals(expectedManufacturer, manufacturer);
@@ -404,29 +409,30 @@ class JavaGeneratorTest
         assertThat(result.toString(), is("R11R12"));
     }
 
-    @Test
-    @Disabled("TODO: invalid field encode order")
-    void shouldGenerateGetVariableStringUsingAppendable() throws Exception
+    @ParameterizedTest
+    @ValueSource(strings = {"Red", "", "Red and Blue"})
+    void shouldGenerateGetVariableStringUsingAppendable(final String color) throws Exception
     {
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
         final StringBuilder result = new StringBuilder();
         generator().generate();
 
         final Object encoder = wrap(buffer, compileCarEncoder().getDeclaredConstructor().newInstance());
+        setEmptyFuelFiguresGroup(encoder);
+        setEmptyPerformanceFiguresGroup(encoder);
+        set(encoder, "manufacturer", String.class, "Bristol");
+        set(encoder, "model", String.class, "Britannia");
+        set(encoder, "activationCode", String.class, "12345");
+        set(encoder, "color", String.class, color);
+
         final Object decoder = getCarDecoder(buffer, encoder);
-        set(encoder, "color", String.class, "Red");
-        get(decoder, "color", result);
-        assertThat(result.toString(), is("Red"));
-
-        result.setLength(0);
-        set(encoder, "color", String.class, "");
-        get(decoder, "color", result);
-        assertThat(result.toString(), is(""));
-
-        result.setLength(0);
-        set(encoder, "color", String.class, "Red and Blue");
-        get(decoder, "color", result);
-        assertThat(result.toString(), is("Red and Blue"));
+        skipFuelFiguresGroup(decoder);
+        skipPerformanceFiguresGroup(decoder);
+        assertThat(get(decoder, "manufacturer"), equalTo("Bristol"));
+        assertThat(get(decoder, "model"), equalTo("Britannia"));
+        assertThat(get(decoder, "activationCode"), equalTo("12345"));
+        assertThat(get(decoder, "color", result), equalTo(color.length()));
+        assertThat(result.toString(), equalTo(color));
     }
 
     @Test
