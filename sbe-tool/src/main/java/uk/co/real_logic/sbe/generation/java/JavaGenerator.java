@@ -2456,7 +2456,6 @@ public class JavaGenerator implements CodeGenerator
             new Formatter(sb).format("\n" +
                 indent + "    public int get%s(final byte[] dst, final int dstOffset)\n" +
                 indent + "    {\n" +
-                stateTransition +
                 indent + "        final int length = %d;\n" +
                 indent + "        if (dstOffset < 0 || dstOffset > (dst.length - length))\n" +
                 indent + "        {\n" +
@@ -2464,6 +2463,7 @@ public class JavaGenerator implements CodeGenerator
                 "\"Copy will go out of range: offset=\" + dstOffset);\n" +
                 indent + "        }\n\n" +
                 "%s" +
+                stateTransition +
                 indent + "        buffer.getBytes(offset + %d, dst, dstOffset, length);\n\n" +
                 indent + "        return length;\n" +
                 indent + "    }\n",
@@ -2475,8 +2475,8 @@ public class JavaGenerator implements CodeGenerator
             new Formatter(sb).format("\n" +
                 indent + "    public String %s()\n" +
                 indent + "    {\n" +
-                stateTransition +
                 "%s" +
+                stateTransition +
                 indent + "        final byte[] dst = new byte[%d];\n" +
                 indent + "        buffer.getBytes(offset + %d, dst, 0, %d);\n\n" +
                 indent + "        int end = 0;\n" +
@@ -2496,8 +2496,8 @@ public class JavaGenerator implements CodeGenerator
                 new Formatter(sb).format("\n" +
                     indent + "    public int get%1$s(final Appendable value)\n" +
                     indent + "    {\n" +
-                    stateTransition +
                     "%2$s" +
+                    stateTransition +
                     indent + "        for (int i = 0; i < %3$d; ++i)\n" +
                     indent + "        {\n" +
                     indent + "            final int c = buffer.getByte(offset + %4$d + i) & 0xFF;\n" +
@@ -2527,8 +2527,8 @@ public class JavaGenerator implements CodeGenerator
             new Formatter(sb).format("\n" +
                 indent + "    public int get%s(final byte[] dst, final int dstOffset, final int length)\n" +
                 indent + "    {\n" +
-                stateTransition +
                 "%s" +
+                stateTransition +
                 indent + "        final int bytesCopied = Math.min(length, %d);\n" +
                 indent + "        buffer.getBytes(offset + %d, dst, dstOffset, bytesCopied);\n\n" +
                 indent + "        return bytesCopied;\n" +
@@ -2541,8 +2541,8 @@ public class JavaGenerator implements CodeGenerator
             new Formatter(sb).format("\n" +
                 indent + "    public int get%s(final %s dst, final int dstOffset, final int length)\n" +
                 indent + "    {\n" +
-                stateTransition +
                 "%s" +
+                stateTransition +
                 indent + "        final int bytesCopied = Math.min(length, %d);\n" +
                 indent + "        buffer.getBytes(offset + %d, dst, dstOffset, bytesCopied);\n\n" +
                 indent + "        return bytesCopied;\n" +
@@ -2556,8 +2556,8 @@ public class JavaGenerator implements CodeGenerator
             new Formatter(sb).format("\n" +
                 indent + "    public void wrap%s(final %s wrapBuffer)\n" +
                 indent + "    {\n" +
-                stateTransition +
                 "%s" +
+                stateTransition +
                 indent + "        wrapBuffer.wrap(buffer, offset + %d, %d);\n" +
                 indent + "    }\n",
                 Generators.toUpperFirstChar(propertyName),

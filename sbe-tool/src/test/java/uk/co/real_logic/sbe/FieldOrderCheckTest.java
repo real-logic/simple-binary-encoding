@@ -24,6 +24,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import java.nio.charset.StandardCharsets;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
@@ -105,7 +107,7 @@ public class FieldOrderCheckTest
         final MultipleVarLengthEncoder encoder = new MultipleVarLengthEncoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(42);
-        final byte[] value = "def".getBytes();
+        final byte[] value = "def".getBytes(StandardCharsets.US_ASCII);
         assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> encoder.putC(value, 0, value.length));
     }
 
@@ -115,7 +117,7 @@ public class FieldOrderCheckTest
         final MultipleVarLengthEncoder encoder = new MultipleVarLengthEncoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(42);
-        final byte[] value = "def".getBytes();
+        final byte[] value = "def".getBytes(StandardCharsets.US_ASCII);
         final UnsafeBuffer buffer = new UnsafeBuffer(value);
         assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> encoder.putC(buffer, 0, buffer.capacity()));
     }
@@ -1469,7 +1471,7 @@ public class FieldOrderCheckTest
     }
 
     @Test
-    void allowsNewDecoderToDecodeMissingArrayFieldBeforeGroupAsNullValue()
+    void allowsNewDecoderToDecodeMissingArrayFieldBeforeGroupAsNullValue1()
     {
         final AddArrayBeforeGroupV0Encoder encoder = new AddArrayBeforeGroupV0Encoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
@@ -1484,6 +1486,62 @@ public class FieldOrderCheckTest
         assertThat(decoder.d(1), equalTo(AddArrayBeforeGroupV1Decoder.dNullValue()));
         assertThat(decoder.d(2), equalTo(AddArrayBeforeGroupV1Decoder.dNullValue()));
         assertThat(decoder.d(3), equalTo(AddArrayBeforeGroupV1Decoder.dNullValue()));
+        final AddArrayBeforeGroupV1Decoder.BDecoder b = decoder.b();
+        assertThat(b.count(), equalTo(1));
+        assertThat(b.next().c(), equalTo(2));
+    }
+
+    @Test
+    void allowsNewDecoderToDecodeMissingArrayFieldBeforeGroupAsNullValue2()
+    {
+        final AddArrayBeforeGroupV0Encoder encoder = new AddArrayBeforeGroupV0Encoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(1).bCount(1).next().c(2);
+
+        modifyHeaderToLookLikeVersion0();
+
+        final AddArrayBeforeGroupV1Decoder decoder = new AddArrayBeforeGroupV1Decoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
+        assertThat(decoder.a(), equalTo(1));
+        assertThat(decoder.getD(new byte[8], 0, 8), equalTo(0));
+        final AddArrayBeforeGroupV1Decoder.BDecoder b = decoder.b();
+        assertThat(b.count(), equalTo(1));
+        assertThat(b.next().c(), equalTo(2));
+    }
+
+    @Test
+    void allowsNewDecoderToDecodeMissingArrayFieldBeforeGroupAsNullValue3()
+    {
+        final AddArrayBeforeGroupV0Encoder encoder = new AddArrayBeforeGroupV0Encoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(1).bCount(1).next().c(2);
+
+        modifyHeaderToLookLikeVersion0();
+
+        final AddArrayBeforeGroupV1Decoder decoder = new AddArrayBeforeGroupV1Decoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
+        assertThat(decoder.a(), equalTo(1));
+        assertThat(decoder.getD(new ExpandableArrayBuffer(), 0, 8), equalTo(0));
+        final AddArrayBeforeGroupV1Decoder.BDecoder b = decoder.b();
+        assertThat(b.count(), equalTo(1));
+        assertThat(b.next().c(), equalTo(2));
+    }
+
+    @Test
+    void allowsNewDecoderToDecodeMissingArrayFieldBeforeGroupAsNullValue4()
+    {
+        final AddArrayBeforeGroupV0Encoder encoder = new AddArrayBeforeGroupV0Encoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(1).bCount(1).next().c(2);
+
+        modifyHeaderToLookLikeVersion0();
+
+        final AddArrayBeforeGroupV1Decoder decoder = new AddArrayBeforeGroupV1Decoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
+        assertThat(decoder.a(), equalTo(1));
+        final UnsafeBuffer buffer = new UnsafeBuffer();
+        decoder.wrapD(buffer);
+        assertThat(buffer.capacity(), equalTo(0));
         final AddArrayBeforeGroupV1Decoder.BDecoder b = decoder.b();
         assertThat(b.count(), equalTo(1));
         assertThat(b.next().c(), equalTo(2));
@@ -2042,6 +2100,453 @@ public class FieldOrderCheckTest
         assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, decoder::d);
     }
 
+    @Test
+    void allowsNewDecoderToDecodeAddedVarData()
+    {
+        final AddVarDataV1Encoder encoder = new AddVarDataV1Encoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(42);
+        encoder.b("abc");
+
+        final AddVarDataV1Decoder decoder = new AddVarDataV1Decoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
+        assertThat(decoder.a(), equalTo(42));
+        assertThat(decoder.b(), equalTo("abc"));
+    }
+
+    @Test
+    void allowsNewDecoderToDecodeMissingAddedVarDataAsNullValue1()
+    {
+        final AddVarDataV0Encoder encoder = new AddVarDataV0Encoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(42);
+
+        modifyHeaderToLookLikeVersion0();
+
+        final AddVarDataV1Decoder decoder = new AddVarDataV1Decoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
+        assertThat(decoder.a(), equalTo(42));
+        assertThat(decoder.b(), equalTo(""));
+    }
+
+    @Test
+    void allowsNewDecoderToDecodeMissingAddedVarDataAsNullValue2()
+    {
+        final AddVarDataV0Encoder encoder = new AddVarDataV0Encoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(42);
+
+        modifyHeaderToLookLikeVersion0();
+
+        final AddVarDataV1Decoder decoder = new AddVarDataV1Decoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
+        assertThat(decoder.a(), equalTo(42));
+        assertThat(decoder.getB(new StringBuilder()), equalTo(0));
+    }
+
+    @Test
+    void allowsNewDecoderToDecodeMissingAddedVarDataAsNullValue3()
+    {
+        final AddVarDataV0Encoder encoder = new AddVarDataV0Encoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(42);
+
+        modifyHeaderToLookLikeVersion0();
+
+        final AddVarDataV1Decoder decoder = new AddVarDataV1Decoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
+        assertThat(decoder.a(), equalTo(42));
+        assertThat(decoder.getB(new byte[3], 0, 3), equalTo(0));
+    }
+
+    @Test
+    void allowsNewDecoderToDecodeMissingAddedVarDataAsNullValue4()
+    {
+        final AddVarDataV0Encoder encoder = new AddVarDataV0Encoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(42);
+
+        modifyHeaderToLookLikeVersion0();
+
+        final AddVarDataV1Decoder decoder = new AddVarDataV1Decoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
+        assertThat(decoder.a(), equalTo(42));
+        assertThat(decoder.getB(new ExpandableArrayBuffer(), 0, 3), equalTo(0));
+    }
+
+    @Test
+    void allowsNewDecoderToDecodeMissingAddedVarDataAsNullValue5()
+    {
+        final AddVarDataV0Encoder encoder = new AddVarDataV0Encoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(42);
+
+        modifyHeaderToLookLikeVersion0();
+
+        final AddVarDataV1Decoder decoder = new AddVarDataV1Decoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
+        assertThat(decoder.a(), equalTo(42));
+        assertThat(decoder.bLength(), equalTo(0));
+    }
+
+    @Test
+    void allowsEncodingAndDecodingAsciiInsideGroupInSchemaDefinedOrder1()
+    {
+        final AsciiInsideGroupEncoder encoder = new AsciiInsideGroupEncoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a("GBPUSD");
+        encoder.bCount(1)
+            .next()
+            .c("EURUSD");
+
+        final AsciiInsideGroupDecoder decoder = new AsciiInsideGroupDecoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
+        assertThat(decoder.a(), equalTo("GBPUSD"));
+        final AsciiInsideGroupDecoder.BDecoder b = decoder.b();
+        assertThat(b.count(), equalTo(1));
+        b.next();
+        assertThat(b.c(), equalTo("EURUSD"));
+    }
+
+    @Test
+    void allowsEncodingAndDecodingAsciiInsideGroupInSchemaDefinedOrder2()
+    {
+        final AsciiInsideGroupEncoder encoder = new AsciiInsideGroupEncoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        final byte[] gbpUsdBytes = "GBPUSD".getBytes(StandardCharsets.US_ASCII);
+        encoder.putA(gbpUsdBytes, 0);
+        encoder.bCount(1)
+            .next()
+            .c(0, (byte)'E')
+            .c(1, (byte)'U')
+            .c(2, (byte)'R')
+            .c(3, (byte)'U')
+            .c(4, (byte)'S')
+            .c(5, (byte)'D');
+
+        final AsciiInsideGroupDecoder decoder = new AsciiInsideGroupDecoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
+        final byte[] aBytes = new byte[6];
+        decoder.getA(aBytes, 0);
+        assertThat(aBytes, equalTo(gbpUsdBytes));
+        final AsciiInsideGroupDecoder.BDecoder b = decoder.b();
+        assertThat(b.count(), equalTo(1));
+        b.next();
+        assertThat(b.c(0), equalTo((byte)'E'));
+        assertThat(b.c(1), equalTo((byte)'U'));
+        assertThat(b.c(2), equalTo((byte)'R'));
+        assertThat(b.c(3), equalTo((byte)'U'));
+        assertThat(b.c(4), equalTo((byte)'S'));
+        assertThat(b.c(5), equalTo((byte)'D'));
+    }
+
+    @Test
+    void disallowsEncodingAsciiInsideGroupBeforeCallingNext1()
+    {
+        final AsciiInsideGroupEncoder.BEncoder bEncoder = encodeUntilGroupWithAsciiInside();
+        assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> bEncoder.c("EURUSD"));
+    }
+
+    @Test
+    void disallowsEncodingAsciiInsideGroupBeforeCallingNext2()
+    {
+        final AsciiInsideGroupEncoder.BEncoder bEncoder = encodeUntilGroupWithAsciiInside();
+        assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> bEncoder.c(0, (byte)'E'));
+    }
+
+    @Test
+    void disallowsEncodingAsciiInsideGroupBeforeCallingNext3()
+    {
+        final AsciiInsideGroupEncoder.BEncoder bEncoder = encodeUntilGroupWithAsciiInside();
+        final byte[] eurUsdBytes = "EURUSD".getBytes(StandardCharsets.US_ASCII);
+        assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> bEncoder.putC(eurUsdBytes, 0));
+    }
+
+    private AsciiInsideGroupEncoder.BEncoder encodeUntilGroupWithAsciiInside()
+    {
+        final AsciiInsideGroupEncoder encoder = new AsciiInsideGroupEncoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a("GBPUSD");
+        return encoder.bCount(1);
+    }
+
+    @Test
+    void disallowsDecodingAsciiInsideGroupBeforeCallingNext1()
+    {
+        final AsciiInsideGroupDecoder.BDecoder b = decodeUntilGroupWithAsciiInside();
+        assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> b.c(0));
+    }
+
+    @Test
+    void disallowsDecodingAsciiInsideGroupBeforeCallingNext2()
+    {
+        final AsciiInsideGroupDecoder.BDecoder b = decodeUntilGroupWithAsciiInside();
+        assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> b.getC(new byte[6], 0));
+    }
+
+    @Test
+    void disallowsDecodingAsciiInsideGroupBeforeCallingNext3()
+    {
+        final AsciiInsideGroupDecoder.BDecoder b = decodeUntilGroupWithAsciiInside();
+        assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, b::c);
+    }
+
+    @Test
+    void disallowsDecodingAsciiInsideGroupBeforeCallingNext4()
+    {
+        final AsciiInsideGroupDecoder.BDecoder b = decodeUntilGroupWithAsciiInside();
+        assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> b.getC(new StringBuilder()));
+    }
+
+    private AsciiInsideGroupDecoder.BDecoder decodeUntilGroupWithAsciiInside()
+    {
+        final AsciiInsideGroupEncoder encoder = new AsciiInsideGroupEncoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a("GBPUSD");
+        encoder.bCount(1)
+            .next()
+            .c("EURUSD");
+
+        final AsciiInsideGroupDecoder decoder = new AsciiInsideGroupDecoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
+        assertThat(decoder.a(), equalTo("GBPUSD"));
+        final AsciiInsideGroupDecoder.BDecoder b = decoder.b();
+        assertThat(b.count(), equalTo(1));
+        return b;
+    }
+
+    @Test
+    @Disabled("Our access checks are too strict to allow the behaviour in this test.")
+    void allowsReEncodingTopLevelAsciiViaReWrap()
+    {
+        final AsciiInsideGroupEncoder encoder = new AsciiInsideGroupEncoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a("GBPUSD");
+        encoder.bCount(1)
+            .next()
+            .c("EURUSD");
+
+        encoder.a("CADUSD");
+
+        final AsciiInsideGroupDecoder decoder = new AsciiInsideGroupDecoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
+        assertThat(decoder.a(), equalTo("CADUSD"));
+        final AsciiInsideGroupDecoder.BDecoder b = decoder.b();
+        assertThat(b.count(), equalTo(1));
+        b.next();
+        assertThat(b.c(), equalTo("EURUSD"));
+    }
+
+    @Test
+    void allowsNewDecoderToDecodeAddedAsciiFieldBeforeGroup1()
+    {
+        final AddAsciiBeforeGroupV1Encoder encoder = new AddAsciiBeforeGroupV1Encoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(1)
+            .d("EURUSD")
+            .bCount(1)
+            .next().c(2);
+
+        final AddAsciiBeforeGroupV1Decoder decoder = new AddAsciiBeforeGroupV1Decoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
+        assertThat(decoder.a(), equalTo(1));
+        assertThat(decoder.d(), equalTo("EURUSD"));
+        final AddAsciiBeforeGroupV1Decoder.BDecoder b = decoder.b();
+        assertThat(b.count(), equalTo(1));
+        assertThat(b.next().c(), equalTo(2));
+    }
+
+    @Test
+    void allowsNewDecoderToDecodeAddedAsciiFieldBeforeGroup2()
+    {
+        final AddAsciiBeforeGroupV1Encoder encoder = new AddAsciiBeforeGroupV1Encoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(1)
+            .d("EURUSD")
+            .bCount(1)
+            .next().c(2);
+
+        final AddAsciiBeforeGroupV1Decoder decoder = new AddAsciiBeforeGroupV1Decoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
+        assertThat(decoder.a(), equalTo(1));
+        final StringBuilder aValue = new StringBuilder();
+        decoder.getD(aValue);
+        assertThat(aValue.toString(), equalTo("EURUSD"));
+        final AddAsciiBeforeGroupV1Decoder.BDecoder b = decoder.b();
+        assertThat(b.count(), equalTo(1));
+        assertThat(b.next().c(), equalTo(2));
+    }
+
+
+    @Test
+    void allowsNewDecoderToDecodeAddedAsciiFieldBeforeGroup3()
+    {
+        final AddAsciiBeforeGroupV1Encoder encoder = new AddAsciiBeforeGroupV1Encoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        final byte[] eurUsdBytes = "EURUSD".getBytes(StandardCharsets.US_ASCII);
+        encoder.a(1)
+            .putD(eurUsdBytes, 0)
+            .bCount(1)
+            .next().c(2);
+
+        final AddAsciiBeforeGroupV1Decoder decoder = new AddAsciiBeforeGroupV1Decoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
+        assertThat(decoder.a(), equalTo(1));
+        final byte[] aBytes = new byte[6];
+        decoder.getD(aBytes, 0);
+        assertThat(aBytes, equalTo(eurUsdBytes));
+        final AddAsciiBeforeGroupV1Decoder.BDecoder b = decoder.b();
+        assertThat(b.count(), equalTo(1));
+        assertThat(b.next().c(), equalTo(2));
+    }
+
+
+    @Test
+    void allowsNewDecoderToDecodeAddedAsciiFieldBeforeGroup4()
+    {
+        final AddAsciiBeforeGroupV1Encoder encoder = new AddAsciiBeforeGroupV1Encoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(1)
+            .d(0, (byte)'E')
+            .d(1, (byte)'U')
+            .d(2, (byte)'R')
+            .d(3, (byte)'U')
+            .d(4, (byte)'S')
+            .d(5, (byte)'D')
+            .bCount(1)
+            .next().c(2);
+
+        final AddAsciiBeforeGroupV1Decoder decoder = new AddAsciiBeforeGroupV1Decoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
+        assertThat(decoder.a(), equalTo(1));
+        assertThat(decoder.d(0), equalTo((byte)'E'));
+        assertThat(decoder.d(1), equalTo((byte)'U'));
+        assertThat(decoder.d(2), equalTo((byte)'R'));
+        assertThat(decoder.d(3), equalTo((byte)'U'));
+        assertThat(decoder.d(4), equalTo((byte)'S'));
+        assertThat(decoder.d(5), equalTo((byte)'D'));
+        final AddAsciiBeforeGroupV1Decoder.BDecoder b = decoder.b();
+        assertThat(b.count(), equalTo(1));
+        assertThat(b.next().c(), equalTo(2));
+    }
+
+    @Test
+    void allowsNewDecoderToDecodeMissingAsciiFieldBeforeGroupAsNullValue1()
+    {
+        final AddAsciiBeforeGroupV0Encoder encoder = new AddAsciiBeforeGroupV0Encoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(1).bCount(1).next().c(2);
+
+        modifyHeaderToLookLikeVersion0();
+
+        final AddAsciiBeforeGroupV1Decoder decoder = new AddAsciiBeforeGroupV1Decoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
+        assertThat(decoder.a(), equalTo(1));
+        assertThat(decoder.d(0), equalTo(AddAsciiBeforeGroupV1Decoder.dNullValue()));
+        assertThat(decoder.d(1), equalTo(AddAsciiBeforeGroupV1Decoder.dNullValue()));
+        assertThat(decoder.d(2), equalTo(AddAsciiBeforeGroupV1Decoder.dNullValue()));
+        assertThat(decoder.d(3), equalTo(AddAsciiBeforeGroupV1Decoder.dNullValue()));
+        assertThat(decoder.d(4), equalTo(AddAsciiBeforeGroupV1Decoder.dNullValue()));
+        assertThat(decoder.d(5), equalTo(AddAsciiBeforeGroupV1Decoder.dNullValue()));
+        final AddAsciiBeforeGroupV1Decoder.BDecoder b = decoder.b();
+        assertThat(b.count(), equalTo(1));
+        assertThat(b.next().c(), equalTo(2));
+    }
+
+    @Test
+    void allowsNewDecoderToDecodeMissingAsciiFieldBeforeGroupAsNullValue2()
+    {
+        final AddAsciiBeforeGroupV0Encoder encoder = new AddAsciiBeforeGroupV0Encoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(1).bCount(1).next().c(2);
+
+        modifyHeaderToLookLikeVersion0();
+
+        final AddAsciiBeforeGroupV1Decoder decoder = new AddAsciiBeforeGroupV1Decoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
+        assertThat(decoder.a(), equalTo(1));
+        assertThat(decoder.d(), equalTo(""));
+        final AddAsciiBeforeGroupV1Decoder.BDecoder b = decoder.b();
+        assertThat(b.count(), equalTo(1));
+        assertThat(b.next().c(), equalTo(2));
+    }
+
+    @Test
+    void allowsNewDecoderToDecodeMissingAsciiFieldBeforeGroupAsNullValue3()
+    {
+        final AddAsciiBeforeGroupV0Encoder encoder = new AddAsciiBeforeGroupV0Encoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(1).bCount(1).next().c(2);
+
+        modifyHeaderToLookLikeVersion0();
+
+        final AddAsciiBeforeGroupV1Decoder decoder = new AddAsciiBeforeGroupV1Decoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
+        assertThat(decoder.a(), equalTo(1));
+        final StringBuilder aValue = new StringBuilder();
+        assertThat(decoder.getD(aValue), equalTo(0));
+        assertThat(aValue.length(), equalTo(0));
+        final AddAsciiBeforeGroupV1Decoder.BDecoder b = decoder.b();
+        assertThat(b.count(), equalTo(1));
+        assertThat(b.next().c(), equalTo(2));
+    }
+
+    @Test
+    void allowsNewDecoderToDecodeMissingAsciiFieldBeforeGroupAsNullValue4()
+    {
+        final AddAsciiBeforeGroupV0Encoder encoder = new AddAsciiBeforeGroupV0Encoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(1).bCount(1).next().c(2);
+
+        modifyHeaderToLookLikeVersion0();
+
+        final AddAsciiBeforeGroupV1Decoder decoder = new AddAsciiBeforeGroupV1Decoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
+        assertThat(decoder.a(), equalTo(1));
+        assertThat(decoder.getD(new byte[6], 0), equalTo(0));
+        final AddAsciiBeforeGroupV1Decoder.BDecoder b = decoder.b();
+        assertThat(b.count(), equalTo(1));
+        assertThat(b.next().c(), equalTo(2));
+    }
+
+    @Test
+    void allowsNewDecoderToSkipPresentButAddedAsciiFieldBeforeGroup()
+    {
+        final AddAsciiBeforeGroupV1Encoder encoder = new AddAsciiBeforeGroupV1Encoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(1)
+            .d("EURUSD")
+            .bCount(1)
+            .next().c(2);
+
+        final AddAsciiBeforeGroupV1Decoder decoder = new AddAsciiBeforeGroupV1Decoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
+        assertThat(decoder.a(), equalTo(1));
+        final AddAsciiBeforeGroupV1Decoder.BDecoder b = decoder.b();
+        assertThat(b.count(), equalTo(1));
+        assertThat(b.next().c(), equalTo(2));
+    }
+
+    @Test
+    void allowsOldDecoderToSkipAddedAsciiFieldBeforeGroup()
+    {
+        final AddAsciiBeforeGroupV1Encoder encoder = new AddAsciiBeforeGroupV1Encoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(1)
+            .d("EURUSD")
+            .bCount(1)
+            .next().c(2);
+
+        modifyHeaderToLookLikeVersion1();
+
+        final AddAsciiBeforeGroupV0Decoder decoder = new AddAsciiBeforeGroupV0Decoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
+        assertThat(decoder.a(), equalTo(1));
+        final AddAsciiBeforeGroupV0Decoder.BDecoder b = decoder.b();
+        assertThat(b.count(), equalTo(1));
+        assertThat(b.next().c(), equalTo(2));
+    }
+
     private void modifyHeaderToLookLikeVersion0()
     {
         messageHeaderDecoder.wrap(buffer, OFFSET);
@@ -2058,5 +2563,6 @@ public class FieldOrderCheckTest
         messageHeaderEncoder.wrap(buffer, OFFSET);
         messageHeaderEncoder.templateId(v0TemplateId);
     }
-    // TODO improve and test error message
+
+    // TODO test error message
 }
