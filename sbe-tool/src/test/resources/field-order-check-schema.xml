@@ -268,4 +268,14 @@
             <field name="c" id="3" type="ccyPair"/>
         </group>
     </sbe:message>
+
+    <sbe:message name="NoBlock" id="22">
+        <data name="a" id="1" type="varDataEncoding"/>
+    </sbe:message>
+
+    <sbe:message name="GroupWithNoBlock" id="23">
+        <group name="a" id="1">
+            <data name="b" id="2" type="varDataEncoding"/>
+        </group>
+    </sbe:message>
 </sbe:messageSchema>

@@ -35,7 +35,7 @@ import static uk.co.real_logic.sbe.ir.GenerationUtil.collectVarData;
 final class FieldOrderModel
 {
     private final Int2ObjectHashMap<State> states = new Int2ObjectHashMap<>();
-    private final Map<Token, TransitionGroup> transitions = new LinkedHashMap<>();
+    private final Map<Token, FieldTransitions> transitions = new LinkedHashMap<>();
     private final Int2ObjectHashMap<State> versionWrappedStates = new Int2ObjectHashMap<>();
     private final Set<String> reservedNames = new HashSet<>();
     private final State notWrappedState = allocateState("NOT_WRAPPED");
@@ -71,13 +71,24 @@ final class FieldOrderModel
 
     public List<Transition> getTransitions(final TransitionContext context, final Token token)
     {
-        final TransitionGroup transitionGroup = transitions.get(token);
-        if (transitionGroup == null)
+        final FieldTransitions fieldTransitions = transitions.get(token);
+        if (fieldTransitions == null)
         {
             return Collections.emptyList();
         }
 
-        return transitionGroup.transitions.get(context);
+        return fieldTransitions.transitions.get(context);
+    }
+
+    public State minimumEntryState(final Token token)
+    {
+        final FieldTransitions fieldTransitions = transitions.get(token);
+        if (fieldTransitions == null)
+        {
+            return null;
+        }
+
+        return fieldTransitions.minimumEntryState();
     }
 
     public static FieldOrderModel findTransitions(
@@ -128,8 +139,8 @@ final class FieldOrderModel
         final String indent)
     {
         sb.append(indent).append("digraph G {\n");
-        transitions.values().forEach(transitionGroup ->
-            transitionGroup.transitions.forEach((context, transitions1) ->
+        transitions.values().forEach(fieldTransitions ->
+            fieldTransitions.transitions.forEach((context, transitions1) ->
             {
                 transitions1.forEach(transition ->
                 {
@@ -382,9 +393,9 @@ final class FieldOrderModel
         final List<State> from,
         final State to)
     {
-        final TransitionGroup transitionGroup = transitions.computeIfAbsent(token, ignored -> new TransitionGroup());
+        final FieldTransitions fieldTransitions = transitions.computeIfAbsent(token, ignored -> new FieldTransitions());
         final Transition transition = new Transition(description, from, to);
-        transitionGroup.add(firingContext, transition);
+        fieldTransitions.add(firingContext, transition);
     }
 
     static final class State
@@ -461,7 +472,7 @@ final class FieldOrderModel
         LAST_ELEMENT_IN_GROUP
     }
 
-    private static final class TransitionGroup
+    private static final class FieldTransitions
     {
         private final Map<Object, List<Transition>> transitions = new LinkedHashMap<>();
 
@@ -489,6 +500,26 @@ final class FieldOrderModel
             }
 
             transitionsForContext.add(transition);
+        }
+
+        public State minimumEntryState()
+        {
+            final MutableReference<State> minimumState = new MutableReference<>();
+            transitions.values().forEach(transitionsForContext ->
+            {
+                transitionsForContext.forEach(transition ->
+                {
+                    transition.from.forEach(state ->
+                    {
+                        if (null == minimumState.get() || state.number < minimumState.get().number)
+                        {
+                            minimumState.set(state);
+                        }
+                    });
+                });
+            });
+
+            return minimumState.get();
         }
     }
 }

@@ -23,6 +23,7 @@ import org.agrona.DirectBuffer;
 import org.agrona.MutableDirectBuffer;
 import org.agrona.Strings;
 import org.agrona.Verify;
+import org.agrona.collections.MutableBoolean;
 import org.agrona.generation.DynamicPackageOutputManager;
 import org.agrona.sbe.*;
 
@@ -295,10 +296,32 @@ public class JavaGenerator implements CodeGenerator
         sb.append("     * }</pre>\n");
         sb.append("     */\n");
         sb.append("    private enum CodecState\n")
-            .append("    {\n");
+            .append("    {");
+        final MutableBoolean isFirstState = new MutableBoolean(true);
         fieldOrderModel.forEachState(state ->
-            sb.append("        ").append(unqualifiedStateCase(state)).append(",\n"));
+        {
+            if (isFirstState.get())
+            {
+                isFirstState.set(false);
+            }
+            else
+            {
+                sb.append(",");
+            }
+            sb.append("\n        ").append(unqualifiedStateCase(state))
+                .append("(").append(state.number()).append(")");
+        });
+        sb.append(";\n\n");
 
+        sb.append("        private final int stateNumber;\n\n");
+        sb.append("        CodecState(final int stateNumber)\n");
+        sb.append("        {\n");
+        sb.append("            this.stateNumber = stateNumber;\n");
+        sb.append("        }\n\n");
+        sb.append("        int stateNumber()\n");
+        sb.append("        {\n");
+        sb.append("            return stateNumber;\n");
+        sb.append("        }\n");
         sb.append("    }\n\n");
 
         sb.append("    private CodecState codecState = ")
@@ -372,7 +395,7 @@ public class JavaGenerator implements CodeGenerator
 
         generateFieldOrderStateTransitions(
             sb,
-            indent + "            ",
+            indent + "        ",
             fieldOrderModel,
             FieldOrderModel.TransitionContext.SELECT_MULTI_ELEMENT_GROUP,
             token);
@@ -404,11 +427,26 @@ public class JavaGenerator implements CodeGenerator
                 .append(indent).append("        break;\n");
         });
 
-        sb.append(indent).append("    default:\n")
-            .append(indent).append("        throw new IllegalStateException(")
-            .append("\"Cannot access field \\\"").append(token.name())
-            .append("\\\" in state: \" + codecState());\n")
-            .append(indent).append("}\n");
+        sb.append(indent).append("    default:\n");
+        final FieldOrderModel.State minimumEntryState = fieldOrderModel.minimumEntryState(token);
+        if (token.signal() == Signal.BEGIN_FIELD && minimumEntryState != null)
+        {
+            sb.append(indent).append("        if (codecState().stateNumber() < ")
+                .append(qualifiedStateCase(minimumEntryState)).append(".stateNumber())\n");
+            sb.append(indent).append("        {\n");
+            sb.append(indent).append("            throw new IllegalStateException(")
+                .append("\"Cannot access field \\\"").append(token.name())
+                .append("\\\" in state: \" + codecState());\n");
+            sb.append(indent).append("        }\n");
+        }
+        else
+        {
+            sb.append(indent).append("        throw new IllegalStateException(")
+                .append("\"Cannot access field \\\"").append(token.name())
+                .append("\\\" in state: \" + codecState());\n");
+        }
+
+        sb.append(indent).append("}\n");
     }
 
     private static CharSequence generateFieldOrderStateTransitionsForNextGroupElement(

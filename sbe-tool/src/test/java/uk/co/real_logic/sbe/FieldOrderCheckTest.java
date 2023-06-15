@@ -21,7 +21,6 @@ import org.agrona.ExpandableArrayBuffer;
 import org.agrona.MutableDirectBuffer;
 import org.agrona.concurrent.UnsafeBuffer;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
@@ -105,7 +104,6 @@ public class FieldOrderCheckTest
     }
 
     @Test
-    @Disabled("Our access checks are too strict to allow the behaviour in this test.")
     void allowsReEncodingTopLevelPrimitiveFields()
     {
         final MultipleVarLengthEncoder encoder = new MultipleVarLengthEncoder()
@@ -428,7 +426,6 @@ public class FieldOrderCheckTest
     }
 
     @Test
-    @Disabled("Our access checks are too strict to allow the behaviour in this test.")
     void allowsReEncodingPrimitiveFieldInGroupElementAfterTopLevelVariableLengthField()
     {
         final GroupAndVarLengthEncoder encoder = new GroupAndVarLengthEncoder()
@@ -454,8 +451,7 @@ public class FieldOrderCheckTest
     }
 
     @Test
-    @Disabled("Our access checks are too strict to allow the behaviour in this test.")
-    void allowsReWrappingGroupDecoderAfterAccessingLength()
+    void disallowsReWrappingGroupDecoder()
     {
         final GroupAndVarLengthEncoder encoder = new GroupAndVarLengthEncoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
@@ -472,10 +468,9 @@ public class FieldOrderCheckTest
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
         assertThat(decoder.a(), equalTo(42));
         assertThat(decoder.b().count(), equalTo(2));
-        final GroupAndVarLengthDecoder.BDecoder b = decoder.b();
-        assertThat(b.next().c(), equalTo(1));
-        assertThat(b.next().c(), equalTo(3));
-        assertThat(decoder.d(), equalTo("abc"));
+        final Exception exception =
+            assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, decoder::b);
+        assertThat(exception.getMessage(), containsString("Cannot access field \"b\" in state: V0_B_N"));
     }
 
     @Test
@@ -559,7 +554,6 @@ public class FieldOrderCheckTest
     }
 
     @Test
-    @Disabled("Our access checks are too strict to allow the behaviour in this test.")
     void allowsReEncodingGroupElementBlockFieldAfterTopLevelVariableLengthField()
     {
         final GroupAndVarLengthEncoder encoder = new GroupAndVarLengthEncoder()
@@ -685,7 +679,6 @@ public class FieldOrderCheckTest
     }
 
     @Test
-    @Disabled("Our access checks are too strict to allow the behaviour in this test.")
     void allowsReEncodingGroupElementPrimitiveFieldAfterElementVariableLengthField()
     {
         final VarLengthInsideGroupEncoder encoder = new VarLengthInsideGroupEncoder()
@@ -1016,7 +1009,6 @@ public class FieldOrderCheckTest
     }
 
     @Test
-    @Disabled("Our access checks are too strict to allow the behaviour in this test.")
     void allowsReEncodingTopLevelCompositeViaReWrap()
     {
         final CompositeInsideGroupEncoder encoder = new CompositeInsideGroupEncoder()
@@ -1109,7 +1101,6 @@ public class FieldOrderCheckTest
     }
 
     @Test
-    @Disabled("Our access checks are too strict to allow the behaviour in this test.")
     void allowsReDecodingTopLevelCompositeViaReWrap()
     {
         final CompositeInsideGroupEncoder encoder = new CompositeInsideGroupEncoder()
@@ -1925,7 +1916,6 @@ public class FieldOrderCheckTest
     }
 
     @Test
-    @Disabled("Our access checks are too strict to allow the behaviour in this test.")
     void allowsReEncodingTopLevelEnum()
     {
         final EnumInsideGroupEncoder encoder = new EnumInsideGroupEncoder()
@@ -2007,7 +1997,6 @@ public class FieldOrderCheckTest
     }
 
     @Test
-    @Disabled("Our access checks are too strict to allow the behaviour in this test.")
     void allowsReEncodingTopLevelBitSetViaReWrap()
     {
         final BitSetInsideGroupEncoder encoder = new BitSetInsideGroupEncoder()
@@ -2166,7 +2155,6 @@ public class FieldOrderCheckTest
     }
 
     @Test
-    @Disabled("Our access checks are too strict to allow the behaviour in this test.")
     void allowsReEncodingTopLevelArrayViaReWrap()
     {
         final ArrayInsideGroupEncoder encoder = new ArrayInsideGroupEncoder()
@@ -2233,7 +2221,6 @@ public class FieldOrderCheckTest
     }
 
     @Test
-    @Disabled("Our access checks are too strict to allow the behaviour in this test.")
     void allowsReEncodingTopLevelPrimitiveFieldsAfterGroups()
     {
         final MultipleGroupsEncoder encoder = new MultipleGroupsEncoder()
@@ -2586,7 +2573,6 @@ public class FieldOrderCheckTest
     }
 
     @Test
-    @Disabled("Our access checks are too strict to allow the behaviour in this test.")
     void allowsReEncodingTopLevelAsciiViaReWrap()
     {
         final AsciiInsideGroupEncoder encoder = new AsciiInsideGroupEncoder()
@@ -2815,6 +2801,32 @@ public class FieldOrderCheckTest
         final AddAsciiBeforeGroupV0Decoder.BDecoder b = decoder.b();
         assertThat(b.count(), equalTo(1));
         assertThat(b.next().c(), equalTo(2));
+    }
+
+    @Test
+    void allowsEncodeAndDecodeOfMessagesWithNoABlock()
+    {
+        final NoBlockEncoder encoder = new NoBlockEncoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a("abc");
+
+        final NoBlockDecoder decoder = new NoBlockDecoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
+        assertThat(decoder.a(), equalTo("abc"));
+    }
+
+    @Test
+    void allowsEncodeAndDecodeOfGroupsWithNoBlock()
+    {
+        final GroupWithNoBlockEncoder encoder = new GroupWithNoBlockEncoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.aCount(1).next().b("abc");
+
+        final GroupWithNoBlockDecoder decoder = new GroupWithNoBlockDecoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
+        final GroupWithNoBlockDecoder.ADecoder a = decoder.a();
+        assertThat(a.count(), equalTo(1));
+        assertThat(a.next().b(), equalTo("abc"));
     }
 
     private void modifyHeaderToLookLikeVersion0()
