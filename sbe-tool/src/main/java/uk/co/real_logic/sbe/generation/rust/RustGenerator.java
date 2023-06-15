@@ -641,7 +641,7 @@ public class RustGenerator implements CodeGenerator
         if (fieldToken.version() > 0)
         {
             indent(sb, level + 1, "if self.acting_version < %d {\n", fieldToken.version());
-            indent(sb, level + 2, "return [%s, %d];\n", encoding.applicableNullValue(), arrayLength);
+            indent(sb, level + 2, "return [%s; %d];\n", encoding.applicableNullValue(), arrayLength);
             indent(sb, level + 1, "}\n\n");
         }
 
