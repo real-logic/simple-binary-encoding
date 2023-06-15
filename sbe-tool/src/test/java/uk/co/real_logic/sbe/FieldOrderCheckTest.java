@@ -27,9 +27,7 @@ import org.junit.jupiter.api.Test;
 import java.nio.charset.StandardCharsets;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
@@ -62,6 +60,7 @@ public class FieldOrderCheckTest
         assertThat(decoder.a(), equalTo(42));
         assertThat(decoder.b(), equalTo("abc"));
         assertThat(decoder.c(), equalTo("def"));
+        assertThat(decoder.toString(), containsString("a=42|b='abc'|c='def'"));
     }
 
     @Test
@@ -239,6 +238,7 @@ public class FieldOrderCheckTest
         assertThat(bs.next().c(), equalTo(1));
         assertThat(bs.next().c(), equalTo(2));
         assertThat(decoder.d(), equalTo("abc"));
+        assertThat(decoder.toString(), containsString("a=42|b=[(c=1),(c=2)]|d='abc'"));
     }
 
     @Test
@@ -256,6 +256,7 @@ public class FieldOrderCheckTest
         final GroupAndVarLengthDecoder.BDecoder bs = decoder.b();
         assertThat(bs.count(), equalTo(0));
         assertThat(decoder.d(), equalTo("abc"));
+        assertThat(decoder.toString(), containsString("a=42|b=[]|d='abc'"));
     }
 
     @Test
@@ -496,6 +497,7 @@ public class FieldOrderCheckTest
         assertThat(bs.next().c(), equalTo(2));
         assertThat(bs.d(), equalTo("def"));
         assertThat(decoder.e(), equalTo("ghi"));
+        assertThat(decoder.toString(), containsString("a=42|b=[(c=1|d='abc'),(c=2|d='def')]|e='ghi'"));
     }
 
     @Test
@@ -719,6 +721,8 @@ public class FieldOrderCheckTest
         final NestedGroupsDecoder.HDecoder hs = decoder.h();
         assertThat(hs.count(), equalTo(1));
         assertThat(hs.next().i(), equalTo(8));
+        assertThat(decoder.toString(),
+            containsString("a=42|b=[(c=1|d=[(e=2),(e=3)]|f=[(g=4)]),(c=5|d=[(e=6)]|f=[(g=7)])]|h=[(i=8)]"));
     }
 
     @Test
@@ -737,6 +741,7 @@ public class FieldOrderCheckTest
         assertThat(bs.count(), equalTo(0));
         final NestedGroupsDecoder.HDecoder hs = decoder.h();
         assertThat(hs.count(), equalTo(0));
+        assertThat(decoder.toString(), containsString("a=42|b=[]|h=[]"));
     }
 
     @Test
@@ -771,6 +776,7 @@ public class FieldOrderCheckTest
         final PointDecoder c = b.next().c();
         assertThat(c.x(), equalTo(3));
         assertThat(c.y(), equalTo(4));
+        assertThat(decoder.toString(), containsString("a=(x=1|y=2)|b=[(c=(x=3|y=4))]"));
     }
 
     @Test
@@ -1247,6 +1253,7 @@ public class FieldOrderCheckTest
         final AddGroupBeforeVarDataV1Decoder.CDecoder c = decoder.c();
         assertThat(c.count(), equalTo(0));
         assertThat(decoder.b(), equalTo("abc"));
+        assertThat(decoder.toString(), containsString("a=1|c=[]|b='abc'"));
     }
 
     @Test
@@ -1674,6 +1681,7 @@ public class FieldOrderCheckTest
         final EnumInsideGroupDecoder.BDecoder b = decoder.b();
         assertThat(b.count(), equalTo(1));
         assertThat(b.next().c(), equalTo(Direction.SELL));
+        assertThat(decoder.toString(), containsString("a=BUY|b=[(c=SELL)]"));
     }
 
     @Test
@@ -1748,6 +1756,7 @@ public class FieldOrderCheckTest
         assertThat(c.guacamole(), equalTo(false));
         assertThat(c.cheese(), equalTo(false));
         assertThat(c.sourCream(), equalTo(true));
+        assertThat(decoder.toString(), containsString("a={guacamole,cheese}|b=[(c={sourCream})]"));
     }
 
     @Test
@@ -1831,6 +1840,7 @@ public class FieldOrderCheckTest
         assertThat(b.c(1), equalTo((short)6));
         assertThat(b.c(2), equalTo((short)7));
         assertThat(b.c(3), equalTo((short)8));
+        assertThat(decoder.toString(), containsString("a=[1,2,3,4]|b=[(c=[5,6,7,8])]"));
     }
 
     @Test
@@ -1968,6 +1978,7 @@ public class FieldOrderCheckTest
         final MultipleGroupsDecoder.DDecoder d = decoder.d();
         assertThat(d.count(), equalTo(1));
         assertThat(d.next().e(), equalTo(43));
+        assertThat(decoder.toString(), containsString("a=42|b=[]|d=[(e=43)]"));
     }
 
     @Test
@@ -2127,6 +2138,7 @@ public class FieldOrderCheckTest
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
         assertThat(decoder.a(), equalTo(42));
         assertThat(decoder.b(), equalTo(""));
+        assertThat(decoder.toString(), containsString("a=42|b=''"));
     }
 
     @Test
@@ -2206,6 +2218,7 @@ public class FieldOrderCheckTest
         assertThat(b.count(), equalTo(1));
         b.next();
         assertThat(b.c(), equalTo("EURUSD"));
+        assertThat(decoder.toString(), containsString("a=GBPUSD|b=[(c=EURUSD)]"));
     }
 
     @Test
