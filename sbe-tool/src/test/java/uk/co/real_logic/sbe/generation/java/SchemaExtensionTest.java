@@ -21,7 +21,6 @@ import org.agrona.concurrent.UnsafeBuffer;
 import org.agrona.generation.CompilerUtil;
 import org.agrona.generation.StringWriterOutputManager;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import uk.co.real_logic.sbe.Tests;
 import uk.co.real_logic.sbe.ir.Ir;
@@ -43,7 +42,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static uk.co.real_logic.sbe.generation.java.ReflectionUtil.*;
 
 @SuppressWarnings("MethodLength")
-@Disabled // TODO
 class SchemaExtensionTest
 {
     private static final Class<?> BUFFER_CLASS = MutableDirectBuffer.class;

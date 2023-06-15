@@ -3076,9 +3076,14 @@ public class JavaGenerator implements CodeGenerator
             "    public int sbeDecodedLength()\n" +
             "    {\n" +
             "        final int currentLimit = limit();\n" +
+            "        final CodecState currentCodecState = codecState();\n" +
             "        sbeSkip();\n" +
             "        final int decodedLength = encodedLength();\n" +
             "        limit(currentLimit);\n\n" +
+            "        if (DEBUG_MODE)\n" +
+            "        {\n" +
+            "            codecState(currentCodecState);\n" +
+            "        }\n\n" +
             "        return decodedLength;\n" +
             "    }\n\n" +
 

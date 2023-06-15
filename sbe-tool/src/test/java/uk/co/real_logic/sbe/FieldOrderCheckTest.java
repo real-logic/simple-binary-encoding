@@ -64,6 +64,47 @@ public class FieldOrderCheckTest
     }
 
     @Test
+    void allowsDecodingVariableLengthFieldsAfterRewind()
+    {
+        final MultipleVarLengthEncoder encoder = new MultipleVarLengthEncoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(42);
+        encoder.b("abc");
+        encoder.c("def");
+
+        final MultipleVarLengthDecoder decoder = new MultipleVarLengthDecoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
+        assertThat(decoder.a(), equalTo(42));
+        assertThat(decoder.b(), equalTo("abc"));
+        assertThat(decoder.c(), equalTo("def"));
+        assertThat(decoder.toString(), containsString("a=42|b='abc'|c='def'"));
+
+        decoder.sbeRewind();
+
+        assertThat(decoder.a(), equalTo(42));
+        assertThat(decoder.b(), equalTo("abc"));
+        assertThat(decoder.c(), equalTo("def"));
+        assertThat(decoder.toString(), containsString("a=42|b='abc'|c='def'"));
+    }
+
+    @Test
+    void allowsDecodingToSkipVariableLengthFields()
+    {
+        final MultipleVarLengthEncoder encoder = new MultipleVarLengthEncoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(42);
+        encoder.b("abc");
+        encoder.c("def");
+
+        final MultipleVarLengthDecoder decoder = new MultipleVarLengthDecoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
+        assertThat(decoder.a(), equalTo(42));
+        assertThat(decoder.skipB(), equalTo(3));
+        assertThat(decoder.c(), equalTo("def"));
+        assertThat(decoder.toString(), containsString("a=42|b='abc'|c='def'"));
+    }
+
+    @Test
     @Disabled("Our access checks are too strict to allow the behaviour in this test.")
     void allowsReEncodingTopLevelPrimitiveFields()
     {
@@ -239,6 +280,104 @@ public class FieldOrderCheckTest
         assertThat(bs.next().c(), equalTo(2));
         assertThat(decoder.d(), equalTo("abc"));
         assertThat(decoder.toString(), containsString("a=42|b=[(c=1),(c=2)]|d='abc'"));
+    }
+
+    @Test
+    void allowsDecodingGroupAndVariableLengthFieldsAfterRewind()
+    {
+        final GroupAndVarLengthEncoder encoder = new GroupAndVarLengthEncoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(42);
+        encoder.bCount(2)
+            .next()
+            .c(1)
+            .next()
+            .c(2);
+        encoder.d("abc");
+
+        final GroupAndVarLengthDecoder decoder = new GroupAndVarLengthDecoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
+        assertThat(decoder.a(), equalTo(42));
+        final GroupAndVarLengthDecoder.BDecoder bs = decoder.b();
+        assertThat(bs.count(), equalTo(2));
+        assertThat(bs.next().c(), equalTo(1));
+        assertThat(bs.next().c(), equalTo(2));
+        assertThat(decoder.d(), equalTo("abc"));
+        assertThat(decoder.toString(), containsString("a=42|b=[(c=1),(c=2)]|d='abc'"));
+
+        decoder.sbeRewind();
+
+        assertThat(decoder.a(), equalTo(42));
+        final GroupAndVarLengthDecoder.BDecoder bs2 = decoder.b();
+        assertThat(bs2.count(), equalTo(2));
+        assertThat(bs2.next().c(), equalTo(1));
+        assertThat(bs2.next().c(), equalTo(2));
+        assertThat(decoder.d(), equalTo("abc"));
+        assertThat(decoder.toString(), containsString("a=42|b=[(c=1),(c=2)]|d='abc'"));
+    }
+
+    @Test
+    void allowsDecodingToSkipMessage()
+    {
+        final GroupAndVarLengthEncoder encoder = new GroupAndVarLengthEncoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(42);
+        encoder.bCount(2)
+            .next()
+            .c(1)
+            .next()
+            .c(2);
+        encoder.d("abc");
+
+        final int nextEncodeOffset = encoder.limit();
+        encoder.wrapAndApplyHeader(buffer, nextEncodeOffset, messageHeaderEncoder);
+        encoder.a(43);
+        encoder.bCount(2)
+            .next()
+            .c(3)
+            .next()
+            .c(4);
+        encoder.d("def");
+
+        final GroupAndVarLengthDecoder decoder = new GroupAndVarLengthDecoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
+
+        decoder.sbeSkip();
+        final int nextDecodeOffset = decoder.limit();
+        assertThat(nextDecodeOffset, equalTo(nextEncodeOffset));
+
+        decoder.wrapAndApplyHeader(buffer, nextDecodeOffset, messageHeaderDecoder);
+        assertThat(decoder.a(), equalTo(43));
+        final GroupAndVarLengthDecoder.BDecoder bs = decoder.b();
+        assertThat(bs.count(), equalTo(2));
+        assertThat(bs.next().c(), equalTo(3));
+        assertThat(bs.next().c(), equalTo(4));
+        assertThat(decoder.d(), equalTo("def"));
+    }
+
+    @Test
+    void allowsDecodingToDetermineMessageLengthBeforeReadingFields()
+    {
+        final GroupAndVarLengthEncoder encoder = new GroupAndVarLengthEncoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(43);
+        encoder.bCount(2)
+            .next()
+            .c(3)
+            .next()
+            .c(4);
+        encoder.d("def");
+
+        final GroupAndVarLengthDecoder decoder = new GroupAndVarLengthDecoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
+
+        assertThat(decoder.sbeDecodedLength(), equalTo(18));
+        assertThat(decoder.a(), equalTo(43));
+        final GroupAndVarLengthDecoder.BDecoder bs = decoder.b();
+        assertThat(bs.count(), equalTo(2));
+        assertThat(bs.next().c(), equalTo(3));
+        assertThat(bs.next().c(), equalTo(4));
+        assertThat(decoder.d(), equalTo("def"));
     }
 
     @Test

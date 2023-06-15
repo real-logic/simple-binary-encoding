@@ -166,9 +166,15 @@ public final class FrameCodecDecoder
     public int sbeDecodedLength()
     {
         final int currentLimit = limit();
+        final CodecState currentCodecState = codecState();
         sbeSkip();
         final int decodedLength = encodedLength();
         limit(currentLimit);
+
+        if (DEBUG_MODE)
+        {
+            codecState(currentCodecState);
+        }
 
         return decodedLength;
     }
