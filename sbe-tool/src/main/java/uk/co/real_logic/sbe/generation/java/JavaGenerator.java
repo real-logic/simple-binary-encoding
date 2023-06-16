@@ -250,8 +250,7 @@ public class JavaGenerator implements CodeGenerator
                 generateAnnotations(BASE_INDENT, className, groups, out, this::encoderName);
             }
             out.append(generateDeclaration(className, implementsString, msgToken));
-            final FieldOrderModel fieldOrderModel = FieldOrderModel.findTransitions(
-                msgToken, fields, groups, varData);
+            final FieldOrderModel fieldOrderModel = FieldOrderModel.newInstance(msgToken, fields, groups, varData);
             out.append(generateFieldOrderStates(fieldOrderModel));
             out.append(generateEncoderFlyweightCode(className, fieldOrderModel, msgToken));
 
@@ -390,25 +389,39 @@ public class JavaGenerator implements CodeGenerator
         final FieldOrderModel.TransitionContext context,
         final Token token)
     {
-        sb.append(indent).append("switch (codecState())\n")
-            .append(indent).append("{\n");
-
-        final List<FieldOrderModel.Transition> transitions = fieldOrderModel.getTransitions(context, token);
-
-        transitions.forEach(transition ->
+        if (fieldOrderModel.isTopLevelBlockField(token))
         {
-            transition.forEachStartState(startState ->
-                sb.append(indent).append("    case ").append(unqualifiedStateCase(startState)).append(":\n"));
-            sb.append(indent).append("        codecState(")
-                .append(qualifiedStateCase(transition.endState())).append(");\n")
-                .append(indent).append("        break;\n");
-        });
+            sb.append(indent).append("if (codecState() == ")
+                .append(qualifiedStateCase(fieldOrderModel.notWrappedState()))
+                .append(")\n")
+                .append(indent).append("{\n")
+                .append(indent).append("    throw new IllegalStateException(")
+                .append("\"Cannot access field \\\"").append(token.name())
+                .append("\\\" in state: \" + codecState());\n")
+                .append(indent).append("}\n");
+        }
+        else
+        {
+            sb.append(indent).append("switch (codecState())\n")
+                .append(indent).append("{\n");
 
-        sb.append(indent).append("    default:\n")
-            .append(indent).append("        throw new IllegalStateException(")
-            .append("\"Cannot access field \\\"").append(token.name())
-            .append("\\\" in state: \" + codecState());\n")
-            .append(indent).append("}\n");
+            final List<FieldOrderModel.Transition> transitions = fieldOrderModel.getTransitions(context, token);
+
+            transitions.forEach(transition ->
+            {
+                transition.forEachStartState(startState ->
+                    sb.append(indent).append("    case ").append(unqualifiedStateCase(startState)).append(":\n"));
+                sb.append(indent).append("        codecState(")
+                    .append(qualifiedStateCase(transition.endState())).append(");\n")
+                    .append(indent).append("        break;\n");
+            });
+
+            sb.append(indent).append("    default:\n")
+                .append(indent).append("        throw new IllegalStateException(")
+                .append("\"Cannot access field \\\"").append(token.name())
+                .append("\\\" in state: \" + codecState());\n")
+                .append(indent).append("}\n");
+        }
     }
 
     private static CharSequence generateFieldOrderStateTransitionsForNextGroupElement(
@@ -499,7 +512,7 @@ public class JavaGenerator implements CodeGenerator
                 generateAnnotations(BASE_INDENT, className, groups, out, this::decoderName);
             }
             out.append(generateDeclaration(className, implementsString, msgToken));
-            final FieldOrderModel fieldOrderModel = FieldOrderModel.findTransitions(
+            final FieldOrderModel fieldOrderModel = FieldOrderModel.newInstance(
                 msgToken, fields, groups, varData);
             out.append(generateFieldOrderStates(fieldOrderModel));
             out.append(generateDecoderFlyweightCode(fieldOrderModel, className, msgToken));

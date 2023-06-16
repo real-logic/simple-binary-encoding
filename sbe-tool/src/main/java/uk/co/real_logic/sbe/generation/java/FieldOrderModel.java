@@ -36,6 +36,7 @@ final class FieldOrderModel
 {
     private final Int2ObjectHashMap<State> states = new Int2ObjectHashMap<>();
     private final Map<Token, TransitionGroup> transitions = new LinkedHashMap<>();
+    private final Set<Token> topLevelBlockFields = new HashSet<>();
     private final Int2ObjectHashMap<State> versionWrappedStates = new Int2ObjectHashMap<>();
     private final Set<String> reservedNames = new HashSet<>();
     private final State notWrappedState = allocateState("NOT_WRAPPED");
@@ -69,6 +70,11 @@ final class FieldOrderModel
             .forEach(consumer);
     }
 
+    public boolean isTopLevelBlockField(final Token token)
+    {
+        return topLevelBlockFields.contains(token);
+    }
+
     public List<Transition> getTransitions(final TransitionContext context, final Token token)
     {
         final TransitionGroup transitionGroup = transitions.get(token);
@@ -80,45 +86,14 @@ final class FieldOrderModel
         return transitionGroup.transitions.get(context);
     }
 
-    public static FieldOrderModel findTransitions(
+    public static FieldOrderModel newInstance(
         final Token msgToken,
         final List<Token> fields,
         final List<Token> groups,
         final List<Token> varData)
     {
         final FieldOrderModel model = new FieldOrderModel();
-
-        final IntHashSet versions = new IntHashSet();
-        versions.add(msgToken.version());
-        findVersions(versions, fields, groups, varData);
-
-        versions.stream().sorted().forEach(version ->
-        {
-            final State versionWrappedState = model.allocateState("V" + version + "_BLOCK");
-
-            model.versionWrappedStates.put(version, versionWrappedState);
-
-            model.encoderWrappedState = versionWrappedState;
-
-            model.allocateTransition(
-                version,
-                ".wrap(...)",
-                null,
-                Collections.singletonList(model.notWrappedState),
-                versionWrappedState
-            );
-
-            model.findTransitions(
-                Collections.singletonList(versionWrappedState),
-                versionWrappedState,
-                "V" + version + "_",
-                fields,
-                groups,
-                varData,
-                token -> token.version() <= version
-            );
-        });
-
+        model.findTransitions(msgToken, fields, groups, varData);
         return model;
     }
 
@@ -190,6 +165,46 @@ final class FieldOrderModel
 
             versions.add(token.version());
         }
+    }
+
+    private void findTransitions(
+        final Token msgToken,
+        final List<Token> fields,
+        final List<Token> groups,
+        final List<Token> varData)
+    {
+        final IntHashSet versions = new IntHashSet();
+        versions.add(msgToken.version());
+        findVersions(versions, fields, groups, varData);
+
+        Generators.forEachField(fields, (fieldToken, ignored) -> topLevelBlockFields.add(fieldToken));
+
+        versions.stream().sorted().forEach(version ->
+        {
+            final State versionWrappedState = allocateState("V" + version + "_BLOCK");
+
+            versionWrappedStates.put(version, versionWrappedState);
+
+            encoderWrappedState = versionWrappedState;
+
+            allocateTransition(
+                version,
+                ".wrap(...)",
+                null,
+                Collections.singletonList(notWrappedState),
+                versionWrappedState
+            );
+
+            findTransitions(
+                Collections.singletonList(versionWrappedState),
+                versionWrappedState,
+                "V" + version + "_",
+                fields,
+                groups,
+                varData,
+                token -> token.version() <= version
+            );
+        });
     }
 
     @SuppressWarnings("checkstyle:MethodLength")

@@ -105,7 +105,6 @@ public class FieldOrderCheckTest
     }
 
     @Test
-    @Disabled("Our access checks are too strict to allow the behaviour in this test.")
     void allowsReEncodingTopLevelPrimitiveFields()
     {
         final MultipleVarLengthEncoder encoder = new MultipleVarLengthEncoder()
@@ -1016,7 +1015,6 @@ public class FieldOrderCheckTest
     }
 
     @Test
-    @Disabled("Our access checks are too strict to allow the behaviour in this test.")
     void allowsReEncodingTopLevelCompositeViaReWrap()
     {
         final CompositeInsideGroupEncoder encoder = new CompositeInsideGroupEncoder()
@@ -1109,7 +1107,6 @@ public class FieldOrderCheckTest
     }
 
     @Test
-    @Disabled("Our access checks are too strict to allow the behaviour in this test.")
     void allowsReDecodingTopLevelCompositeViaReWrap()
     {
         final CompositeInsideGroupEncoder encoder = new CompositeInsideGroupEncoder()
@@ -1925,7 +1922,6 @@ public class FieldOrderCheckTest
     }
 
     @Test
-    @Disabled("Our access checks are too strict to allow the behaviour in this test.")
     void allowsReEncodingTopLevelEnum()
     {
         final EnumInsideGroupEncoder encoder = new EnumInsideGroupEncoder()
@@ -2007,7 +2003,6 @@ public class FieldOrderCheckTest
     }
 
     @Test
-    @Disabled("Our access checks are too strict to allow the behaviour in this test.")
     void allowsReEncodingTopLevelBitSetViaReWrap()
     {
         final BitSetInsideGroupEncoder encoder = new BitSetInsideGroupEncoder()
@@ -2166,7 +2161,6 @@ public class FieldOrderCheckTest
     }
 
     @Test
-    @Disabled("Our access checks are too strict to allow the behaviour in this test.")
     void allowsReEncodingTopLevelArrayViaReWrap()
     {
         final ArrayInsideGroupEncoder encoder = new ArrayInsideGroupEncoder()
@@ -2233,7 +2227,6 @@ public class FieldOrderCheckTest
     }
 
     @Test
-    @Disabled("Our access checks are too strict to allow the behaviour in this test.")
     void allowsReEncodingTopLevelPrimitiveFieldsAfterGroups()
     {
         final MultipleGroupsEncoder encoder = new MultipleGroupsEncoder()
@@ -2586,7 +2579,6 @@ public class FieldOrderCheckTest
     }
 
     @Test
-    @Disabled("Our access checks are too strict to allow the behaviour in this test.")
     void allowsReEncodingTopLevelAsciiViaReWrap()
     {
         final AsciiInsideGroupEncoder encoder = new AsciiInsideGroupEncoder()

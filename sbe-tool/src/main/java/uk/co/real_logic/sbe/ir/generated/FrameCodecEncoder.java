@@ -200,13 +200,9 @@ public final class FrameCodecEncoder
     {
         if (DEBUG_MODE)
         {
-            switch (codecState())
+            if (codecState() == CodecState.NOT_WRAPPED)
             {
-                case V0_BLOCK:
-                    codecState(CodecState.V0_BLOCK);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"irId\" in state: " + codecState());
+                throw new IllegalStateException("Cannot access field \"irId\" in state: " + codecState());
             }
         }
 
@@ -264,13 +260,9 @@ public final class FrameCodecEncoder
     {
         if (DEBUG_MODE)
         {
-            switch (codecState())
+            if (codecState() == CodecState.NOT_WRAPPED)
             {
-                case V0_BLOCK:
-                    codecState(CodecState.V0_BLOCK);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"irVersion\" in state: " + codecState());
+                throw new IllegalStateException("Cannot access field \"irVersion\" in state: " + codecState());
             }
         }
 
@@ -328,13 +320,9 @@ public final class FrameCodecEncoder
     {
         if (DEBUG_MODE)
         {
-            switch (codecState())
+            if (codecState() == CodecState.NOT_WRAPPED)
             {
-                case V0_BLOCK:
-                    codecState(CodecState.V0_BLOCK);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"schemaVersion\" in state: " + codecState());
+                throw new IllegalStateException("Cannot access field \"schemaVersion\" in state: " + codecState());
             }
         }
 
