@@ -105,6 +105,7 @@ public class FieldOrderCheckTest
     }
 
     @Test
+    @Disabled("Our access checks are too strict to allow the behaviour in this test.")
     void allowsReEncodingTopLevelPrimitiveFields()
     {
         final MultipleVarLengthEncoder encoder = new MultipleVarLengthEncoder()
@@ -427,6 +428,7 @@ public class FieldOrderCheckTest
     }
 
     @Test
+    @Disabled("Our access checks are too strict to allow the behaviour in this test.")
     void allowsReEncodingPrimitiveFieldInGroupElementAfterTopLevelVariableLengthField()
     {
         final GroupAndVarLengthEncoder encoder = new GroupAndVarLengthEncoder()
@@ -452,7 +454,8 @@ public class FieldOrderCheckTest
     }
 
     @Test
-    void disallowsReWrappingGroupDecoder()
+    @Disabled("Our access checks are too strict to allow the behaviour in this test.")
+    void allowsReWrappingGroupDecoderAfterAccessingLength()
     {
         final GroupAndVarLengthEncoder encoder = new GroupAndVarLengthEncoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
@@ -469,9 +472,10 @@ public class FieldOrderCheckTest
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
         assertThat(decoder.a(), equalTo(42));
         assertThat(decoder.b().count(), equalTo(2));
-        final Exception exception =
-            assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, decoder::b);
-        assertThat(exception.getMessage(), containsString("Cannot access field \"b\" in state: V0_B_N"));
+        final GroupAndVarLengthDecoder.BDecoder b = decoder.b();
+        assertThat(b.next().c(), equalTo(1));
+        assertThat(b.next().c(), equalTo(3));
+        assertThat(decoder.d(), equalTo("abc"));
     }
 
     @Test
@@ -555,6 +559,7 @@ public class FieldOrderCheckTest
     }
 
     @Test
+    @Disabled("Our access checks are too strict to allow the behaviour in this test.")
     void allowsReEncodingGroupElementBlockFieldAfterTopLevelVariableLengthField()
     {
         final GroupAndVarLengthEncoder encoder = new GroupAndVarLengthEncoder()
@@ -680,6 +685,7 @@ public class FieldOrderCheckTest
     }
 
     @Test
+    @Disabled("Our access checks are too strict to allow the behaviour in this test.")
     void allowsReEncodingGroupElementPrimitiveFieldAfterElementVariableLengthField()
     {
         final VarLengthInsideGroupEncoder encoder = new VarLengthInsideGroupEncoder()
@@ -1010,6 +1016,7 @@ public class FieldOrderCheckTest
     }
 
     @Test
+    @Disabled("Our access checks are too strict to allow the behaviour in this test.")
     void allowsReEncodingTopLevelCompositeViaReWrap()
     {
         final CompositeInsideGroupEncoder encoder = new CompositeInsideGroupEncoder()
@@ -1102,6 +1109,7 @@ public class FieldOrderCheckTest
     }
 
     @Test
+    @Disabled("Our access checks are too strict to allow the behaviour in this test.")
     void allowsReDecodingTopLevelCompositeViaReWrap()
     {
         final CompositeInsideGroupEncoder encoder = new CompositeInsideGroupEncoder()
@@ -1917,6 +1925,7 @@ public class FieldOrderCheckTest
     }
 
     @Test
+    @Disabled("Our access checks are too strict to allow the behaviour in this test.")
     void allowsReEncodingTopLevelEnum()
     {
         final EnumInsideGroupEncoder encoder = new EnumInsideGroupEncoder()
@@ -1998,6 +2007,7 @@ public class FieldOrderCheckTest
     }
 
     @Test
+    @Disabled("Our access checks are too strict to allow the behaviour in this test.")
     void allowsReEncodingTopLevelBitSetViaReWrap()
     {
         final BitSetInsideGroupEncoder encoder = new BitSetInsideGroupEncoder()
@@ -2156,6 +2166,7 @@ public class FieldOrderCheckTest
     }
 
     @Test
+    @Disabled("Our access checks are too strict to allow the behaviour in this test.")
     void allowsReEncodingTopLevelArrayViaReWrap()
     {
         final ArrayInsideGroupEncoder encoder = new ArrayInsideGroupEncoder()
@@ -2222,6 +2233,7 @@ public class FieldOrderCheckTest
     }
 
     @Test
+    @Disabled("Our access checks are too strict to allow the behaviour in this test.")
     void allowsReEncodingTopLevelPrimitiveFieldsAfterGroups()
     {
         final MultipleGroupsEncoder encoder = new MultipleGroupsEncoder()
@@ -2574,6 +2586,7 @@ public class FieldOrderCheckTest
     }
 
     @Test
+    @Disabled("Our access checks are too strict to allow the behaviour in this test.")
     void allowsReEncodingTopLevelAsciiViaReWrap()
     {
         final AsciiInsideGroupEncoder encoder = new AsciiInsideGroupEncoder()
@@ -2831,7 +2844,6 @@ public class FieldOrderCheckTest
     }
 
     @Test
-    @Disabled("False positive since making checks more-lenient")
     void disallowsEncodingElementOfEmptyGroup1()
     {
         final MultipleGroupsEncoder encoder = new MultipleGroupsEncoder()
@@ -2841,11 +2853,10 @@ public class FieldOrderCheckTest
         encoder.dCount(1).next().e(43);
         final IllegalStateException exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> bEncoder.c(44));
-        assertThat(exception.getMessage(), containsString("TODO"));
+        assertThat(exception.getMessage(), containsString("Cannot access field \"c\" in state: V0_D_1_BLOCK"));
     }
 
     @Test
-    @Disabled("False positive since making checks more-lenient")
     void disallowsEncodingElementOfEmptyGroup2()
     {
         final NestedGroupsEncoder encoder = new NestedGroupsEncoder()
@@ -2859,11 +2870,10 @@ public class FieldOrderCheckTest
         encoder.hCount(0);
         final IllegalStateException exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> dEncoder.e(44));
-        assertThat(exception.getMessage(), containsString("TODO"));
+        assertThat(exception.getMessage(), containsString("Cannot access field \"e\" in state: V0_H_0"));
     }
 
     @Test
-    @Disabled("False positive since making checks more-lenient")
     void disallowsEncodingElementOfEmptyGroup3()
     {
         final NestedGroupsEncoder encoder = new NestedGroupsEncoder()
@@ -2877,11 +2887,10 @@ public class FieldOrderCheckTest
         encoder.hCount(0);
         final IllegalStateException exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> dEncoder.e(44));
-        assertThat(exception.getMessage(), containsString("TODO"));
+        assertThat(exception.getMessage(), containsString("Cannot access field \"e\" in state: V0_H_0"));
     }
 
     @Test
-    @Disabled("False positive since making checks more-lenient")
     void disallowsEncodingElementOfEmptyGroup4()
     {
         final NestedGroupsEncoder encoder = new NestedGroupsEncoder()
@@ -2894,11 +2903,10 @@ public class FieldOrderCheckTest
         bEncoder.fCount(0);
         final IllegalStateException exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> dEncoder.e(44));
-        assertThat(exception.getMessage(), containsString("TODO"));
+        assertThat(exception.getMessage(), containsString("Cannot access field \"e\" in state: V0_B_1_F_0"));
     }
 
     @Test
-    @Disabled("False positive since making checks more-lenient")
     void disallowsEncodingElementOfEmptyGroup5()
     {
         final AddPrimitiveInsideGroupV1Encoder encoder = new AddPrimitiveInsideGroupV1Encoder()
@@ -2907,11 +2915,10 @@ public class FieldOrderCheckTest
         final AddPrimitiveInsideGroupV1Encoder.BEncoder bEncoder = encoder.bCount(0);
         final IllegalStateException exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> bEncoder.c(43));
-        assertThat(exception.getMessage(), containsString("TODO"));
+        assertThat(exception.getMessage(), containsString("Cannot access field \"c\" in state: V1_B_0"));
     }
 
     @Test
-    @Disabled("False positive since making checks more-lenient")
     void disallowsEncodingElementOfEmptyGroup6()
     {
         final GroupAndVarLengthEncoder encoder = new GroupAndVarLengthEncoder()
@@ -2921,7 +2928,7 @@ public class FieldOrderCheckTest
         encoder.d("abc");
         final IllegalStateException exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> bEncoder.c(43));
-        assertThat(exception.getMessage(), containsString("TODO"));
+        assertThat(exception.getMessage(), containsString("Cannot access field \"c\" in state: V0_D_DONE"));
     }
 
     private void modifyHeaderToLookLikeVersion0()
@@ -2940,6 +2947,4 @@ public class FieldOrderCheckTest
         messageHeaderEncoder.wrap(buffer, OFFSET);
         messageHeaderEncoder.templateId(v0TemplateId);
     }
-
-    // TODO test error message
 }

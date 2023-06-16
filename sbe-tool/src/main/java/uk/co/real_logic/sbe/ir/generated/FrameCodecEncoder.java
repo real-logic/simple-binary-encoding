@@ -33,23 +33,11 @@ public final class FrameCodecEncoder
      */
     private enum CodecState
     {
-        NOT_WRAPPED(0),
-        V0_BLOCK(1),
-        V0_PACKAGENAME_DONE(2),
-        V0_NAMESPACENAME_DONE(3),
-        V0_SEMANTICVERSION_DONE(4);
-
-        private final int stateNumber;
-
-        CodecState(final int stateNumber)
-        {
-            this.stateNumber = stateNumber;
-        }
-
-        int stateNumber()
-        {
-            return stateNumber;
-        }
+        NOT_WRAPPED,
+        V0_BLOCK,
+        V0_PACKAGENAME_DONE,
+        V0_NAMESPACENAME_DONE,
+        V0_SEMANTICVERSION_DONE,
     }
 
     private CodecState codecState = CodecState.NOT_WRAPPED;
@@ -218,10 +206,7 @@ public final class FrameCodecEncoder
                     codecState(CodecState.V0_BLOCK);
                     break;
                 default:
-                    if (codecState().stateNumber() < CodecState.V0_BLOCK.stateNumber())
-                    {
-                        throw new IllegalStateException("Cannot access field \"irId\" in state: " + codecState());
-                    }
+                    throw new IllegalStateException("Cannot access field \"irId\" in state: " + codecState());
             }
         }
 
@@ -285,10 +270,7 @@ public final class FrameCodecEncoder
                     codecState(CodecState.V0_BLOCK);
                     break;
                 default:
-                    if (codecState().stateNumber() < CodecState.V0_BLOCK.stateNumber())
-                    {
-                        throw new IllegalStateException("Cannot access field \"irVersion\" in state: " + codecState());
-                    }
+                    throw new IllegalStateException("Cannot access field \"irVersion\" in state: " + codecState());
             }
         }
 
@@ -352,10 +334,7 @@ public final class FrameCodecEncoder
                     codecState(CodecState.V0_BLOCK);
                     break;
                 default:
-                    if (codecState().stateNumber() < CodecState.V0_BLOCK.stateNumber())
-                    {
-                        throw new IllegalStateException("Cannot access field \"schemaVersion\" in state: " + codecState());
-                    }
+                    throw new IllegalStateException("Cannot access field \"schemaVersion\" in state: " + codecState());
             }
         }
 
