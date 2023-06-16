@@ -21,6 +21,7 @@ import org.agrona.ExpandableArrayBuffer;
 import org.agrona.MutableDirectBuffer;
 import org.agrona.concurrent.UnsafeBuffer;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
@@ -2827,6 +2828,100 @@ public class FieldOrderCheckTest
         final GroupWithNoBlockDecoder.ADecoder a = decoder.a();
         assertThat(a.count(), equalTo(1));
         assertThat(a.next().b(), equalTo("abc"));
+    }
+
+    @Test
+    @Disabled("False positive since making checks more-lenient")
+    void disallowsEncodingElementOfEmptyGroup1()
+    {
+        final MultipleGroupsEncoder encoder = new MultipleGroupsEncoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(42);
+        final MultipleGroupsEncoder.BEncoder bEncoder = encoder.bCount(0);
+        encoder.dCount(1).next().e(43);
+        final IllegalStateException exception =
+            assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> bEncoder.c(44));
+        assertThat(exception.getMessage(), containsString("TODO"));
+    }
+
+    @Test
+    @Disabled("False positive since making checks more-lenient")
+    void disallowsEncodingElementOfEmptyGroup2()
+    {
+        final NestedGroupsEncoder encoder = new NestedGroupsEncoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(42);
+        final NestedGroupsEncoder.BEncoder bEncoder = encoder.bCount(1);
+        bEncoder.next();
+        bEncoder.c(43);
+        final NestedGroupsEncoder.BEncoder.DEncoder dEncoder = bEncoder.dCount(0);
+        bEncoder.fCount(0);
+        encoder.hCount(0);
+        final IllegalStateException exception =
+            assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> dEncoder.e(44));
+        assertThat(exception.getMessage(), containsString("TODO"));
+    }
+
+    @Test
+    @Disabled("False positive since making checks more-lenient")
+    void disallowsEncodingElementOfEmptyGroup3()
+    {
+        final NestedGroupsEncoder encoder = new NestedGroupsEncoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(42);
+        final NestedGroupsEncoder.BEncoder bEncoder = encoder.bCount(1);
+        bEncoder.next();
+        bEncoder.c(43);
+        final NestedGroupsEncoder.BEncoder.DEncoder dEncoder = bEncoder.dCount(0);
+        bEncoder.fCount(0);
+        encoder.hCount(0);
+        final IllegalStateException exception =
+            assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> dEncoder.e(44));
+        assertThat(exception.getMessage(), containsString("TODO"));
+    }
+
+    @Test
+    @Disabled("False positive since making checks more-lenient")
+    void disallowsEncodingElementOfEmptyGroup4()
+    {
+        final NestedGroupsEncoder encoder = new NestedGroupsEncoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(42);
+        final NestedGroupsEncoder.BEncoder bEncoder = encoder.bCount(1);
+        bEncoder.next();
+        bEncoder.c(43);
+        final NestedGroupsEncoder.BEncoder.DEncoder dEncoder = bEncoder.dCount(0);
+        bEncoder.fCount(0);
+        final IllegalStateException exception =
+            assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> dEncoder.e(44));
+        assertThat(exception.getMessage(), containsString("TODO"));
+    }
+
+    @Test
+    @Disabled("False positive since making checks more-lenient")
+    void disallowsEncodingElementOfEmptyGroup5()
+    {
+        final AddPrimitiveInsideGroupV1Encoder encoder = new AddPrimitiveInsideGroupV1Encoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(42);
+        final AddPrimitiveInsideGroupV1Encoder.BEncoder bEncoder = encoder.bCount(0);
+        final IllegalStateException exception =
+            assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> bEncoder.c(43));
+        assertThat(exception.getMessage(), containsString("TODO"));
+    }
+
+    @Test
+    @Disabled("False positive since making checks more-lenient")
+    void disallowsEncodingElementOfEmptyGroup6()
+    {
+        final GroupAndVarLengthEncoder encoder = new GroupAndVarLengthEncoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(42);
+        final GroupAndVarLengthEncoder.BEncoder bEncoder = encoder.bCount(0);
+        encoder.d("abc");
+        final IllegalStateException exception =
+            assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> bEncoder.c(43));
+        assertThat(exception.getMessage(), containsString("TODO"));
     }
 
     private void modifyHeaderToLookLikeVersion0()
