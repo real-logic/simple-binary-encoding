@@ -111,6 +111,19 @@ public final class FrameCodecDecoder
         return offset;
     }
 
+    private void onWrap(final int actingVersion)
+    {
+        switch(actingVersion)
+        {
+            case 0:
+                codecState(CodecState.V0_BLOCK);
+                break;
+            default:
+                codecState(CodecState.V0_BLOCK);
+                break;
+        }
+    }
+
     public FrameCodecDecoder wrap(
         final DirectBuffer buffer,
         final int offset,
@@ -129,14 +142,7 @@ public final class FrameCodecDecoder
 
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch(actingVersion)            {
-                case 0:
-                    codecState(CodecState.V0_BLOCK);
-                    break;
-                default:
-                    codecState(CodecState.V0_BLOCK);
-                    break;
-            }
+            onWrap(actingVersion);
         }
 
         return this;
@@ -233,6 +239,14 @@ public final class FrameCodecDecoder
         return "";
     }
 
+    private void onIrIdAccessed()
+    {
+        if (codecState() == CodecState.NOT_WRAPPED)
+        {
+            throw new IllegalStateException("Cannot access field \"irId\" in state: " + codecState());
+        }
+    }
+
     public static int irIdNullValue()
     {
         return -2147483648;
@@ -252,10 +266,7 @@ public final class FrameCodecDecoder
     {
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            if (codecState() == CodecState.NOT_WRAPPED)
-            {
-                throw new IllegalStateException("Cannot access field \"irId\" in state: " + codecState());
-            }
+            onIrIdAccessed();
         }
 
         return buffer.getInt(offset + 0, java.nio.ByteOrder.LITTLE_ENDIAN);
@@ -292,6 +303,14 @@ public final class FrameCodecDecoder
         return "";
     }
 
+    private void onIrVersionAccessed()
+    {
+        if (codecState() == CodecState.NOT_WRAPPED)
+        {
+            throw new IllegalStateException("Cannot access field \"irVersion\" in state: " + codecState());
+        }
+    }
+
     public static int irVersionNullValue()
     {
         return -2147483648;
@@ -311,10 +330,7 @@ public final class FrameCodecDecoder
     {
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            if (codecState() == CodecState.NOT_WRAPPED)
-            {
-                throw new IllegalStateException("Cannot access field \"irVersion\" in state: " + codecState());
-            }
+            onIrVersionAccessed();
         }
 
         return buffer.getInt(offset + 4, java.nio.ByteOrder.LITTLE_ENDIAN);
@@ -351,6 +367,14 @@ public final class FrameCodecDecoder
         return "";
     }
 
+    private void onSchemaVersionAccessed()
+    {
+        if (codecState() == CodecState.NOT_WRAPPED)
+        {
+            throw new IllegalStateException("Cannot access field \"schemaVersion\" in state: " + codecState());
+        }
+    }
+
     public static int schemaVersionNullValue()
     {
         return -2147483648;
@@ -370,10 +394,7 @@ public final class FrameCodecDecoder
     {
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            if (codecState() == CodecState.NOT_WRAPPED)
-            {
-                throw new IllegalStateException("Cannot access field \"schemaVersion\" in state: " + codecState());
-            }
+            onSchemaVersionAccessed();
         }
 
         return buffer.getInt(offset + 8, java.nio.ByteOrder.LITTLE_ENDIAN);
@@ -410,18 +431,23 @@ public final class FrameCodecDecoder
         return 2;
     }
 
+    private void onPackageNameAccessed()
+    {
+        switch (codecState())
+        {
+            case V0_BLOCK:
+                codecState(CodecState.V0_PACKAGENAME_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Cannot access field \"packageName\" in state: " + codecState());
+        }
+    }
+
     public int packageNameLength()
     {
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_BLOCK:
-                    codecState(CodecState.V0_PACKAGENAME_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"packageName\" in state: " + codecState());
-            }
+            onPackageNameAccessed();
         }
 
         final int limit = parentMessage.limit();
@@ -432,14 +458,7 @@ public final class FrameCodecDecoder
     {
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_BLOCK:
-                    codecState(CodecState.V0_PACKAGENAME_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"packageName\" in state: " + codecState());
-            }
+            onPackageNameAccessed();
         }
 
         final int headerLength = 2;
@@ -455,14 +474,7 @@ public final class FrameCodecDecoder
     {
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_BLOCK:
-                    codecState(CodecState.V0_PACKAGENAME_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"packageName\" in state: " + codecState());
-            }
+            onPackageNameAccessed();
         }
 
         final int headerLength = 2;
@@ -479,14 +491,7 @@ public final class FrameCodecDecoder
     {
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_BLOCK:
-                    codecState(CodecState.V0_PACKAGENAME_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"packageName\" in state: " + codecState());
-            }
+            onPackageNameAccessed();
         }
 
         final int headerLength = 2;
@@ -503,14 +508,7 @@ public final class FrameCodecDecoder
     {
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_BLOCK:
-                    codecState(CodecState.V0_PACKAGENAME_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"packageName\" in state: " + codecState());
-            }
+            onPackageNameAccessed();
         }
 
         final int headerLength = 2;
@@ -524,14 +522,7 @@ public final class FrameCodecDecoder
     {
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_BLOCK:
-                    codecState(CodecState.V0_PACKAGENAME_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"packageName\" in state: " + codecState());
-            }
+            onPackageNameAccessed();
         }
 
         final int headerLength = 2;
@@ -580,18 +571,23 @@ public final class FrameCodecDecoder
         return 2;
     }
 
+    private void onNamespaceNameAccessed()
+    {
+        switch (codecState())
+        {
+            case V0_PACKAGENAME_DONE:
+                codecState(CodecState.V0_NAMESPACENAME_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Cannot access field \"namespaceName\" in state: " + codecState());
+        }
+    }
+
     public int namespaceNameLength()
     {
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_PACKAGENAME_DONE:
-                    codecState(CodecState.V0_NAMESPACENAME_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"namespaceName\" in state: " + codecState());
-            }
+            onNamespaceNameAccessed();
         }
 
         final int limit = parentMessage.limit();
@@ -602,14 +598,7 @@ public final class FrameCodecDecoder
     {
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_PACKAGENAME_DONE:
-                    codecState(CodecState.V0_NAMESPACENAME_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"namespaceName\" in state: " + codecState());
-            }
+            onNamespaceNameAccessed();
         }
 
         final int headerLength = 2;
@@ -625,14 +614,7 @@ public final class FrameCodecDecoder
     {
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_PACKAGENAME_DONE:
-                    codecState(CodecState.V0_NAMESPACENAME_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"namespaceName\" in state: " + codecState());
-            }
+            onNamespaceNameAccessed();
         }
 
         final int headerLength = 2;
@@ -649,14 +631,7 @@ public final class FrameCodecDecoder
     {
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_PACKAGENAME_DONE:
-                    codecState(CodecState.V0_NAMESPACENAME_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"namespaceName\" in state: " + codecState());
-            }
+            onNamespaceNameAccessed();
         }
 
         final int headerLength = 2;
@@ -673,14 +648,7 @@ public final class FrameCodecDecoder
     {
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_PACKAGENAME_DONE:
-                    codecState(CodecState.V0_NAMESPACENAME_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"namespaceName\" in state: " + codecState());
-            }
+            onNamespaceNameAccessed();
         }
 
         final int headerLength = 2;
@@ -694,14 +662,7 @@ public final class FrameCodecDecoder
     {
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_PACKAGENAME_DONE:
-                    codecState(CodecState.V0_NAMESPACENAME_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"namespaceName\" in state: " + codecState());
-            }
+            onNamespaceNameAccessed();
         }
 
         final int headerLength = 2;
@@ -750,18 +711,23 @@ public final class FrameCodecDecoder
         return 2;
     }
 
+    private void onSemanticVersionAccessed()
+    {
+        switch (codecState())
+        {
+            case V0_NAMESPACENAME_DONE:
+                codecState(CodecState.V0_SEMANTICVERSION_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Cannot access field \"semanticVersion\" in state: " + codecState());
+        }
+    }
+
     public int semanticVersionLength()
     {
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_NAMESPACENAME_DONE:
-                    codecState(CodecState.V0_SEMANTICVERSION_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"semanticVersion\" in state: " + codecState());
-            }
+            onSemanticVersionAccessed();
         }
 
         final int limit = parentMessage.limit();
@@ -772,14 +738,7 @@ public final class FrameCodecDecoder
     {
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_NAMESPACENAME_DONE:
-                    codecState(CodecState.V0_SEMANTICVERSION_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"semanticVersion\" in state: " + codecState());
-            }
+            onSemanticVersionAccessed();
         }
 
         final int headerLength = 2;
@@ -795,14 +754,7 @@ public final class FrameCodecDecoder
     {
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_NAMESPACENAME_DONE:
-                    codecState(CodecState.V0_SEMANTICVERSION_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"semanticVersion\" in state: " + codecState());
-            }
+            onSemanticVersionAccessed();
         }
 
         final int headerLength = 2;
@@ -819,14 +771,7 @@ public final class FrameCodecDecoder
     {
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_NAMESPACENAME_DONE:
-                    codecState(CodecState.V0_SEMANTICVERSION_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"semanticVersion\" in state: " + codecState());
-            }
+            onSemanticVersionAccessed();
         }
 
         final int headerLength = 2;
@@ -843,14 +788,7 @@ public final class FrameCodecDecoder
     {
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_NAMESPACENAME_DONE:
-                    codecState(CodecState.V0_SEMANTICVERSION_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"semanticVersion\" in state: " + codecState());
-            }
+            onSemanticVersionAccessed();
         }
 
         final int headerLength = 2;
@@ -864,14 +802,7 @@ public final class FrameCodecDecoder
     {
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_NAMESPACENAME_DONE:
-                    codecState(CodecState.V0_SEMANTICVERSION_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"semanticVersion\" in state: " + codecState());
-            }
+            onSemanticVersionAccessed();
         }
 
         final int headerLength = 2;

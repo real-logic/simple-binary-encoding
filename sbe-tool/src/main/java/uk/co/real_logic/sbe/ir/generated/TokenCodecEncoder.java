@@ -208,6 +208,14 @@ public final class TokenCodecEncoder
         return "";
     }
 
+    private void onTokenOffsetAccessed()
+    {
+        if (codecState() == CodecState.NOT_WRAPPED)
+        {
+            throw new IllegalStateException("Cannot access field \"tokenOffset\" in state: " + codecState());
+        }
+    }
+
     public static int tokenOffsetNullValue()
     {
         return -2147483648;
@@ -227,10 +235,7 @@ public final class TokenCodecEncoder
     {
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            if (codecState() == CodecState.NOT_WRAPPED)
-            {
-                throw new IllegalStateException("Cannot access field \"tokenOffset\" in state: " + codecState());
-            }
+            onTokenOffsetAccessed();
         }
 
         buffer.putInt(offset + 0, value, java.nio.ByteOrder.LITTLE_ENDIAN);
@@ -268,6 +273,14 @@ public final class TokenCodecEncoder
         return "";
     }
 
+    private void onTokenSizeAccessed()
+    {
+        if (codecState() == CodecState.NOT_WRAPPED)
+        {
+            throw new IllegalStateException("Cannot access field \"tokenSize\" in state: " + codecState());
+        }
+    }
+
     public static int tokenSizeNullValue()
     {
         return -2147483648;
@@ -287,10 +300,7 @@ public final class TokenCodecEncoder
     {
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            if (codecState() == CodecState.NOT_WRAPPED)
-            {
-                throw new IllegalStateException("Cannot access field \"tokenSize\" in state: " + codecState());
-            }
+            onTokenSizeAccessed();
         }
 
         buffer.putInt(offset + 4, value, java.nio.ByteOrder.LITTLE_ENDIAN);
@@ -328,6 +338,14 @@ public final class TokenCodecEncoder
         return "";
     }
 
+    private void onFieldIdAccessed()
+    {
+        if (codecState() == CodecState.NOT_WRAPPED)
+        {
+            throw new IllegalStateException("Cannot access field \"fieldId\" in state: " + codecState());
+        }
+    }
+
     public static int fieldIdNullValue()
     {
         return -2147483648;
@@ -347,10 +365,7 @@ public final class TokenCodecEncoder
     {
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            if (codecState() == CodecState.NOT_WRAPPED)
-            {
-                throw new IllegalStateException("Cannot access field \"fieldId\" in state: " + codecState());
-            }
+            onFieldIdAccessed();
         }
 
         buffer.putInt(offset + 8, value, java.nio.ByteOrder.LITTLE_ENDIAN);
@@ -388,6 +403,14 @@ public final class TokenCodecEncoder
         return "";
     }
 
+    private void onTokenVersionAccessed()
+    {
+        if (codecState() == CodecState.NOT_WRAPPED)
+        {
+            throw new IllegalStateException("Cannot access field \"tokenVersion\" in state: " + codecState());
+        }
+    }
+
     public static int tokenVersionNullValue()
     {
         return -2147483648;
@@ -407,10 +430,7 @@ public final class TokenCodecEncoder
     {
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            if (codecState() == CodecState.NOT_WRAPPED)
-            {
-                throw new IllegalStateException("Cannot access field \"tokenVersion\" in state: " + codecState());
-            }
+            onTokenVersionAccessed();
         }
 
         buffer.putInt(offset + 12, value, java.nio.ByteOrder.LITTLE_ENDIAN);
@@ -448,6 +468,14 @@ public final class TokenCodecEncoder
         return "";
     }
 
+    private void onComponentTokenCountAccessed()
+    {
+        if (codecState() == CodecState.NOT_WRAPPED)
+        {
+            throw new IllegalStateException("Cannot access field \"componentTokenCount\" in state: " + codecState());
+        }
+    }
+
     public static int componentTokenCountNullValue()
     {
         return -2147483648;
@@ -467,10 +495,7 @@ public final class TokenCodecEncoder
     {
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            if (codecState() == CodecState.NOT_WRAPPED)
-            {
-                throw new IllegalStateException("Cannot access field \"componentTokenCount\" in state: " + codecState());
-            }
+            onComponentTokenCountAccessed();
         }
 
         buffer.putInt(offset + 16, value, java.nio.ByteOrder.LITTLE_ENDIAN);
@@ -508,14 +533,19 @@ public final class TokenCodecEncoder
         return "";
     }
 
+    private void onSignalAccessed()
+    {
+        if (codecState() == CodecState.NOT_WRAPPED)
+        {
+            throw new IllegalStateException("Cannot access field \"signal\" in state: " + codecState());
+        }
+    }
+
     public TokenCodecEncoder signal(final SignalCodec value)
     {
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            if (codecState() == CodecState.NOT_WRAPPED)
-            {
-                throw new IllegalStateException("Cannot access field \"signal\" in state: " + codecState());
-            }
+            onSignalAccessed();
         }
 
         buffer.putByte(offset + 20, (byte)value.value());
@@ -552,14 +582,19 @@ public final class TokenCodecEncoder
         return "";
     }
 
+    private void onPrimitiveTypeAccessed()
+    {
+        if (codecState() == CodecState.NOT_WRAPPED)
+        {
+            throw new IllegalStateException("Cannot access field \"primitiveType\" in state: " + codecState());
+        }
+    }
+
     public TokenCodecEncoder primitiveType(final PrimitiveTypeCodec value)
     {
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            if (codecState() == CodecState.NOT_WRAPPED)
-            {
-                throw new IllegalStateException("Cannot access field \"primitiveType\" in state: " + codecState());
-            }
+            onPrimitiveTypeAccessed();
         }
 
         buffer.putByte(offset + 21, (byte)value.value());
@@ -596,14 +631,19 @@ public final class TokenCodecEncoder
         return "";
     }
 
+    private void onByteOrderAccessed()
+    {
+        if (codecState() == CodecState.NOT_WRAPPED)
+        {
+            throw new IllegalStateException("Cannot access field \"byteOrder\" in state: " + codecState());
+        }
+    }
+
     public TokenCodecEncoder byteOrder(final ByteOrderCodec value)
     {
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            if (codecState() == CodecState.NOT_WRAPPED)
-            {
-                throw new IllegalStateException("Cannot access field \"byteOrder\" in state: " + codecState());
-            }
+            onByteOrderAccessed();
         }
 
         buffer.putByte(offset + 22, (byte)value.value());
@@ -640,14 +680,19 @@ public final class TokenCodecEncoder
         return "";
     }
 
+    private void onPresenceAccessed()
+    {
+        if (codecState() == CodecState.NOT_WRAPPED)
+        {
+            throw new IllegalStateException("Cannot access field \"presence\" in state: " + codecState());
+        }
+    }
+
     public TokenCodecEncoder presence(final PresenceCodec value)
     {
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            if (codecState() == CodecState.NOT_WRAPPED)
-            {
-                throw new IllegalStateException("Cannot access field \"presence\" in state: " + codecState());
-            }
+            onPresenceAccessed();
         }
 
         buffer.putByte(offset + 23, (byte)value.value());
@@ -684,6 +729,14 @@ public final class TokenCodecEncoder
         return "";
     }
 
+    private void onDeprecatedAccessed()
+    {
+        if (codecState() == CodecState.NOT_WRAPPED)
+        {
+            throw new IllegalStateException("Cannot access field \"deprecated\" in state: " + codecState());
+        }
+    }
+
     public static int deprecatedNullValue()
     {
         return 0;
@@ -703,10 +756,7 @@ public final class TokenCodecEncoder
     {
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            if (codecState() == CodecState.NOT_WRAPPED)
-            {
-                throw new IllegalStateException("Cannot access field \"deprecated\" in state: " + codecState());
-            }
+            onDeprecatedAccessed();
         }
 
         buffer.putInt(offset + 24, value, java.nio.ByteOrder.LITTLE_ENDIAN);
@@ -739,6 +789,18 @@ public final class TokenCodecEncoder
         return 2;
     }
 
+    private void onNameAccessed()
+    {
+        switch (codecState())
+        {
+            case V0_BLOCK:
+                codecState(CodecState.V0_NAME_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Cannot access field \"name\" in state: " + codecState());
+        }
+    }
+
     public TokenCodecEncoder putName(final DirectBuffer src, final int srcOffset, final int length)
     {
         if (length > 65534)
@@ -748,14 +810,7 @@ public final class TokenCodecEncoder
 
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_BLOCK:
-                    codecState(CodecState.V0_NAME_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"name\" in state: " + codecState());
-            }
+            onNameAccessed();
         }
 
         final int headerLength = 2;
@@ -776,14 +831,7 @@ public final class TokenCodecEncoder
 
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_BLOCK:
-                    codecState(CodecState.V0_NAME_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"name\" in state: " + codecState());
-            }
+            onNameAccessed();
         }
 
         final int headerLength = 2;
@@ -807,14 +855,7 @@ public final class TokenCodecEncoder
 
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_BLOCK:
-                    codecState(CodecState.V0_NAME_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"name\" in state: " + codecState());
-            }
+            onNameAccessed();
         }
 
         final int headerLength = 2;
@@ -851,6 +892,18 @@ public final class TokenCodecEncoder
         return 2;
     }
 
+    private void onConstValueAccessed()
+    {
+        switch (codecState())
+        {
+            case V0_NAME_DONE:
+                codecState(CodecState.V0_CONSTVALUE_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Cannot access field \"constValue\" in state: " + codecState());
+        }
+    }
+
     public TokenCodecEncoder putConstValue(final DirectBuffer src, final int srcOffset, final int length)
     {
         if (length > 65534)
@@ -860,14 +913,7 @@ public final class TokenCodecEncoder
 
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_NAME_DONE:
-                    codecState(CodecState.V0_CONSTVALUE_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"constValue\" in state: " + codecState());
-            }
+            onConstValueAccessed();
         }
 
         final int headerLength = 2;
@@ -888,14 +934,7 @@ public final class TokenCodecEncoder
 
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_NAME_DONE:
-                    codecState(CodecState.V0_CONSTVALUE_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"constValue\" in state: " + codecState());
-            }
+            onConstValueAccessed();
         }
 
         final int headerLength = 2;
@@ -919,14 +958,7 @@ public final class TokenCodecEncoder
 
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_NAME_DONE:
-                    codecState(CodecState.V0_CONSTVALUE_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"constValue\" in state: " + codecState());
-            }
+            onConstValueAccessed();
         }
 
         final int headerLength = 2;
@@ -963,6 +995,18 @@ public final class TokenCodecEncoder
         return 2;
     }
 
+    private void onMinValueAccessed()
+    {
+        switch (codecState())
+        {
+            case V0_CONSTVALUE_DONE:
+                codecState(CodecState.V0_MINVALUE_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Cannot access field \"minValue\" in state: " + codecState());
+        }
+    }
+
     public TokenCodecEncoder putMinValue(final DirectBuffer src, final int srcOffset, final int length)
     {
         if (length > 65534)
@@ -972,14 +1016,7 @@ public final class TokenCodecEncoder
 
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_CONSTVALUE_DONE:
-                    codecState(CodecState.V0_MINVALUE_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"minValue\" in state: " + codecState());
-            }
+            onMinValueAccessed();
         }
 
         final int headerLength = 2;
@@ -1000,14 +1037,7 @@ public final class TokenCodecEncoder
 
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_CONSTVALUE_DONE:
-                    codecState(CodecState.V0_MINVALUE_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"minValue\" in state: " + codecState());
-            }
+            onMinValueAccessed();
         }
 
         final int headerLength = 2;
@@ -1031,14 +1061,7 @@ public final class TokenCodecEncoder
 
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_CONSTVALUE_DONE:
-                    codecState(CodecState.V0_MINVALUE_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"minValue\" in state: " + codecState());
-            }
+            onMinValueAccessed();
         }
 
         final int headerLength = 2;
@@ -1075,6 +1098,18 @@ public final class TokenCodecEncoder
         return 2;
     }
 
+    private void onMaxValueAccessed()
+    {
+        switch (codecState())
+        {
+            case V0_MINVALUE_DONE:
+                codecState(CodecState.V0_MAXVALUE_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Cannot access field \"maxValue\" in state: " + codecState());
+        }
+    }
+
     public TokenCodecEncoder putMaxValue(final DirectBuffer src, final int srcOffset, final int length)
     {
         if (length > 65534)
@@ -1084,14 +1119,7 @@ public final class TokenCodecEncoder
 
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_MINVALUE_DONE:
-                    codecState(CodecState.V0_MAXVALUE_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"maxValue\" in state: " + codecState());
-            }
+            onMaxValueAccessed();
         }
 
         final int headerLength = 2;
@@ -1112,14 +1140,7 @@ public final class TokenCodecEncoder
 
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_MINVALUE_DONE:
-                    codecState(CodecState.V0_MAXVALUE_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"maxValue\" in state: " + codecState());
-            }
+            onMaxValueAccessed();
         }
 
         final int headerLength = 2;
@@ -1143,14 +1164,7 @@ public final class TokenCodecEncoder
 
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_MINVALUE_DONE:
-                    codecState(CodecState.V0_MAXVALUE_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"maxValue\" in state: " + codecState());
-            }
+            onMaxValueAccessed();
         }
 
         final int headerLength = 2;
@@ -1187,6 +1201,18 @@ public final class TokenCodecEncoder
         return 2;
     }
 
+    private void onNullValueAccessed()
+    {
+        switch (codecState())
+        {
+            case V0_MAXVALUE_DONE:
+                codecState(CodecState.V0_NULLVALUE_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Cannot access field \"nullValue\" in state: " + codecState());
+        }
+    }
+
     public TokenCodecEncoder putNullValue(final DirectBuffer src, final int srcOffset, final int length)
     {
         if (length > 65534)
@@ -1196,14 +1222,7 @@ public final class TokenCodecEncoder
 
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_MAXVALUE_DONE:
-                    codecState(CodecState.V0_NULLVALUE_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"nullValue\" in state: " + codecState());
-            }
+            onNullValueAccessed();
         }
 
         final int headerLength = 2;
@@ -1224,14 +1243,7 @@ public final class TokenCodecEncoder
 
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_MAXVALUE_DONE:
-                    codecState(CodecState.V0_NULLVALUE_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"nullValue\" in state: " + codecState());
-            }
+            onNullValueAccessed();
         }
 
         final int headerLength = 2;
@@ -1255,14 +1267,7 @@ public final class TokenCodecEncoder
 
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_MAXVALUE_DONE:
-                    codecState(CodecState.V0_NULLVALUE_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"nullValue\" in state: " + codecState());
-            }
+            onNullValueAccessed();
         }
 
         final int headerLength = 2;
@@ -1299,6 +1304,18 @@ public final class TokenCodecEncoder
         return 2;
     }
 
+    private void onCharacterEncodingAccessed()
+    {
+        switch (codecState())
+        {
+            case V0_NULLVALUE_DONE:
+                codecState(CodecState.V0_CHARACTERENCODING_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Cannot access field \"characterEncoding\" in state: " + codecState());
+        }
+    }
+
     public TokenCodecEncoder putCharacterEncoding(final DirectBuffer src, final int srcOffset, final int length)
     {
         if (length > 65534)
@@ -1308,14 +1325,7 @@ public final class TokenCodecEncoder
 
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_NULLVALUE_DONE:
-                    codecState(CodecState.V0_CHARACTERENCODING_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"characterEncoding\" in state: " + codecState());
-            }
+            onCharacterEncodingAccessed();
         }
 
         final int headerLength = 2;
@@ -1336,14 +1346,7 @@ public final class TokenCodecEncoder
 
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_NULLVALUE_DONE:
-                    codecState(CodecState.V0_CHARACTERENCODING_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"characterEncoding\" in state: " + codecState());
-            }
+            onCharacterEncodingAccessed();
         }
 
         final int headerLength = 2;
@@ -1367,14 +1370,7 @@ public final class TokenCodecEncoder
 
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_NULLVALUE_DONE:
-                    codecState(CodecState.V0_CHARACTERENCODING_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"characterEncoding\" in state: " + codecState());
-            }
+            onCharacterEncodingAccessed();
         }
 
         final int headerLength = 2;
@@ -1411,6 +1407,18 @@ public final class TokenCodecEncoder
         return 2;
     }
 
+    private void onEpochAccessed()
+    {
+        switch (codecState())
+        {
+            case V0_CHARACTERENCODING_DONE:
+                codecState(CodecState.V0_EPOCH_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Cannot access field \"epoch\" in state: " + codecState());
+        }
+    }
+
     public TokenCodecEncoder putEpoch(final DirectBuffer src, final int srcOffset, final int length)
     {
         if (length > 65534)
@@ -1420,14 +1428,7 @@ public final class TokenCodecEncoder
 
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_CHARACTERENCODING_DONE:
-                    codecState(CodecState.V0_EPOCH_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"epoch\" in state: " + codecState());
-            }
+            onEpochAccessed();
         }
 
         final int headerLength = 2;
@@ -1448,14 +1449,7 @@ public final class TokenCodecEncoder
 
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_CHARACTERENCODING_DONE:
-                    codecState(CodecState.V0_EPOCH_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"epoch\" in state: " + codecState());
-            }
+            onEpochAccessed();
         }
 
         final int headerLength = 2;
@@ -1479,14 +1473,7 @@ public final class TokenCodecEncoder
 
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_CHARACTERENCODING_DONE:
-                    codecState(CodecState.V0_EPOCH_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"epoch\" in state: " + codecState());
-            }
+            onEpochAccessed();
         }
 
         final int headerLength = 2;
@@ -1523,6 +1510,18 @@ public final class TokenCodecEncoder
         return 2;
     }
 
+    private void onTimeUnitAccessed()
+    {
+        switch (codecState())
+        {
+            case V0_EPOCH_DONE:
+                codecState(CodecState.V0_TIMEUNIT_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Cannot access field \"timeUnit\" in state: " + codecState());
+        }
+    }
+
     public TokenCodecEncoder putTimeUnit(final DirectBuffer src, final int srcOffset, final int length)
     {
         if (length > 65534)
@@ -1532,14 +1531,7 @@ public final class TokenCodecEncoder
 
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_EPOCH_DONE:
-                    codecState(CodecState.V0_TIMEUNIT_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"timeUnit\" in state: " + codecState());
-            }
+            onTimeUnitAccessed();
         }
 
         final int headerLength = 2;
@@ -1560,14 +1552,7 @@ public final class TokenCodecEncoder
 
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_EPOCH_DONE:
-                    codecState(CodecState.V0_TIMEUNIT_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"timeUnit\" in state: " + codecState());
-            }
+            onTimeUnitAccessed();
         }
 
         final int headerLength = 2;
@@ -1591,14 +1576,7 @@ public final class TokenCodecEncoder
 
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_EPOCH_DONE:
-                    codecState(CodecState.V0_TIMEUNIT_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"timeUnit\" in state: " + codecState());
-            }
+            onTimeUnitAccessed();
         }
 
         final int headerLength = 2;
@@ -1635,6 +1613,18 @@ public final class TokenCodecEncoder
         return 2;
     }
 
+    private void onSemanticTypeAccessed()
+    {
+        switch (codecState())
+        {
+            case V0_TIMEUNIT_DONE:
+                codecState(CodecState.V0_SEMANTICTYPE_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Cannot access field \"semanticType\" in state: " + codecState());
+        }
+    }
+
     public TokenCodecEncoder putSemanticType(final DirectBuffer src, final int srcOffset, final int length)
     {
         if (length > 65534)
@@ -1644,14 +1634,7 @@ public final class TokenCodecEncoder
 
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_TIMEUNIT_DONE:
-                    codecState(CodecState.V0_SEMANTICTYPE_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"semanticType\" in state: " + codecState());
-            }
+            onSemanticTypeAccessed();
         }
 
         final int headerLength = 2;
@@ -1672,14 +1655,7 @@ public final class TokenCodecEncoder
 
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_TIMEUNIT_DONE:
-                    codecState(CodecState.V0_SEMANTICTYPE_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"semanticType\" in state: " + codecState());
-            }
+            onSemanticTypeAccessed();
         }
 
         final int headerLength = 2;
@@ -1703,14 +1679,7 @@ public final class TokenCodecEncoder
 
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_TIMEUNIT_DONE:
-                    codecState(CodecState.V0_SEMANTICTYPE_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"semanticType\" in state: " + codecState());
-            }
+            onSemanticTypeAccessed();
         }
 
         final int headerLength = 2;
@@ -1747,6 +1716,18 @@ public final class TokenCodecEncoder
         return 2;
     }
 
+    private void onDescriptionAccessed()
+    {
+        switch (codecState())
+        {
+            case V0_SEMANTICTYPE_DONE:
+                codecState(CodecState.V0_DESCRIPTION_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Cannot access field \"description\" in state: " + codecState());
+        }
+    }
+
     public TokenCodecEncoder putDescription(final DirectBuffer src, final int srcOffset, final int length)
     {
         if (length > 65534)
@@ -1756,14 +1737,7 @@ public final class TokenCodecEncoder
 
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_SEMANTICTYPE_DONE:
-                    codecState(CodecState.V0_DESCRIPTION_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"description\" in state: " + codecState());
-            }
+            onDescriptionAccessed();
         }
 
         final int headerLength = 2;
@@ -1784,14 +1758,7 @@ public final class TokenCodecEncoder
 
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_SEMANTICTYPE_DONE:
-                    codecState(CodecState.V0_DESCRIPTION_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"description\" in state: " + codecState());
-            }
+            onDescriptionAccessed();
         }
 
         final int headerLength = 2;
@@ -1815,14 +1782,7 @@ public final class TokenCodecEncoder
 
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_SEMANTICTYPE_DONE:
-                    codecState(CodecState.V0_DESCRIPTION_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"description\" in state: " + codecState());
-            }
+            onDescriptionAccessed();
         }
 
         final int headerLength = 2;
@@ -1859,6 +1819,18 @@ public final class TokenCodecEncoder
         return 2;
     }
 
+    private void onReferencedNameAccessed()
+    {
+        switch (codecState())
+        {
+            case V0_DESCRIPTION_DONE:
+                codecState(CodecState.V0_REFERENCEDNAME_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Cannot access field \"referencedName\" in state: " + codecState());
+        }
+    }
+
     public TokenCodecEncoder putReferencedName(final DirectBuffer src, final int srcOffset, final int length)
     {
         if (length > 65534)
@@ -1868,14 +1840,7 @@ public final class TokenCodecEncoder
 
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_DESCRIPTION_DONE:
-                    codecState(CodecState.V0_REFERENCEDNAME_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"referencedName\" in state: " + codecState());
-            }
+            onReferencedNameAccessed();
         }
 
         final int headerLength = 2;
@@ -1896,14 +1861,7 @@ public final class TokenCodecEncoder
 
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_DESCRIPTION_DONE:
-                    codecState(CodecState.V0_REFERENCEDNAME_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"referencedName\" in state: " + codecState());
-            }
+            onReferencedNameAccessed();
         }
 
         final int headerLength = 2;
@@ -1927,14 +1885,7 @@ public final class TokenCodecEncoder
 
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            switch (codecState())
-            {
-                case V0_DESCRIPTION_DONE:
-                    codecState(CodecState.V0_REFERENCEDNAME_DONE);
-                    break;
-                default:
-                    throw new IllegalStateException("Cannot access field \"referencedName\" in state: " + codecState());
-            }
+            onReferencedNameAccessed();
         }
 
         final int headerLength = 2;

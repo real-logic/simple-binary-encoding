@@ -2076,9 +2076,9 @@ public class FieldOrderCheckTest
     void disallowsEncodingArrayInsideGroupBeforeCallingNext3()
     {
         final ArrayInsideGroupEncoder.BEncoder bEncoder = encodeUntilGroupWithArrayInside();
-        final byte[] bytes = {5, 0, 6, 0, 7, 0, 8, 0};
+        final byte[] bytes = {5, 6, 7, 8};
         final Exception exception =
-            assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> bEncoder.putC(bytes, 0, 8));
+            assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> bEncoder.putC(bytes, 0, 4));
         assertThat(exception.getMessage(), containsString("Cannot access field \"c\" in state: V0_B_N"));
     }
 
@@ -2087,12 +2087,12 @@ public class FieldOrderCheckTest
     {
         final ArrayInsideGroupEncoder.BEncoder bEncoder = encodeUntilGroupWithArrayInside();
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[8]);
-        buffer.putShort(0, (short)5);
-        buffer.putShort(2, (short)6);
-        buffer.putShort(4, (short)7);
-        buffer.putShort(6, (short)8);
+        buffer.putByte(0, (byte)5);
+        buffer.putByte(2, (byte)6);
+        buffer.putByte(4, (byte)7);
+        buffer.putByte(6, (byte)8);
         final Exception exception =
-            assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> bEncoder.putC(buffer, 0, 8));
+            assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> bEncoder.putC(buffer, 0, 4));
         assertThat(exception.getMessage(), containsString("Cannot access field \"c\" in state: V0_B_N"));
     }
 
