@@ -11,7 +11,11 @@ import org.agrona.DirectBuffer;
 @SuppressWarnings("all")
 public final class FrameCodecEncoder
 {
-    private static final boolean DEBUG_MODE = !Boolean.getBoolean("agrona.disable.bounds.checks");
+    private static final boolean ENABLE_BOUNDS_CHECKS = !Boolean.getBoolean("agrona.disable.bounds.checks");
+
+    private static final boolean ENABLE_ACCESS_ORDER_CHECKS = Boolean.parseBoolean(System.getProperty(
+        "sbe.enable.access.order.checks",
+        Boolean.toString(ENABLE_BOUNDS_CHECKS)));
 
     /**
      * The states in which a encoder/decoder/codec can live.
@@ -115,7 +119,7 @@ public final class FrameCodecEncoder
         this.offset = offset;
         limit(offset + BLOCK_LENGTH);
 
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             codecState(CodecState.V0_BLOCK);
         }
@@ -198,7 +202,7 @@ public final class FrameCodecEncoder
 
     public FrameCodecEncoder irId(final int value)
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             if (codecState() == CodecState.NOT_WRAPPED)
             {
@@ -258,7 +262,7 @@ public final class FrameCodecEncoder
 
     public FrameCodecEncoder irVersion(final int value)
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             if (codecState() == CodecState.NOT_WRAPPED)
             {
@@ -318,7 +322,7 @@ public final class FrameCodecEncoder
 
     public FrameCodecEncoder schemaVersion(final int value)
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             if (codecState() == CodecState.NOT_WRAPPED)
             {
@@ -363,7 +367,7 @@ public final class FrameCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -391,7 +395,7 @@ public final class FrameCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -422,7 +426,7 @@ public final class FrameCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -475,7 +479,7 @@ public final class FrameCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -503,7 +507,7 @@ public final class FrameCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -534,7 +538,7 @@ public final class FrameCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -587,7 +591,7 @@ public final class FrameCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -615,7 +619,7 @@ public final class FrameCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -646,7 +650,7 @@ public final class FrameCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {

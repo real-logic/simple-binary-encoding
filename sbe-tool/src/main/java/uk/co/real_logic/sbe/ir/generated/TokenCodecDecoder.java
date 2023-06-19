@@ -11,7 +11,11 @@ import org.agrona.DirectBuffer;
 @SuppressWarnings("all")
 public final class TokenCodecDecoder
 {
-    private static final boolean DEBUG_MODE = !Boolean.getBoolean("agrona.disable.bounds.checks");
+    private static final boolean ENABLE_BOUNDS_CHECKS = !Boolean.getBoolean("agrona.disable.bounds.checks");
+
+    private static final boolean ENABLE_ACCESS_ORDER_CHECKS = Boolean.parseBoolean(System.getProperty(
+        "sbe.enable.access.order.checks",
+        Boolean.toString(ENABLE_BOUNDS_CHECKS)));
 
     /**
      * The states in which a encoder/decoder/codec can live.
@@ -146,7 +150,7 @@ public final class TokenCodecDecoder
         this.actingVersion = actingVersion;
         limit(offset + actingBlockLength);
 
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch(actingVersion)            {
                 case 0:
@@ -194,7 +198,7 @@ public final class TokenCodecDecoder
         final int decodedLength = encodedLength();
         limit(currentLimit);
 
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             codecState(currentCodecState);
         }
@@ -269,7 +273,7 @@ public final class TokenCodecDecoder
 
     public int tokenOffset()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             if (codecState() == CodecState.NOT_WRAPPED)
             {
@@ -328,7 +332,7 @@ public final class TokenCodecDecoder
 
     public int tokenSize()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             if (codecState() == CodecState.NOT_WRAPPED)
             {
@@ -387,7 +391,7 @@ public final class TokenCodecDecoder
 
     public int fieldId()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             if (codecState() == CodecState.NOT_WRAPPED)
             {
@@ -446,7 +450,7 @@ public final class TokenCodecDecoder
 
     public int tokenVersion()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             if (codecState() == CodecState.NOT_WRAPPED)
             {
@@ -505,7 +509,7 @@ public final class TokenCodecDecoder
 
     public int componentTokenCount()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             if (codecState() == CodecState.NOT_WRAPPED)
             {
@@ -549,7 +553,7 @@ public final class TokenCodecDecoder
 
     public short signalRaw()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             if (codecState() == CodecState.NOT_WRAPPED)
             {
@@ -562,7 +566,7 @@ public final class TokenCodecDecoder
 
     public SignalCodec signal()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             if (codecState() == CodecState.NOT_WRAPPED)
             {
@@ -606,7 +610,7 @@ public final class TokenCodecDecoder
 
     public short primitiveTypeRaw()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             if (codecState() == CodecState.NOT_WRAPPED)
             {
@@ -619,7 +623,7 @@ public final class TokenCodecDecoder
 
     public PrimitiveTypeCodec primitiveType()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             if (codecState() == CodecState.NOT_WRAPPED)
             {
@@ -663,7 +667,7 @@ public final class TokenCodecDecoder
 
     public short byteOrderRaw()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             if (codecState() == CodecState.NOT_WRAPPED)
             {
@@ -676,7 +680,7 @@ public final class TokenCodecDecoder
 
     public ByteOrderCodec byteOrder()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             if (codecState() == CodecState.NOT_WRAPPED)
             {
@@ -720,7 +724,7 @@ public final class TokenCodecDecoder
 
     public short presenceRaw()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             if (codecState() == CodecState.NOT_WRAPPED)
             {
@@ -733,7 +737,7 @@ public final class TokenCodecDecoder
 
     public PresenceCodec presence()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             if (codecState() == CodecState.NOT_WRAPPED)
             {
@@ -792,7 +796,7 @@ public final class TokenCodecDecoder
 
     public int deprecated()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             if (codecState() == CodecState.NOT_WRAPPED)
             {
@@ -836,7 +840,7 @@ public final class TokenCodecDecoder
 
     public int nameLength()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -854,7 +858,7 @@ public final class TokenCodecDecoder
 
     public int skipName()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -877,7 +881,7 @@ public final class TokenCodecDecoder
 
     public int getName(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -901,7 +905,7 @@ public final class TokenCodecDecoder
 
     public int getName(final byte[] dst, final int dstOffset, final int length)
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -925,7 +929,7 @@ public final class TokenCodecDecoder
 
     public void wrapName(final DirectBuffer wrapBuffer)
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -946,7 +950,7 @@ public final class TokenCodecDecoder
 
     public String name()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1006,7 +1010,7 @@ public final class TokenCodecDecoder
 
     public int constValueLength()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1024,7 +1028,7 @@ public final class TokenCodecDecoder
 
     public int skipConstValue()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1047,7 +1051,7 @@ public final class TokenCodecDecoder
 
     public int getConstValue(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1071,7 +1075,7 @@ public final class TokenCodecDecoder
 
     public int getConstValue(final byte[] dst, final int dstOffset, final int length)
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1095,7 +1099,7 @@ public final class TokenCodecDecoder
 
     public void wrapConstValue(final DirectBuffer wrapBuffer)
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1116,7 +1120,7 @@ public final class TokenCodecDecoder
 
     public String constValue()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1176,7 +1180,7 @@ public final class TokenCodecDecoder
 
     public int minValueLength()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1194,7 +1198,7 @@ public final class TokenCodecDecoder
 
     public int skipMinValue()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1217,7 +1221,7 @@ public final class TokenCodecDecoder
 
     public int getMinValue(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1241,7 +1245,7 @@ public final class TokenCodecDecoder
 
     public int getMinValue(final byte[] dst, final int dstOffset, final int length)
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1265,7 +1269,7 @@ public final class TokenCodecDecoder
 
     public void wrapMinValue(final DirectBuffer wrapBuffer)
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1286,7 +1290,7 @@ public final class TokenCodecDecoder
 
     public String minValue()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1346,7 +1350,7 @@ public final class TokenCodecDecoder
 
     public int maxValueLength()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1364,7 +1368,7 @@ public final class TokenCodecDecoder
 
     public int skipMaxValue()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1387,7 +1391,7 @@ public final class TokenCodecDecoder
 
     public int getMaxValue(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1411,7 +1415,7 @@ public final class TokenCodecDecoder
 
     public int getMaxValue(final byte[] dst, final int dstOffset, final int length)
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1435,7 +1439,7 @@ public final class TokenCodecDecoder
 
     public void wrapMaxValue(final DirectBuffer wrapBuffer)
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1456,7 +1460,7 @@ public final class TokenCodecDecoder
 
     public String maxValue()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1516,7 +1520,7 @@ public final class TokenCodecDecoder
 
     public int nullValueLength()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1534,7 +1538,7 @@ public final class TokenCodecDecoder
 
     public int skipNullValue()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1557,7 +1561,7 @@ public final class TokenCodecDecoder
 
     public int getNullValue(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1581,7 +1585,7 @@ public final class TokenCodecDecoder
 
     public int getNullValue(final byte[] dst, final int dstOffset, final int length)
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1605,7 +1609,7 @@ public final class TokenCodecDecoder
 
     public void wrapNullValue(final DirectBuffer wrapBuffer)
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1626,7 +1630,7 @@ public final class TokenCodecDecoder
 
     public String nullValue()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1686,7 +1690,7 @@ public final class TokenCodecDecoder
 
     public int characterEncodingLength()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1704,7 +1708,7 @@ public final class TokenCodecDecoder
 
     public int skipCharacterEncoding()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1727,7 +1731,7 @@ public final class TokenCodecDecoder
 
     public int getCharacterEncoding(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1751,7 +1755,7 @@ public final class TokenCodecDecoder
 
     public int getCharacterEncoding(final byte[] dst, final int dstOffset, final int length)
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1775,7 +1779,7 @@ public final class TokenCodecDecoder
 
     public void wrapCharacterEncoding(final DirectBuffer wrapBuffer)
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1796,7 +1800,7 @@ public final class TokenCodecDecoder
 
     public String characterEncoding()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1856,7 +1860,7 @@ public final class TokenCodecDecoder
 
     public int epochLength()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1874,7 +1878,7 @@ public final class TokenCodecDecoder
 
     public int skipEpoch()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1897,7 +1901,7 @@ public final class TokenCodecDecoder
 
     public int getEpoch(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1921,7 +1925,7 @@ public final class TokenCodecDecoder
 
     public int getEpoch(final byte[] dst, final int dstOffset, final int length)
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1945,7 +1949,7 @@ public final class TokenCodecDecoder
 
     public void wrapEpoch(final DirectBuffer wrapBuffer)
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1966,7 +1970,7 @@ public final class TokenCodecDecoder
 
     public String epoch()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -2026,7 +2030,7 @@ public final class TokenCodecDecoder
 
     public int timeUnitLength()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -2044,7 +2048,7 @@ public final class TokenCodecDecoder
 
     public int skipTimeUnit()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -2067,7 +2071,7 @@ public final class TokenCodecDecoder
 
     public int getTimeUnit(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -2091,7 +2095,7 @@ public final class TokenCodecDecoder
 
     public int getTimeUnit(final byte[] dst, final int dstOffset, final int length)
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -2115,7 +2119,7 @@ public final class TokenCodecDecoder
 
     public void wrapTimeUnit(final DirectBuffer wrapBuffer)
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -2136,7 +2140,7 @@ public final class TokenCodecDecoder
 
     public String timeUnit()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -2196,7 +2200,7 @@ public final class TokenCodecDecoder
 
     public int semanticTypeLength()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -2214,7 +2218,7 @@ public final class TokenCodecDecoder
 
     public int skipSemanticType()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -2237,7 +2241,7 @@ public final class TokenCodecDecoder
 
     public int getSemanticType(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -2261,7 +2265,7 @@ public final class TokenCodecDecoder
 
     public int getSemanticType(final byte[] dst, final int dstOffset, final int length)
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -2285,7 +2289,7 @@ public final class TokenCodecDecoder
 
     public void wrapSemanticType(final DirectBuffer wrapBuffer)
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -2306,7 +2310,7 @@ public final class TokenCodecDecoder
 
     public String semanticType()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -2366,7 +2370,7 @@ public final class TokenCodecDecoder
 
     public int descriptionLength()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -2384,7 +2388,7 @@ public final class TokenCodecDecoder
 
     public int skipDescription()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -2407,7 +2411,7 @@ public final class TokenCodecDecoder
 
     public int getDescription(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -2431,7 +2435,7 @@ public final class TokenCodecDecoder
 
     public int getDescription(final byte[] dst, final int dstOffset, final int length)
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -2455,7 +2459,7 @@ public final class TokenCodecDecoder
 
     public void wrapDescription(final DirectBuffer wrapBuffer)
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -2476,7 +2480,7 @@ public final class TokenCodecDecoder
 
     public String description()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -2536,7 +2540,7 @@ public final class TokenCodecDecoder
 
     public int referencedNameLength()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -2554,7 +2558,7 @@ public final class TokenCodecDecoder
 
     public int skipReferencedName()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -2577,7 +2581,7 @@ public final class TokenCodecDecoder
 
     public int getReferencedName(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -2601,7 +2605,7 @@ public final class TokenCodecDecoder
 
     public int getReferencedName(final byte[] dst, final int dstOffset, final int length)
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -2625,7 +2629,7 @@ public final class TokenCodecDecoder
 
     public void wrapReferencedName(final DirectBuffer wrapBuffer)
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -2646,7 +2650,7 @@ public final class TokenCodecDecoder
 
     public String referencedName()
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {

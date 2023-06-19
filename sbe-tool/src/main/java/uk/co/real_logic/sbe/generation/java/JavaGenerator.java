@@ -280,8 +280,12 @@ public class JavaGenerator implements CodeGenerator
     {
         final StringBuilder sb = new StringBuilder();
 
-        sb.append("    private static final boolean DEBUG_MODE = ")
+        sb.append("    private static final boolean ENABLE_BOUNDS_CHECKS = ")
             .append("!Boolean.getBoolean(\"agrona.disable.bounds.checks\");\n\n");
+        sb.append("    private static final boolean ENABLE_ACCESS_ORDER_CHECKS = ")
+            .append("Boolean.parseBoolean(System.getProperty(\n")
+            .append("        \"sbe.enable.access.order.checks\",\n")
+            .append("        Boolean.toString(ENABLE_BOUNDS_CHECKS)));\n\n");
 
         sb.append("    /**\n");
         sb.append("     * The states in which a encoder/decoder/codec can live.\n");
@@ -329,7 +333,7 @@ public class JavaGenerator implements CodeGenerator
 
         final StringBuilder sb = new StringBuilder();
 
-        sb.append(indent).append("if (DEBUG_MODE)\n")
+        sb.append(indent).append("if (ENABLE_ACCESS_ORDER_CHECKS)\n")
             .append(indent).append("{\n");
 
         generateFieldOrderStateTransitions(
@@ -352,7 +356,7 @@ public class JavaGenerator implements CodeGenerator
     {
         final StringBuilder sb = new StringBuilder();
 
-        sb.append(indent).append("if (DEBUG_MODE)\n")
+        sb.append(indent).append("if (ENABLE_ACCESS_ORDER_CHECKS)\n")
             .append(indent).append("{\n")
             .append(indent).append("    final int remaining = ").append(remainingExpression).append(";\n")
             .append(indent).append("    if (remaining == 0)\n")
@@ -432,7 +436,7 @@ public class JavaGenerator implements CodeGenerator
     {
         final StringBuilder sb = new StringBuilder();
 
-        sb.append(indent).append("if (DEBUG_MODE)\n")
+        sb.append(indent).append("if (ENABLE_ACCESS_ORDER_CHECKS)\n")
             .append(indent).append("{\n")
             .append(indent).append("    final int remaining = ").append(remainingExpression).append(";\n")
             .append(indent).append("    if (remaining > 1)\n")
@@ -468,7 +472,7 @@ public class JavaGenerator implements CodeGenerator
         final String actingVersion)
     {
         final StringBuilder sb = new StringBuilder();
-        sb.append(indent).append("if (DEBUG_MODE)\n")
+        sb.append(indent).append("if (ENABLE_ACCESS_ORDER_CHECKS)\n")
             .append(indent).append("{\n")
             .append(indent).append("    switch(" + actingVersion + ")")
             .append(indent).append("    {\n");
@@ -3093,7 +3097,7 @@ public class JavaGenerator implements CodeGenerator
             "        sbeSkip();\n" +
             "        final int decodedLength = encodedLength();\n" +
             "        limit(currentLimit);\n\n" +
-            "        if (DEBUG_MODE)\n" +
+            "        if (ENABLE_ACCESS_ORDER_CHECKS)\n" +
             "        {\n" +
             "            codecState(currentCodecState);\n" +
             "        }\n\n" +
@@ -3226,7 +3230,7 @@ public class JavaGenerator implements CodeGenerator
             "        this.initialOffset = offset;\n" +
             "        this.offset = offset;\n" +
             "        limit(offset + BLOCK_LENGTH);\n\n" +
-            "        if (DEBUG_MODE)\n" +
+            "        if (ENABLE_ACCESS_ORDER_CHECKS)\n" +
             "        {\n" +
             "            codecState(" + qualifiedStateCase(fieldOrderModel.latestVersionWrappedState()) + ");\n" +
             "        }\n\n" +

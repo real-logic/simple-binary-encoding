@@ -11,7 +11,11 @@ import org.agrona.DirectBuffer;
 @SuppressWarnings("all")
 public final class TokenCodecEncoder
 {
-    private static final boolean DEBUG_MODE = !Boolean.getBoolean("agrona.disable.bounds.checks");
+    private static final boolean ENABLE_BOUNDS_CHECKS = !Boolean.getBoolean("agrona.disable.bounds.checks");
+
+    private static final boolean ENABLE_ACCESS_ORDER_CHECKS = Boolean.parseBoolean(System.getProperty(
+        "sbe.enable.access.order.checks",
+        Boolean.toString(ENABLE_BOUNDS_CHECKS)));
 
     /**
      * The states in which a encoder/decoder/codec can live.
@@ -138,7 +142,7 @@ public final class TokenCodecEncoder
         this.offset = offset;
         limit(offset + BLOCK_LENGTH);
 
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             codecState(CodecState.V0_BLOCK);
         }
@@ -221,7 +225,7 @@ public final class TokenCodecEncoder
 
     public TokenCodecEncoder tokenOffset(final int value)
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             if (codecState() == CodecState.NOT_WRAPPED)
             {
@@ -281,7 +285,7 @@ public final class TokenCodecEncoder
 
     public TokenCodecEncoder tokenSize(final int value)
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             if (codecState() == CodecState.NOT_WRAPPED)
             {
@@ -341,7 +345,7 @@ public final class TokenCodecEncoder
 
     public TokenCodecEncoder fieldId(final int value)
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             if (codecState() == CodecState.NOT_WRAPPED)
             {
@@ -401,7 +405,7 @@ public final class TokenCodecEncoder
 
     public TokenCodecEncoder tokenVersion(final int value)
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             if (codecState() == CodecState.NOT_WRAPPED)
             {
@@ -461,7 +465,7 @@ public final class TokenCodecEncoder
 
     public TokenCodecEncoder componentTokenCount(final int value)
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             if (codecState() == CodecState.NOT_WRAPPED)
             {
@@ -506,7 +510,7 @@ public final class TokenCodecEncoder
 
     public TokenCodecEncoder signal(final SignalCodec value)
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             if (codecState() == CodecState.NOT_WRAPPED)
             {
@@ -550,7 +554,7 @@ public final class TokenCodecEncoder
 
     public TokenCodecEncoder primitiveType(final PrimitiveTypeCodec value)
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             if (codecState() == CodecState.NOT_WRAPPED)
             {
@@ -594,7 +598,7 @@ public final class TokenCodecEncoder
 
     public TokenCodecEncoder byteOrder(final ByteOrderCodec value)
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             if (codecState() == CodecState.NOT_WRAPPED)
             {
@@ -638,7 +642,7 @@ public final class TokenCodecEncoder
 
     public TokenCodecEncoder presence(final PresenceCodec value)
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             if (codecState() == CodecState.NOT_WRAPPED)
             {
@@ -697,7 +701,7 @@ public final class TokenCodecEncoder
 
     public TokenCodecEncoder deprecated(final int value)
     {
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             if (codecState() == CodecState.NOT_WRAPPED)
             {
@@ -742,7 +746,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -770,7 +774,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -801,7 +805,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -854,7 +858,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -882,7 +886,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -913,7 +917,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -966,7 +970,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -994,7 +998,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1025,7 +1029,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1078,7 +1082,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1106,7 +1110,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1137,7 +1141,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1190,7 +1194,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1218,7 +1222,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1249,7 +1253,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1302,7 +1306,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1330,7 +1334,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1361,7 +1365,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1414,7 +1418,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1442,7 +1446,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1473,7 +1477,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1526,7 +1530,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1554,7 +1558,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1585,7 +1589,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1638,7 +1642,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1666,7 +1670,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1697,7 +1701,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1750,7 +1754,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1778,7 +1782,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1809,7 +1813,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1862,7 +1866,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1890,7 +1894,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
@@ -1921,7 +1925,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (DEBUG_MODE)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
             switch (codecState())
             {
