@@ -554,7 +554,8 @@ public class FieldOrderCheckTest
         encoder.d("abc");
         final Exception exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> encoder.bCount(1));
-        assertThat(exception.getMessage(), containsString("Cannot access field \"b\" in state: V0_D_DONE"));
+        assertThat(exception.getMessage(),
+            containsString("Cannot encode count of repeating group \"b\" in state: V0_D_DONE"));
     }
 
     @Test
@@ -652,7 +653,8 @@ public class FieldOrderCheckTest
         assertThat(decoder.d(), equalTo("abc"));
         final Exception exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, decoder::b);
-        assertThat(exception.getMessage(), containsString("Cannot access field \"b\" in state: V0_D_DONE"));
+        assertThat(exception.getMessage(),
+            containsString("Cannot decode count of repeating group \"b\" in state: V0_D_DONE"));
     }
 
     @Test
@@ -730,7 +732,8 @@ public class FieldOrderCheckTest
             .next();
         final Exception exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, b::next);
-        assertThat(exception.getMessage(), containsString("Cannot access field \"b\" in state: V0_B_N_BLOCK"));
+        assertThat(exception.getMessage(),
+            containsString("Cannot access next element in repeating group \"b\" in state: V0_B_N_BLOCK"));
     }
 
     @Test
@@ -814,7 +817,8 @@ public class FieldOrderCheckTest
         assertThat(bs.next().c(), equalTo(1));
         final Exception exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, bs::next);
-        assertThat(exception.getMessage(), containsString("Cannot access field \"b\" in state: V0_B_N_BLOCK"));
+        assertThat(exception.getMessage(),
+            containsString("Cannot access next element in repeating group \"b\" in state: V0_B_N_BLOCK"));
     }
 
     @Test
@@ -954,7 +958,8 @@ public class FieldOrderCheckTest
             .c(1);
         final Exception exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> b.fCount(1));
-        assertThat(exception.getMessage(), containsString("Cannot access field \"b.f\" in state: V0_B_1_BLOCK"));
+        assertThat(exception.getMessage(),
+            containsString("Cannot encode count of repeating group \"b.f\" in state: V0_B_1_BLOCK"));
     }
 
     @Test
@@ -2255,7 +2260,8 @@ public class FieldOrderCheckTest
         encoder.a(41);
         final Exception exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> encoder.dCount(0));
-        assertThat(exception.getMessage(), containsString("Cannot access field \"d\" in state: V0_BLOCK"));
+        assertThat(exception.getMessage(),
+            containsString("Cannot encode count of repeating group \"d\" in state: V0_BLOCK"));
     }
 
     @Test
@@ -2268,7 +2274,8 @@ public class FieldOrderCheckTest
         encoder.dCount(1).next().e(43);
         final Exception exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> encoder.bCount(1));
-        assertThat(exception.getMessage(), containsString("Cannot access field \"b\" in state: V0_D_1_BLOCK"));
+        assertThat(exception.getMessage(),
+            containsString("Cannot encode count of repeating group \"b\" in state: V0_D_1_BLOCK"));
     }
 
     @Test
@@ -2281,7 +2288,8 @@ public class FieldOrderCheckTest
         encoder.dCount(1).next().e(43);
         final Exception exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> encoder.dCount(1));
-        assertThat(exception.getMessage(), containsString("Cannot access field \"d\" in state: V0_D_1_BLOCK"));
+        assertThat(exception.getMessage(),
+            containsString("Cannot encode count of repeating group \"d\" in state: V0_D_1_BLOCK"));
     }
 
     @Test
@@ -2298,7 +2306,8 @@ public class FieldOrderCheckTest
         assertThat(decoder.a(), equalTo(41));
         final Exception exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, decoder::d);
-        assertThat(exception.getMessage(), containsString("Cannot access field \"d\" in state: V0_BLOCK"));
+        assertThat(exception.getMessage(),
+            containsString("Cannot decode count of repeating group \"d\" in state: V0_BLOCK"));
     }
 
     @Test
@@ -2321,7 +2330,8 @@ public class FieldOrderCheckTest
         assertThat(d.next().e(), equalTo(43));
         final Exception exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, decoder::b);
-        assertThat(exception.getMessage(), containsString("Cannot access field \"b\" in state: V0_D_1_BLOCK"));
+        assertThat(exception.getMessage(),
+            containsString("Cannot decode count of repeating group \"b\" in state: V0_D_1_BLOCK"));
     }
 
     @Test
@@ -2344,7 +2354,8 @@ public class FieldOrderCheckTest
         assertThat(d.next().e(), equalTo(43));
         final Exception exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, decoder::d);
-        assertThat(exception.getMessage(), containsString("Cannot access field \"d\" in state: V0_D_1_BLOCK"));
+        assertThat(exception.getMessage(),
+            containsString("Cannot decode count of repeating group \"d\" in state: V0_D_1_BLOCK"));
     }
 
     @Test

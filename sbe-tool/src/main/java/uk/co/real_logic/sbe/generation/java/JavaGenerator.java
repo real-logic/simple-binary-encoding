@@ -311,7 +311,7 @@ public class JavaGenerator implements CodeGenerator
         sb.append("     */\n");
         sb.append("    private static class CodecStates\n")
             .append("    {\n");
-        fieldOrderModel.forEachState(state ->
+        fieldOrderModel.forEachStateOrderedByNumber(state ->
         {
             sb.append("        private static final int ")
                 .append(unqualifiedStateCase(state))
@@ -320,7 +320,7 @@ public class JavaGenerator implements CodeGenerator
         });
         sb.append("\n").append("        private static final String[] STATE_NAME_LOOKUP =\n")
                 .append("        {\n");
-        fieldOrderModel.forEachState(state ->
+        fieldOrderModel.forEachStateOrderedByNumber(state ->
         {
             sb.append("            \"").append(state.name()).append("\",\n");
         });
@@ -371,6 +371,7 @@ public class JavaGenerator implements CodeGenerator
         generateAccessOrderListener(
             sb,
             indent + "    ",
+            "access field",
             fieldOrderModel,
             FieldOrderModel.TransitionContext.NONE,
             token);
@@ -424,6 +425,7 @@ public class JavaGenerator implements CodeGenerator
 
     private static void generateAccessOrderListenerMethodForGroupWrap(
         final StringBuilder sb,
+        final String action,
         final FieldOrderModel fieldOrderModel,
         final String indent,
         final Token token)
@@ -443,6 +445,7 @@ public class JavaGenerator implements CodeGenerator
         generateAccessOrderListener(
             sb,
             indent + "        ",
+            action + " count of repeating group",
             fieldOrderModel,
             FieldOrderModel.TransitionContext.SELECT_EMPTY_GROUP,
             token);
@@ -454,6 +457,7 @@ public class JavaGenerator implements CodeGenerator
         generateAccessOrderListener(
             sb,
             indent + "        ",
+            action + " count of repeating group",
             fieldOrderModel,
             FieldOrderModel.TransitionContext.SELECT_MULTI_ELEMENT_GROUP,
             token);
@@ -465,6 +469,7 @@ public class JavaGenerator implements CodeGenerator
     private static void generateAccessOrderListener(
         final StringBuilder sb,
         final String indent,
+        final String action,
         final FieldOrderModel fieldOrderModel,
         final FieldOrderModel.TransitionContext context,
         final Token token)
@@ -476,8 +481,10 @@ public class JavaGenerator implements CodeGenerator
                 .append(")\n")
                 .append(indent).append("{\n")
                 .append(indent).append("    throw new IllegalStateException(")
-                .append("\"Cannot access field \\\"").append(fieldOrderModel.fieldPath(token))
-                .append("\\\" in state: \" + CodecStates.name(codecState()));\n")
+                .append("\"Cannot ").append(action).append(" \\\"").append(fieldOrderModel.fieldPath(token))
+                .append("\\\" in state: \" + CodecStates.name(codecState()) +\n")
+                .append(indent).append("            \". ")
+                .append("Please see the diagram in the Javadoc of the inner class #CodecStates.\");\n")
                 .append(indent).append("}\n");
         }
         else
@@ -498,8 +505,10 @@ public class JavaGenerator implements CodeGenerator
 
             sb.append(indent).append("    default:\n")
                 .append(indent).append("        throw new IllegalStateException(")
-                .append("\"Cannot access field \\\"").append(fieldOrderModel.fieldPath(token))
-                .append("\\\" in state: \" + CodecStates.name(codecState()));\n")
+                .append("\"Cannot ").append(action).append(" \\\"").append(fieldOrderModel.fieldPath(token))
+                .append("\\\" in state: \" + CodecStates.name(codecState()) +\n")
+                .append(indent).append("            \". ")
+                .append("Please see the diagram in the Javadoc of the inner class #CodecStates.\");\n")
                 .append(indent).append("}\n");
         }
     }
@@ -524,6 +533,7 @@ public class JavaGenerator implements CodeGenerator
         generateAccessOrderListener(
             sb,
             indent + "       ",
+            "access next element in repeating group",
             fieldOrderModel,
             FieldOrderModel.TransitionContext.NEXT_ELEMENT_IN_GROUP,
             token);
@@ -535,6 +545,7 @@ public class JavaGenerator implements CodeGenerator
         generateAccessOrderListener(
             sb,
             indent + "        ",
+            "access next element in repeating group",
             fieldOrderModel,
             FieldOrderModel.TransitionContext.LAST_ELEMENT_IN_GROUP,
             token);
@@ -1150,7 +1161,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "            return " + propertyName + ";\n" +
             indent + "        }\n\n";
 
-        generateAccessOrderListenerMethodForGroupWrap(sb, fieldOrderModel, indent + "    ", token);
+        generateAccessOrderListenerMethodForGroupWrap(sb, "decode", fieldOrderModel, indent + "    ", token);
 
         generateFlyweightPropertyJavadoc(sb, indent + INDENT, token, className);
         new Formatter(sb).format("\n" +
@@ -1194,7 +1205,7 @@ public class JavaGenerator implements CodeGenerator
             formatPropertyName(groupName),
             token.id());
 
-        generateAccessOrderListenerMethodForGroupWrap(sb, fieldOrderModel, indent + "    ", token);
+        generateAccessOrderListenerMethodForGroupWrap(sb, "encode", fieldOrderModel, indent + "    ", token);
 
         generateGroupEncodePropertyJavadoc(sb, indent + INDENT, token, className);
         new Formatter(sb).format("\n" +

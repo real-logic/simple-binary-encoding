@@ -82,7 +82,7 @@ final class FieldOrderModel
         }
     }
 
-    public void forEachState(final Consumer<State> consumer)
+    public void forEachStateOrderedByNumber(final Consumer<State> consumer)
     {
         states.values()
             .stream()
@@ -507,13 +507,40 @@ final class FieldOrderModel
 
     enum TransitionContext
     {
+        /**
+         * For tokens with a set of transitions that does not depend on any context, e.g.,
+         * when a block field is accessed. As opposed to a repeating group, where the
+         * transitions depend both on the number of remaining elements in the group and
+         * whether {@code next()} is called or {@code myGroupCount(int count)}.
+         */
         NONE,
+
+        /**
+         * When a repeating group count is supplied as zero.
+         */
         SELECT_EMPTY_GROUP,
+
+        /**
+         * When a repeating group count is supplied as greater than zero.
+         */
         SELECT_MULTI_ELEMENT_GROUP,
+
+        /**
+         * When the next element in a repeating group is accessed,
+         * and it is not the last element.
+         */
         NEXT_ELEMENT_IN_GROUP,
+
+        /**
+         * When the next element in a repeating group is accessed,
+         * and it is the last element.
+         */
         LAST_ELEMENT_IN_GROUP
     }
 
+    /**
+     * The codec state transitions possible for a given block/group/data field.
+     */
     private static final class TransitionGroup
     {
         private final Map<Object, List<Transition>> transitions = new LinkedHashMap<>();

@@ -288,7 +288,8 @@ public final class TokenCodecDecoder
     {
         if (codecState() == CodecStates.NOT_WRAPPED)
         {
-            throw new IllegalStateException("Cannot access field \"tokenOffset\" in state: " + CodecStates.name(codecState()));
+            throw new IllegalStateException("Cannot access field \"tokenOffset\" in state: " + CodecStates.name(codecState()) +
+                    ". Please see the diagram in the Javadoc of the inner class #CodecStates.");
         }
     }
 
@@ -352,7 +353,8 @@ public final class TokenCodecDecoder
     {
         if (codecState() == CodecStates.NOT_WRAPPED)
         {
-            throw new IllegalStateException("Cannot access field \"tokenSize\" in state: " + CodecStates.name(codecState()));
+            throw new IllegalStateException("Cannot access field \"tokenSize\" in state: " + CodecStates.name(codecState()) +
+                    ". Please see the diagram in the Javadoc of the inner class #CodecStates.");
         }
     }
 
@@ -416,7 +418,8 @@ public final class TokenCodecDecoder
     {
         if (codecState() == CodecStates.NOT_WRAPPED)
         {
-            throw new IllegalStateException("Cannot access field \"fieldId\" in state: " + CodecStates.name(codecState()));
+            throw new IllegalStateException("Cannot access field \"fieldId\" in state: " + CodecStates.name(codecState()) +
+                    ". Please see the diagram in the Javadoc of the inner class #CodecStates.");
         }
     }
 
@@ -480,7 +483,8 @@ public final class TokenCodecDecoder
     {
         if (codecState() == CodecStates.NOT_WRAPPED)
         {
-            throw new IllegalStateException("Cannot access field \"tokenVersion\" in state: " + CodecStates.name(codecState()));
+            throw new IllegalStateException("Cannot access field \"tokenVersion\" in state: " + CodecStates.name(codecState()) +
+                    ". Please see the diagram in the Javadoc of the inner class #CodecStates.");
         }
     }
 
@@ -544,7 +548,8 @@ public final class TokenCodecDecoder
     {
         if (codecState() == CodecStates.NOT_WRAPPED)
         {
-            throw new IllegalStateException("Cannot access field \"componentTokenCount\" in state: " + CodecStates.name(codecState()));
+            throw new IllegalStateException("Cannot access field \"componentTokenCount\" in state: " + CodecStates.name(codecState()) +
+                    ". Please see the diagram in the Javadoc of the inner class #CodecStates.");
         }
     }
 
@@ -608,7 +613,8 @@ public final class TokenCodecDecoder
     {
         if (codecState() == CodecStates.NOT_WRAPPED)
         {
-            throw new IllegalStateException("Cannot access field \"signal\" in state: " + CodecStates.name(codecState()));
+            throw new IllegalStateException("Cannot access field \"signal\" in state: " + CodecStates.name(codecState()) +
+                    ". Please see the diagram in the Javadoc of the inner class #CodecStates.");
         }
     }
 
@@ -667,7 +673,8 @@ public final class TokenCodecDecoder
     {
         if (codecState() == CodecStates.NOT_WRAPPED)
         {
-            throw new IllegalStateException("Cannot access field \"primitiveType\" in state: " + CodecStates.name(codecState()));
+            throw new IllegalStateException("Cannot access field \"primitiveType\" in state: " + CodecStates.name(codecState()) +
+                    ". Please see the diagram in the Javadoc of the inner class #CodecStates.");
         }
     }
 
@@ -726,7 +733,8 @@ public final class TokenCodecDecoder
     {
         if (codecState() == CodecStates.NOT_WRAPPED)
         {
-            throw new IllegalStateException("Cannot access field \"byteOrder\" in state: " + CodecStates.name(codecState()));
+            throw new IllegalStateException("Cannot access field \"byteOrder\" in state: " + CodecStates.name(codecState()) +
+                    ". Please see the diagram in the Javadoc of the inner class #CodecStates.");
         }
     }
 
@@ -785,7 +793,8 @@ public final class TokenCodecDecoder
     {
         if (codecState() == CodecStates.NOT_WRAPPED)
         {
-            throw new IllegalStateException("Cannot access field \"presence\" in state: " + CodecStates.name(codecState()));
+            throw new IllegalStateException("Cannot access field \"presence\" in state: " + CodecStates.name(codecState()) +
+                    ". Please see the diagram in the Javadoc of the inner class #CodecStates.");
         }
     }
 
@@ -844,7 +853,8 @@ public final class TokenCodecDecoder
     {
         if (codecState() == CodecStates.NOT_WRAPPED)
         {
-            throw new IllegalStateException("Cannot access field \"deprecated\" in state: " + CodecStates.name(codecState()));
+            throw new IllegalStateException("Cannot access field \"deprecated\" in state: " + CodecStates.name(codecState()) +
+                    ". Please see the diagram in the Javadoc of the inner class #CodecStates.");
         }
     }
 
@@ -912,7 +922,8 @@ public final class TokenCodecDecoder
                 codecState(CodecStates.V0_NAME_DONE);
                 break;
             default:
-                throw new IllegalStateException("Cannot access field \"name\" in state: " + CodecStates.name(codecState()));
+                throw new IllegalStateException("Cannot access field \"name\" in state: " + CodecStates.name(codecState()) +
+                    ". Please see the diagram in the Javadoc of the inner class #CodecStates.");
         }
     }
 
@@ -1052,7 +1063,8 @@ public final class TokenCodecDecoder
                 codecState(CodecStates.V0_CONSTVALUE_DONE);
                 break;
             default:
-                throw new IllegalStateException("Cannot access field \"constValue\" in state: " + CodecStates.name(codecState()));
+                throw new IllegalStateException("Cannot access field \"constValue\" in state: " + CodecStates.name(codecState()) +
+                    ". Please see the diagram in the Javadoc of the inner class #CodecStates.");
         }
     }
 
@@ -1192,7 +1204,8 @@ public final class TokenCodecDecoder
                 codecState(CodecStates.V0_MINVALUE_DONE);
                 break;
             default:
-                throw new IllegalStateException("Cannot access field \"minValue\" in state: " + CodecStates.name(codecState()));
+                throw new IllegalStateException("Cannot access field \"minValue\" in state: " + CodecStates.name(codecState()) +
+                    ". Please see the diagram in the Javadoc of the inner class #CodecStates.");
         }
     }
 
@@ -1332,7 +1345,8 @@ public final class TokenCodecDecoder
                 codecState(CodecStates.V0_MAXVALUE_DONE);
                 break;
             default:
-                throw new IllegalStateException("Cannot access field \"maxValue\" in state: " + CodecStates.name(codecState()));
+                throw new IllegalStateException("Cannot access field \"maxValue\" in state: " + CodecStates.name(codecState()) +
+                    ". Please see the diagram in the Javadoc of the inner class #CodecStates.");
         }
     }
 
@@ -1472,7 +1486,8 @@ public final class TokenCodecDecoder
                 codecState(CodecStates.V0_NULLVALUE_DONE);
                 break;
             default:
-                throw new IllegalStateException("Cannot access field \"nullValue\" in state: " + CodecStates.name(codecState()));
+                throw new IllegalStateException("Cannot access field \"nullValue\" in state: " + CodecStates.name(codecState()) +
+                    ". Please see the diagram in the Javadoc of the inner class #CodecStates.");
         }
     }
 
@@ -1612,7 +1627,8 @@ public final class TokenCodecDecoder
                 codecState(CodecStates.V0_CHARACTERENCODING_DONE);
                 break;
             default:
-                throw new IllegalStateException("Cannot access field \"characterEncoding\" in state: " + CodecStates.name(codecState()));
+                throw new IllegalStateException("Cannot access field \"characterEncoding\" in state: " + CodecStates.name(codecState()) +
+                    ". Please see the diagram in the Javadoc of the inner class #CodecStates.");
         }
     }
 
@@ -1752,7 +1768,8 @@ public final class TokenCodecDecoder
                 codecState(CodecStates.V0_EPOCH_DONE);
                 break;
             default:
-                throw new IllegalStateException("Cannot access field \"epoch\" in state: " + CodecStates.name(codecState()));
+                throw new IllegalStateException("Cannot access field \"epoch\" in state: " + CodecStates.name(codecState()) +
+                    ". Please see the diagram in the Javadoc of the inner class #CodecStates.");
         }
     }
 
@@ -1892,7 +1909,8 @@ public final class TokenCodecDecoder
                 codecState(CodecStates.V0_TIMEUNIT_DONE);
                 break;
             default:
-                throw new IllegalStateException("Cannot access field \"timeUnit\" in state: " + CodecStates.name(codecState()));
+                throw new IllegalStateException("Cannot access field \"timeUnit\" in state: " + CodecStates.name(codecState()) +
+                    ". Please see the diagram in the Javadoc of the inner class #CodecStates.");
         }
     }
 
@@ -2032,7 +2050,8 @@ public final class TokenCodecDecoder
                 codecState(CodecStates.V0_SEMANTICTYPE_DONE);
                 break;
             default:
-                throw new IllegalStateException("Cannot access field \"semanticType\" in state: " + CodecStates.name(codecState()));
+                throw new IllegalStateException("Cannot access field \"semanticType\" in state: " + CodecStates.name(codecState()) +
+                    ". Please see the diagram in the Javadoc of the inner class #CodecStates.");
         }
     }
 
@@ -2172,7 +2191,8 @@ public final class TokenCodecDecoder
                 codecState(CodecStates.V0_DESCRIPTION_DONE);
                 break;
             default:
-                throw new IllegalStateException("Cannot access field \"description\" in state: " + CodecStates.name(codecState()));
+                throw new IllegalStateException("Cannot access field \"description\" in state: " + CodecStates.name(codecState()) +
+                    ". Please see the diagram in the Javadoc of the inner class #CodecStates.");
         }
     }
 
@@ -2312,7 +2332,8 @@ public final class TokenCodecDecoder
                 codecState(CodecStates.V0_REFERENCEDNAME_DONE);
                 break;
             default:
-                throw new IllegalStateException("Cannot access field \"referencedName\" in state: " + CodecStates.name(codecState()));
+                throw new IllegalStateException("Cannot access field \"referencedName\" in state: " + CodecStates.name(codecState()) +
+                    ". Please see the diagram in the Javadoc of the inner class #CodecStates.");
         }
     }
 
