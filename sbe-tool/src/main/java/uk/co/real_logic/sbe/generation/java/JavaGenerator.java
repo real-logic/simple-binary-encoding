@@ -23,6 +23,7 @@ import org.agrona.DirectBuffer;
 import org.agrona.MutableDirectBuffer;
 import org.agrona.Strings;
 import org.agrona.Verify;
+import org.agrona.collections.MutableBoolean;
 import org.agrona.generation.DynamicPackageOutputManager;
 import org.agrona.sbe.*;
 
@@ -302,8 +303,9 @@ public class JavaGenerator implements CodeGenerator
         sb.append("    /**\n");
         sb.append("     * The states in which a encoder/decoder/codec can live.\n");
         sb.append("     *\n");
-        sb.append("     * <p>The state machine diagram below describes the valid state transitions\n");
-        sb.append("     * according to the order in which fields may be accessed safely.\n");
+        sb.append("     * <p>The state machine diagram below, encoded in the dot language, describes\n");
+        sb.append("     * the valid state transitions according to the order in which fields may be\n");
+        sb.append("     * accessed safely. Tools such as PlantUML and Graphviz can render it.\n");
         sb.append("     *\n");
         sb.append("     * <pre>{@code\n");
         fieldOrderModel.generateGraph(sb, "     *   ");
@@ -318,6 +320,7 @@ public class JavaGenerator implements CodeGenerator
                 .append(" = ").append(state.number())
                 .append(";\n");
         });
+
         sb.append("\n").append("        private static final String[] STATE_NAME_LOOKUP =\n")
                 .append("        {\n");
         fieldOrderModel.forEachStateOrderedByNumber(state ->
@@ -325,10 +328,44 @@ public class JavaGenerator implements CodeGenerator
             sb.append("            \"").append(state.name()).append("\",\n");
         });
         sb.append("        };\n\n");
+
+        sb.append("        private static final String[] STATE_TRANSITIONS_LOOKUP =\n")
+                .append("        {\n");
+        fieldOrderModel.forEachStateOrderedByNumber(state ->
+        {
+            sb.append("            \"");
+            final MutableBoolean isFirst = new MutableBoolean(true);
+            final Set<String> transitionDescriptions = new HashSet<>();
+            fieldOrderModel.forEachTransitionFrom(state, transition ->
+            {
+                if (transitionDescriptions.add(transition.description()))
+                {
+                    if (isFirst.get())
+                    {
+                        isFirst.set(false);
+                    }
+                    else
+                    {
+                        sb.append(", ");
+                    }
+
+                    sb.append("\\\"").append(transition.description()).append("\\\"");
+                }
+            });
+            sb.append("\",\n");
+        });
+        sb.append("        };\n\n");
+
         sb.append("        private static String name(final int state)\n")
             .append("        {\n")
             .append("            return STATE_NAME_LOOKUP[state];\n")
+            .append("        }\n\n");
+
+        sb.append("        private static String transitions(final int state)\n")
+            .append("        {\n")
+            .append("            return STATE_TRANSITIONS_LOOKUP[state];\n")
             .append("        }\n");
+
         sb.append("    }\n\n");
 
         sb.append("    private int codecState = ")
@@ -479,20 +516,17 @@ public class JavaGenerator implements CodeGenerator
             sb.append(indent).append("if (codecState() == ")
                 .append(qualifiedStateCase(fieldOrderModel.notWrappedState()))
                 .append(")\n")
-                .append(indent).append("{\n")
-                .append(indent).append("    throw new IllegalStateException(")
-                .append("\"Cannot ").append(action).append(" \\\"").append(fieldOrderModel.fieldPath(token))
-                .append("\\\" in state: \" + CodecStates.name(codecState()) +\n")
-                .append(indent).append("            \". ")
-                .append("Please see the diagram in the Javadoc of the inner class #CodecStates.\");\n")
-                .append(indent).append("}\n");
+                .append(indent).append("{\n");
+            generateAccessOrderException(sb, indent + "    ", action, fieldOrderModel, token);
+            sb.append(indent).append("}\n");
         }
         else
         {
             sb.append(indent).append("switch (codecState())\n")
                 .append(indent).append("{\n");
 
-            final List<FieldOrderModel.Transition> transitions = fieldOrderModel.getTransitions(context, token);
+            final List<FieldOrderModel.Transition> transitions = new ArrayList<>();
+            fieldOrderModel.getTransitions(transitions, context, token);
 
             transitions.forEach(transition ->
             {
@@ -503,14 +537,28 @@ public class JavaGenerator implements CodeGenerator
                     .append(indent).append("        break;\n");
             });
 
-            sb.append(indent).append("    default:\n")
-                .append(indent).append("        throw new IllegalStateException(")
-                .append("\"Cannot ").append(action).append(" \\\"").append(fieldOrderModel.fieldPath(token))
-                .append("\\\" in state: \" + CodecStates.name(codecState()) +\n")
-                .append(indent).append("            \". ")
-                .append("Please see the diagram in the Javadoc of the inner class #CodecStates.\");\n")
-                .append(indent).append("}\n");
+            sb.append(indent).append("    default:\n");
+            generateAccessOrderException(sb, indent + "        ", action, fieldOrderModel, token);
+            sb.append(indent).append("}\n");
         }
+    }
+
+    private static void generateAccessOrderException(
+        final StringBuilder sb,
+        final String indent,
+        final String action,
+        final FieldOrderModel fieldOrderModel,
+        final Token token)
+    {
+        sb.append(indent).append("throw new IllegalStateException(")
+            .append("\"Illegal field access order. \" +\n")
+            .append(indent)
+            .append("    \"Cannot ").append(action).append(" \\\"").append(fieldOrderModel.fieldPath(token))
+            .append("\\\" in state: \" + CodecStates.name(codecState()) +\n")
+            .append(indent)
+            .append("    \". Expected one of these transitions: [\" + CodecStates.transitions(codecState()) +\n")
+            .append(indent)
+            .append("    \"]. Please see the diagram in the Javadoc of the inner class #CodecStates.\");\n");
     }
 
     private static void generateAccessOrderListenerMethodForNextGroupElement(
