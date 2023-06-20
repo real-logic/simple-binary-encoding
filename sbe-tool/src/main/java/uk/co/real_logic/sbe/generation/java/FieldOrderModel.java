@@ -25,7 +25,9 @@ import org.agrona.collections.MutableReference;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.IntStream;
 
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectFields;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectGroups;
@@ -56,10 +58,11 @@ final class FieldOrderModel
         final Token msgToken,
         final List<Token> fields,
         final List<Token> groups,
-        final List<Token> varData)
+        final List<Token> varData,
+        final Function<IntStream, IntStream> versionsSelector)
     {
         final FieldOrderModel model = new FieldOrderModel();
-        model.findTransitions(msgToken, fields, groups, varData);
+        model.findTransitions(msgToken, fields, groups, varData, versionsSelector);
         return model;
     }
 
@@ -212,7 +215,8 @@ final class FieldOrderModel
         final Token msgToken,
         final List<Token> fields,
         final List<Token> groups,
-        final List<Token> varData)
+        final List<Token> varData,
+        final Function<IntStream, IntStream> versionsSelector)
     {
         final IntHashSet versions = new IntHashSet();
         versions.add(msgToken.version());
@@ -220,7 +224,8 @@ final class FieldOrderModel
 
         Generators.forEachField(fields, (fieldToken, ignored) -> topLevelBlockFields.add(fieldToken));
 
-        versions.stream().sorted().forEach(version ->
+        final IntStream selectedVersions = versionsSelector.apply(versions.stream().mapToInt(i -> i));
+        selectedVersions.sorted().forEach(version ->
         {
             final State versionWrappedState = allocateState("V" + version + "_BLOCK");
 

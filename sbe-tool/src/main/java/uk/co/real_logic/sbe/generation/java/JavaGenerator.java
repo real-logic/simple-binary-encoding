@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.IntStream;
 
 import static uk.co.real_logic.sbe.SbeTool.JAVA_INTERFACE_PACKAGE;
 import static uk.co.real_logic.sbe.generation.java.JavaGenerator.CodecType.DECODER;
@@ -251,9 +252,18 @@ public class JavaGenerator implements CodeGenerator
                 generateAnnotations(BASE_INDENT, className, groups, out, this::encoderName);
             }
             out.append(generateDeclaration(className, implementsString, msgToken));
-            final FieldOrderModel fieldOrderModel = FieldOrderModel.generateAccessOrderChecks() ?
-                FieldOrderModel.newInstance(msgToken, fields, groups, varData) :
-                null;
+
+            FieldOrderModel fieldOrderModel = null;
+            if (FieldOrderModel.generateAccessOrderChecks())
+            {
+                final Function<IntStream, IntStream> selectLatestVersion = versions ->
+                {
+                    final OptionalInt max = versions.max();
+                    return max.isPresent() ? IntStream.of(max.getAsInt()) : IntStream.empty();
+                };
+                fieldOrderModel = FieldOrderModel.newInstance(msgToken, fields, groups, varData, selectLatestVersion);
+            }
+
             out.append(generateFieldOrderStates(fieldOrderModel));
             out.append(generateEncoderFlyweightCode(className, fieldOrderModel, msgToken));
 
@@ -678,9 +688,8 @@ public class JavaGenerator implements CodeGenerator
             FieldOrderModel fieldOrderModel = null;
             if (FieldOrderModel.generateAccessOrderChecks())
             {
-                fieldOrderModel = FieldOrderModel.newInstance(msgToken, fields, groups, varData);
+                fieldOrderModel = FieldOrderModel.newInstance(msgToken, fields, groups, varData, Function.identity());
             }
-
             out.append(generateFieldOrderStates(fieldOrderModel));
             out.append(generateDecoderFlyweightCode(fieldOrderModel, className, msgToken));
 
@@ -850,7 +859,7 @@ public class JavaGenerator implements CodeGenerator
             .append(indent).append("        parentMessage.limit(limit + HEADER_SIZE);\n")
             .append(indent).append("        blockLength = ").append(blockLenCast).append(blockLengthGet).append(";\n")
             .append(indent).append("        count = ").append(numInGroupCast).append(numInGroupGet).append(";\n")
-            .append(indent).append("    }\n");
+            .append(indent).append("    }\n\n");
 
 
         generateAccessOrderListenerMethodForNextGroupElement(sb, fieldOrderModel, indent + "    ", groupToken);
@@ -985,7 +994,7 @@ public class JavaGenerator implements CodeGenerator
             ind + "        parentMessage.limit(limit + HEADER_SIZE);\n" +
             ind + "        %5$s;\n" +
             ind + "        %6$s;\n" +
-            ind + "    }\n",
+            ind + "    }\n\n",
             parentMessageClassName,
             mutableBuffer,
             numInGroupToken.encoding().applicableMinValue().longValue(),
