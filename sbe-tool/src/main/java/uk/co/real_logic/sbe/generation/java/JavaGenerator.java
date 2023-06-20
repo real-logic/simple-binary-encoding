@@ -270,7 +270,12 @@ public class JavaGenerator implements CodeGenerator
 
     private static CharSequence qualifiedStateCase(final FieldOrderModel.State state)
     {
-        return "CodecState." + state.name();
+        return "CodecStates." + state.name();
+    }
+
+    private static CharSequence stateCaseForSwitchCase(final FieldOrderModel.State state)
+    {
+        return qualifiedStateCase(state);
     }
 
     private static CharSequence unqualifiedStateCase(final FieldOrderModel.State state)
@@ -304,23 +309,38 @@ public class JavaGenerator implements CodeGenerator
         fieldOrderModel.generateGraph(sb, "     *   ");
         sb.append("     * }</pre>\n");
         sb.append("     */\n");
-        sb.append("    private enum CodecState\n")
+        sb.append("    private static class CodecStates\n")
             .append("    {\n");
         fieldOrderModel.forEachState(state ->
-            sb.append("        ").append(unqualifiedStateCase(state)).append(",\n"));
-
+        {
+            sb.append("        private static final int ")
+                .append(unqualifiedStateCase(state))
+                .append(" = ").append(state.number())
+                .append(";\n");
+        });
+        sb.append("\n").append("        private static final String[] STATE_NAME_LOOKUP =\n")
+                .append("        {\n");
+        fieldOrderModel.forEachState(state ->
+        {
+            sb.append("            \"").append(state.name()).append("\",\n");
+        });
+        sb.append("        };\n\n");
+        sb.append("        private static String name(final int state)\n")
+            .append("        {\n")
+            .append("            return STATE_NAME_LOOKUP[state];\n")
+            .append("        }\n");
         sb.append("    }\n\n");
 
-        sb.append("    private CodecState codecState = ")
+        sb.append("    private int codecState = ")
             .append(qualifiedStateCase(fieldOrderModel.notWrappedState()))
             .append(";\n\n");
 
-        sb.append("    private CodecState codecState()\n")
+        sb.append("    private int codecState()\n")
             .append("    {\n")
             .append("        return codecState;\n")
             .append("    }\n\n");
 
-        sb.append("    private void codecState(CodecState newState)\n")
+        sb.append("    private void codecState(int newState)\n")
             .append("    {\n")
             .append("        codecState = newState;\n")
             .append("    }\n\n");
@@ -457,7 +477,7 @@ public class JavaGenerator implements CodeGenerator
                 .append(indent).append("{\n")
                 .append(indent).append("    throw new IllegalStateException(")
                 .append("\"Cannot access field \\\"").append(token.name())
-                .append("\\\" in state: \" + codecState());\n")
+                .append("\\\" in state: \" + CodecStates.name(codecState()));\n")
                 .append(indent).append("}\n");
         }
         else
@@ -470,7 +490,7 @@ public class JavaGenerator implements CodeGenerator
             transitions.forEach(transition ->
             {
                 transition.forEachStartState(startState ->
-                    sb.append(indent).append("    case ").append(unqualifiedStateCase(startState)).append(":\n"));
+                    sb.append(indent).append("    case ").append(stateCaseForSwitchCase(startState)).append(":\n"));
                 sb.append(indent).append("        codecState(")
                     .append(qualifiedStateCase(transition.endState())).append(");\n")
                     .append(indent).append("        break;\n");
@@ -479,7 +499,7 @@ public class JavaGenerator implements CodeGenerator
             sb.append(indent).append("    default:\n")
                 .append(indent).append("        throw new IllegalStateException(")
                 .append("\"Cannot access field \\\"").append(token.name())
-                .append("\\\" in state: \" + codecState());\n")
+                .append("\\\" in state: \" + CodecStates.name(codecState()));\n")
                 .append(indent).append("}\n");
         }
     }
@@ -835,13 +855,13 @@ public class JavaGenerator implements CodeGenerator
         if (null != fieldOrderModel)
         {
             sb.append("\n")
-                .append(indent).append("    private CodecState codecState()\n")
+                .append(indent).append("    private int codecState()\n")
                 .append(indent).append("    {\n")
                 .append(indent).append("        return parentMessage.codecState();\n")
                 .append(indent).append("    }\n");
 
             sb.append("\n")
-                .append(indent).append("    private void codecState(final CodecState newState)\n")
+                .append(indent).append("    private void codecState(final int newState)\n")
                 .append(indent).append("    {\n")
                 .append(indent).append("        parentMessage.codecState(newState);\n")
                 .append(indent).append("    }\n");
@@ -965,13 +985,13 @@ public class JavaGenerator implements CodeGenerator
         if (null != fieldOrderModel)
         {
             sb.append("\n")
-                .append(ind).append("    private CodecState codecState()\n")
+                .append(ind).append("    private int codecState()\n")
                 .append(ind).append("    {\n")
                 .append(ind).append("        return parentMessage.codecState();\n")
                 .append(ind).append("    }\n");
 
             sb.append("\n")
-                .append(ind).append("    private void codecState(final CodecState newState)\n")
+                .append(ind).append("    private void codecState(final int newState)\n")
                 .append(ind).append("    {\n")
                 .append(ind).append("        parentMessage.codecState(newState);\n")
                 .append(ind).append("    }\n");
@@ -3193,7 +3213,7 @@ public class JavaGenerator implements CodeGenerator
 
         if (null != fieldOrderModel)
         {
-            methods.append("        final CodecState currentCodecState = codecState();\n");
+            methods.append("        final int currentCodecState = codecState();\n");
         }
 
         methods

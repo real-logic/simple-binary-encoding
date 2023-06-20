@@ -35,23 +35,37 @@ public final class FrameCodecDecoder
      *   }
      * }</pre>
      */
-    private enum CodecState
+    private static class CodecStates
     {
-        NOT_WRAPPED,
-        V0_BLOCK,
-        V0_PACKAGENAME_DONE,
-        V0_NAMESPACENAME_DONE,
-        V0_SEMANTICVERSION_DONE,
+        private static final int NOT_WRAPPED = 0;
+        private static final int V0_BLOCK = 1;
+        private static final int V0_PACKAGENAME_DONE = 2;
+        private static final int V0_NAMESPACENAME_DONE = 3;
+        private static final int V0_SEMANTICVERSION_DONE = 4;
+
+        private static final String[] STATE_NAME_LOOKUP =
+        {
+            "NOT_WRAPPED",
+            "V0_BLOCK",
+            "V0_PACKAGENAME_DONE",
+            "V0_NAMESPACENAME_DONE",
+            "V0_SEMANTICVERSION_DONE",
+        };
+
+        private static String name(final int state)
+        {
+            return STATE_NAME_LOOKUP[state];
+        }
     }
 
-    private CodecState codecState = CodecState.NOT_WRAPPED;
+    private int codecState = CodecStates.NOT_WRAPPED;
 
-    private CodecState codecState()
+    private int codecState()
     {
         return codecState;
     }
 
-    private void codecState(CodecState newState)
+    private void codecState(int newState)
     {
         codecState = newState;
     }
@@ -116,10 +130,10 @@ public final class FrameCodecDecoder
         switch(actingVersion)
         {
             case 0:
-                codecState(CodecState.V0_BLOCK);
+                codecState(CodecStates.V0_BLOCK);
                 break;
             default:
-                codecState(CodecState.V0_BLOCK);
+                codecState(CodecStates.V0_BLOCK);
                 break;
         }
     }
@@ -176,7 +190,7 @@ public final class FrameCodecDecoder
     public int sbeDecodedLength()
     {
         final int currentLimit = limit();
-        final CodecState currentCodecState = codecState();
+        final int currentCodecState = codecState();
         sbeSkip();
         final int decodedLength = encodedLength();
         limit(currentLimit);
@@ -241,9 +255,9 @@ public final class FrameCodecDecoder
 
     private void onIrIdAccessed()
     {
-        if (codecState() == CodecState.NOT_WRAPPED)
+        if (codecState() == CodecStates.NOT_WRAPPED)
         {
-            throw new IllegalStateException("Cannot access field \"irId\" in state: " + codecState());
+            throw new IllegalStateException("Cannot access field \"irId\" in state: " + CodecStates.name(codecState()));
         }
     }
 
@@ -305,9 +319,9 @@ public final class FrameCodecDecoder
 
     private void onIrVersionAccessed()
     {
-        if (codecState() == CodecState.NOT_WRAPPED)
+        if (codecState() == CodecStates.NOT_WRAPPED)
         {
-            throw new IllegalStateException("Cannot access field \"irVersion\" in state: " + codecState());
+            throw new IllegalStateException("Cannot access field \"irVersion\" in state: " + CodecStates.name(codecState()));
         }
     }
 
@@ -369,9 +383,9 @@ public final class FrameCodecDecoder
 
     private void onSchemaVersionAccessed()
     {
-        if (codecState() == CodecState.NOT_WRAPPED)
+        if (codecState() == CodecStates.NOT_WRAPPED)
         {
-            throw new IllegalStateException("Cannot access field \"schemaVersion\" in state: " + codecState());
+            throw new IllegalStateException("Cannot access field \"schemaVersion\" in state: " + CodecStates.name(codecState()));
         }
     }
 
@@ -435,11 +449,11 @@ public final class FrameCodecDecoder
     {
         switch (codecState())
         {
-            case V0_BLOCK:
-                codecState(CodecState.V0_PACKAGENAME_DONE);
+            case CodecStates.V0_BLOCK:
+                codecState(CodecStates.V0_PACKAGENAME_DONE);
                 break;
             default:
-                throw new IllegalStateException("Cannot access field \"packageName\" in state: " + codecState());
+                throw new IllegalStateException("Cannot access field \"packageName\" in state: " + CodecStates.name(codecState()));
         }
     }
 
@@ -575,11 +589,11 @@ public final class FrameCodecDecoder
     {
         switch (codecState())
         {
-            case V0_PACKAGENAME_DONE:
-                codecState(CodecState.V0_NAMESPACENAME_DONE);
+            case CodecStates.V0_PACKAGENAME_DONE:
+                codecState(CodecStates.V0_NAMESPACENAME_DONE);
                 break;
             default:
-                throw new IllegalStateException("Cannot access field \"namespaceName\" in state: " + codecState());
+                throw new IllegalStateException("Cannot access field \"namespaceName\" in state: " + CodecStates.name(codecState()));
         }
     }
 
@@ -715,11 +729,11 @@ public final class FrameCodecDecoder
     {
         switch (codecState())
         {
-            case V0_NAMESPACENAME_DONE:
-                codecState(CodecState.V0_SEMANTICVERSION_DONE);
+            case CodecStates.V0_NAMESPACENAME_DONE:
+                codecState(CodecStates.V0_SEMANTICVERSION_DONE);
                 break;
             default:
-                throw new IllegalStateException("Cannot access field \"semanticVersion\" in state: " + codecState());
+                throw new IllegalStateException("Cannot access field \"semanticVersion\" in state: " + CodecStates.name(codecState()));
         }
     }
 
