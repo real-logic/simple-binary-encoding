@@ -34,6 +34,8 @@ import static uk.co.real_logic.sbe.ir.GenerationUtil.collectVarData;
 @SuppressWarnings("DuplicatedCode") // there is no abstraction for visiting fields, groups, and varData
 final class FieldOrderModel
 {
+    private static final boolean GENERATE_ACCESS_ORDER_CHECKS = Boolean.parseBoolean(
+        System.getProperty("sbe.generate.access.order.checks", "true"));
     private final Int2ObjectHashMap<State> states = new Int2ObjectHashMap<>();
     private final Map<Token, TransitionGroup> transitions = new LinkedHashMap<>();
     private final Set<Token> topLevelBlockFields = new HashSet<>();
@@ -84,6 +86,11 @@ final class FieldOrderModel
         }
 
         return transitionGroup.transitions.get(context);
+    }
+
+    public static boolean generateAccessOrderChecks()
+    {
+        return GENERATE_ACCESS_ORDER_CHECKS;
     }
 
     public static FieldOrderModel newInstance(

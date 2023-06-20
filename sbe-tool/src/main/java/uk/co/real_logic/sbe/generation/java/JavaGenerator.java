@@ -250,7 +250,9 @@ public class JavaGenerator implements CodeGenerator
                 generateAnnotations(BASE_INDENT, className, groups, out, this::encoderName);
             }
             out.append(generateDeclaration(className, implementsString, msgToken));
-            final FieldOrderModel fieldOrderModel = FieldOrderModel.newInstance(msgToken, fields, groups, varData);
+            final FieldOrderModel fieldOrderModel = FieldOrderModel.generateAccessOrderChecks() ?
+                FieldOrderModel.newInstance(msgToken, fields, groups, varData) :
+                null;
             out.append(generateFieldOrderStates(fieldOrderModel));
             out.append(generateEncoderFlyweightCode(className, fieldOrderModel, msgToken));
 
@@ -278,6 +280,11 @@ public class JavaGenerator implements CodeGenerator
 
     private static CharSequence generateFieldOrderStates(final FieldOrderModel fieldOrderModel)
     {
+        if (null == fieldOrderModel)
+        {
+            return "";
+        }
+
         final StringBuilder sb = new StringBuilder();
 
         sb.append("    private static final boolean ENABLE_BOUNDS_CHECKS = ")
@@ -332,7 +339,7 @@ public class JavaGenerator implements CodeGenerator
         final String indent,
         final Token token)
     {
-        if (fieldOrderModel == null)
+        if (null == fieldOrderModel)
         {
             return;
         }
@@ -370,7 +377,7 @@ public class JavaGenerator implements CodeGenerator
         final String methodName,
         final String... arguments)
     {
-        if (fieldOrderModel == null)
+        if (null == fieldOrderModel)
         {
             return "";
         }
@@ -401,6 +408,11 @@ public class JavaGenerator implements CodeGenerator
         final String indent,
         final Token token)
     {
+        if (null == fieldOrderModel)
+        {
+            return;
+        }
+
         sb.append("\n")
             .append(indent).append("private void ").append(accessOrderListenerMethodName(token))
             .append("(final int remaining)\n")
@@ -478,6 +490,11 @@ public class JavaGenerator implements CodeGenerator
         final String indent,
         final Token token)
     {
+        if (null == fieldOrderModel)
+        {
+            return;
+        }
+
         sb.append(indent).append("private void onNextElementAccessed()\n")
             .append(indent).append("{\n")
             .append(indent).append("    final int remaining = ").append("count - index").append(";\n")
@@ -510,6 +527,11 @@ public class JavaGenerator implements CodeGenerator
         final FieldOrderModel fieldOrderModel,
         final String indent)
     {
+        if (null == fieldOrderModel)
+        {
+            return "";
+        }
+
         final StringBuilder sb = new StringBuilder();
         sb.append(indent).append("private void onWrap(final int actingVersion)\n")
             .append(indent).append("{\n")
@@ -534,6 +556,24 @@ public class JavaGenerator implements CodeGenerator
         return sb;
     }
 
+    private CharSequence generateEncoderWrapListener(
+        final FieldOrderModel fieldOrderModel,
+        final String indent)
+    {
+        if (null == fieldOrderModel)
+        {
+            return "";
+        }
+
+        final StringBuilder sb = new StringBuilder();
+        sb.append(indent).append("if (ENABLE_ACCESS_ORDER_CHECKS)")
+            .append("\n").append(indent).append("{\n")
+            .append(indent).append("    codecState(")
+            .append(qualifiedStateCase(fieldOrderModel.latestVersionWrappedState()))
+            .append(");\n")
+            .append(indent).append("}\n\n");
+        return sb;
+    }
 
     private void generateDecoder(
         final Token msgToken,
@@ -555,8 +595,13 @@ public class JavaGenerator implements CodeGenerator
                 generateAnnotations(BASE_INDENT, className, groups, out, this::decoderName);
             }
             out.append(generateDeclaration(className, implementsString, msgToken));
-            final FieldOrderModel fieldOrderModel = FieldOrderModel.newInstance(
-                msgToken, fields, groups, varData);
+
+            FieldOrderModel fieldOrderModel = null;
+            if (FieldOrderModel.generateAccessOrderChecks())
+            {
+                fieldOrderModel = FieldOrderModel.newInstance(msgToken, fields, groups, varData);
+            }
+
             out.append(generateFieldOrderStates(fieldOrderModel));
             out.append(generateDecoderFlyweightCode(fieldOrderModel, className, msgToken));
 
@@ -787,17 +832,20 @@ public class JavaGenerator implements CodeGenerator
             .append(indent).append("        return index < count;\n")
             .append(indent).append("    }\n");
 
-        sb.append("\n")
-            .append(indent).append("    private CodecState codecState()\n")
-            .append(indent).append("    {\n")
-            .append(indent).append("        return parentMessage.codecState();\n")
-            .append(indent).append("    }\n");
+        if (null != fieldOrderModel)
+        {
+            sb.append("\n")
+                .append(indent).append("    private CodecState codecState()\n")
+                .append(indent).append("    {\n")
+                .append(indent).append("        return parentMessage.codecState();\n")
+                .append(indent).append("    }\n");
 
-        sb.append("\n")
-            .append(indent).append("    private void codecState(final CodecState newState)\n")
-            .append(indent).append("    {\n")
-            .append(indent).append("        parentMessage.codecState(newState);\n")
-            .append(indent).append("    }\n");
+            sb.append("\n")
+                .append(indent).append("    private void codecState(final CodecState newState)\n")
+                .append(indent).append("    {\n")
+                .append(indent).append("        parentMessage.codecState(newState);\n")
+                .append(indent).append("    }\n");
+        }
     }
 
     private void generateGroupEncoderClassHeader(
@@ -914,17 +962,20 @@ public class JavaGenerator implements CodeGenerator
             .append(ind).append("        return ").append(blockLength).append(";\n")
             .append(ind).append("    }\n");
 
-        sb.append("\n")
-            .append(ind).append("    private CodecState codecState()\n")
-            .append(ind).append("    {\n")
-            .append(ind).append("        return parentMessage.codecState();\n")
-            .append(ind).append("    }\n");
+        if (null != fieldOrderModel)
+        {
+            sb.append("\n")
+                .append(ind).append("    private CodecState codecState()\n")
+                .append(ind).append("    {\n")
+                .append(ind).append("        return parentMessage.codecState();\n")
+                .append(ind).append("    }\n");
 
-        sb.append("\n")
-            .append(ind).append("    private void codecState(final CodecState newState)\n")
-            .append(ind).append("    {\n")
-            .append(ind).append("        parentMessage.codecState(newState);\n")
-            .append(ind).append("    }\n");
+            sb.append("\n")
+                .append(ind).append("    private void codecState(final CodecState newState)\n")
+                .append(ind).append("    {\n")
+                .append(ind).append("        parentMessage.codecState(newState);\n")
+                .append(ind).append("    }\n");
+        }
     }
 
     private static String primitiveTypeName(final Token token)
@@ -3090,73 +3141,83 @@ public class JavaGenerator implements CodeGenerator
     {
         final String headerClassName = formatClassName(ir.headerStructure().tokens().get(0).applicableTypeName());
 
-        final String methods =
-            generateDecoderWrapListener(fieldOrderModel, "    ") +
-            "    public " + className + " wrap(\n" +
-            "        final " + readOnlyBuffer + " buffer,\n" +
-            "        final int offset,\n" +
-            "        final int actingBlockLength,\n" +
-            "        final int actingVersion)\n" +
-            "    {\n" +
-            "        if (buffer != this.buffer)\n" +
-            "        {\n" +
-            "            this.buffer = buffer;\n" +
-            "        }\n" +
-            "        this.initialOffset = offset;\n" +
-            "        this.offset = offset;\n" +
-            "        this.actingBlockLength = actingBlockLength;\n" +
-            "        this.actingVersion = actingVersion;\n" +
-            "        limit(offset + actingBlockLength);\n\n" +
-            "        if (ENABLE_ACCESS_ORDER_CHECKS)\n" +
-            "        {\n" +
-            "            onWrap(actingVersion);\n" +
-            "        }\n\n" +
-            "        return this;\n" +
-            "    }\n\n" +
+        final StringBuilder methods = new StringBuilder();
 
-            "    public " + className + " wrapAndApplyHeader(\n" +
-            "        final " + readOnlyBuffer + " buffer,\n" +
-            "        final int offset,\n" +
-            "        final " + headerClassName + "Decoder headerDecoder)\n" +
-            "    {\n" +
-            "        headerDecoder.wrap(buffer, offset);\n\n" +
-            "        final int templateId = headerDecoder.templateId();\n" +
-            "        if (TEMPLATE_ID != templateId)\n" +
-            "        {\n" +
-            "            throw new IllegalStateException(\"Invalid TEMPLATE_ID: \" + templateId);\n" +
-            "        }\n\n" +
-            "        return wrap(\n" +
-            "            buffer,\n" +
-            "            offset + " + headerClassName + "Decoder.ENCODED_LENGTH,\n" +
-            "            headerDecoder.blockLength(),\n" +
-            "            headerDecoder.version());\n" +
-            "    }\n\n" +
+        methods.append(generateDecoderWrapListener(fieldOrderModel, "    "));
 
-            "    public " + className + " sbeRewind()\n" +
-            "    {\n" +
-            "        return wrap(buffer, initialOffset, actingBlockLength, actingVersion);\n" +
-            "    }\n\n" +
+        methods.append("    public ").append(className).append(" wrap(\n")
+            .append("        final ").append(readOnlyBuffer).append(" buffer,\n")
+            .append("        final int offset,\n")
+            .append("        final int actingBlockLength,\n")
+            .append("        final int actingVersion)\n")
+            .append("    {\n")
+            .append("        if (buffer != this.buffer)\n")
+            .append("        {\n")
+            .append("            this.buffer = buffer;\n")
+            .append("        }\n")
+            .append("        this.initialOffset = offset;\n")
+            .append("        this.offset = offset;\n")
+            .append("        this.actingBlockLength = actingBlockLength;\n")
+            .append("        this.actingVersion = actingVersion;\n")
+            .append("        limit(offset + actingBlockLength);\n\n")
+            .append(generateAccessOrderListenerCall(fieldOrderModel, "        ", "onWrap", "actingVersion"))
+            .append("        return this;\n")
+            .append("    }\n\n");
 
-            "    public int sbeDecodedLength()\n" +
-            "    {\n" +
-            "        final int currentLimit = limit();\n" +
-            "        final CodecState currentCodecState = codecState();\n" +
-            "        sbeSkip();\n" +
-            "        final int decodedLength = encodedLength();\n" +
-            "        limit(currentLimit);\n\n" +
-            "        if (ENABLE_ACCESS_ORDER_CHECKS)\n" +
-            "        {\n" +
-            "            codecState(currentCodecState);\n" +
-            "        }\n\n" +
-            "        return decodedLength;\n" +
-            "    }\n\n" +
+        methods.append("    public ").append(className).append(" wrapAndApplyHeader(\n")
+            .append("        final ").append(readOnlyBuffer).append(" buffer,\n")
+            .append("        final int offset,\n")
+            .append("        final ").append(headerClassName).append("Decoder headerDecoder)\n")
+            .append("    {\n")
+            .append("        headerDecoder.wrap(buffer, offset);\n\n")
+            .append("        final int templateId = headerDecoder.templateId();\n")
+            .append("        if (TEMPLATE_ID != templateId)\n")
+            .append("        {\n")
+            .append("            throw new IllegalStateException(\"Invalid TEMPLATE_ID: \" + templateId);\n")
+            .append("        }\n\n")
+            .append("        return wrap(\n")
+            .append("            buffer,\n")
+            .append("            offset + ").append(headerClassName).append("Decoder.ENCODED_LENGTH,\n")
+            .append("            headerDecoder.blockLength(),\n")
+            .append("            headerDecoder.version());\n")
+            .append("    }\n\n");
 
-            "    public int actingVersion()\n" +
-            "    {\n" +
-            "        return actingVersion;\n" +
-            "    }\n\n";
+        methods.append("    public ").append(className).append(" sbeRewind()\n")
+            .append("    {\n")
+            .append("        return wrap(buffer, initialOffset, actingBlockLength, actingVersion);\n")
+            .append("    }\n\n");
 
-        return generateFlyweightCode(DECODER, className, token, methods, readOnlyBuffer);
+        methods.append("    public int sbeDecodedLength()\n")
+            .append("    {\n")
+            .append("        final int currentLimit = limit();\n");
+
+        if (null != fieldOrderModel)
+        {
+            methods.append("        final CodecState currentCodecState = codecState();\n");
+        }
+
+        methods
+            .append("        sbeSkip();\n")
+            .append("        final int decodedLength = encodedLength();\n")
+            .append("        limit(currentLimit);\n\n");
+
+        if (null != fieldOrderModel)
+        {
+            methods.append("        if (ENABLE_ACCESS_ORDER_CHECKS)\n")
+                .append("        {\n")
+                .append("            codecState(currentCodecState);\n")
+                .append("        }\n\n");
+        }
+
+        methods.append("        return decodedLength;\n")
+            .append("    }\n\n");
+
+        methods.append("    public int actingVersion()\n")
+            .append("    {\n")
+            .append("        return actingVersion;\n")
+            .append("    }\n\n");
+
+        return generateFlyweightCode(DECODER, className, token, methods.toString(), readOnlyBuffer);
     }
 
     private CharSequence generateFlyweightCode(
@@ -3277,10 +3338,7 @@ public class JavaGenerator implements CodeGenerator
             "        this.initialOffset = offset;\n" +
             "        this.offset = offset;\n" +
             "        limit(offset + BLOCK_LENGTH);\n\n" +
-            "        if (ENABLE_ACCESS_ORDER_CHECKS)\n" +
-            "        {\n" +
-            "            codecState(" + qualifiedStateCase(fieldOrderModel.latestVersionWrappedState()) + ");\n" +
-            "        }\n\n" +
+            generateEncoderWrapListener(fieldOrderModel, "        ") +
             "        return this;\n" +
             "    }\n\n";
 

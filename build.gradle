@@ -542,7 +542,8 @@ project(':sbe-benchmarks') {
                 'sbe.validation.stop.on.error': 'true',
                 'sbe.validation.xsd': validationXsdPath,
                 'sbe.java.encoding.buffer.type': 'org.agrona.concurrent.UnsafeBuffer',
-                'sbe.java.decoding.buffer.type': 'org.agrona.concurrent.UnsafeBuffer')
+                'sbe.java.decoding.buffer.type': 'org.agrona.concurrent.UnsafeBuffer',
+                'sbe.generate.access.order.checks': 'false')
         args = ['src/main/resources/car.xml', 'src/main/resources/fix-message-samples.xml']
     }
 
