@@ -486,7 +486,7 @@ public class FieldOrderCheckTest
         final GroupAndVarLengthEncoder.BEncoder bEncoder = encoder.bCount(1);
         final Exception exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> bEncoder.c(1));
-        assertThat(exception.getMessage(), containsString("Cannot access field \"c\" in state: V0_B_N"));
+        assertThat(exception.getMessage(), containsString("Cannot access field \"b.c\" in state: V0_B_N"));
     }
 
     @Test
@@ -509,7 +509,7 @@ public class FieldOrderCheckTest
         assertThat(bs.count(), equalTo(2));
         final Exception exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, bs::c);
-        assertThat(exception.getMessage(), containsString("Cannot access field \"c\" in state: V0_B_N"));
+        assertThat(exception.getMessage(), containsString("Cannot access field \"b.c\" in state: V0_B_N"));
     }
 
     @Test
@@ -761,7 +761,7 @@ public class FieldOrderCheckTest
         encoder.e("def");
         final Exception exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> b.d("ghi"));
-        assertThat(exception.getMessage(), containsString("Cannot access field \"d\" in state: V0_E_DONE"));
+        assertThat(exception.getMessage(), containsString("Cannot access field \"b.d\" in state: V0_E_DONE"));
     }
 
     @Test
@@ -788,7 +788,7 @@ public class FieldOrderCheckTest
         assertThat(bs.d(), equalTo("abc"));
         final Exception exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, bs::d);
-        assertThat(exception.getMessage(), containsString("Cannot access field \"d\" in state: V0_B_N_D_DONE"));
+        assertThat(exception.getMessage(), containsString("Cannot access field \"b.d\" in state: V0_B_N_D_DONE"));
     }
 
     @Test
@@ -954,7 +954,7 @@ public class FieldOrderCheckTest
             .c(1);
         final Exception exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> b.fCount(1));
-        assertThat(exception.getMessage(), containsString("Cannot access field \"f\" in state: V0_B_1_BLOCK"));
+        assertThat(exception.getMessage(), containsString("Cannot access field \"b.f\" in state: V0_B_1_BLOCK"));
     }
 
     @Test
@@ -989,7 +989,7 @@ public class FieldOrderCheckTest
         final CompositeInsideGroupEncoder.BEncoder bEncoder = encoder.bCount(1);
         final Exception exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, bEncoder::c);
-        assertThat(exception.getMessage(), containsString("Cannot access field \"c\" in state: V0_B_N"));
+        assertThat(exception.getMessage(), containsString("Cannot access field \"b.c\" in state: V0_B_N"));
     }
 
     @Test
@@ -1011,7 +1011,7 @@ public class FieldOrderCheckTest
         assertThat(b.count(), equalTo(1));
         final Exception exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, b::c);
-        assertThat(exception.getMessage(), containsString("Cannot access field \"c\" in state: V0_B_N"));
+        assertThat(exception.getMessage(), containsString("Cannot access field \"b.c\" in state: V0_B_N"));
     }
 
     @Test
@@ -1898,7 +1898,7 @@ public class FieldOrderCheckTest
         final EnumInsideGroupEncoder.BEncoder bEncoder = encoder.bCount(1);
         final Exception exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> bEncoder.c(Direction.SELL));
-        assertThat(exception.getMessage(), containsString("Cannot access field \"c\" in state: V0_B_N"));
+        assertThat(exception.getMessage(), containsString("Cannot access field \"b.c\" in state: V0_B_N"));
     }
 
     @Test
@@ -1918,7 +1918,7 @@ public class FieldOrderCheckTest
         assertThat(b.count(), equalTo(1));
         final Exception exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, b::c);
-        assertThat(exception.getMessage(), containsString("Cannot access field \"c\" in state: V0_B_N"));
+        assertThat(exception.getMessage(), containsString("Cannot access field \"b.c\" in state: V0_B_N"));
     }
 
     @Test
@@ -1976,7 +1976,7 @@ public class FieldOrderCheckTest
         final BitSetInsideGroupEncoder.BEncoder bEncoder = encoder.bCount(1);
         final Exception exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, bEncoder::c);
-        assertThat(exception.getMessage(), containsString("Cannot access field \"c\" in state: V0_B_N"));
+        assertThat(exception.getMessage(), containsString("Cannot access field \"b.c\" in state: V0_B_N"));
     }
 
     @Test
@@ -1999,7 +1999,7 @@ public class FieldOrderCheckTest
         assertThat(b.count(), equalTo(1));
         final Exception exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, b::c);
-        assertThat(exception.getMessage(), containsString("Cannot access field \"c\" in state: V0_B_N"));
+        assertThat(exception.getMessage(), containsString("Cannot access field \"b.c\" in state: V0_B_N"));
     }
 
     @Test
@@ -2060,7 +2060,7 @@ public class FieldOrderCheckTest
         final ArrayInsideGroupEncoder.BEncoder bEncoder = encodeUntilGroupWithArrayInside();
         final Exception exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> bEncoder.putC((short)5, (short)6, (short)7, (short)8));
-        assertThat(exception.getMessage(), containsString("Cannot access field \"c\" in state: V0_B_N"));
+        assertThat(exception.getMessage(), containsString("Cannot access field \"b.c\" in state: V0_B_N"));
     }
 
     @Test
@@ -2069,7 +2069,7 @@ public class FieldOrderCheckTest
         final ArrayInsideGroupEncoder.BEncoder bEncoder = encodeUntilGroupWithArrayInside();
         final Exception exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> bEncoder.c(0, (short)5));
-        assertThat(exception.getMessage(), containsString("Cannot access field \"c\" in state: V0_B_N"));
+        assertThat(exception.getMessage(), containsString("Cannot access field \"b.c\" in state: V0_B_N"));
     }
 
     @Test
@@ -2079,7 +2079,7 @@ public class FieldOrderCheckTest
         final byte[] bytes = {5, 6, 7, 8};
         final Exception exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> bEncoder.putC(bytes, 0, 4));
-        assertThat(exception.getMessage(), containsString("Cannot access field \"c\" in state: V0_B_N"));
+        assertThat(exception.getMessage(), containsString("Cannot access field \"b.c\" in state: V0_B_N"));
     }
 
     @Test
@@ -2093,7 +2093,7 @@ public class FieldOrderCheckTest
         buffer.putByte(6, (byte)8);
         final Exception exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> bEncoder.putC(buffer, 0, 4));
-        assertThat(exception.getMessage(), containsString("Cannot access field \"c\" in state: V0_B_N"));
+        assertThat(exception.getMessage(), containsString("Cannot access field \"b.c\" in state: V0_B_N"));
     }
 
     private ArrayInsideGroupEncoder.BEncoder encodeUntilGroupWithArrayInside()
@@ -2110,7 +2110,7 @@ public class FieldOrderCheckTest
         final ArrayInsideGroupDecoder.BDecoder b = decodeUntilGroupWithArrayInside();
         final Exception exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> b.c(0));
-        assertThat(exception.getMessage(), containsString("Cannot access field \"c\" in state: V0_B_N"));
+        assertThat(exception.getMessage(), containsString("Cannot access field \"b.c\" in state: V0_B_N"));
     }
 
     @Test
@@ -2119,7 +2119,7 @@ public class FieldOrderCheckTest
         final ArrayInsideGroupDecoder.BDecoder b = decodeUntilGroupWithArrayInside();
         final Exception exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> b.getC(new byte[8], 0, 8));
-        assertThat(exception.getMessage(), containsString("Cannot access field \"c\" in state: V0_B_N"));
+        assertThat(exception.getMessage(), containsString("Cannot access field \"b.c\" in state: V0_B_N"));
     }
 
     @Test
@@ -2128,7 +2128,7 @@ public class FieldOrderCheckTest
         final ArrayInsideGroupDecoder.BDecoder b = decodeUntilGroupWithArrayInside();
         final Exception exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> b.getC(new ExpandableArrayBuffer(), 0, 8));
-        assertThat(exception.getMessage(), containsString("Cannot access field \"c\" in state: V0_B_N"));
+        assertThat(exception.getMessage(), containsString("Cannot access field \"b.c\" in state: V0_B_N"));
     }
 
     @Test
@@ -2137,7 +2137,7 @@ public class FieldOrderCheckTest
         final ArrayInsideGroupDecoder.BDecoder b = decodeUntilGroupWithArrayInside();
         final Exception exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> b.wrapC(new UnsafeBuffer()));
-        assertThat(exception.getMessage(), containsString("Cannot access field \"c\" in state: V0_B_N"));
+        assertThat(exception.getMessage(), containsString("Cannot access field \"b.c\" in state: V0_B_N"));
     }
 
     private ArrayInsideGroupDecoder.BDecoder decodeUntilGroupWithArrayInside()
@@ -2495,7 +2495,7 @@ public class FieldOrderCheckTest
         final AsciiInsideGroupEncoder.BEncoder bEncoder = encodeUntilGroupWithAsciiInside();
         final Exception exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> bEncoder.c("EURUSD"));
-        assertThat(exception.getMessage(), containsString("Cannot access field \"c\" in state: V0_B_N"));
+        assertThat(exception.getMessage(), containsString("Cannot access field \"b.c\" in state: V0_B_N"));
     }
 
     @Test
@@ -2504,7 +2504,7 @@ public class FieldOrderCheckTest
         final AsciiInsideGroupEncoder.BEncoder bEncoder = encodeUntilGroupWithAsciiInside();
         final Exception exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> bEncoder.c(0, (byte)'E'));
-        assertThat(exception.getMessage(), containsString("Cannot access field \"c\" in state: V0_B_N"));
+        assertThat(exception.getMessage(), containsString("Cannot access field \"b.c\" in state: V0_B_N"));
     }
 
     @Test
@@ -2514,7 +2514,7 @@ public class FieldOrderCheckTest
         final byte[] eurUsdBytes = "EURUSD".getBytes(StandardCharsets.US_ASCII);
         final Exception exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> bEncoder.putC(eurUsdBytes, 0));
-        assertThat(exception.getMessage(), containsString("Cannot access field \"c\" in state: V0_B_N"));
+        assertThat(exception.getMessage(), containsString("Cannot access field \"b.c\" in state: V0_B_N"));
     }
 
     private AsciiInsideGroupEncoder.BEncoder encodeUntilGroupWithAsciiInside()
@@ -2531,7 +2531,7 @@ public class FieldOrderCheckTest
         final AsciiInsideGroupDecoder.BDecoder b = decodeUntilGroupWithAsciiInside();
         final Exception exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> b.c(0));
-        assertThat(exception.getMessage(), containsString("Cannot access field \"c\" in state: V0_B_N"));
+        assertThat(exception.getMessage(), containsString("Cannot access field \"b.c\" in state: V0_B_N"));
     }
 
     @Test
@@ -2540,7 +2540,7 @@ public class FieldOrderCheckTest
         final AsciiInsideGroupDecoder.BDecoder b = decodeUntilGroupWithAsciiInside();
         final Exception exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> b.getC(new byte[6], 0));
-        assertThat(exception.getMessage(), containsString("Cannot access field \"c\" in state: V0_B_N"));
+        assertThat(exception.getMessage(), containsString("Cannot access field \"b.c\" in state: V0_B_N"));
     }
 
     @Test
@@ -2549,7 +2549,7 @@ public class FieldOrderCheckTest
         final AsciiInsideGroupDecoder.BDecoder b = decodeUntilGroupWithAsciiInside();
         final Exception exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, b::c);
-        assertThat(exception.getMessage(), containsString("Cannot access field \"c\" in state: V0_B_N"));
+        assertThat(exception.getMessage(), containsString("Cannot access field \"b.c\" in state: V0_B_N"));
     }
 
     @Test
@@ -2558,7 +2558,7 @@ public class FieldOrderCheckTest
         final AsciiInsideGroupDecoder.BDecoder b = decodeUntilGroupWithAsciiInside();
         final Exception exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> b.getC(new StringBuilder()));
-        assertThat(exception.getMessage(), containsString("Cannot access field \"c\" in state: V0_B_N"));
+        assertThat(exception.getMessage(), containsString("Cannot access field \"b.c\" in state: V0_B_N"));
     }
 
     private AsciiInsideGroupDecoder.BDecoder decodeUntilGroupWithAsciiInside()
@@ -2845,7 +2845,7 @@ public class FieldOrderCheckTest
         encoder.dCount(1).next().e(43);
         final IllegalStateException exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> bEncoder.c(44));
-        assertThat(exception.getMessage(), containsString("Cannot access field \"c\" in state: V0_D_1_BLOCK"));
+        assertThat(exception.getMessage(), containsString("Cannot access field \"b.c\" in state: V0_D_1_BLOCK"));
     }
 
     @Test
@@ -2862,7 +2862,7 @@ public class FieldOrderCheckTest
         encoder.hCount(0);
         final IllegalStateException exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> dEncoder.e(44));
-        assertThat(exception.getMessage(), containsString("Cannot access field \"e\" in state: V0_H_0"));
+        assertThat(exception.getMessage(), containsString("Cannot access field \"b.d.e\" in state: V0_H_0"));
     }
 
     @Test
@@ -2879,7 +2879,7 @@ public class FieldOrderCheckTest
         encoder.hCount(0);
         final IllegalStateException exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> dEncoder.e(44));
-        assertThat(exception.getMessage(), containsString("Cannot access field \"e\" in state: V0_H_0"));
+        assertThat(exception.getMessage(), containsString("Cannot access field \"b.d.e\" in state: V0_H_0"));
     }
 
     @Test
@@ -2895,7 +2895,7 @@ public class FieldOrderCheckTest
         bEncoder.fCount(0);
         final IllegalStateException exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> dEncoder.e(44));
-        assertThat(exception.getMessage(), containsString("Cannot access field \"e\" in state: V0_B_1_F_0"));
+        assertThat(exception.getMessage(), containsString("Cannot access field \"b.d.e\" in state: V0_B_1_F_0"));
     }
 
     @Test
@@ -2907,7 +2907,7 @@ public class FieldOrderCheckTest
         final AddPrimitiveInsideGroupV1Encoder.BEncoder bEncoder = encoder.bCount(0);
         final IllegalStateException exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> bEncoder.c(43));
-        assertThat(exception.getMessage(), containsString("Cannot access field \"c\" in state: V1_B_0"));
+        assertThat(exception.getMessage(), containsString("Cannot access field \"b.c\" in state: V1_B_0"));
     }
 
     @Test
@@ -2920,7 +2920,7 @@ public class FieldOrderCheckTest
         encoder.d("abc");
         final IllegalStateException exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> bEncoder.c(43));
-        assertThat(exception.getMessage(), containsString("Cannot access field \"c\" in state: V0_D_DONE"));
+        assertThat(exception.getMessage(), containsString("Cannot access field \"b.c\" in state: V0_D_DONE"));
     }
 
     private void modifyHeaderToLookLikeVersion0()

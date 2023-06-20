@@ -476,7 +476,7 @@ public class JavaGenerator implements CodeGenerator
                 .append(")\n")
                 .append(indent).append("{\n")
                 .append(indent).append("    throw new IllegalStateException(")
-                .append("\"Cannot access field \\\"").append(token.name())
+                .append("\"Cannot access field \\\"").append(fieldOrderModel.fieldPath(token))
                 .append("\\\" in state: \" + CodecStates.name(codecState()));\n")
                 .append(indent).append("}\n");
         }
@@ -498,7 +498,7 @@ public class JavaGenerator implements CodeGenerator
 
             sb.append(indent).append("    default:\n")
                 .append(indent).append("        throw new IllegalStateException(")
-                .append("\"Cannot access field \\\"").append(token.name())
+                .append("\"Cannot access field \\\"").append(fieldOrderModel.fieldPath(token))
                 .append("\\\" in state: \" + CodecStates.name(codecState()));\n")
                 .append(indent).append("}\n");
         }

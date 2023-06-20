@@ -31,7 +31,9 @@ import static uk.co.real_logic.sbe.ir.GenerationUtil.collectFields;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectGroups;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectVarData;
 
-@SuppressWarnings("DuplicatedCode") // there is no abstraction for visiting fields, groups, and varData
+// There is no abstraction for visiting fields, groups, and varData. Therefore, there is some "duplication".
+// Lambdas without braces tend to conflict with checkstyle. Therefore, we allow braces when an expression is possible.
+@SuppressWarnings({"DuplicatedCode", "CodeBlock2Expr"})
 final class FieldOrderModel
 {
     private static final boolean GENERATE_ACCESS_ORDER_CHECKS = Boolean.parseBoolean(
@@ -43,6 +45,22 @@ final class FieldOrderModel
     private final Set<String> reservedNames = new HashSet<>();
     private final State notWrappedState = allocateState("NOT_WRAPPED");
     private State encoderWrappedState;
+
+    public static boolean generateAccessOrderChecks()
+    {
+        return GENERATE_ACCESS_ORDER_CHECKS;
+    }
+
+    public static FieldOrderModel newInstance(
+        final Token msgToken,
+        final List<Token> fields,
+        final List<Token> groups,
+        final List<Token> varData)
+    {
+        final FieldOrderModel model = new FieldOrderModel();
+        model.findTransitions(msgToken, fields, groups, varData);
+        return model;
+    }
 
     public State notWrappedState()
     {
@@ -77,6 +95,21 @@ final class FieldOrderModel
         return topLevelBlockFields.contains(token);
     }
 
+    public String fieldPath(final Token token)
+    {
+        final StringBuilder sb = new StringBuilder();
+        final TransitionGroup transitionGroup = transitions.get(token);
+        if (null != transitionGroup)
+        {
+            transitionGroup.groupPath.forEach(groupToken ->
+            {
+                sb.append(groupToken.name()).append('.');
+            });
+        }
+        sb.append(token.name());
+        return sb.toString();
+    }
+
     public List<Transition> getTransitions(final TransitionContext context, final Token token)
     {
         final TransitionGroup transitionGroup = transitions.get(token);
@@ -88,23 +121,6 @@ final class FieldOrderModel
         return transitionGroup.transitions.get(context);
     }
 
-    public static boolean generateAccessOrderChecks()
-    {
-        return GENERATE_ACCESS_ORDER_CHECKS;
-    }
-
-    public static FieldOrderModel newInstance(
-        final Token msgToken,
-        final List<Token> fields,
-        final List<Token> groups,
-        final List<Token> varData)
-    {
-        final FieldOrderModel model = new FieldOrderModel();
-        model.findTransitions(msgToken, fields, groups, varData);
-        return model;
-    }
-
-    @SuppressWarnings("CodeBlock2Expr") // lambdas without braces tend to conflict with checkstyle
     public void generateGraph(
         final StringBuilder sb,
         final String indent)
@@ -197,6 +213,7 @@ final class FieldOrderModel
             allocateTransition(
                 version,
                 ".wrap(...)",
+                Collections.emptyList(),
                 null,
                 Collections.singletonList(notWrappedState),
                 versionWrappedState
@@ -206,6 +223,7 @@ final class FieldOrderModel
                 Collections.singletonList(versionWrappedState),
                 versionWrappedState,
                 "V" + version + "_",
+                new ArrayList<>(),
                 fields,
                 groups,
                 varData,
@@ -219,6 +237,7 @@ final class FieldOrderModel
         final List<State> entryStates,
         final State blockStateOrNull,
         final String prefix,
+        final List<Token> groupPath,
         final List<Token> fields,
         final List<Token> groups,
         final List<Token> varData,
@@ -244,6 +263,7 @@ final class FieldOrderModel
             allocateTransition(
                 TransitionContext.NONE,
                 "." + token.name() + "(value)",
+                groupPath,
                 token,
                 fromStates,
                 blockState.get());
@@ -283,6 +303,8 @@ final class FieldOrderModel
             final String groupPrefix = prefix + groupName + "_";
 
             final List<State> beginGroupStates = new ArrayList<>(fromStates);
+            final List<Token> newGroupPath = new ArrayList<>(groupPath);
+            newGroupPath.add(token);
 
             final State nRemainingGroup = allocateState(groupPrefix + "N");
             final State nRemainingGroupElement = allocateState(groupPrefix + "N_BLOCK");
@@ -293,6 +315,7 @@ final class FieldOrderModel
             allocateTransition(
                 TransitionContext.SELECT_EMPTY_GROUP,
                 "." + token.name() + "Length(0)",
+                groupPath,
                 token,
                 beginGroupStates,
                 emptyGroup);
@@ -301,6 +324,7 @@ final class FieldOrderModel
             allocateTransition(
                 TransitionContext.SELECT_MULTI_ELEMENT_GROUP,
                 "." + token.name() + "Length(N) where N > 0",
+                groupPath,
                 token,
                 beginGroupStates,
                 nRemainingGroup);
@@ -311,6 +335,7 @@ final class FieldOrderModel
                 fromStates,
                 nRemainingGroupElement,
                 groupPrefix + "N_",
+                newGroupPath,
                 groupFields,
                 groupGroups,
                 groupVarData,
@@ -324,6 +349,7 @@ final class FieldOrderModel
             allocateTransition(
                 TransitionContext.NEXT_ELEMENT_IN_GROUP,
                 token.name() + ".next()\\n&& count - index > 1",
+                groupPath,
                 token,
                 fromStates,
                 nRemainingGroupElement);
@@ -336,6 +362,7 @@ final class FieldOrderModel
             allocateTransition(
                 TransitionContext.LAST_ELEMENT_IN_GROUP,
                 token.name() + ".next()\\n&& count - index == 1",
+                groupPath,
                 token,
                 fromStates,
                 oneRemainingGroupElement);
@@ -347,6 +374,7 @@ final class FieldOrderModel
                 fromStates,
                 oneRemainingGroupElement,
                 groupPrefix + "1_",
+                newGroupPath,
                 groupFields,
                 groupGroups,
                 groupVarData,
@@ -375,6 +403,7 @@ final class FieldOrderModel
             allocateTransition(
                 TransitionContext.NONE,
                 "." + token.name() + "(value)",
+                groupPath,
                 token,
                 fromStates,
                 state);
@@ -400,11 +429,13 @@ final class FieldOrderModel
     private void allocateTransition(
         final Object firingContext,
         final String description,
+        final List<Token> groupPath,
         final Token token,
         final List<State> from,
         final State to)
     {
-        final TransitionGroup transitionGroup = transitions.computeIfAbsent(token, ignored -> new TransitionGroup());
+        final TransitionGroup transitionGroup = transitions.computeIfAbsent(token,
+            ignored -> new TransitionGroup(groupPath));
         final Transition transition = new Transition(description, from, to);
         transitionGroup.add(firingContext, transition);
     }
@@ -486,6 +517,12 @@ final class FieldOrderModel
     private static final class TransitionGroup
     {
         private final Map<Object, List<Transition>> transitions = new LinkedHashMap<>();
+        private final List<Token> groupPath;
+
+        private TransitionGroup(final List<Token> groupPath)
+        {
+            this.groupPath = groupPath;
+        }
 
         public void add(final Object context, final Transition transition)
         {
