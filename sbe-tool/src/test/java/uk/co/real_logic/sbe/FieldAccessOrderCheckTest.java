@@ -31,7 +31,7 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
-public class FieldOrderCheckTest
+public class FieldAccessOrderCheckTest
 {
     private static final Class<IllegalStateException> INCORRECT_ORDER_EXCEPTION_CLASS = IllegalStateException.class;
     private static final int OFFSET = 0;

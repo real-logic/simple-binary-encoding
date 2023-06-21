@@ -26,7 +26,7 @@ public final class TokenCodecEncoder
      *
      * <pre>{@code
      *   digraph G {
-     *       NOT_WRAPPED -> V0_BLOCK [label="  wrap(?)  "];
+     *       NOT_WRAPPED -> V0_BLOCK [label="  wrap(version=0)  "];
      *       V0_BLOCK -> V0_BLOCK [label="  tokenOffset(?)  "];
      *       V0_BLOCK -> V0_BLOCK [label="  tokenSize(?)  "];
      *       V0_BLOCK -> V0_BLOCK [label="  fieldId(?)  "];
@@ -86,7 +86,7 @@ public final class TokenCodecEncoder
 
         private static final String[] STATE_TRANSITIONS_LOOKUP =
         {
-            "\"wrap(?)\"",
+            "\"wrap(version=0)\"",
             "\"tokenOffset(?)\", \"tokenSize(?)\", \"fieldId(?)\", \"tokenVersion(?)\", \"componentTokenCount(?)\", \"signal(?)\", \"primitiveType(?)\", \"byteOrder(?)\", \"presence(?)\", \"deprecated(?)\", \"name(?)\"",
             "\"constValue(?)\"",
             "\"minValue(?)\"",

@@ -26,7 +26,7 @@ public final class FrameCodecDecoder
      *
      * <pre>{@code
      *   digraph G {
-     *       NOT_WRAPPED -> V0_BLOCK [label="  wrap(?)  "];
+     *       NOT_WRAPPED -> V0_BLOCK [label="  wrap(version=0)  "];
      *       V0_BLOCK -> V0_BLOCK [label="  irId(?)  "];
      *       V0_BLOCK -> V0_BLOCK [label="  irVersion(?)  "];
      *       V0_BLOCK -> V0_BLOCK [label="  schemaVersion(?)  "];
@@ -55,7 +55,7 @@ public final class FrameCodecDecoder
 
         private static final String[] STATE_TRANSITIONS_LOOKUP =
         {
-            "\"wrap(?)\"",
+            "\"wrap(version=0)\"",
             "\"irId(?)\", \"irVersion(?)\", \"schemaVersion(?)\", \"packageName(?)\"",
             "\"namespaceName(?)\"",
             "\"semanticVersion(?)\"",
