@@ -278,4 +278,15 @@
             <data name="b" id="2" type="varDataEncoding"/>
         </group>
     </sbe:message>
+
+    <sbe:message name="NestedGroupWithVarLength" id="24">
+        <field name="a" id="1" type="int32"/>
+        <group name="b" id="2">
+            <field name="c" id="3" type="int32"/>
+            <group name="d" id="4">
+                <field name="e" id="5" type="int32"/>
+                <data name="f" id="6" type="varDataEncoding"/>
+            </group>
+        </group>
+    </sbe:message>
 </sbe:messageSchema>

@@ -23,6 +23,8 @@ import org.agrona.concurrent.UnsafeBuffer;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import java.nio.charset.StandardCharsets;
 
@@ -2932,6 +2934,186 @@ public class FieldAccessOrderCheckTest
         final IllegalStateException exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> bEncoder.c(43));
         assertThat(exception.getMessage(), containsString("Cannot access field \"b.c\" in state: V0_D_DONE"));
+    }
+
+    @Test
+    void allowsEncodingAndDecodingNestedGroupWithVarDataInSchemaDefinedOrder()
+    {
+        final NestedGroupWithVarLengthEncoder encoder = new NestedGroupWithVarLengthEncoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(1);
+        final NestedGroupWithVarLengthEncoder.BEncoder bEncoder = encoder.bCount(3);
+        bEncoder.next().c(2).dCount(0);
+        bEncoder.next().c(3).dCount(1).next().e(4).f("abc");
+        bEncoder.next().c(5).dCount(2).next().e(6).f("def").next().e(7).f("ghi");
+
+        final NestedGroupWithVarLengthDecoder decoder = new NestedGroupWithVarLengthDecoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
+        assertThat(decoder.a(), equalTo(1));
+        final NestedGroupWithVarLengthDecoder.BDecoder bDecoder = decoder.b();
+        assertThat(bDecoder.count(), equalTo(3));
+        assertThat(bDecoder.next().c(), equalTo(2));
+        assertThat(bDecoder.d().count(), equalTo(0));
+        assertThat(bDecoder.next().c(), equalTo(3));
+        final NestedGroupWithVarLengthDecoder.BDecoder.DDecoder dDecoder = bDecoder.d();
+        assertThat(dDecoder.count(), equalTo(1));
+        assertThat(dDecoder.next().e(), equalTo(4));
+        assertThat(dDecoder.f(), equalTo("abc"));
+        assertThat(bDecoder.next().c(), equalTo(5));
+        assertThat(bDecoder.d(), sameInstance(dDecoder));
+        assertThat(dDecoder.count(), equalTo(2));
+        assertThat(dDecoder.next().e(), equalTo(6));
+        assertThat(dDecoder.f(), equalTo("def"));
+        assertThat(dDecoder.next().e(), equalTo(7));
+        assertThat(dDecoder.f(), equalTo("ghi"));
+    }
+
+    @CsvSource(value = {
+        "1,V0_B_1_D_N_BLOCK",
+        "2,V0_B_N_D_N_BLOCK"
+    })
+    @ParameterizedTest
+    void disallowsMissedEncodingOfVarLengthFieldInNestedGroupToNextInnerElement(
+        final int bCount,
+        final String expectedState)
+    {
+        final NestedGroupWithVarLengthEncoder encoder = new NestedGroupWithVarLengthEncoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(1);
+        final NestedGroupWithVarLengthEncoder.BEncoder bEncoder = encoder.bCount(bCount);
+        final NestedGroupWithVarLengthEncoder.BEncoder.DEncoder dEncoder = bEncoder.next().c(5).dCount(2);
+        dEncoder.next().e(7);
+        final IllegalStateException exception =
+            assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, dEncoder::next);
+        assertThat(exception.getMessage(),
+            containsString("Cannot access next element in repeating group \"b.d\" in state: " + expectedState));
+        assertThat(exception.getMessage(),
+            containsString("Expected one of these transitions: [\"b.d.e(?)\", \"b.d.f(?)\"]."));
+    }
+
+    @CsvSource(value = {
+        "1,V0_B_N_D_1_BLOCK",
+        "2,V0_B_N_D_N_BLOCK",
+    })
+    @ParameterizedTest
+    void disallowsMissedEncodingOfVarLengthFieldInNestedGroupToNextOuterElement(
+        final int dCount,
+        final String expectedState)
+    {
+        final NestedGroupWithVarLengthEncoder encoder = new NestedGroupWithVarLengthEncoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(1);
+        final NestedGroupWithVarLengthEncoder.BEncoder bEncoder = encoder.bCount(2);
+        bEncoder.next().c(3).dCount(dCount).next().e(4);
+        final IllegalStateException exception =
+            assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, bEncoder::next);
+        assertThat(exception.getMessage(),
+            containsString("Cannot access next element in repeating group \"b\" in state: " + expectedState));
+        assertThat(exception.getMessage(),
+            containsString("Expected one of these transitions: [\"b.d.e(?)\", \"b.d.f(?)\"]."));
+    }
+
+    @Test
+    void disallowsMissedDecodingOfVarLengthFieldInNestedGroupToNextInnerElement1()
+    {
+        final NestedGroupWithVarLengthEncoder encoder = new NestedGroupWithVarLengthEncoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(1);
+        final NestedGroupWithVarLengthEncoder.BEncoder bEncoder = encoder.bCount(1);
+        bEncoder.next().c(2).dCount(2).next().e(3).f("abc").next().e(4).f("def");
+
+        final NestedGroupWithVarLengthDecoder decoder = new NestedGroupWithVarLengthDecoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
+        assertThat(decoder.a(), equalTo(1));
+        final NestedGroupWithVarLengthDecoder.BDecoder bDecoder = decoder.b();
+        assertThat(bDecoder.count(), equalTo(1));
+        assertThat(bDecoder.next().c(), equalTo(2));
+        final NestedGroupWithVarLengthDecoder.BDecoder.DDecoder dDecoder = bDecoder.d();
+        assertThat(dDecoder.count(), equalTo(2));
+        assertThat(dDecoder.next().e(), equalTo(3));
+        final Exception exception = assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, dDecoder::next);
+        assertThat(exception.getMessage(),
+            containsString("Cannot access next element in repeating group \"b.d\" in state: V0_B_1_D_N_BLOCK."));
+        assertThat(exception.getMessage(),
+            containsString("Expected one of these transitions: [\"b.d.e(?)\", \"b.d.f(?)\"]."));
+    }
+
+    @Test
+    void disallowsMissedDecodingOfVarLengthFieldInNestedGroupToNextInnerElement2()
+    {
+        final NestedGroupWithVarLengthEncoder encoder = new NestedGroupWithVarLengthEncoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(1);
+        final NestedGroupWithVarLengthEncoder.BEncoder bEncoder = encoder.bCount(2);
+        bEncoder.next().c(2).dCount(2).next().e(3).f("abc").next().e(4).f("def");
+        bEncoder.next().c(5).dCount(0);
+
+        final NestedGroupWithVarLengthDecoder decoder = new NestedGroupWithVarLengthDecoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
+        assertThat(decoder.a(), equalTo(1));
+        final NestedGroupWithVarLengthDecoder.BDecoder bDecoder = decoder.b();
+        assertThat(bDecoder.count(), equalTo(2));
+        assertThat(bDecoder.next().c(), equalTo(2));
+        final NestedGroupWithVarLengthDecoder.BDecoder.DDecoder dDecoder = bDecoder.d();
+        assertThat(dDecoder.count(), equalTo(2));
+        assertThat(dDecoder.next().e(), equalTo(3));
+        final Exception exception = assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, dDecoder::next);
+        assertThat(exception.getMessage(),
+            containsString("Cannot access next element in repeating group \"b.d\" in state: V0_B_N_D_N_BLOCK."));
+        assertThat(exception.getMessage(),
+            containsString("Expected one of these transitions: [\"b.d.e(?)\", \"b.d.f(?)\"]."));
+    }
+
+    @Test
+    void disallowsMissedDecodingOfVarLengthFieldInNestedGroupToNextOuterElement1()
+    {
+        final NestedGroupWithVarLengthEncoder encoder = new NestedGroupWithVarLengthEncoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(1);
+        final NestedGroupWithVarLengthEncoder.BEncoder bEncoder = encoder.bCount(2);
+        bEncoder.next().c(2).dCount(2).next().e(3).f("abc").next().e(4).f("def");
+        bEncoder.next().c(5).dCount(0);
+
+        final NestedGroupWithVarLengthDecoder decoder = new NestedGroupWithVarLengthDecoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
+        assertThat(decoder.a(), equalTo(1));
+        final NestedGroupWithVarLengthDecoder.BDecoder bDecoder = decoder.b();
+        assertThat(bDecoder.count(), equalTo(2));
+        assertThat(bDecoder.next().c(), equalTo(2));
+        final NestedGroupWithVarLengthDecoder.BDecoder.DDecoder dDecoder = bDecoder.d();
+        assertThat(dDecoder.count(), equalTo(2));
+        assertThat(dDecoder.next().e(), equalTo(3));
+        final Exception exception = assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, bDecoder::next);
+        assertThat(exception.getMessage(),
+            containsString("Cannot access next element in repeating group \"b\" in state: V0_B_N_D_N_BLOCK."));
+        assertThat(exception.getMessage(),
+            containsString("Expected one of these transitions: [\"b.d.e(?)\", \"b.d.f(?)\"]."));
+    }
+
+    @Test
+    void disallowsMissedDecodingOfVarLengthFieldInNestedGroupToNextOuterElement2()
+    {
+        final NestedGroupWithVarLengthEncoder encoder = new NestedGroupWithVarLengthEncoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(1);
+        final NestedGroupWithVarLengthEncoder.BEncoder bEncoder = encoder.bCount(2);
+        bEncoder.next().c(2).dCount(1).next().e(3).f("abc");
+        bEncoder.next().c(5).dCount(0);
+
+        final NestedGroupWithVarLengthDecoder decoder = new NestedGroupWithVarLengthDecoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
+        assertThat(decoder.a(), equalTo(1));
+        final NestedGroupWithVarLengthDecoder.BDecoder bDecoder = decoder.b();
+        assertThat(bDecoder.count(), equalTo(2));
+        assertThat(bDecoder.next().c(), equalTo(2));
+        final NestedGroupWithVarLengthDecoder.BDecoder.DDecoder dDecoder = bDecoder.d();
+        assertThat(dDecoder.count(), equalTo(1));
+        assertThat(dDecoder.next().e(), equalTo(3));
+        final Exception exception = assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, bDecoder::next);
+        assertThat(exception.getMessage(),
+            containsString("Cannot access next element in repeating group \"b\" in state: V0_B_N_D_1_BLOCK."));
+        assertThat(exception.getMessage(),
+            containsString("Expected one of these transitions: [\"b.d.e(?)\", \"b.d.f(?)\"]."));
     }
 
     private void modifyHeaderToLookLikeVersion0()
