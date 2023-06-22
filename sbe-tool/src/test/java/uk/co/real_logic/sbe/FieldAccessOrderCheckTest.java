@@ -56,6 +56,7 @@ public class FieldAccessOrderCheckTest
         encoder.a(42);
         encoder.b("abc");
         encoder.c("def");
+        encoder.checkEncodingIsComplete();
 
         final MultipleVarLengthDecoder decoder = new MultipleVarLengthDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -73,6 +74,7 @@ public class FieldAccessOrderCheckTest
         encoder.a(42);
         encoder.b("abc");
         encoder.c("def");
+        encoder.checkEncodingIsComplete();
 
         final MultipleVarLengthDecoder decoder = new MultipleVarLengthDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -97,6 +99,7 @@ public class FieldAccessOrderCheckTest
         encoder.a(42);
         encoder.b("abc");
         encoder.c("def");
+        encoder.checkEncodingIsComplete();
 
         final MultipleVarLengthDecoder decoder = new MultipleVarLengthDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -115,6 +118,7 @@ public class FieldAccessOrderCheckTest
         encoder.b("abc");
         encoder.c("def");
         encoder.a(43);
+        encoder.checkEncodingIsComplete();
 
         final MultipleVarLengthDecoder decoder = new MultipleVarLengthDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -281,6 +285,7 @@ public class FieldAccessOrderCheckTest
         encoder.a(42);
         encoder.b("abc");
         encoder.c("def");
+        encoder.checkEncodingIsComplete();
 
         final MultipleVarLengthDecoder decoder = new MultipleVarLengthDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -300,6 +305,7 @@ public class FieldAccessOrderCheckTest
             .next()
             .c(2);
         encoder.d("abc");
+        encoder.checkEncodingIsComplete();
 
         final GroupAndVarLengthDecoder decoder = new GroupAndVarLengthDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -324,6 +330,7 @@ public class FieldAccessOrderCheckTest
             .next()
             .c(2);
         encoder.d("abc");
+        encoder.checkEncodingIsComplete();
 
         final GroupAndVarLengthDecoder decoder = new GroupAndVarLengthDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -358,6 +365,7 @@ public class FieldAccessOrderCheckTest
             .next()
             .c(2);
         encoder.d("abc");
+        encoder.checkEncodingIsComplete();
 
         final int nextEncodeOffset = encoder.limit();
         encoder.wrapAndApplyHeader(buffer, nextEncodeOffset, messageHeaderEncoder);
@@ -368,6 +376,7 @@ public class FieldAccessOrderCheckTest
             .next()
             .c(4);
         encoder.d("def");
+        encoder.checkEncodingIsComplete();
 
         final GroupAndVarLengthDecoder decoder = new GroupAndVarLengthDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -397,6 +406,7 @@ public class FieldAccessOrderCheckTest
             .next()
             .c(4);
         encoder.d("def");
+        encoder.checkEncodingIsComplete();
 
         final GroupAndVarLengthDecoder decoder = new GroupAndVarLengthDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -418,6 +428,7 @@ public class FieldAccessOrderCheckTest
         encoder.a(42);
         encoder.bCount(0);
         encoder.d("abc");
+        encoder.checkEncodingIsComplete();
 
         final GroupAndVarLengthDecoder decoder = new GroupAndVarLengthDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -443,6 +454,7 @@ public class FieldAccessOrderCheckTest
             .c(2);
         encoder.d("abc");
         bEncoder.c(3);
+        encoder.checkEncodingIsComplete();
 
         final GroupAndVarLengthDecoder decoder = new GroupAndVarLengthDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -468,6 +480,7 @@ public class FieldAccessOrderCheckTest
             .next()
             .c(2);
         encoder.d("abc");
+        encoder.checkEncodingIsComplete();
 
         final GroupAndVarLengthDecoder decoder = new GroupAndVarLengthDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -503,6 +516,7 @@ public class FieldAccessOrderCheckTest
             .next()
             .c(2);
         encoder.d("abc");
+        encoder.checkEncodingIsComplete();
 
         final GroupAndVarLengthDecoder decoder = new GroupAndVarLengthDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -574,6 +588,7 @@ public class FieldAccessOrderCheckTest
             .c(2);
         encoder.d("abc");
         b.c(3);
+        encoder.checkEncodingIsComplete();
 
         final GroupAndVarLengthDecoder decoder = new GroupAndVarLengthDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -597,6 +612,7 @@ public class FieldAccessOrderCheckTest
             .next()
             .c(2);
         encoder.d("abc");
+        encoder.checkEncodingIsComplete();
 
         final GroupAndVarLengthDecoder decoder = new GroupAndVarLengthDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -618,6 +634,7 @@ public class FieldAccessOrderCheckTest
             .next()
             .c(2);
         encoder.d("abc");
+        encoder.checkEncodingIsComplete();
 
         final GroupAndVarLengthDecoder decoder = new GroupAndVarLengthDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -644,6 +661,7 @@ public class FieldAccessOrderCheckTest
             .next()
             .c(2);
         encoder.d("abc");
+        encoder.checkEncodingIsComplete();
 
         final GroupAndVarLengthDecoder decoder = new GroupAndVarLengthDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -673,6 +691,7 @@ public class FieldAccessOrderCheckTest
             .c(2)
             .d("def");
         encoder.e("ghi");
+        encoder.checkEncodingIsComplete();
 
         final VarLengthInsideGroupDecoder decoder = new VarLengthInsideGroupDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -701,6 +720,7 @@ public class FieldAccessOrderCheckTest
             .d("abc");
         bEncoder.c(2);
         encoder.e("ghi");
+        encoder.checkEncodingIsComplete();
 
         final VarLengthInsideGroupDecoder decoder = new VarLengthInsideGroupDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -783,6 +803,7 @@ public class FieldAccessOrderCheckTest
             .c(2)
             .d("def");
         encoder.e("ghi");
+        encoder.checkEncodingIsComplete();
 
         final VarLengthInsideGroupDecoder decoder = new VarLengthInsideGroupDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -810,6 +831,7 @@ public class FieldAccessOrderCheckTest
             .c(2)
             .d("def");
         encoder.e("ghi");
+        encoder.checkEncodingIsComplete();
 
         final VarLengthInsideGroupDecoder decoder = new VarLengthInsideGroupDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -834,6 +856,7 @@ public class FieldAccessOrderCheckTest
             .c(1)
             .d("abc");
         encoder.e("ghi");
+        encoder.checkEncodingIsComplete();
 
         final VarLengthInsideGroupDecoder decoder = new VarLengthInsideGroupDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -860,6 +883,7 @@ public class FieldAccessOrderCheckTest
             .c(2)
             .d("def");
         encoder.e("ghi");
+        encoder.checkEncodingIsComplete();
 
         final VarLengthInsideGroupDecoder decoder = new VarLengthInsideGroupDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -900,6 +924,7 @@ public class FieldAccessOrderCheckTest
         encoder.hCount(1)
             .next()
             .i(8);
+        encoder.checkEncodingIsComplete();
 
         final NestedGroupsDecoder decoder = new NestedGroupsDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -938,6 +963,7 @@ public class FieldAccessOrderCheckTest
         encoder.a(42);
         encoder.bCount(0);
         encoder.hCount(0);
+        encoder.checkEncodingIsComplete();
 
         final NestedGroupsDecoder decoder = new NestedGroupsDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -973,6 +999,7 @@ public class FieldAccessOrderCheckTest
         encoder.bCount(1)
             .next()
             .c().x(3).y(4);
+        encoder.checkEncodingIsComplete();
 
         final CompositeInsideGroupDecoder decoder = new CompositeInsideGroupDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -1031,6 +1058,7 @@ public class FieldAccessOrderCheckTest
             .next()
             .c().x(3).y(4);
         encoder.a().x(5).y(6);
+        encoder.checkEncodingIsComplete();
 
         final CompositeInsideGroupDecoder decoder = new CompositeInsideGroupDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -1055,6 +1083,7 @@ public class FieldAccessOrderCheckTest
             .next()
             .c().x(3).y(4);
         aEncoder.x(5).y(6);
+        encoder.checkEncodingIsComplete();
 
         final CompositeInsideGroupDecoder decoder = new CompositeInsideGroupDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -1077,6 +1106,7 @@ public class FieldAccessOrderCheckTest
         final CompositeInsideGroupEncoder.BEncoder bEncoder = encoder.bCount(1).next();
         bEncoder.c().x(3).y(4);
         bEncoder.c().x(5).y(6);
+        encoder.checkEncodingIsComplete();
 
         final CompositeInsideGroupDecoder decoder = new CompositeInsideGroupDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -1100,6 +1130,7 @@ public class FieldAccessOrderCheckTest
         final PointEncoder cEncoder = bEncoder.c();
         cEncoder.x(3).y(4);
         cEncoder.x(5).y(6);
+        encoder.checkEncodingIsComplete();
 
         final CompositeInsideGroupDecoder decoder = new CompositeInsideGroupDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -1122,6 +1153,7 @@ public class FieldAccessOrderCheckTest
         encoder.bCount(1)
             .next()
             .c().x(3).y(4);
+        encoder.checkEncodingIsComplete();
 
         final CompositeInsideGroupDecoder decoder = new CompositeInsideGroupDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -1147,6 +1179,7 @@ public class FieldAccessOrderCheckTest
         encoder.bCount(1)
             .next()
             .c().x(3).y(4);
+        encoder.checkEncodingIsComplete();
 
         final CompositeInsideGroupDecoder decoder = new CompositeInsideGroupDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -1171,6 +1204,7 @@ public class FieldAccessOrderCheckTest
         encoder.bCount(1)
             .next()
             .c().x(3).y(4);
+        encoder.checkEncodingIsComplete();
 
         final CompositeInsideGroupDecoder decoder = new CompositeInsideGroupDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -1196,6 +1230,7 @@ public class FieldAccessOrderCheckTest
         encoder.bCount(1)
             .next()
             .c().x(3).y(4);
+        encoder.checkEncodingIsComplete();
 
         final CompositeInsideGroupDecoder decoder = new CompositeInsideGroupDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -1217,6 +1252,7 @@ public class FieldAccessOrderCheckTest
         final AddPrimitiveV1Encoder encoder = new AddPrimitiveV1Encoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(1).b(2);
+        encoder.checkEncodingIsComplete();
 
         final AddPrimitiveV1Decoder decoder = new AddPrimitiveV1Decoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -1230,6 +1266,7 @@ public class FieldAccessOrderCheckTest
         final AddPrimitiveV0Encoder encoder = new AddPrimitiveV0Encoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(1);
+        encoder.checkEncodingIsComplete();
 
         modifyHeaderToLookLikeVersion0();
 
@@ -1245,6 +1282,7 @@ public class FieldAccessOrderCheckTest
         final AddPrimitiveBeforeGroupV1Encoder encoder = new AddPrimitiveBeforeGroupV1Encoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(1).d(3).bCount(1).next().c(2);
+        encoder.checkEncodingIsComplete();
 
         final AddPrimitiveBeforeGroupV1Decoder decoder = new AddPrimitiveBeforeGroupV1Decoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -1261,6 +1299,7 @@ public class FieldAccessOrderCheckTest
         final AddPrimitiveBeforeGroupV0Encoder encoder = new AddPrimitiveBeforeGroupV0Encoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(1).bCount(1).next().c(2);
+        encoder.checkEncodingIsComplete();
 
         modifyHeaderToLookLikeVersion0();
 
@@ -1279,6 +1318,7 @@ public class FieldAccessOrderCheckTest
         final AddPrimitiveBeforeGroupV1Encoder encoder = new AddPrimitiveBeforeGroupV1Encoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(1).d(3).bCount(1).next().c(2);
+        encoder.checkEncodingIsComplete();
 
         final AddPrimitiveBeforeGroupV1Decoder decoder = new AddPrimitiveBeforeGroupV1Decoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -1294,6 +1334,7 @@ public class FieldAccessOrderCheckTest
         final AddPrimitiveBeforeGroupV1Encoder encoder = new AddPrimitiveBeforeGroupV1Encoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(1).d(3).bCount(1).next().c(2);
+        encoder.checkEncodingIsComplete();
 
         modifyHeaderToLookLikeVersion1();
 
@@ -1311,6 +1352,7 @@ public class FieldAccessOrderCheckTest
         final AddPrimitiveBeforeVarDataV1Encoder encoder = new AddPrimitiveBeforeVarDataV1Encoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(1).c(3).b("abc");
+        encoder.checkEncodingIsComplete();
 
         final AddPrimitiveBeforeVarDataV1Decoder decoder = new AddPrimitiveBeforeVarDataV1Decoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -1325,6 +1367,7 @@ public class FieldAccessOrderCheckTest
         final AddPrimitiveBeforeVarDataV0Encoder encoder = new AddPrimitiveBeforeVarDataV0Encoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(1).b("abc");
+        encoder.checkEncodingIsComplete();
 
         modifyHeaderToLookLikeVersion0();
 
@@ -1341,6 +1384,7 @@ public class FieldAccessOrderCheckTest
         final AddPrimitiveBeforeVarDataV1Encoder encoder = new AddPrimitiveBeforeVarDataV1Encoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(1).c(3).b("abc");
+        encoder.checkEncodingIsComplete();
 
         final AddPrimitiveBeforeVarDataV1Decoder decoder = new AddPrimitiveBeforeVarDataV1Decoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -1354,6 +1398,7 @@ public class FieldAccessOrderCheckTest
         final AddPrimitiveBeforeVarDataV1Encoder encoder = new AddPrimitiveBeforeVarDataV1Encoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(1).c(3).b("abc");
+        encoder.checkEncodingIsComplete();
 
         modifyHeaderToLookLikeVersion1();
 
@@ -1369,6 +1414,7 @@ public class FieldAccessOrderCheckTest
         final AddPrimitiveInsideGroupV1Encoder encoder = new AddPrimitiveInsideGroupV1Encoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(1).bCount(1).next().c(2).d(3);
+        encoder.checkEncodingIsComplete();
 
         final AddPrimitiveInsideGroupV1Decoder decoder = new AddPrimitiveInsideGroupV1Decoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -1385,6 +1431,7 @@ public class FieldAccessOrderCheckTest
         final AddPrimitiveInsideGroupV0Encoder encoder = new AddPrimitiveInsideGroupV0Encoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(1).bCount(1).next().c(2);
+        encoder.checkEncodingIsComplete();
 
         modifyHeaderToLookLikeVersion0();
 
@@ -1403,6 +1450,7 @@ public class FieldAccessOrderCheckTest
         final AddPrimitiveInsideGroupV1Encoder encoder = new AddPrimitiveInsideGroupV1Encoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(1).bCount(2).next().c(2).d(3).next().c(4).d(5);
+        encoder.checkEncodingIsComplete();
 
         final AddPrimitiveInsideGroupV1Decoder decoder = new AddPrimitiveInsideGroupV1Decoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -1419,6 +1467,7 @@ public class FieldAccessOrderCheckTest
         final AddPrimitiveInsideGroupV1Encoder encoder = new AddPrimitiveInsideGroupV1Encoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(1).bCount(2).next().c(2).d(3).next().c(4).d(5);
+        encoder.checkEncodingIsComplete();
 
         modifyHeaderToLookLikeVersion1();
 
@@ -1438,6 +1487,7 @@ public class FieldAccessOrderCheckTest
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(1).cCount(1).next().d(2);
         encoder.b("abc");
+        encoder.checkEncodingIsComplete();
 
         final AddGroupBeforeVarDataV1Decoder decoder = new AddGroupBeforeVarDataV1Decoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -1454,6 +1504,7 @@ public class FieldAccessOrderCheckTest
         final AddGroupBeforeVarDataV0Encoder encoder = new AddGroupBeforeVarDataV0Encoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(1).b("abc");
+        encoder.checkEncodingIsComplete();
 
         modifyHeaderToLookLikeVersion0();
 
@@ -1472,6 +1523,7 @@ public class FieldAccessOrderCheckTest
         final AddGroupBeforeVarDataV0Encoder encoder = new AddGroupBeforeVarDataV0Encoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(1).b("abc");
+        encoder.checkEncodingIsComplete();
 
         modifyHeaderToLookLikeVersion0();
 
@@ -1488,6 +1540,7 @@ public class FieldAccessOrderCheckTest
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(1).cCount(1).next().d(2);
         encoder.b("abc");
+        encoder.checkEncodingIsComplete();
 
         final AddGroupBeforeVarDataV1Decoder decoder = new AddGroupBeforeVarDataV1Decoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -1505,6 +1558,7 @@ public class FieldAccessOrderCheckTest
         messageHeaderEncoder.numGroups(1);
         encoder.a(1).cCount(1).next().d(2);
         encoder.b("abc");
+        encoder.checkEncodingIsComplete();
 
         modifyHeaderToLookLikeVersion1();
 
@@ -1535,6 +1589,7 @@ public class FieldAccessOrderCheckTest
         final AddEnumBeforeGroupV1Encoder encoder = new AddEnumBeforeGroupV1Encoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(1).d(Direction.BUY).bCount(1).next().c(2);
+        encoder.checkEncodingIsComplete();
 
         final AddEnumBeforeGroupV1Decoder decoder = new AddEnumBeforeGroupV1Decoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -1551,6 +1606,7 @@ public class FieldAccessOrderCheckTest
         final AddEnumBeforeGroupV0Encoder encoder = new AddEnumBeforeGroupV0Encoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(1).bCount(1).next().c(2);
+        encoder.checkEncodingIsComplete();
 
         modifyHeaderToLookLikeVersion0();
 
@@ -1569,6 +1625,7 @@ public class FieldAccessOrderCheckTest
         final AddEnumBeforeGroupV1Encoder encoder = new AddEnumBeforeGroupV1Encoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(1).d(Direction.SELL).bCount(1).next().c(2);
+        encoder.checkEncodingIsComplete();
 
         final AddEnumBeforeGroupV1Decoder decoder = new AddEnumBeforeGroupV1Decoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -1584,6 +1641,7 @@ public class FieldAccessOrderCheckTest
         final AddEnumBeforeGroupV1Encoder encoder = new AddEnumBeforeGroupV1Encoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(1).d(Direction.BUY).bCount(1).next().c(2);
+        encoder.checkEncodingIsComplete();
 
         modifyHeaderToLookLikeVersion1();
 
@@ -1602,6 +1660,7 @@ public class FieldAccessOrderCheckTest
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(1).d().x(-1).y(-2);
         encoder.bCount(1).next().c(2);
+        encoder.checkEncodingIsComplete();
 
         final AddCompositeBeforeGroupV1Decoder decoder = new AddCompositeBeforeGroupV1Decoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -1621,6 +1680,7 @@ public class FieldAccessOrderCheckTest
         final AddCompositeBeforeGroupV0Encoder encoder = new AddCompositeBeforeGroupV0Encoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(1).bCount(1).next().c(2);
+        encoder.checkEncodingIsComplete();
 
         modifyHeaderToLookLikeVersion0();
 
@@ -1640,6 +1700,7 @@ public class FieldAccessOrderCheckTest
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(1).d().x(-1).y(-2);
         encoder.bCount(1).next().c(2);
+        encoder.checkEncodingIsComplete();
 
         final AddCompositeBeforeGroupV1Decoder decoder = new AddCompositeBeforeGroupV1Decoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -1656,6 +1717,7 @@ public class FieldAccessOrderCheckTest
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(1).d().x(-1).y(-2);
         encoder.bCount(1).next().c(2);
+        encoder.checkEncodingIsComplete();
 
         modifyHeaderToLookLikeVersion1();
 
@@ -1676,6 +1738,7 @@ public class FieldAccessOrderCheckTest
             .putD((short)1, (short)2, (short)3, (short)4)
             .bCount(1)
             .next().c(2);
+        encoder.checkEncodingIsComplete();
 
         final AddArrayBeforeGroupV1Decoder decoder = new AddArrayBeforeGroupV1Decoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -1695,6 +1758,7 @@ public class FieldAccessOrderCheckTest
         final AddArrayBeforeGroupV0Encoder encoder = new AddArrayBeforeGroupV0Encoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(1).bCount(1).next().c(2);
+        encoder.checkEncodingIsComplete();
 
         modifyHeaderToLookLikeVersion0();
 
@@ -1716,6 +1780,7 @@ public class FieldAccessOrderCheckTest
         final AddArrayBeforeGroupV0Encoder encoder = new AddArrayBeforeGroupV0Encoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(1).bCount(1).next().c(2);
+        encoder.checkEncodingIsComplete();
 
         modifyHeaderToLookLikeVersion0();
 
@@ -1734,6 +1799,7 @@ public class FieldAccessOrderCheckTest
         final AddArrayBeforeGroupV0Encoder encoder = new AddArrayBeforeGroupV0Encoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(1).bCount(1).next().c(2);
+        encoder.checkEncodingIsComplete();
 
         modifyHeaderToLookLikeVersion0();
 
@@ -1752,6 +1818,7 @@ public class FieldAccessOrderCheckTest
         final AddArrayBeforeGroupV0Encoder encoder = new AddArrayBeforeGroupV0Encoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(1).bCount(1).next().c(2);
+        encoder.checkEncodingIsComplete();
 
         modifyHeaderToLookLikeVersion0();
 
@@ -1775,6 +1842,7 @@ public class FieldAccessOrderCheckTest
             .putD((short)1, (short)2, (short)3, (short)4)
             .bCount(1)
             .next().c(2);
+        encoder.checkEncodingIsComplete();
 
         final AddArrayBeforeGroupV1Decoder decoder = new AddArrayBeforeGroupV1Decoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -1793,6 +1861,7 @@ public class FieldAccessOrderCheckTest
             .putD((short)1, (short)2, (short)3, (short)4)
             .bCount(1)
             .next().c(2);
+        encoder.checkEncodingIsComplete();
 
         modifyHeaderToLookLikeVersion1();
 
@@ -1811,6 +1880,7 @@ public class FieldAccessOrderCheckTest
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(1).d().guacamole(true).cheese(true);
         encoder.bCount(1).next().c(2);
+        encoder.checkEncodingIsComplete();
 
         final AddBitSetBeforeGroupV1Decoder decoder = new AddBitSetBeforeGroupV1Decoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -1831,6 +1901,7 @@ public class FieldAccessOrderCheckTest
         final AddBitSetBeforeGroupV0Encoder encoder = new AddBitSetBeforeGroupV0Encoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(1).bCount(1).next().c(2);
+        encoder.checkEncodingIsComplete();
 
         modifyHeaderToLookLikeVersion0();
 
@@ -1850,6 +1921,7 @@ public class FieldAccessOrderCheckTest
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(1).d().guacamole(true).cheese(true);
         encoder.bCount(1).next().c(2);
+        encoder.checkEncodingIsComplete();
 
         final AddBitSetBeforeGroupV1Decoder decoder = new AddBitSetBeforeGroupV1Decoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -1866,6 +1938,7 @@ public class FieldAccessOrderCheckTest
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(1).d().guacamole(true).cheese(true);
         encoder.bCount(1).next().c(2);
+        encoder.checkEncodingIsComplete();
 
         modifyHeaderToLookLikeVersion1();
 
@@ -1886,6 +1959,7 @@ public class FieldAccessOrderCheckTest
             .bCount(1)
             .next()
             .c(Direction.SELL);
+        encoder.checkEncodingIsComplete();
 
         final EnumInsideGroupDecoder decoder = new EnumInsideGroupDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -1917,6 +1991,7 @@ public class FieldAccessOrderCheckTest
             .bCount(1)
             .next()
             .c(Direction.SELL);
+        encoder.checkEncodingIsComplete();
 
         final EnumInsideGroupDecoder decoder = new EnumInsideGroupDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -1939,6 +2014,7 @@ public class FieldAccessOrderCheckTest
             .c(Direction.SELL);
 
         encoder.a(Direction.SELL);
+        encoder.checkEncodingIsComplete();
 
 
         final EnumInsideGroupDecoder decoder = new EnumInsideGroupDecoder()
@@ -1958,6 +2034,7 @@ public class FieldAccessOrderCheckTest
         encoder.bCount(1)
             .next()
             .c().sourCream(true);
+        encoder.checkEncodingIsComplete();
 
         final BitSetInsideGroupDecoder decoder = new BitSetInsideGroupDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -1995,6 +2072,7 @@ public class FieldAccessOrderCheckTest
         encoder.bCount(1)
             .next()
             .c().sourCream(true);
+        encoder.checkEncodingIsComplete();
 
         final BitSetInsideGroupDecoder decoder = new BitSetInsideGroupDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -2020,6 +2098,7 @@ public class FieldAccessOrderCheckTest
             .c().sourCream(true);
 
         encoder.a().sourCream(true);
+        encoder.checkEncodingIsComplete();
 
         final BitSetInsideGroupDecoder decoder = new BitSetInsideGroupDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -2044,6 +2123,7 @@ public class FieldAccessOrderCheckTest
         encoder.bCount(1)
             .next()
             .putC((short)5, (short)6, (short)7, (short)8);
+        encoder.checkEncodingIsComplete();
 
         final ArrayInsideGroupDecoder decoder = new ArrayInsideGroupDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -2155,6 +2235,7 @@ public class FieldAccessOrderCheckTest
         encoder.bCount(1)
             .next()
             .putC((short)5, (short)6, (short)7, (short)8);
+        encoder.checkEncodingIsComplete();
 
         final ArrayInsideGroupDecoder decoder = new ArrayInsideGroupDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -2178,6 +2259,7 @@ public class FieldAccessOrderCheckTest
             .putC((short)5, (short)6, (short)7, (short)8);
 
         encoder.putA((short)9, (short)10, (short)11, (short)12);
+        encoder.checkEncodingIsComplete();
 
         final ArrayInsideGroupDecoder decoder = new ArrayInsideGroupDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -2202,6 +2284,7 @@ public class FieldAccessOrderCheckTest
         encoder.a(42);
         encoder.bCount(0);
         encoder.dCount(1).next().e(43);
+        encoder.checkEncodingIsComplete();
 
         final MultipleGroupsDecoder decoder = new MultipleGroupsDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -2221,6 +2304,7 @@ public class FieldAccessOrderCheckTest
         encoder.a(41);
         encoder.bCount(1).next().c(42);
         encoder.dCount(1).next().e(43);
+        encoder.checkEncodingIsComplete();
 
         final MultipleGroupsDecoder decoder = new MultipleGroupsDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -2242,6 +2326,7 @@ public class FieldAccessOrderCheckTest
         encoder.bCount(1).next().c(42);
         encoder.dCount(1).next().e(43);
         encoder.a(44);
+        encoder.checkEncodingIsComplete();
 
         final MultipleGroupsDecoder decoder = new MultipleGroupsDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -2302,6 +2387,7 @@ public class FieldAccessOrderCheckTest
         encoder.a(41);
         encoder.bCount(1).next().c(42);
         encoder.dCount(1).next().e(43);
+        encoder.checkEncodingIsComplete();
 
         final MultipleGroupsDecoder decoder = new MultipleGroupsDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -2320,6 +2406,7 @@ public class FieldAccessOrderCheckTest
         encoder.a(41);
         encoder.bCount(1).next().c(42);
         encoder.dCount(1).next().e(43);
+        encoder.checkEncodingIsComplete();
 
         final MultipleGroupsDecoder decoder = new MultipleGroupsDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -2344,6 +2431,7 @@ public class FieldAccessOrderCheckTest
         encoder.a(41);
         encoder.bCount(1).next().c(42);
         encoder.dCount(1).next().e(43);
+        encoder.checkEncodingIsComplete();
 
         final MultipleGroupsDecoder decoder = new MultipleGroupsDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -2367,6 +2455,7 @@ public class FieldAccessOrderCheckTest
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(42);
         encoder.b("abc");
+        encoder.checkEncodingIsComplete();
 
         final AddVarDataV1Decoder decoder = new AddVarDataV1Decoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -2380,6 +2469,7 @@ public class FieldAccessOrderCheckTest
         final AddVarDataV0Encoder encoder = new AddVarDataV0Encoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(42);
+        encoder.checkEncodingIsComplete();
 
         modifyHeaderToLookLikeVersion0();
 
@@ -2396,6 +2486,7 @@ public class FieldAccessOrderCheckTest
         final AddVarDataV0Encoder encoder = new AddVarDataV0Encoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(42);
+        encoder.checkEncodingIsComplete();
 
         modifyHeaderToLookLikeVersion0();
 
@@ -2411,6 +2502,7 @@ public class FieldAccessOrderCheckTest
         final AddVarDataV0Encoder encoder = new AddVarDataV0Encoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(42);
+        encoder.checkEncodingIsComplete();
 
         modifyHeaderToLookLikeVersion0();
 
@@ -2426,6 +2518,7 @@ public class FieldAccessOrderCheckTest
         final AddVarDataV0Encoder encoder = new AddVarDataV0Encoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(42);
+        encoder.checkEncodingIsComplete();
 
         modifyHeaderToLookLikeVersion0();
 
@@ -2441,6 +2534,7 @@ public class FieldAccessOrderCheckTest
         final AddVarDataV0Encoder encoder = new AddVarDataV0Encoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(42);
+        encoder.checkEncodingIsComplete();
 
         modifyHeaderToLookLikeVersion0();
 
@@ -2459,6 +2553,7 @@ public class FieldAccessOrderCheckTest
         encoder.bCount(1)
             .next()
             .c("EURUSD");
+        encoder.checkEncodingIsComplete();
 
         final AsciiInsideGroupDecoder decoder = new AsciiInsideGroupDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -2485,6 +2580,7 @@ public class FieldAccessOrderCheckTest
             .c(3, (byte)'U')
             .c(4, (byte)'S')
             .c(5, (byte)'D');
+        encoder.checkEncodingIsComplete();
 
         final AsciiInsideGroupDecoder decoder = new AsciiInsideGroupDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -2582,6 +2678,7 @@ public class FieldAccessOrderCheckTest
         encoder.bCount(1)
             .next()
             .c("EURUSD");
+        encoder.checkEncodingIsComplete();
 
         final AsciiInsideGroupDecoder decoder = new AsciiInsideGroupDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -2602,6 +2699,7 @@ public class FieldAccessOrderCheckTest
             .c("EURUSD");
 
         encoder.a("CADUSD");
+        encoder.checkEncodingIsComplete();
 
         final AsciiInsideGroupDecoder decoder = new AsciiInsideGroupDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -2621,6 +2719,7 @@ public class FieldAccessOrderCheckTest
             .d("EURUSD")
             .bCount(1)
             .next().c(2);
+        encoder.checkEncodingIsComplete();
 
         final AddAsciiBeforeGroupV1Decoder decoder = new AddAsciiBeforeGroupV1Decoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -2640,6 +2739,7 @@ public class FieldAccessOrderCheckTest
             .d("EURUSD")
             .bCount(1)
             .next().c(2);
+        encoder.checkEncodingIsComplete();
 
         final AddAsciiBeforeGroupV1Decoder decoder = new AddAsciiBeforeGroupV1Decoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -2663,6 +2763,7 @@ public class FieldAccessOrderCheckTest
             .putD(eurUsdBytes, 0)
             .bCount(1)
             .next().c(2);
+        encoder.checkEncodingIsComplete();
 
         final AddAsciiBeforeGroupV1Decoder decoder = new AddAsciiBeforeGroupV1Decoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -2690,6 +2791,7 @@ public class FieldAccessOrderCheckTest
             .d(5, (byte)'D')
             .bCount(1)
             .next().c(2);
+        encoder.checkEncodingIsComplete();
 
         final AddAsciiBeforeGroupV1Decoder decoder = new AddAsciiBeforeGroupV1Decoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -2711,6 +2813,7 @@ public class FieldAccessOrderCheckTest
         final AddAsciiBeforeGroupV0Encoder encoder = new AddAsciiBeforeGroupV0Encoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(1).bCount(1).next().c(2);
+        encoder.checkEncodingIsComplete();
 
         modifyHeaderToLookLikeVersion0();
 
@@ -2734,6 +2837,7 @@ public class FieldAccessOrderCheckTest
         final AddAsciiBeforeGroupV0Encoder encoder = new AddAsciiBeforeGroupV0Encoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(1).bCount(1).next().c(2);
+        encoder.checkEncodingIsComplete();
 
         modifyHeaderToLookLikeVersion0();
 
@@ -2752,6 +2856,7 @@ public class FieldAccessOrderCheckTest
         final AddAsciiBeforeGroupV0Encoder encoder = new AddAsciiBeforeGroupV0Encoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(1).bCount(1).next().c(2);
+        encoder.checkEncodingIsComplete();
 
         modifyHeaderToLookLikeVersion0();
 
@@ -2772,6 +2877,7 @@ public class FieldAccessOrderCheckTest
         final AddAsciiBeforeGroupV0Encoder encoder = new AddAsciiBeforeGroupV0Encoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(1).bCount(1).next().c(2);
+        encoder.checkEncodingIsComplete();
 
         modifyHeaderToLookLikeVersion0();
 
@@ -2793,6 +2899,7 @@ public class FieldAccessOrderCheckTest
             .d("EURUSD")
             .bCount(1)
             .next().c(2);
+        encoder.checkEncodingIsComplete();
 
         final AddAsciiBeforeGroupV1Decoder decoder = new AddAsciiBeforeGroupV1Decoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -2811,6 +2918,7 @@ public class FieldAccessOrderCheckTest
             .d("EURUSD")
             .bCount(1)
             .next().c(2);
+        encoder.checkEncodingIsComplete();
 
         modifyHeaderToLookLikeVersion1();
 
@@ -2828,6 +2936,7 @@ public class FieldAccessOrderCheckTest
         final NoBlockEncoder encoder = new NoBlockEncoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a("abc");
+        encoder.checkEncodingIsComplete();
 
         final NoBlockDecoder decoder = new NoBlockDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -2840,6 +2949,7 @@ public class FieldAccessOrderCheckTest
         final GroupWithNoBlockEncoder encoder = new GroupWithNoBlockEncoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.aCount(1).next().b("abc");
+        encoder.checkEncodingIsComplete();
 
         final GroupWithNoBlockDecoder decoder = new GroupWithNoBlockDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -2946,6 +3056,7 @@ public class FieldAccessOrderCheckTest
         bEncoder.next().c(2).dCount(0);
         bEncoder.next().c(3).dCount(1).next().e(4).f("abc");
         bEncoder.next().c(5).dCount(2).next().e(6).f("def").next().e(7).f("ghi");
+        encoder.checkEncodingIsComplete();
 
         final NestedGroupWithVarLengthDecoder decoder = new NestedGroupWithVarLengthDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -3021,6 +3132,7 @@ public class FieldAccessOrderCheckTest
         encoder.a(1);
         final NestedGroupWithVarLengthEncoder.BEncoder bEncoder = encoder.bCount(1);
         bEncoder.next().c(2).dCount(2).next().e(3).f("abc").next().e(4).f("def");
+        encoder.checkEncodingIsComplete();
 
         final NestedGroupWithVarLengthDecoder decoder = new NestedGroupWithVarLengthDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -3047,6 +3159,7 @@ public class FieldAccessOrderCheckTest
         final NestedGroupWithVarLengthEncoder.BEncoder bEncoder = encoder.bCount(2);
         bEncoder.next().c(2).dCount(2).next().e(3).f("abc").next().e(4).f("def");
         bEncoder.next().c(5).dCount(0);
+        encoder.checkEncodingIsComplete();
 
         final NestedGroupWithVarLengthDecoder decoder = new NestedGroupWithVarLengthDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -3073,6 +3186,7 @@ public class FieldAccessOrderCheckTest
         final NestedGroupWithVarLengthEncoder.BEncoder bEncoder = encoder.bCount(2);
         bEncoder.next().c(2).dCount(2).next().e(3).f("abc").next().e(4).f("def");
         bEncoder.next().c(5).dCount(0);
+        encoder.checkEncodingIsComplete();
 
         final NestedGroupWithVarLengthDecoder decoder = new NestedGroupWithVarLengthDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -3099,6 +3213,7 @@ public class FieldAccessOrderCheckTest
         final NestedGroupWithVarLengthEncoder.BEncoder bEncoder = encoder.bCount(2);
         bEncoder.next().c(2).dCount(1).next().e(3).f("abc");
         bEncoder.next().c(5).dCount(0);
+        encoder.checkEncodingIsComplete();
 
         final NestedGroupWithVarLengthDecoder decoder = new NestedGroupWithVarLengthDecoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
@@ -3114,6 +3229,115 @@ public class FieldAccessOrderCheckTest
             containsString("Cannot access next element in repeating group \"b\" in state: V0_B_N_D_1_BLOCK."));
         assertThat(exception.getMessage(),
             containsString("Expected one of these transitions: [\"b.d.e(?)\", \"b.d.f(?)\"]."));
+    }
+
+    @Test
+    void disallowsIncompleteMessagesDueToMissingVarLengthField1()
+    {
+        final MultipleVarLengthEncoder encoder = new MultipleVarLengthEncoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(1).b("abc");
+        final Exception exception = assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, encoder::checkEncodingIsComplete);
+        assertThat(exception.getMessage(),
+            containsString("Not fully encoded, current state: V0_B_DONE, allowed transitions: \"c(?)\""));
+    }
+
+    @Test
+    void disallowsIncompleteMessagesDueToMissingVarLengthField2()
+    {
+        final NoBlockEncoder encoder = new NoBlockEncoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        final Exception exception = assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, encoder::checkEncodingIsComplete);
+        assertThat(exception.getMessage(),
+            containsString("Not fully encoded, current state: V0_BLOCK, allowed transitions: \"a(?)\""));
+    }
+
+    @Test
+    void disallowsIncompleteMessagesDueToMissingTopLevelGroup1()
+    {
+        final MultipleGroupsEncoder encoder = new MultipleGroupsEncoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(1).bCount(0);
+        final Exception exception = assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, encoder::checkEncodingIsComplete);
+        assertThat(exception.getMessage(), containsString(
+            "Not fully encoded, current state: V0_B_0, allowed transitions: \"dCount(0)\", \"dCount(>0)\""));
+    }
+
+    @Test
+    void disallowsIncompleteMessagesDueToMissingTopLevelGroup2()
+    {
+        final MultipleGroupsEncoder encoder = new MultipleGroupsEncoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(1).bCount(1).next().c(2);
+        final Exception exception = assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, encoder::checkEncodingIsComplete);
+        assertThat(exception.getMessage(), containsString(
+            "Not fully encoded, current state: V0_B_1_BLOCK, allowed transitions: " +
+            "\"b.c(?)\", \"dCount(0)\", \"dCount(>0)\""));
+    }
+
+    @Test
+    void disallowsIncompleteMessagesDueToMissingTopLevelGroup3()
+    {
+        final MultipleGroupsEncoder encoder = new MultipleGroupsEncoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(1);
+        final Exception exception = assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, encoder::checkEncodingIsComplete);
+        assertThat(exception.getMessage(), containsString(
+            "Not fully encoded, current state: V0_BLOCK, allowed transitions: " +
+            "\"a(?)\", \"bCount(0)\", \"bCount(>0)\""));
+    }
+
+    @CsvSource(value = {
+        "1,V0_B_1_BLOCK",
+        "2,V0_B_N_BLOCK",
+    })
+    @ParameterizedTest
+    void disallowsIncompleteMessagesDueToMissingNestedGroup1(final int bCount, final String expectedState)
+    {
+        final NestedGroupWithVarLengthEncoder encoder = new NestedGroupWithVarLengthEncoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(1).bCount(bCount).next().c(2);
+        final Exception exception = assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, encoder::checkEncodingIsComplete);
+        assertThat(exception.getMessage(), containsString("Not fully encoded, current state: " + expectedState));
+    }
+
+    @CsvSource(value = {
+        "1,1,V0_B_1_D_N",
+        "1,2,V0_B_1_D_N",
+        "2,0,V0_B_N_D_0",
+        "2,1,V0_B_N_D_N",
+        "2,2,V0_B_N_D_N",
+    })
+    @ParameterizedTest
+    void disallowsIncompleteMessagesDueToMissingNestedGroup2(
+        final int bCount,
+        final int dCount,
+        final String expectedState)
+    {
+        final NestedGroupWithVarLengthEncoder encoder = new NestedGroupWithVarLengthEncoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(1).bCount(bCount).next().c(2).dCount(dCount);
+        final Exception exception = assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, encoder::checkEncodingIsComplete);
+        assertThat(exception.getMessage(), containsString("Not fully encoded, current state: " + expectedState));
+    }
+
+    @CsvSource(value = {
+        "1,1,V0_B_1_D_1_BLOCK",
+        "1,2,V0_B_1_D_N_BLOCK",
+        "2,1,V0_B_N_D_1_BLOCK",
+        "2,2,V0_B_N_D_N_BLOCK",
+    })
+    @ParameterizedTest
+    void disallowsIncompleteMessagesDueToMissingVarDataInNestedGroup(
+        final int bCount,
+        final int dCount,
+        final String expectedState)
+    {
+        final NestedGroupWithVarLengthEncoder encoder = new NestedGroupWithVarLengthEncoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(1).bCount(bCount).next().c(2).dCount(dCount).next().e(10);
+        final Exception exception = assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, encoder::checkEncodingIsComplete);
+        assertThat(exception.getMessage(), containsString("Not fully encoded, current state: " + expectedState));
     }
 
     private void modifyHeaderToLookLikeVersion0()

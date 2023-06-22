@@ -273,6 +273,7 @@ public class JavaGenerator implements CodeGenerator
             generateEncoderVarData(sb, className, accessOrderModel, varData, BASE_INDENT);
 
             generateEncoderDisplay(sb, decoderName(msgToken.name()));
+            generateFullyEncodedCheck(sb, accessOrderModel);
 
             out.append(sb);
             out.append("}\n");
@@ -393,6 +394,36 @@ public class JavaGenerator implements CodeGenerator
             .append("    }\n\n");
 
         return sb;
+    }
+
+    private static void generateFullyEncodedCheck(
+        final StringBuilder sb,
+        final AccessOrderModel accessOrderModel)
+    {
+        if (null == accessOrderModel)
+        {
+            return;
+        }
+
+        sb.append("\n");
+
+        sb.append("    public void checkEncodingIsComplete()\n")
+            .append("    {\n")
+            .append("        switch (codecState)\n")
+            .append("        {\n");
+
+        accessOrderModel.forEachTerminalEncoderState(state ->
+        {
+            sb.append("            case ").append(stateCaseForSwitchCase(state)).append(":\n")
+                .append("                return;\n");
+        });
+
+        sb.append("            default:\n")
+            .append("                throw new IllegalStateException(\"Not fully encoded, current state: \" +\n")
+            .append("                    CodecStates.name(codecState) + \", allowed transitions: \" +\n")
+            .append("                    CodecStates.transitions(codecState));\n")
+            .append("        }\n")
+            .append("    }\n\n");
     }
 
     private static String accessOrderListenerMethodName(final Token token)

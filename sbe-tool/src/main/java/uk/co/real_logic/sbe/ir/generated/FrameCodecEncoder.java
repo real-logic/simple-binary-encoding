@@ -728,4 +728,18 @@ public final class FrameCodecEncoder
 
         return decoder.appendTo(builder);
     }
+
+    public void checkEncodingIsComplete()
+    {
+        switch (codecState)
+        {
+            case CodecStates.V0_SEMANTICVERSION_DONE:
+                return;
+            default:
+                throw new IllegalStateException("Not fully encoded, current state: " +
+                    CodecStates.name(codecState) + ", allowed transitions: " +
+                    CodecStates.transitions(codecState));
+        }
+    }
+
 }

@@ -48,6 +48,7 @@ final class AccessOrderModel
     private final Int2ObjectHashMap<State> versionWrappedStates = new Int2ObjectHashMap<>();
     private final State notWrappedState = allocateState("NOT_WRAPPED");
     private State encoderWrappedState;
+    private Set<State> terminalEncoderStates;
 
     static boolean generateAccessOrderChecks()
     {
@@ -84,6 +85,11 @@ final class AccessOrderModel
             iterator.next();
             consumer.accept(iterator.getIntKey(), iterator.getValue());
         }
+    }
+
+    void forEachTerminalEncoderState(final Consumer<State> consumer)
+    {
+        terminalEncoderStates.forEach(consumer);
     }
 
     void forEachStateOrderedByStateNumber(final Consumer<State> consumer)
@@ -165,8 +171,6 @@ final class AccessOrderModel
 
             versionWrappedStates.put(version, versionWrappedState);
 
-            encoderWrappedState = versionWrappedState;
-
             final CodecInteraction wrapInteraction = interactionFactory.wrap(version);
 
             allocateTransitions(
@@ -183,6 +187,10 @@ final class AccessOrderModel
             );
 
             walkSchemaLevel(transitionCollector, fields, groups, varData);
+
+            // Last writer (highest version) wins when there are multiple versions
+            encoderWrappedState = versionWrappedState;
+            terminalEncoderStates = transitionCollector.exitStates();
         });
     }
 
