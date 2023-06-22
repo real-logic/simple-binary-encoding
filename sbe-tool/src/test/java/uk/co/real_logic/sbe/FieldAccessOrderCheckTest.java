@@ -454,7 +454,7 @@ public class FieldAccessOrderCheckTest
 
     @Test
     @Disabled("Our access checks are too strict to allow the behaviour in this test.")
-    void allowsReWrappingGroupDecoderAfterAccessingLength()
+    void allowsReWrappingGroupDecoderAfterAccessingGroupCount()
     {
         final GroupAndVarLengthEncoder encoder = new GroupAndVarLengthEncoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
@@ -473,7 +473,7 @@ public class FieldAccessOrderCheckTest
         assertThat(decoder.b().count(), equalTo(2));
         final GroupAndVarLengthDecoder.BDecoder b = decoder.b();
         assertThat(b.next().c(), equalTo(1));
-        assertThat(b.next().c(), equalTo(3));
+        assertThat(b.next().c(), equalTo(2));
         assertThat(decoder.d(), equalTo("abc"));
     }
 
@@ -541,7 +541,7 @@ public class FieldAccessOrderCheckTest
     }
 
     @Test
-    void disallowsReEncodingGroupLength()
+    void disallowsReEncodingGroupCount()
     {
         final GroupAndVarLengthEncoder encoder = new GroupAndVarLengthEncoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
