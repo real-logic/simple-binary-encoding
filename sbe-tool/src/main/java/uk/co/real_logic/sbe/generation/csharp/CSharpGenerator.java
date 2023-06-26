@@ -513,9 +513,9 @@ public class CSharpGenerator implements CodeGenerator
                         indent + INDENT + "int byteCount = _buffer.SetBytesFromString(encoding, value, " +
                         "limit + sizeOfLengthField);\n" +
                         indent + INDENT + "_parentMessage.Limit = limit + sizeOfLengthField + byteCount;\n" +
-                        indent + INDENT + "_buffer.%3$sPut%4$s(limit, (ushort)byteCount);\n" +
+                        indent + INDENT + "_buffer.%3$sPut%4$s(limit, (%5$s)byteCount);\n" +
                         indent + "}\n",
-                        propertyName, sizeOfLengthField, lengthTypePrefix, byteOrderStr));
+                        propertyName, sizeOfLengthField, lengthTypePrefix, byteOrderStr, lengthCSharpType));
                 }
             }
         }
