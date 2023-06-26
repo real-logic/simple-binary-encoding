@@ -105,6 +105,7 @@ csharp/sbe-generated/mktdata/*.cs
 csharp/sbe-generated/uk_co_real_logic_sbe_benchmarks_fix
 csharp/sbe-tests/*.sbe
 csharp/nuget/
+csharp/csharp.sln.DotSettings.user
 
 # rust
 rust/target
