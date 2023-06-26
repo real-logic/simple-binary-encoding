@@ -739,6 +739,7 @@ tasks.register('generateCSharpCodecsTests', JavaExec) {
             'sbe-tool/src/test/resources/issue560.xml',
             'sbe-tool/src/test/resources/since-deprecated-test-schema.xml',
             'sbe-tool/src/test/resources/example-bigendian-test-schema.xml',
+            'sbe-tool/src/test/resources/field-order-check-schema.xml',
             'sbe-benchmarks/src/main/resources/fix-message-samples.xml']
 }
 

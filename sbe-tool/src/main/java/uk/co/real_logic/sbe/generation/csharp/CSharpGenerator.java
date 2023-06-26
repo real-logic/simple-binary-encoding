@@ -130,6 +130,7 @@ public class CSharpGenerator implements CodeGenerator
                 out.append(generateDocumentation(BASE_INDENT, msgToken));
                 out.append(generateClassDeclaration(className));
                 out.append(generateMessageFlyweightCode(className, msgToken, BASE_INDENT));
+                out.append(generateFullyEncodedCheck(BASE_INDENT + INDENT));
 
                 final List<Token> messageBody = tokens.subList(1, tokens.size() - 1);
                 int offset = 0;
@@ -1184,16 +1185,17 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + "{\n" +
             indent + INDENT + INDENT + "_parentMessage = this;\n" +
             indent + INDENT + "}\n\n" +
-            indent + INDENT + "public void WrapForEncode(DirectBuffer buffer, int offset)\n" +
+            indent + INDENT + "public %10$s WrapForEncode(DirectBuffer buffer, int offset)\n" +
             indent + INDENT + "{\n" +
             indent + INDENT + INDENT + "_buffer = buffer;\n" +
             indent + INDENT + INDENT + "_offset = offset;\n" +
             indent + INDENT + INDENT + "_actingBlockLength = BlockLength;\n" +
             indent + INDENT + INDENT + "_actingVersion = SchemaVersion;\n" +
             indent + INDENT + INDENT + "Limit = offset + _actingBlockLength;\n" +
+            indent + INDENT + INDENT + "return this;\n" +
             indent + INDENT + "}\n\n" +
-            indent + INDENT + "public void WrapForEncodeAndApplyHeader(DirectBuffer buffer, int offset, " +
-                " MessageHeader headerEncoder)\n" +
+            indent + INDENT + "public %10$s WrapForEncodeAndApplyHeader(DirectBuffer buffer, int offset, " +
+                "MessageHeader headerEncoder)\n" +
             indent + INDENT + "{\n" +
             indent + INDENT + INDENT + "headerEncoder.Wrap(buffer, offset, SchemaVersion);\n" +
             indent + INDENT + INDENT + "headerEncoder.BlockLength = BlockLength;\n" +
@@ -1201,9 +1203,9 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + INDENT + "headerEncoder.SchemaId = SchemaId;\n" +
             indent + INDENT + INDENT + "headerEncoder.Version = SchemaVersion;\n" +
             indent + INDENT + INDENT + "\n" +
-            indent + INDENT + INDENT + "WrapForEncode(buffer, offset + MessageHeader.Size);\n" +
+            indent + INDENT + INDENT + "return WrapForEncode(buffer, offset + MessageHeader.Size);\n" +
             indent + INDENT + "}\n\n" +
-            indent + INDENT + "public void WrapForDecode(DirectBuffer buffer, int offset, " +
+            indent + INDENT + "public %10$s WrapForDecode(DirectBuffer buffer, int offset, " +
                 "int actingBlockLength, int actingVersion)\n" +
             indent + INDENT + "{\n" +
             indent + INDENT + INDENT + "_buffer = buffer;\n" +
@@ -1211,6 +1213,15 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + INDENT + "_actingBlockLength = actingBlockLength;\n" +
             indent + INDENT + INDENT + "_actingVersion = actingVersion;\n" +
             indent + INDENT + INDENT + "Limit = offset + _actingBlockLength;\n" +
+            indent + INDENT + INDENT + "return this;\n" +
+            indent + INDENT + "}\n\n" +
+            indent + INDENT + "public %10$s WrapForDecodeAndApplyHeader(DirectBuffer buffer, int offset, " +
+                "MessageHeader headerDecoder)\n" +
+            indent + INDENT + "{\n" +
+            indent + INDENT + INDENT + "headerDecoder.Wrap(buffer, offset, SchemaVersion);\n" +
+            indent + INDENT + INDENT + "\n" +
+            indent + INDENT + INDENT + "return WrapForDecode(buffer, offset + MessageHeader.Size, " +
+            " headerDecoder.BlockLength, headerDecoder.Version);\n" +
             indent + INDENT + "}\n\n" +
             indent + INDENT + "public int Size\n" +
             indent + INDENT + "{\n" +
@@ -1242,6 +1253,17 @@ public class CSharpGenerator implements CodeGenerator
             semanticType,
             className,
             semanticVersion);
+    }
+
+    private CharSequence generateFullyEncodedCheck(final String indent)
+    {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("\n");
+        sb.append(indent).append("public void CheckEncodingIsComplete()\n");
+        sb.append(indent).append("{\n");
+        sb.append(indent).append("    // TODO\n");
+        sb.append(indent).append("}\n");
+        return sb;
     }
 
     private CharSequence generateFields(final List<Token> tokens, final String indent)
@@ -1715,11 +1737,13 @@ public class CSharpGenerator implements CodeGenerator
                     {
                         if (typeToken.encoding().primitiveType() == PrimitiveType.CHAR)
                         {
+                            append(sb, indent, "builder.Append(\"'\");");
                             append(sb, indent, "for (int i = 0; i < " + fieldName +
                                 "Length && this.Get" + fieldName + "(i) > 0; ++i)");
                             append(sb, indent, "{");
                             append(sb, indent, "    builder.Append((char)this.Get" + fieldName + "(i));");
                             append(sb, indent, "}");
+                            append(sb, indent, "builder.Append(\"'\");");
                         }
                         else
                         {

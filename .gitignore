@@ -101,6 +101,7 @@ csharp/sbe-generated/issue483
 csharp/sbe-generated/issue560
 csharp/sbe-generated/issue661
 csharp/sbe-generated/since-deprecated
+csharp/sbe-generated/order_check
 csharp/sbe-generated/mktdata/*.cs
 csharp/sbe-generated/uk_co_real_logic_sbe_benchmarks_fix
 csharp/sbe-tests/*.sbe
