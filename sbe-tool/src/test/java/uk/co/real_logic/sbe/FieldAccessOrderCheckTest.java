@@ -21,12 +21,14 @@ import org.agrona.ExpandableArrayBuffer;
 import org.agrona.MutableDirectBuffer;
 import org.agrona.concurrent.UnsafeBuffer;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Random;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -46,6 +48,12 @@ public class FieldAccessOrderCheckTest
     {
         final boolean productionMode = Boolean.getBoolean("agrona.disable.bounds.checks");
         assumeFalse(productionMode);
+    }
+
+    @BeforeEach
+    void setUp()
+    {
+        new Random().nextBytes(buffer.byteArray());
     }
 
     @Test
@@ -1878,7 +1886,7 @@ public class FieldAccessOrderCheckTest
     {
         final AddBitSetBeforeGroupV1Encoder encoder = new AddBitSetBeforeGroupV1Encoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
-        encoder.a(1).d().guacamole(true).cheese(true);
+        encoder.a(1).d().guacamole(true).cheese(true).sourCream(false);
         encoder.bCount(1).next().c(2);
         encoder.checkEncodingIsComplete();
 
@@ -1919,7 +1927,7 @@ public class FieldAccessOrderCheckTest
     {
         final AddBitSetBeforeGroupV1Encoder encoder = new AddBitSetBeforeGroupV1Encoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
-        encoder.a(1).d().guacamole(true).cheese(true);
+        encoder.a(1).d().guacamole(true).cheese(true).sourCream(false);
         encoder.bCount(1).next().c(2);
         encoder.checkEncodingIsComplete();
 
@@ -1936,7 +1944,7 @@ public class FieldAccessOrderCheckTest
     {
         final AddBitSetBeforeGroupV1Encoder encoder = new AddBitSetBeforeGroupV1Encoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
-        encoder.a(1).d().guacamole(true).cheese(true);
+        encoder.a(1).d().guacamole(true).cheese(true).sourCream(false);
         encoder.bCount(1).next().c(2);
         encoder.checkEncodingIsComplete();
 
@@ -2030,10 +2038,10 @@ public class FieldAccessOrderCheckTest
     {
         final BitSetInsideGroupEncoder encoder = new BitSetInsideGroupEncoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
-        encoder.a().cheese(true).guacamole(true);
+        encoder.a().cheese(true).guacamole(true).sourCream(false);
         encoder.bCount(1)
             .next()
-            .c().sourCream(true);
+            .c().cheese(false).guacamole(false).sourCream(true);
         encoder.checkEncodingIsComplete();
 
         final BitSetInsideGroupDecoder decoder = new BitSetInsideGroupDecoder()
@@ -2056,7 +2064,7 @@ public class FieldAccessOrderCheckTest
     {
         final BitSetInsideGroupEncoder encoder = new BitSetInsideGroupEncoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
-        encoder.a().cheese(true).guacamole(true);
+        encoder.a().cheese(true).guacamole(true).sourCream(false);
         final BitSetInsideGroupEncoder.BEncoder bEncoder = encoder.bCount(1);
         final Exception exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, bEncoder::c);
@@ -2068,10 +2076,10 @@ public class FieldAccessOrderCheckTest
     {
         final BitSetInsideGroupEncoder encoder = new BitSetInsideGroupEncoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
-        encoder.a().cheese(true).guacamole(true);
+        encoder.a().cheese(true).guacamole(true).sourCream(false);
         encoder.bCount(1)
             .next()
-            .c().sourCream(true);
+            .c().guacamole(false).cheese(false).sourCream(true);
         encoder.checkEncodingIsComplete();
 
         final BitSetInsideGroupDecoder decoder = new BitSetInsideGroupDecoder()
@@ -2092,10 +2100,10 @@ public class FieldAccessOrderCheckTest
     {
         final BitSetInsideGroupEncoder encoder = new BitSetInsideGroupEncoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
-        encoder.a().cheese(true).guacamole(true);
+        encoder.a().cheese(true).guacamole(true).sourCream(false);
         encoder.bCount(1)
             .next()
-            .c().sourCream(true);
+            .c().cheese(false).guacamole(false).sourCream(true);
 
         encoder.a().sourCream(true);
         encoder.checkEncodingIsComplete();
