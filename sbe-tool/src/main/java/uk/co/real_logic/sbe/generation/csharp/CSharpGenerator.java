@@ -19,8 +19,10 @@ package uk.co.real_logic.sbe.generation.csharp;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.PrimitiveValue;
 import uk.co.real_logic.sbe.generation.CodeGenerator;
+import org.agrona.collections.MutableBoolean;
 import org.agrona.generation.OutputManager;
 import uk.co.real_logic.sbe.generation.Generators;
+import uk.co.real_logic.sbe.generation.common.AccessOrderModel;
 import uk.co.real_logic.sbe.ir.*;
 import org.agrona.Verify;
 
@@ -28,7 +30,10 @@ import java.io.IOException;
 import java.io.Writer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.function.Function;
 
 import static java.lang.System.lineSeparator;
 
@@ -126,28 +131,41 @@ public class CSharpGenerator implements CodeGenerator
 
             try (Writer out = outputManager.createOutput(className))
             {
+                final List<Token> messageBody = tokens.subList(1, tokens.size() - 1);
+                int offset = 0;
+                final List<Token> fields = new ArrayList<>();
+                offset = collectFields(messageBody, offset, fields);
+                final List<Token> groups = new ArrayList<>();
+                offset = collectGroups(messageBody, offset, groups);
+                final List<Token> varData = new ArrayList<>();
+                collectVarData(messageBody, offset, varData);
+
+                AccessOrderModel accessOrderModel = null;
+                if (AccessOrderModel.generateAccessOrderChecks())
+                {
+                    accessOrderModel = AccessOrderModel.newInstance(
+                        msgToken,
+                        fields,
+                        groups,
+                        varData,
+                        Function.identity());
+                }
+
                 out.append(generateFileHeader(ir.applicableNamespace()));
                 out.append(generateDocumentation(BASE_INDENT, msgToken));
                 out.append(generateClassDeclaration(className));
-                out.append(generateMessageFlyweightCode(className, msgToken, BASE_INDENT));
-                out.append(generateFullyEncodedCheck(BASE_INDENT + INDENT));
+                out.append(generateMessageFlyweightCode(className, msgToken, accessOrderModel, BASE_INDENT));
 
-                final List<Token> messageBody = tokens.subList(1, tokens.size() - 1);
-                int offset = 0;
+                out.append(generateFieldOrderStates(BASE_INDENT, accessOrderModel));
+                out.append(generateFullyEncodedCheck(BASE_INDENT, accessOrderModel));
 
-                final List<Token> fields = new ArrayList<>();
-                offset = collectFields(messageBody, offset, fields);
-                out.append(generateFields(fields, BASE_INDENT));
+                out.append(generateFields(accessOrderModel, fields, BASE_INDENT));
 
-                final List<Token> groups = new ArrayList<>();
-                offset = collectGroups(messageBody, offset, groups);
                 final StringBuilder sb = new StringBuilder();
-                generateGroups(sb, className, groups, BASE_INDENT);
+                generateGroups(sb, className, groups, accessOrderModel, BASE_INDENT);
                 out.append(sb);
 
-                final List<Token> varData = new ArrayList<>();
-                collectVarData(messageBody, offset, varData);
-                out.append(generateVarData(varData, BASE_INDENT + INDENT));
+                out.append(generateVarData(accessOrderModel, varData, BASE_INDENT + INDENT));
 
                 out.append(generateDisplay(toUpperFirstChar(msgToken.name()), fields, groups, varData));
 
@@ -161,6 +179,7 @@ public class CSharpGenerator implements CodeGenerator
         final StringBuilder sb,
         final String parentMessageClassName,
         final List<Token> tokens,
+        final AccessOrderModel accessOrderModel,
         final String indent)
     {
         for (int i = 0, size = tokens.size(); i < size; i++)
@@ -171,23 +190,24 @@ public class CSharpGenerator implements CodeGenerator
                 throw new IllegalStateException("tokens must begin with BEGIN_GROUP: token=" + groupToken);
             }
             final String groupName = groupToken.name();
-            sb.append(generateGroupProperty(groupName, groupToken, indent + INDENT));
+            sb.append(generateGroupProperty(groupName, accessOrderModel, groupToken, indent + INDENT));
 
-            generateGroupClassHeader(sb, groupName, parentMessageClassName, tokens, i, indent + INDENT);
+            generateGroupClassHeader(sb, groupName, parentMessageClassName, tokens,
+                accessOrderModel, i, indent + INDENT);
             i++;
             i += tokens.get(i).componentTokenCount();
 
             final List<Token> fields = new ArrayList<>();
             i = collectFields(tokens, i, fields);
-            sb.append(generateFields(fields, indent + INDENT));
+            sb.append(generateFields(accessOrderModel, fields, indent + INDENT));
 
             final List<Token> groups = new ArrayList<>();
             i = collectGroups(tokens, i, groups);
-            generateGroups(sb, parentMessageClassName, groups, indent + INDENT);
+            generateGroups(sb, parentMessageClassName, groups, accessOrderModel, indent + INDENT);
 
             final List<Token> varData = new ArrayList<>();
             i = collectVarData(tokens, i, varData);
-            sb.append(generateVarData(varData, indent + INDENT + INDENT));
+            sb.append(generateVarData(accessOrderModel, varData, indent + INDENT + INDENT));
 
             appendGroupInstanceDisplay(sb, fields, groups, varData, indent + TWO_INDENT);
 
@@ -200,6 +220,7 @@ public class CSharpGenerator implements CodeGenerator
         final String groupName,
         final String parentMessageClassName,
         final List<Token> tokens,
+        final AccessOrderModel accessOrderModel,
         final int index,
         final String indent)
     {
@@ -285,15 +306,35 @@ public class CSharpGenerator implements CodeGenerator
             blockLength,
             dimensionHeaderLength));
 
-        generateGroupEnumerator(sb, groupName, typeForNumInGroup, indent);
+        if (null != accessOrderModel)
+        {
+            sb.append("\n")
+                .append(indent).append("    private CodecState codecState()\n")
+                .append(indent).append("    {\n")
+                .append(indent).append("        return _parentMessage.codecState();\n")
+                .append(indent).append("    }\n");
+
+            sb.append("\n")
+                .append(indent).append("    private void codecState(CodecState newState)\n")
+                .append(indent).append("    {\n")
+                .append(indent).append("        _parentMessage.codecState(newState);\n")
+                .append(indent).append("    }\n");
+        }
+
+        final Token groupToken = tokens.get(index);
+        generateGroupEnumerator(sb, accessOrderModel, groupToken, groupName, typeForNumInGroup, indent);
     }
 
     private void generateGroupEnumerator(
         final StringBuilder sb,
+        final AccessOrderModel accessOrderModel,
+        final Token groupToken,
         final String groupName,
         final String typeForNumInGroup,
         final String indent)
     {
+        generateAccessOrderListenerMethodForNextGroupElement(sb, accessOrderModel, indent + INDENT, groupToken);
+
         sb.append(
             indent + INDENT + "public int ActingBlockLength { get { return _blockLength; } }\n\n" +
             indent + INDENT + "public int Count { get { return _count; } }\n\n" +
@@ -315,6 +356,7 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + INDENT + "{\n" +
             indent + INDENT + INDENT + INDENT + "ThrowHelper.ThrowInvalidOperationException();\n" +
             indent + INDENT + INDENT + "}\n\n" +
+            generateAccessOrderListenerCall(accessOrderModel, indent + TWO_INDENT, "OnNextElementAccessed") +
             indent + INDENT + INDENT + "_offset = _parentMessage.Limit;\n" +
             indent + INDENT + INDENT + "_parentMessage.Limit = _offset + _blockLength;\n" +
             indent + INDENT + INDENT + "++_index;\n\n" +
@@ -339,7 +381,11 @@ public class CSharpGenerator implements CodeGenerator
             encoding.applicableMaxValue().longValue() <= Integer.MAX_VALUE;
     }
 
-    private CharSequence generateGroupProperty(final String groupName, final Token token, final String indent)
+    private CharSequence generateGroupProperty(
+        final String groupName,
+        final AccessOrderModel accessOrderModel,
+        final Token token,
+        final String indent)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -356,6 +402,8 @@ public class CSharpGenerator implements CodeGenerator
             toUpperFirstChar(groupName),
             token.id()));
 
+        generateAccessOrderListenerMethodForGroupWrap(sb, accessOrderModel, indent + INDENT, token);
+
         generateSinceActingDeprecated(sb, indent, toUpperFirstChar(groupName), token);
 
         sb.append(String.format("\n" +
@@ -365,6 +413,8 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + "get\n" +
             indent + INDENT + "{\n" +
             indent + INDENT + INDENT + "_%4$s.WrapForDecode(_parentMessage, _buffer, _actingVersion);\n" +
+            generateAccessOrderListenerCall(accessOrderModel, indent + TWO_INDENT, token,
+            "_" + groupName + ".Count", "\"decode\"") +
             indent + INDENT + INDENT + "return _%4$s;\n" +
             indent + INDENT + "}\n" +
             indent + "}\n",
@@ -376,6 +426,7 @@ public class CSharpGenerator implements CodeGenerator
         sb.append(String.format("\n" +
             indent + "public %1$sGroup %2$sCount(int count)\n" +
             indent + "{\n" +
+            generateAccessOrderListenerCall(accessOrderModel, indent + INDENT, token, "count", "\"encode\"") +
             indent + INDENT + "_%3$s.WrapForEncode(_parentMessage, _buffer, count);\n" +
             indent + INDENT + "return _%3$s;\n" +
             indent + "}\n",
@@ -386,7 +437,10 @@ public class CSharpGenerator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generateVarData(final List<Token> tokens, final String indent)
+    private CharSequence generateVarData(
+        final AccessOrderModel accessOrderModel,
+        final List<Token> tokens,
+        final String indent)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -413,6 +467,10 @@ public class CSharpGenerator implements CodeGenerator
                 final ByteOrder byteOrder = lengthEncoding.byteOrder();
                 final String byteOrderStr = generateByteOrder(byteOrder, lengthEncoding.primitiveType().size());
 
+                generateAccessOrderListenerMethod(sb, accessOrderModel, indent, token);
+                final CharSequence accessOrderListenerCall =
+                    generateAccessOrderListenerCall(accessOrderModel, indent + INDENT, token);
+
                 sb.append(String.format("\n" +
                     indent + "public const int %sHeaderSize = %d;\n",
                     propertyName,
@@ -421,6 +479,7 @@ public class CSharpGenerator implements CodeGenerator
                 sb.append(String.format(indent + "\n" +
                     indent + "public int %1$sLength()\n" +
                     indent + "{\n" +
+                    accessOrderListenerCall +
                     indent + INDENT + "_buffer.CheckLimit(_parentMessage.Limit + %2$d);\n" +
                     indent + INDENT + "return (int)_buffer.%3$sGet%4$s(_parentMessage.Limit);\n" +
                     indent + "}\n",
@@ -438,6 +497,7 @@ public class CSharpGenerator implements CodeGenerator
                     indent + "public int Get%1$s(Span<byte> dst)\n" +
                     indent + "{\n" +
                     "%2$s" +
+                    accessOrderListenerCall +
                     indent + INDENT + "const int sizeOfLengthField = %3$d;\n" +
                     indent + INDENT + "int limit = _parentMessage.Limit;\n" +
                     indent + INDENT + "_buffer.CheckLimit(limit + sizeOfLengthField);\n" +
@@ -457,6 +517,7 @@ public class CSharpGenerator implements CodeGenerator
                     indent + "// Allocates and returns a new byte array\n" +
                     indent + "public byte[] Get%1$sBytes()\n" +
                     indent + "{\n" +
+                    accessOrderListenerCall +
                     indent + INDENT + "const int sizeOfLengthField = %2$d;\n" +
                     indent + INDENT + "int limit = _parentMessage.Limit;\n" +
                     indent + INDENT + "_buffer.CheckLimit(limit + sizeOfLengthField);\n" +
@@ -479,6 +540,7 @@ public class CSharpGenerator implements CodeGenerator
                 sb.append(String.format("\n" +
                     indent + "public int Set%1$s(ReadOnlySpan<byte> src)\n" +
                     indent + "{\n" +
+                    accessOrderListenerCall +
                     indent + INDENT + "const int sizeOfLengthField = %2$d;\n" +
                     indent + INDENT + "int limit = _parentMessage.Limit;\n" +
                     indent + INDENT + "_parentMessage.Limit = limit + sizeOfLengthField + src.Length;\n" +
@@ -498,6 +560,7 @@ public class CSharpGenerator implements CodeGenerator
                         .append(String.format(
                         indent + "public string Get%1$s()\n" +
                         indent + "{\n" +
+                        accessOrderListenerCall +
                         indent + INDENT + "const int sizeOfLengthField = %2$d;\n" +
                         indent + INDENT + "int limit = _parentMessage.Limit;\n" +
                         indent + INDENT + "_buffer.CheckLimit(limit + sizeOfLengthField);\n" +
@@ -508,6 +571,7 @@ public class CSharpGenerator implements CodeGenerator
                         indent + "}\n\n" +
                         indent + "public void Set%1$s(string value)\n" +
                         indent + "{\n" +
+                        accessOrderListenerCall +
                         indent + INDENT + "var encoding = %1$sResolvedCharacterEncoding;\n" +
                         indent + INDENT + "const int sizeOfLengthField = %2$d;\n" +
                         indent + INDENT + "int limit = _parentMessage.Limit;\n" +
@@ -589,23 +653,24 @@ public class CSharpGenerator implements CodeGenerator
         {
             final Token token = tokens.get(i);
             final String propertyName = formatPropertyName(token.name());
+            final AccessOrderModel accessOrderModel = null;
 
             switch (token.signal())
             {
                 case ENCODING:
-                    sb.append(generatePrimitiveProperty(propertyName, token, token, indent));
+                    sb.append(generatePrimitiveProperty(propertyName, token, token, accessOrderModel, indent));
                     break;
 
                 case BEGIN_ENUM:
-                    sb.append(generateEnumProperty(propertyName, token, token, indent));
+                    sb.append(generateEnumProperty(propertyName, token, token, accessOrderModel, indent));
                     break;
 
                 case BEGIN_SET:
-                    sb.append(generateBitSetProperty(propertyName, token, token, indent));
+                    sb.append(generateBitSetProperty(propertyName, token, token, accessOrderModel, indent));
                     break;
 
                 case BEGIN_COMPOSITE:
-                    sb.append(generateCompositeProperty(propertyName, token, token, indent));
+                    sb.append(generateCompositeProperty(propertyName, token, token, accessOrderModel, indent));
                     break;
 
                 default:
@@ -748,7 +813,11 @@ public class CSharpGenerator implements CodeGenerator
     }
 
     private CharSequence generatePrimitiveProperty(
-        final String propertyName, final Token fieldToken, final Token typeToken, final String indent)
+        final String propertyName,
+        final Token fieldToken,
+        final Token typeToken,
+        final AccessOrderModel accessOrderModel,
+        final String indent)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -760,7 +829,8 @@ public class CSharpGenerator implements CodeGenerator
         }
         else
         {
-            sb.append(generatePrimitivePropertyMethods(propertyName, fieldToken, typeToken, indent));
+            sb.append(generatePrimitivePropertyMethods(propertyName, fieldToken, typeToken,
+                accessOrderModel, indent));
         }
 
         return sb;
@@ -770,17 +840,20 @@ public class CSharpGenerator implements CodeGenerator
         final String propertyName,
         final Token fieldToken,
         final Token typeToken,
+        final AccessOrderModel accessOrderModel,
         final String indent)
     {
         final int arrayLength = typeToken.arrayLength();
 
         if (arrayLength == 1)
         {
-            return generateSingleValueProperty(propertyName, fieldToken, typeToken, indent + INDENT);
+            return generateSingleValueProperty(propertyName, fieldToken, typeToken,
+                accessOrderModel, indent + INDENT);
         }
         else if (arrayLength > 1)
         {
-            return generateArrayProperty(propertyName, fieldToken, typeToken, indent + INDENT);
+            return generateArrayProperty(propertyName, fieldToken, typeToken,
+                accessOrderModel, indent + INDENT);
         }
 
         return "";
@@ -810,6 +883,7 @@ public class CSharpGenerator implements CodeGenerator
         final String propertyName,
         final Token fieldToken,
         final Token typeToken,
+        final AccessOrderModel accessOrderModel,
         final String indent)
     {
         final String typeName = cSharpTypeName(typeToken.encoding().primitiveType());
@@ -818,6 +892,10 @@ public class CSharpGenerator implements CodeGenerator
         final ByteOrder byteOrder = typeToken.encoding().byteOrder();
         final String byteOrderStr = generateByteOrder(byteOrder, typeToken.encoding().primitiveType().size());
 
+        final CharSequence accessOrderListenerCall =
+            generateAccessOrderListenerCall(accessOrderModel, indent + TWO_INDENT, fieldToken);
+
+
         return String.format("\n" +
             "%1$s" +
             indent + "public %2$s %3$s\n" +
@@ -825,10 +903,12 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + "get\n" +
             indent + INDENT + "{\n" +
             "%4$s" +
+            accessOrderListenerCall +
             indent + INDENT + INDENT + "return _buffer.%5$sGet%7$s(_offset + %6$d);\n" +
             indent + INDENT + "}\n" +
             indent + INDENT + "set\n" +
             indent + INDENT + "{\n" +
+            accessOrderListenerCall +
             indent + INDENT + INDENT + "_buffer.%5$sPut%7$s(_offset + %6$d, value);\n" +
             indent + INDENT + "}\n" +
             indent + "}\n\n",
@@ -913,7 +993,7 @@ public class CSharpGenerator implements CodeGenerator
         final String propertyName,
         final Token fieldToken,
         final Token typeToken,
-        final String indent)
+        final AccessOrderModel accessOrderModel, final String indent)
     {
         final String typeName = cSharpTypeName(typeToken.encoding().primitiveType());
         final String typePrefix = toUpperFirstChar(typeToken.encoding().primitiveType().primitiveName());
@@ -923,6 +1003,11 @@ public class CSharpGenerator implements CodeGenerator
         final int fieldLength = typeToken.arrayLength();
         final int typeSize = typeToken.encoding().primitiveType().size();
         final String propName = toUpperFirstChar(propertyName);
+
+        final CharSequence accessOrderListenerCall =
+            generateAccessOrderListenerCall(accessOrderModel, indent + INDENT, fieldToken);
+        final CharSequence accessOrderListenerCallDoubleIndent =
+            generateAccessOrderListenerCall(accessOrderModel, indent + TWO_INDENT, fieldToken);
 
         final StringBuilder sb = new StringBuilder();
 
@@ -939,6 +1024,7 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + INDENT + "ThrowHelper.ThrowIndexOutOfRangeException(index);\n" +
             indent + INDENT + "}\n\n" +
             "%5$s" +
+            accessOrderListenerCall +
             indent + INDENT + "return _buffer.%6$sGet%9$s(_offset + %7$d + (index * %8$d));\n" +
             indent + "}\n",
             generateDocumentation(indent, fieldToken),
@@ -954,6 +1040,7 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + "{\n" +
             indent + INDENT + INDENT + "ThrowHelper.ThrowIndexOutOfRangeException(index);\n" +
             indent + INDENT + "}\n\n" +
+            accessOrderListenerCall +
             indent + INDENT + "_buffer.%5$sPut%8$s(_offset + %6$d + (index * %7$d), value);\n" +
             indent + "}\n",
             generateDocumentation(indent, fieldToken),
@@ -963,8 +1050,16 @@ public class CSharpGenerator implements CodeGenerator
             "%1$s" +
             indent + "public ReadOnlySpan<%2$s> %3$s\n" +
             indent + "{\n" +
-            indent + INDENT + "get => _buffer.AsReadOnlySpan<%2$s>(_offset + %4$s, %3$sLength);\n" +
-            indent + INDENT + "set => value.CopyTo(_buffer.AsSpan<%2$s>(_offset + %4$s, %3$sLength));\n" +
+            indent + INDENT + "get\n" +
+            indent + INDENT + "{\n" +
+            accessOrderListenerCallDoubleIndent +
+            indent + INDENT + INDENT + "return _buffer.AsReadOnlySpan<%2$s>(_offset + %4$s, %3$sLength);\n" +
+            indent + INDENT + "}\n" +
+            indent + INDENT + "set\n" +
+            indent + INDENT + "{\n" +
+            accessOrderListenerCallDoubleIndent +
+            indent + INDENT + INDENT + "value.CopyTo(_buffer.AsSpan<%2$s>(_offset + %4$s, %3$sLength));\n" +
+            indent + INDENT + "}\n" +
             indent + "}\n",
             generateDocumentation(indent, fieldToken),
             typeName, propName, offset));
@@ -973,6 +1068,7 @@ public class CSharpGenerator implements CodeGenerator
             "%1$s" +
             indent + "public Span<%2$s> %3$sAsSpan()\n" +
             indent + "{\n" +
+            accessOrderListenerCall +
             indent + INDENT + "return _buffer.AsSpan<%2$s>(_offset + %4$s, %3$sLength);\n" +
             indent + "}\n",
             generateDocumentation(indent, fieldToken),
@@ -987,6 +1083,7 @@ public class CSharpGenerator implements CodeGenerator
                 indent + "{\n" +
                 indent + INDENT + "const int length = %2$d;\n" +
                 "%3$s" +
+                accessOrderListenerCall +
                 indent + INDENT + "return Get%1$s(new Span<byte>(dst, dstOffset, length));\n" +
                 indent + "}\n",
                 propName, fieldLength, generateArrayFieldNotPresentCondition(fieldToken.version(), indent), offset));
@@ -1000,6 +1097,7 @@ public class CSharpGenerator implements CodeGenerator
                 indent + INDENT + INDENT + "ThrowHelper.ThrowWhenSpanLengthTooSmall(dst.Length);\n" +
                 indent + INDENT + "}\n\n" +
                 "%3$s" +
+                accessOrderListenerCall +
                 indent + INDENT + "_buffer.GetBytes(_offset + %4$d, dst);\n" +
                 indent + INDENT + "return length;\n" +
                 indent + "}\n",
@@ -1020,6 +1118,7 @@ public class CSharpGenerator implements CodeGenerator
                 indent + INDENT + "{\n" +
                 indent + INDENT + INDENT + "ThrowHelper.ThrowWhenSpanLengthTooLarge(src.Length);\n" +
                 indent + INDENT + "}\n\n" +
+                accessOrderListenerCall +
                 indent + INDENT + "_buffer.SetBytes(_offset + %3$d, src);\n" +
                 indent + "}\n",
                 propName, fieldLength, offset));
@@ -1027,11 +1126,13 @@ public class CSharpGenerator implements CodeGenerator
             sb.append(String.format("\n" +
                 indent + "public void Set%1$s(string value)\n" +
                 indent + "{\n" +
+                accessOrderListenerCall +
                 indent + INDENT + "_buffer.SetNullTerminatedBytesFromString(%1$sResolvedCharacterEncoding, " +
                 "value, _offset + %2$s, %1$sLength, %1$sNullValue);\n" +
                 indent + "}\n" +
                 indent + "public string Get%1$s()\n" +
                 indent + "{\n" +
+                accessOrderListenerCall +
                 indent + INDENT + "return _buffer.GetStringFromNullTerminatedBytes(%1$sResolvedCharacterEncoding, " +
                 "_offset + %2$s, %1$sLength, %1$sNullValue);\n" +
                 indent + "}\n",
@@ -1157,7 +1258,11 @@ public class CSharpGenerator implements CodeGenerator
             size);
     }
 
-    private CharSequence generateMessageFlyweightCode(final String className, final Token token, final String indent)
+    private CharSequence generateMessageFlyweightCode(
+        final String className,
+        final Token token,
+        final AccessOrderModel accessOrderModel,
+        final String indent)
     {
         final String blockLengthType = cSharpTypeName(ir.headerStructure().blockLengthType());
         final String templateIdType = cSharpTypeName(ir.headerStructure().templateIdType());
@@ -1187,6 +1292,7 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + "}\n\n" +
             indent + INDENT + "public %10$s WrapForEncode(DirectBuffer buffer, int offset)\n" +
             indent + INDENT + "{\n" +
+            generateEncoderWrapListener(accessOrderModel, indent + TWO_INDENT) +
             indent + INDENT + INDENT + "_buffer = buffer;\n" +
             indent + INDENT + INDENT + "_offset = offset;\n" +
             indent + INDENT + INDENT + "_actingBlockLength = BlockLength;\n" +
@@ -1205,9 +1311,11 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + INDENT + "\n" +
             indent + INDENT + INDENT + "return WrapForEncode(buffer, offset + MessageHeader.Size);\n" +
             indent + INDENT + "}\n\n" +
+            generateDecoderWrapListener(accessOrderModel, indent + INDENT) +
             indent + INDENT + "public %10$s WrapForDecode(DirectBuffer buffer, int offset, " +
                 "int actingBlockLength, int actingVersion)\n" +
             indent + INDENT + "{\n" +
+            generateAccessOrderListenerCall(accessOrderModel, indent + TWO_INDENT, "OnWrapForDecode", "actingVersion") +
             indent + INDENT + INDENT + "_buffer = buffer;\n" +
             indent + INDENT + INDENT + "_offset = offset;\n" +
             indent + INDENT + INDENT + "_actingBlockLength = actingBlockLength;\n" +
@@ -1255,18 +1363,433 @@ public class CSharpGenerator implements CodeGenerator
             semanticVersion);
     }
 
-    private CharSequence generateFullyEncodedCheck(final String indent)
+    private static CharSequence qualifiedStateCase(final AccessOrderModel.State state)
     {
+        return "CodecState." + state.name();
+    }
+
+    private static CharSequence stateCaseForSwitchCase(final AccessOrderModel.State state)
+    {
+        return qualifiedStateCase(state);
+    }
+
+    private static CharSequence unqualifiedStateCase(final AccessOrderModel.State state)
+    {
+        return state.name();
+    }
+
+    private static CharSequence generateFieldOrderStates(final String indent, final AccessOrderModel accessOrderModel)
+    {
+        if (null == accessOrderModel)
+        {
+            return "";
+        }
+
         final StringBuilder sb = new StringBuilder();
-        sb.append("\n");
-        sb.append(indent).append("public void CheckEncodingIsComplete()\n");
-        sb.append(indent).append("{\n");
-        sb.append(indent).append("    // TODO\n");
-        sb.append(indent).append("}\n");
+
+        sb.append(indent).append("///\n");
+
+        sb.append(indent).append("/// <summary>\n");
+        sb.append(indent).append("///   <para>\n");
+        sb.append(indent).append("///     The states in which a encoder/decoder/codec can live.\n");
+        sb.append(indent).append("///   </para>\n");
+        sb.append(indent).append("///   <para>\n");
+        sb.append(indent).append("///     The state machine diagram below, encoded in the dot language, describes\n");
+        sb.append(indent).append("///     the valid state transitions according to the order in which fields may be\n");
+        sb.append(indent).append("///     accessed safely. Tools such as PlantUML and Graphviz can render it.\n");
+        sb.append(indent).append("///   </para>\n");
+        sb.append(indent).append("///   <code>\n");
+        accessOrderModel.generateGraph(sb, indent + "///     ");
+        sb.append(indent).append("///   </code>\n");
+        sb.append(indent).append("/// </summary>\n");
+        sb.append(indent).append("private enum CodecState\n")
+            .append(indent).append("{\n");
+        accessOrderModel.forEachStateOrderedByStateNumber(state ->
+        {
+            sb.append(indent).append(INDENT).append(unqualifiedStateCase(state))
+                .append(" = ").append(state.number())
+                .append(",\n");
+        });
+        sb.append(indent).append("}\n\n");
+
+        sb.append("\n").append(indent).append("private static readonly string[] StateNameLookup = new []\n")
+            .append(indent).append("{\n");
+        accessOrderModel.forEachStateOrderedByStateNumber(state ->
+        {
+            sb.append(indent).append(INDENT).append("\"").append(state.name()).append("\",\n");
+        });
+        sb.append(indent).append("};\n\n");
+
+        sb.append(indent).append("private static readonly string[] StateTransitionsLookup = new []\n")
+            .append(indent).append("{\n");
+        accessOrderModel.forEachStateOrderedByStateNumber(state ->
+        {
+            sb.append(indent).append(INDENT).append("\"");
+            final MutableBoolean isFirst = new MutableBoolean(true);
+            final Set<String> transitionDescriptions = new HashSet<>();
+            accessOrderModel.forEachTransitionFrom(state, transitionGroup ->
+            {
+                if (transitionDescriptions.add(transitionGroup.exampleCode()))
+                {
+                    if (isFirst.get())
+                    {
+                        isFirst.set(false);
+                    }
+                    else
+                    {
+                        sb.append(", ");
+                    }
+
+                    sb.append("\\\"").append(transitionGroup.exampleCode()).append("\\\"");
+                }
+            });
+            sb.append("\",\n");
+        });
+        sb.append(indent).append("};\n\n");
+
+        sb.append(indent).append("private static string codecStateName(CodecState state)\n")
+            .append(indent).append("{\n")
+            .append(indent).append(INDENT).append("return StateNameLookup[(int) state];\n")
+            .append(indent).append("}\n\n");
+
+        sb.append(indent).append("private static string codecStateTransitions(CodecState state)\n")
+            .append(indent).append("{\n")
+            .append(indent).append(INDENT).append("return StateTransitionsLookup[(int) state];\n")
+            .append(indent).append("}\n\n");
+
+        sb.append(indent).append("private CodecState _codecState = ")
+            .append(qualifiedStateCase(accessOrderModel.notWrappedState()))
+            .append(";\n\n");
+
+        sb.append(indent).append("private CodecState codecState()\n")
+            .append(indent).append("{\n")
+            .append(indent).append(INDENT).append("return _codecState;\n")
+            .append(indent).append("}\n\n");
+
+        sb.append(indent).append("private void codecState(CodecState newState)\n")
+            .append(indent).append("{\n")
+            .append(indent).append(INDENT).append("_codecState = newState;\n")
+            .append(indent).append("}\n");
+
         return sb;
     }
 
-    private CharSequence generateFields(final List<Token> tokens, final String indent)
+    private static CharSequence generateFullyEncodedCheck(
+        final String indent,
+        final AccessOrderModel accessOrderModel)
+    {
+        if (null == accessOrderModel)
+        {
+            return "";
+        }
+
+        final StringBuilder sb = new StringBuilder();
+        sb.append("\n");
+
+        sb.append(indent).append("public void CheckEncodingIsComplete()\n")
+            .append(indent).append("{\n")
+            .append(indent).append(INDENT).append("switch (_codecState)\n")
+            .append(indent).append(INDENT).append("{\n");
+
+        accessOrderModel.forEachTerminalEncoderState(state ->
+        {
+            sb.append(indent).append(TWO_INDENT).append("case ").append(stateCaseForSwitchCase(state)).append(":\n")
+                .append(indent).append(THREE_INDENT).append("return;\n");
+        });
+
+        sb.append(indent).append(TWO_INDENT).append("default:\n")
+            .append(indent).append(THREE_INDENT)
+            .append("throw new InvalidOperationException(\"Not fully encoded, current state: \" +\n")
+            .append(indent).append(THREE_INDENT)
+            .append(INDENT).append("codecStateName(_codecState) + \", allowed transitions: \" +\n")
+            .append(indent).append(THREE_INDENT)
+            .append(INDENT).append("codecStateTransitions(_codecState));\n")
+            .append(indent).append(INDENT).append("}\n")
+            .append(indent).append("}\n\n");
+
+        return sb;
+    }
+
+    private static String accessOrderListenerMethodName(final Token token)
+    {
+        return "On" + Generators.toUpperFirstChar(token.name()) + "Accessed";
+    }
+
+    private static void generateAccessOrderListenerMethod(
+        final StringBuilder sb,
+        final AccessOrderModel accessOrderModel,
+        final String indent,
+        final Token token)
+    {
+        if (null == accessOrderModel)
+        {
+            return;
+        }
+
+        sb.append("\n")
+            .append(indent).append("private void ").append(accessOrderListenerMethodName(token)).append("()\n")
+            .append(indent).append("{\n");
+
+        final AccessOrderModel.CodecInteraction fieldAccess =
+            accessOrderModel.interactionFactory().accessField(token);
+
+        generateAccessOrderListener(
+            sb,
+            indent + INDENT,
+            "access field",
+            accessOrderModel,
+            fieldAccess);
+
+        sb.append(indent).append("}\n");
+    }
+
+    private static CharSequence generateAccessOrderListenerCall(
+        final AccessOrderModel accessOrderModel,
+        final String indent,
+        final Token token,
+        final String... arguments)
+    {
+        return generateAccessOrderListenerCall(
+            accessOrderModel,
+            indent,
+            accessOrderListenerMethodName(token),
+            arguments);
+    }
+
+    private static CharSequence generateAccessOrderListenerCall(
+        final AccessOrderModel accessOrderModel,
+        final String indent,
+        final String methodName,
+        final String... arguments)
+    {
+        if (null == accessOrderModel)
+        {
+            return "";
+        }
+
+        final StringBuilder sb = new StringBuilder();
+        sb.append("#if ENABLE_ACCESS_ORDER_CHECKS\n")
+            .append(indent).append(methodName).append("(");
+
+        for (int i = 0; i < arguments.length; i++)
+        {
+            if (i > 0)
+            {
+                sb.append(", ");
+            }
+            sb.append(arguments[i]);
+        }
+        sb.append(");\n");
+
+        sb.append("#endif\n");
+
+        return sb;
+    }
+
+    private static void generateAccessOrderListenerMethodForGroupWrap(
+        final StringBuilder sb,
+        final AccessOrderModel accessOrderModel,
+        final String indent,
+        final Token token)
+    {
+        if (null == accessOrderModel)
+        {
+            return;
+        }
+
+        sb.append("\n")
+            .append(indent).append("private void ").append(accessOrderListenerMethodName(token))
+            .append("(int remaining, string action)\n")
+            .append(indent).append("{\n")
+            .append(indent).append(INDENT).append("if (remaining == 0)\n")
+            .append(indent).append(INDENT).append("{\n");
+
+        final AccessOrderModel.CodecInteraction selectEmptyGroup =
+            accessOrderModel.interactionFactory().determineGroupIsEmpty(token);
+
+        generateAccessOrderListener(
+            sb,
+            indent + TWO_INDENT,
+            "\" + action + \" count of repeating group",
+            accessOrderModel,
+            selectEmptyGroup);
+
+        sb.append(indent).append(INDENT).append("}\n")
+            .append(indent).append(INDENT).append("else\n")
+            .append(indent).append(INDENT).append("{\n");
+
+        final AccessOrderModel.CodecInteraction selectNonEmptyGroup =
+            accessOrderModel.interactionFactory().determineGroupHasElements(token);
+
+        generateAccessOrderListener(
+            sb,
+            indent + TWO_INDENT,
+            "\" + action + \" count of repeating group",
+            accessOrderModel,
+            selectNonEmptyGroup);
+
+        sb.append(indent).append(INDENT).append("}\n")
+            .append(indent).append("}\n");
+    }
+
+    private static void generateAccessOrderListener(
+        final StringBuilder sb,
+        final String indent,
+        final String action,
+        final AccessOrderModel accessOrderModel,
+        final AccessOrderModel.CodecInteraction interaction)
+    {
+        if (interaction.isTopLevelBlockFieldAccess())
+        {
+            sb.append(indent).append("if (codecState() == ")
+                .append(qualifiedStateCase(accessOrderModel.notWrappedState()))
+                .append(")\n")
+                .append(indent).append("{\n");
+            generateAccessOrderException(sb, indent + INDENT, action, interaction);
+            sb.append(indent).append("}\n");
+        }
+        else
+        {
+            sb.append(indent).append("switch (codecState())\n")
+                .append(indent).append("{\n");
+
+            accessOrderModel.forEachTransition(interaction, transitionGroup ->
+            {
+                transitionGroup.forEachStartState(startState ->
+                {
+                    sb.append(indent).append(INDENT)
+                        .append("case ").append(stateCaseForSwitchCase(startState)).append(":\n");
+                });
+                sb.append(indent).append(TWO_INDENT).append("codecState(")
+                    .append(qualifiedStateCase(transitionGroup.endState())).append(");\n")
+                    .append(indent).append(TWO_INDENT).append("break;\n");
+            });
+
+            sb.append(indent).append(INDENT).append("default:\n");
+            generateAccessOrderException(sb, indent + TWO_INDENT, action, interaction);
+            sb.append(indent).append("}\n");
+        }
+    }
+
+    private static void generateAccessOrderException(
+        final StringBuilder sb,
+        final String indent,
+        final String action,
+        final AccessOrderModel.CodecInteraction interaction)
+    {
+        sb.append(indent).append("throw new InvalidOperationException(")
+            .append("\"Illegal field access order. \" +\n")
+            .append(indent).append(INDENT)
+            .append("\"Cannot ").append(action).append(" \\\"").append(interaction.groupQualifiedName())
+            .append("\\\" in state: \" + codecStateName(codecState()) +\n")
+            .append(indent).append(INDENT)
+            .append("\". Expected one of these transitions: [\" + codecStateTransitions(codecState()) +\n")
+            .append(indent).append(INDENT)
+            .append("\"]. Please see the diagram in the docs of the inner enum #CodecState.\");\n");
+    }
+
+    private static void generateAccessOrderListenerMethodForNextGroupElement(
+        final StringBuilder sb,
+        final AccessOrderModel accessOrderModel,
+        final String indent,
+        final Token token)
+    {
+        if (null == accessOrderModel)
+        {
+            return;
+        }
+
+        sb.append("\n");
+
+        sb.append(indent).append("private void OnNextElementAccessed()\n")
+            .append(indent).append("{\n")
+            .append(indent).append(INDENT).append("int remaining = ").append("_count - _index").append(";\n")
+            .append(indent).append(INDENT).append("if (remaining > 1)\n")
+            .append(indent).append(INDENT).append("{\n");
+
+        final AccessOrderModel.CodecInteraction selectNextElementInGroup =
+            accessOrderModel.interactionFactory().moveToNextElement(token);
+
+        generateAccessOrderListener(
+            sb,
+            indent + TWO_INDENT,
+            "access next element in repeating group",
+            accessOrderModel,
+            selectNextElementInGroup);
+
+        sb.append(indent).append(INDENT).append("}\n")
+            .append(indent).append(INDENT).append("else if (remaining == 1)\n")
+            .append(indent).append(INDENT).append("{\n");
+
+        final AccessOrderModel.CodecInteraction selectLastElementInGroup =
+            accessOrderModel.interactionFactory().moveToLastElement(token);
+
+        generateAccessOrderListener(
+            sb,
+            indent + TWO_INDENT,
+            "access next element in repeating group",
+            accessOrderModel,
+            selectLastElementInGroup);
+
+        sb.append(indent).append(INDENT).append("}\n")
+            .append(indent).append("}\n");
+    }
+
+    private static CharSequence generateDecoderWrapListener(
+        final AccessOrderModel accessOrderModel,
+        final String indent)
+    {
+        if (null == accessOrderModel)
+        {
+            return "";
+        }
+
+        final StringBuilder sb = new StringBuilder();
+        sb.append(indent).append("private void OnWrapForDecode(int actingVersion)\n")
+            .append(indent).append("{\n")
+            .append(indent).append(INDENT).append("switch(actingVersion)\n")
+            .append(indent).append(INDENT).append("{\n");
+
+        accessOrderModel.forEachWrappedStateByVersion((version, state) ->
+        {
+            sb.append(indent).append(TWO_INDENT).append("case ").append(version).append(":\n")
+                .append(indent).append(THREE_INDENT).append("codecState(")
+                .append(qualifiedStateCase(state)).append(");\n")
+                .append(indent).append(THREE_INDENT).append("break;\n");
+        });
+
+        sb.append(indent).append(TWO_INDENT).append("default:\n")
+            .append(indent).append(THREE_INDENT).append("codecState(")
+            .append(qualifiedStateCase(accessOrderModel.latestVersionWrappedState())).append(");\n")
+            .append(indent).append(THREE_INDENT).append("break;\n")
+            .append(indent).append(INDENT).append("}\n")
+            .append(indent).append("}\n\n");
+
+        return sb;
+    }
+
+    private CharSequence generateEncoderWrapListener(
+        final AccessOrderModel accessOrderModel,
+        final String indent)
+    {
+        if (null == accessOrderModel)
+        {
+            return "";
+        }
+
+        final StringBuilder sb = new StringBuilder();
+        sb.append("#if ENABLE_ACCESS_ORDER_CHECKS\n")
+            .append(indent).append("codecState(")
+            .append(qualifiedStateCase(accessOrderModel.latestVersionWrappedState()))
+            .append(");\n")
+            .append("#endif\n");
+        return sb;
+    }
+
+    private CharSequence generateFields(
+        final AccessOrderModel accessOrderModel,
+        final List<Token> tokens,
+        final String indent)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -1278,28 +1801,34 @@ public class CSharpGenerator implements CodeGenerator
                 final Token encodingToken = tokens.get(i + 1);
                 final String propertyName = signalToken.name();
 
-                generateFieldIdMethod(sb, signalToken, indent + INDENT);
+                generateFieldIdMethod(sb, signalToken, indent);
                 generateSinceActingDeprecated(
                     sb, indent, CSharpUtil.formatPropertyName(signalToken.name()), signalToken);
                 generateOffsetMethod(sb, signalToken, indent + INDENT);
                 generateFieldMetaAttributeMethod(sb, signalToken, indent + INDENT);
 
+                generateAccessOrderListenerMethod(sb, accessOrderModel, indent, signalToken);
+
                 switch (encodingToken.signal())
                 {
                     case ENCODING:
-                        sb.append(generatePrimitiveProperty(propertyName, signalToken, encodingToken, indent));
+                        sb.append(generatePrimitiveProperty(propertyName, signalToken, encodingToken,
+                            accessOrderModel, indent));
                         break;
 
                     case BEGIN_ENUM:
-                        sb.append(generateEnumProperty(propertyName, signalToken, encodingToken, indent));
+                        sb.append(generateEnumProperty(propertyName, signalToken, encodingToken,
+                            accessOrderModel, indent));
                         break;
 
                     case BEGIN_SET:
-                        sb.append(generateBitSetProperty(propertyName, signalToken, encodingToken, indent));
+                        sb.append(generateBitSetProperty(propertyName, signalToken, encodingToken,
+                            accessOrderModel, indent));
                         break;
 
                     case BEGIN_COMPOSITE:
-                        sb.append(generateCompositeProperty(propertyName, signalToken, encodingToken, indent));
+                        sb.append(generateCompositeProperty(propertyName, signalToken, encodingToken,
+                            accessOrderModel, indent));
                         break;
 
                     default:
@@ -1374,6 +1903,7 @@ public class CSharpGenerator implements CodeGenerator
         final String propertyName,
         final Token fieldToken,
         final Token typeToken,
+        final AccessOrderModel accessOrderModel,
         final String indent)
     {
         final String enumName = formatClassName(typeToken.applicableTypeName());
@@ -1403,6 +1933,9 @@ public class CSharpGenerator implements CodeGenerator
         }
         else
         {
+            final CharSequence accessOrderListenerCall = generateAccessOrderListenerCall(
+                accessOrderModel, indent + TWO_INDENT, fieldToken);
+
             return String.format("\n" +
                 "%1$s" +
                 indent + INDENT + "public %2$s %3$s\n" +
@@ -1410,10 +1943,12 @@ public class CSharpGenerator implements CodeGenerator
                 indent + INDENT + INDENT + "get\n" +
                 indent + INDENT + INDENT + "{\n" +
                 "%4$s" +
+                accessOrderListenerCall +
                 indent + INDENT + INDENT + INDENT + "return (%5$s)_buffer.%6$sGet%8$s(_offset + %7$d);\n" +
                 indent + INDENT + INDENT + "}\n" +
                 indent + INDENT + INDENT + "set\n" +
                 indent + INDENT + INDENT + "{\n" +
+                accessOrderListenerCall +
                 indent + INDENT + INDENT + INDENT + "_buffer.%6$sPut%8$s(_offset + %7$d, (%9$s)value);\n" +
                 indent + INDENT + INDENT + "}\n" +
                 indent + INDENT + "}\n\n",
@@ -1430,7 +1965,11 @@ public class CSharpGenerator implements CodeGenerator
     }
 
     private String generateBitSetProperty(
-        final String propertyName, final Token fieldToken, final Token typeToken, final String indent)
+        final String propertyName,
+        final Token fieldToken,
+        final Token typeToken,
+        final AccessOrderModel accessOrderModel,
+        final String indent)
     {
         final String bitSetName = formatClassName(typeToken.applicableTypeName());
         final int offset = typeToken.offset();
@@ -1438,6 +1977,8 @@ public class CSharpGenerator implements CodeGenerator
         final ByteOrder byteOrder = typeToken.encoding().byteOrder();
         final String byteOrderStr = generateByteOrder(byteOrder, typeToken.encoding().primitiveType().size());
         final String typeName = cSharpTypeName(typeToken.encoding().primitiveType());
+        final CharSequence accessOrderListenerCall = generateAccessOrderListenerCall(
+            accessOrderModel, indent + TWO_INDENT, fieldToken);
 
         return String.format("\n" +
             "%1$s" +
@@ -1446,10 +1987,12 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + INDENT + "get\n" +
             indent + INDENT + INDENT + "{\n" +
             "%4$s" +
+            accessOrderListenerCall +
             indent + INDENT + INDENT + INDENT + "return (%5$s)_buffer.%6$sGet%8$s(_offset + %7$d);\n" +
             indent + INDENT + INDENT + "}\n" +
             indent + INDENT + INDENT + "set\n" +
             indent + INDENT + INDENT + "{\n" +
+            accessOrderListenerCall +
             indent + INDENT + INDENT + INDENT + "_buffer.%6$sPut%8$s(_offset + %7$d, (%9$s)value);\n" +
             indent + INDENT + INDENT + "}\n" +
             indent + INDENT + "}\n",
@@ -1465,10 +2008,16 @@ public class CSharpGenerator implements CodeGenerator
     }
 
     private Object generateCompositeProperty(
-        final String propertyName, final Token fieldToken, final Token typeToken, final String indent)
+        final String propertyName,
+        final Token fieldToken,
+        final Token typeToken,
+        final AccessOrderModel accessOrderModel,
+        final String indent)
     {
         final String compositeName = CSharpUtil.formatClassName(typeToken.applicableTypeName());
         final int offset = typeToken.offset();
+        final CharSequence accessOrderListenerCall = generateAccessOrderListenerCall(
+            accessOrderModel, indent + THREE_INDENT, fieldToken);
         final StringBuilder sb = new StringBuilder();
 
         sb.append(String.format("\n" +
@@ -1484,6 +2033,7 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + INDENT + "get\n" +
             indent + INDENT + INDENT + "{\n" +
             "%4$s" +
+            accessOrderListenerCall +
             indent + INDENT + INDENT + INDENT + "_%5$s.Wrap(_buffer, _offset + %6$d, _actingVersion);\n" +
             indent + INDENT + INDENT + INDENT + "return _%5$s;\n" +
             indent + INDENT + INDENT + "}\n" +

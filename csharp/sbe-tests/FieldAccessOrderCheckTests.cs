@@ -218,7 +218,7 @@ namespace Org.SbeTool.Sbe.Tests
                 .WrapForEncodeAndApplyHeader(_buffer, Offset, _messageHeader);
             encoder.A = 42;
             var bEncoder = encoder.BCount(1);
-            var exception = Assert.ThrowsException<Exception>(() => bEncoder.C = 1);
+            var exception = Assert.ThrowsException<InvalidOperationException>(() => bEncoder.C = 1);
             Assert.IsTrue(exception.Message.Contains("Cannot access field \"b.c\" in state: V0_B_N"));
         }
 
@@ -242,7 +242,7 @@ namespace Org.SbeTool.Sbe.Tests
             Assert.AreEqual(42, decoder.A);
             var bs = decoder.B;
             Assert.AreEqual(2, bs.Count);
-            var exception = Assert.ThrowsException<Exception>(() => _ = bs.C);
+            var exception = Assert.ThrowsException<InvalidOperationException>(() => _ = bs.C);
             Assert.IsTrue(exception.Message.Contains("Cannot access field \"b.c\" in state: V0_B_N"));
         }
 
@@ -252,7 +252,7 @@ namespace Org.SbeTool.Sbe.Tests
             var encoder = new GroupAndVarLength()
                 .WrapForEncodeAndApplyHeader(_buffer, Offset, _messageHeader);
             encoder.A = 42;
-            var exception = Assert.ThrowsException<Exception>(() => encoder.SetD("abc"));
+            var exception = Assert.ThrowsException<InvalidOperationException>(() => encoder.SetD("abc"));
             Assert.IsTrue(exception.Message.Contains("Cannot access field \"d\" in state: V0_BLOCK"));
         }
 
@@ -269,7 +269,7 @@ namespace Org.SbeTool.Sbe.Tests
             bEncoder.Next()
                 .C = 2;
             encoder.SetD("abc");
-            var exception = Assert.ThrowsException<Exception>(() => encoder.SetD("def"));
+            var exception = Assert.ThrowsException<InvalidOperationException>(() => encoder.SetD("def"));
             Assert.IsTrue(exception.Message.Contains("Cannot access field \"d\" in state: V0_D_DONE"));
         }
 
@@ -286,7 +286,7 @@ namespace Org.SbeTool.Sbe.Tests
             bEncoder.Next()
                 .C = 2;
             encoder.SetD("abc");
-            var exception = Assert.ThrowsException<Exception>(() => encoder.BCount(1));
+            var exception = Assert.ThrowsException<InvalidOperationException>(() => encoder.BCount(1));
             Assert.IsTrue(
                 exception.Message.Contains("Cannot encode count of repeating group \"b\" in state: V0_D_DONE"));
         }
@@ -310,7 +310,7 @@ namespace Org.SbeTool.Sbe.Tests
             var decoder = new GroupAndVarLength()
                 .WrapForDecodeAndApplyHeader(_buffer, Offset, _messageHeader);
             Assert.AreEqual(42, decoder.A);
-            var exception = Assert.ThrowsException<Exception>(() => decoder.GetD());
+            var exception = Assert.ThrowsException<InvalidOperationException>(() => decoder.GetD());
             Assert.IsTrue(exception.Message.Contains("Cannot access field \"d\" in state: V0_BLOCK"));
         }
 
@@ -338,7 +338,7 @@ namespace Org.SbeTool.Sbe.Tests
             Assert.AreEqual(1, bs.Next().C);
             Assert.AreEqual(2, bs.Next().C);
             Assert.AreEqual("abc", decoder.GetD());
-            var exception = Assert.ThrowsException<Exception>(() => decoder.GetD());
+            var exception = Assert.ThrowsException<InvalidOperationException>(() => decoder.GetD());
             Assert.IsTrue(exception.Message.Contains("Cannot access field \"d\" in state: V0_D_DONE"));
         }
 
@@ -366,7 +366,7 @@ namespace Org.SbeTool.Sbe.Tests
             Assert.AreEqual(1, bs.Next().C);
             Assert.AreEqual(2, bs.Next().C);
             Assert.AreEqual("abc", decoder.GetD());
-            var exception = Assert.ThrowsException<Exception>(() => decoder.B);
+            var exception = Assert.ThrowsException<InvalidOperationException>(() => decoder.B);
             Assert.IsTrue(
                 exception.Message.Contains("Cannot decode count of repeating group \"b\" in state: V0_D_DONE"));
         }
@@ -411,7 +411,7 @@ namespace Org.SbeTool.Sbe.Tests
                 .WrapForEncodeAndApplyHeader(_buffer, Offset, _messageHeader);
             encoder.A = 42;
             encoder.BCount(1).Next().C = 1;
-            var exception = Assert.ThrowsException<Exception>(() => encoder.SetE("abc"));
+            var exception = Assert.ThrowsException<InvalidOperationException>(() => encoder.SetE("abc"));
             Assert.IsTrue(exception.Message.Contains("Cannot access field \"e\" in state: V0_B_1_BLOCK"));
         }
 
@@ -422,7 +422,7 @@ namespace Org.SbeTool.Sbe.Tests
                 .WrapForEncodeAndApplyHeader(_buffer, Offset, _messageHeader);
             encoder.A = 42;
             var bEncoder = encoder.BCount(2).Next();
-            var exception = Assert.ThrowsException<Exception>(() => bEncoder.Next());
+            var exception = Assert.ThrowsException<InvalidOperationException>(() => bEncoder.Next());
             Assert.IsTrue(
                 exception.Message.Contains(
                     "Cannot access next element in repeating group \"b\" in state: V0_B_N_BLOCK"));
@@ -437,7 +437,7 @@ namespace Org.SbeTool.Sbe.Tests
             var bEncoder = encoder.BCount(2);
             bEncoder.Next().C = 1;
             bEncoder.SetD("abc");
-            var exception = Assert.ThrowsException<Exception>(() => encoder.SetE("abc"));
+            var exception = Assert.ThrowsException<InvalidOperationException>(() => encoder.SetE("abc"));
             Assert.IsTrue(exception.Message.Contains("Cannot access field \"e\" in state: V0_B_N_D_DONE"));
         }
 
@@ -451,7 +451,7 @@ namespace Org.SbeTool.Sbe.Tests
             bEncoder.C = 1;
             bEncoder.SetD("abc");
             encoder.SetE("def");
-            var exception = Assert.ThrowsException<Exception>(() => bEncoder.SetD("ghi"));
+            var exception = Assert.ThrowsException<InvalidOperationException>(() => bEncoder.SetD("ghi"));
             Assert.IsTrue(exception.Message.Contains("Cannot access field \"b.d\" in state: V0_E_DONE"));
         }
 
@@ -476,7 +476,7 @@ namespace Org.SbeTool.Sbe.Tests
             Assert.AreEqual(2, bDecoder.Count);
             Assert.AreEqual(1, bDecoder.Next().C);
             Assert.AreEqual("abc", bDecoder.GetD());
-            var exception = Assert.ThrowsException<Exception>(() => bDecoder.GetD());
+            var exception = Assert.ThrowsException<InvalidOperationException>(() => bDecoder.GetD());
             Assert.IsTrue(exception.Message.Contains("Cannot access field \"b.d\" in state: V0_B_N_D_DONE"));
         }
 
@@ -500,7 +500,7 @@ namespace Org.SbeTool.Sbe.Tests
             var bDecoder = decoder.B;
             Assert.AreEqual(2, bDecoder.Count);
             Assert.AreEqual(1, bDecoder.Next().C);
-            var exception = Assert.ThrowsException<Exception>(() => bDecoder.Next());
+            var exception = Assert.ThrowsException<InvalidOperationException>(() => bDecoder.Next());
             Assert.IsTrue(
                 exception.Message.Contains(
                     "Cannot access next element in repeating group \"b\" in state: V0_B_N_BLOCK"));
@@ -524,7 +524,7 @@ namespace Org.SbeTool.Sbe.Tests
             var bDecoder = decoder.B;
             Assert.AreEqual(1, bDecoder.Count);
             Assert.AreEqual(1, bDecoder.Next().C);
-            var exception = Assert.ThrowsException<Exception>(() => decoder.GetE());
+            var exception = Assert.ThrowsException<InvalidOperationException>(() => decoder.GetE());
             Assert.IsTrue(exception.Message.Contains("Cannot access field \"e\" in state: V0_B_1_BLOCK"));
         }
 
@@ -548,7 +548,7 @@ namespace Org.SbeTool.Sbe.Tests
             var bDecoder = decoder.B;
             Assert.AreEqual(2, bDecoder.Count);
             Assert.AreEqual(1, bDecoder.Next().C);
-            var exception = Assert.ThrowsException<Exception>(() => decoder.GetE());
+            var exception = Assert.ThrowsException<InvalidOperationException>(() => decoder.GetE());
             Assert.IsTrue(exception.Message.Contains("Cannot access field \"e\" in state: V0_B_N_BLOCK"));
         }
 

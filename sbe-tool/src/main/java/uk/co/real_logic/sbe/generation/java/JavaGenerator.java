@@ -18,6 +18,7 @@ package uk.co.real_logic.sbe.generation.java;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.generation.CodeGenerator;
 import uk.co.real_logic.sbe.generation.Generators;
+import uk.co.real_logic.sbe.generation.common.AccessOrderModel;
 import uk.co.real_logic.sbe.ir.*;
 import org.agrona.DirectBuffer;
 import org.agrona.MutableDirectBuffer;
@@ -571,10 +572,7 @@ public class JavaGenerator implements CodeGenerator
             sb.append(indent).append("switch (codecState())\n")
                 .append(indent).append("{\n");
 
-            final List<AccessOrderModel.TransitionGroup> transitionGroups = new ArrayList<>();
-            accessOrderModel.getTransitions(transitionGroups, interaction);
-
-            transitionGroups.forEach(transitionGroup ->
+            accessOrderModel.forEachTransition(interaction, transitionGroup ->
             {
                 transitionGroup.forEachStartState(startState ->
                     sb.append(indent).append("    case ").append(stateCaseForSwitchCase(startState)).append(":\n"));
@@ -666,7 +664,7 @@ public class JavaGenerator implements CodeGenerator
             .append(indent).append("    switch(actingVersion)\n")
             .append(indent).append("    {\n");
 
-        accessOrderModel.forEachDecoderWrappedState((version, state) ->
+        accessOrderModel.forEachWrappedStateByVersion((version, state) ->
         {
             sb.append(indent).append("        case ").append(version).append(":\n")
                 .append(indent).append("            codecState(")

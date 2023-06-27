@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.co.real_logic.sbe.generation.java;
+package uk.co.real_logic.sbe.generation.common;
 
 import uk.co.real_logic.sbe.generation.Generators;
 import uk.co.real_logic.sbe.ir.Signal;
@@ -32,10 +32,13 @@ import static uk.co.real_logic.sbe.ir.GenerationUtil.collectFields;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectGroups;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectVarData;
 
+/**
+ * A state machine that models whether codec interactions are safe.
+ */
+@SuppressWarnings("CodeBlock2Expr")
 // Lambdas without braces tend to conflict with the indentation Checkstyle expects.
 // Therefore, we allow lambdas with code blocks even when a lambda expression is possible.
-@SuppressWarnings("CodeBlock2Expr")
-final class AccessOrderModel
+public final class AccessOrderModel
 {
     private static final boolean GENERATE_ACCESS_ORDER_CHECKS = Boolean.parseBoolean(
         System.getProperty("sbe.generate.access.order.checks", "true"));
@@ -50,12 +53,26 @@ final class AccessOrderModel
     private State encoderWrappedState;
     private Set<State> terminalEncoderStates;
 
-    static boolean generateAccessOrderChecks()
+    /**
+     * Whether to generate access order checks.
+     * @return whether to generate access order checks.
+     */
+    public static boolean generateAccessOrderChecks()
     {
         return GENERATE_ACCESS_ORDER_CHECKS;
     }
 
-    static AccessOrderModel newInstance(
+    /**
+     * Builds a state machine that models whether codec interactions are safe.
+     *
+     * @param msgToken the message token
+     * @param fields the fields in the message
+     * @param groups the groups in the message
+     * @param varData the varData in the message
+     * @param versionsSelector a function that selects the versions to model in the state machine
+     * @return the access order model
+     */
+    public static AccessOrderModel newInstance(
         final Token msgToken,
         final List<Token> fields,
         final List<Token> groups,
@@ -67,17 +84,29 @@ final class AccessOrderModel
         return model;
     }
 
-    State notWrappedState()
+    /**
+     * The initial state before a codec is wrapped.
+     * @return the initial state before a codec is wrapped.
+     */
+    public State notWrappedState()
     {
         return notWrappedState;
     }
 
-    State latestVersionWrappedState()
+    /**
+     * The state after a codec is wrapped in the latest version.
+     * @return the state after a codec is wrapped in the latest version.
+     */
+    public State latestVersionWrappedState()
     {
         return encoderWrappedState;
     }
 
-    void forEachDecoderWrappedState(final IntObjConsumer<State> consumer)
+    /**
+     * Iterates over the states after a codec is wrapped over a particular version of data.
+     * @param consumer the consumer of the states.
+     */
+    public void forEachWrappedStateByVersion(final IntObjConsumer<State> consumer)
     {
         final Int2ObjectHashMap<State>.EntryIterator iterator = versionWrappedStates.entrySet().iterator();
         while (iterator.hasNext())
@@ -87,35 +116,59 @@ final class AccessOrderModel
         }
     }
 
-    void forEachTerminalEncoderState(final Consumer<State> consumer)
+    /**
+     * Iterates over the states in which a codec is fully encoded.
+     * @param consumer the consumer of the states.
+     */
+    public void forEachTerminalEncoderState(final Consumer<State> consumer)
     {
         terminalEncoderStates.forEach(consumer);
     }
 
-    void forEachStateOrderedByStateNumber(final Consumer<State> consumer)
+    /**
+     * Iterates over the codec states in the order of their state numbers.
+     * @param consumer the consumer of the states.
+     */
+    public void forEachStateOrderedByStateNumber(final Consumer<State> consumer)
     {
         transitionsByState.keySet().stream()
             .sorted(Comparator.comparingInt(s -> s.number))
             .forEach(consumer);
     }
 
-    CodecInteraction.HashConsingFactory interactionFactory()
+    /**
+     * Returns a hash-consing factory for codec interactions.
+     * These interactions are the transitions in the state machine.
+     * @see CodecInteraction
+     * @return a hash-consing factory for codec interactions.
+     */
+    public CodecInteraction.HashConsingFactory interactionFactory()
     {
         return interactionFactory;
     }
 
-    void getTransitions(
-        final List<TransitionGroup> transitionsOut,
-        final CodecInteraction interaction)
+    /**
+     * Iterates over the possible state machine transitions due to the supplied codec interaction.
+     * @param interaction a codec interaction.
+     * @param consumer the consumer of the transitions.
+     */
+    public void forEachTransition(
+        final CodecInteraction interaction,
+        final Consumer<TransitionGroup> consumer)
     {
         final List<TransitionGroup> transitionsForContext = transitionsByInteraction.get(interaction);
         if (null != transitionsForContext)
         {
-            transitionsOut.addAll(transitionsForContext);
+            transitionsForContext.forEach(consumer);
         }
     }
 
-    void forEachTransitionFrom(final State state, final Consumer<TransitionGroup> consumer)
+    /**
+     * Finds the possible transitions from a given state.
+     * @param state the state to find transitions from.
+     * @param consumer the consumer of the transitions.
+     */
+    public void forEachTransitionFrom(final State state, final Consumer<TransitionGroup> consumer)
     {
         final List<TransitionGroup> transitionGroups = transitionsByState.get(state);
         if (null != transitionGroups)
@@ -124,8 +177,13 @@ final class AccessOrderModel
         }
     }
 
+    /**
+     * Encodes the state machine as a graphviz dot diagram.
+     * @param sb the string builder to append to.
+     * @param indent the indentation to use.
+     */
     @SuppressWarnings("SameParameterValue")
-    void generateGraph(final StringBuilder sb, final String indent)
+    public void generateGraph(final StringBuilder sb, final String indent)
     {
         sb.append(indent).append("digraph G {\n");
         transitionsByInteraction.values().forEach(transitionsForContext ->
@@ -344,6 +402,7 @@ final class AccessOrderModel
         }
     }
 
+    @SuppressWarnings("ClassCanBeRecord")
     private static final class VersionCollector implements SchemaConsumer
     {
         private final IntHashSet versions;
@@ -496,7 +555,10 @@ final class AccessOrderModel
         }
     }
 
-    static final class State
+    /**
+     * A state in which a codec may reside.
+     */
+    public static final class State
     {
         private final int number;
         private final String name;
@@ -512,12 +574,16 @@ final class AccessOrderModel
          * and start at 0. This numbering scheme allows easy generation of lookup tables.
          * @return the state number
          */
-        int number()
+        public int number()
         {
             return number;
         }
 
-        String name()
+        /**
+         * Returns the name of the state.
+         * @return the name of the state.
+         */
+        public String name()
         {
             return name;
         }
@@ -532,7 +598,10 @@ final class AccessOrderModel
         }
     }
 
-    static final class TransitionGroup
+    /**
+     * A group of transitions that share the same end state.
+     */
+    public static final class TransitionGroup
     {
         private final CodecInteraction interaction;
         private final Set<State> from;
@@ -548,17 +617,30 @@ final class AccessOrderModel
             this.to = to;
         }
 
-        void forEachStartState(final Consumer<State> consumer)
+        /**
+         * Iterate over the start states of the transitions in this group.
+         * @param consumer the consumer of the start states.
+         */
+        public void forEachStartState(final Consumer<State> consumer)
         {
             from.forEach(consumer);
         }
 
-        State endState()
+        /**
+         * Returns the end state of the transitions in this group.
+         * @return the end state of the transitions in this group.
+         */
+        public State endState()
         {
             return to;
         }
 
-        String exampleCode()
+        /**
+         * Returns some example code for the codec interaction that the transitions in this group share.
+         * Useful for producing error messages.
+         * @return some example code for the codec interaction that the transitions in this group share.
+         */
+        public String exampleCode()
         {
             return interaction.exampleCode();
         }
@@ -574,18 +656,30 @@ final class AccessOrderModel
         }
     }
 
-    abstract static class CodecInteraction
+    /**
+     * Represents an interaction against a codec, e.g., {@code encoder.wrap(...)} or {@code decoder.myVarData()}.
+     */
+    public abstract static class CodecInteraction
     {
-        abstract String groupQualifiedName();
+        /**
+         * Returns a name for the interaction qualified by any groups that it is nested within.
+         * @return a name for the interaction qualified by any groups that it is nested within.
+         */
+        public abstract String groupQualifiedName();
 
         abstract String exampleCode();
 
         abstract String exampleConditions();
 
-        final boolean isTopLevelBlockFieldAccess()
+        /**
+         * Returns {@code true} if this interaction is a top-level block field access; {@code false} otherwise.
+         * @return {@code true} if this interaction is a top-level block field access; {@code false} otherwise.
+         */
+        public final boolean isTopLevelBlockFieldAccess()
         {
             if (this instanceof AccessField)
             {
+                //noinspection PatternVariableCanBeUsed
                 final AccessField accessField = (AccessField)this;
                 return accessField.isTopLevelBlockField();
             }
@@ -606,19 +700,19 @@ final class AccessOrderModel
             }
 
             @Override
-            String groupQualifiedName()
+            public String groupQualifiedName()
             {
                 return "wrap";
             }
 
             @Override
-            String exampleCode()
+            public String exampleCode()
             {
                 return "wrap(version=" + version + ")";
             }
 
             @Override
-            String exampleConditions()
+            public String exampleConditions()
             {
                 return "";
             }
@@ -648,19 +742,19 @@ final class AccessOrderModel
             }
 
             @Override
-            String groupQualifiedName()
+            public String groupQualifiedName()
             {
                 return groupPath + token.name();
             }
 
             @Override
-            String exampleCode()
+            public String exampleCode()
             {
                 return groupPath + token.name() + "(?)";
             }
 
             @Override
-            String exampleConditions()
+            public String exampleConditions()
             {
                 return "";
             }
@@ -683,7 +777,7 @@ final class AccessOrderModel
             }
 
             @Override
-            String groupQualifiedName()
+            public String groupQualifiedName()
             {
                 return groupPath + token.name();
             }
@@ -718,7 +812,7 @@ final class AccessOrderModel
             }
 
             @Override
-            String groupQualifiedName()
+            public String groupQualifiedName()
             {
                 return groupPath + token.name();
             }
@@ -754,7 +848,7 @@ final class AccessOrderModel
             }
 
             @Override
-            String groupQualifiedName()
+            public String groupQualifiedName()
             {
                 return groupPath + token.name();
             }
@@ -790,7 +884,7 @@ final class AccessOrderModel
             }
 
             @Override
-            String groupQualifiedName()
+            public String groupQualifiedName()
             {
                 return groupPath + token.name();
             }
@@ -808,7 +902,12 @@ final class AccessOrderModel
             }
         }
 
-        static final class HashConsingFactory
+        /**
+         * Factory for creating {@link CodecInteraction} instances. This factory
+         * is used to hash-cons the instances, so that they can be compared by
+         * reference.
+         */
+        public static final class HashConsingFactory
         {
             private final Int2ObjectHashMap<CodecInteraction> wrapInteractions = new Int2ObjectHashMap<>();
             private final Map<Token, CodecInteraction> accessFieldInteractions = new HashMap<>();
@@ -828,36 +927,104 @@ final class AccessOrderModel
                 this.topLevelBlockFields = topLevelBlockFields;
             }
 
-            CodecInteraction wrap(final int version)
+            /**
+             * Find or create a {@link CodecInteraction} to represent wrapping a codec around
+             * the given version of data.
+             * @param version the version of data to wrap
+             * @return the {@link CodecInteraction} instance
+             */
+            public CodecInteraction wrap(final int version)
             {
                 return wrapInteractions.computeIfAbsent(version, Wrap::new);
             }
 
-            CodecInteraction accessField(final Token token)
+            /**
+             * Find or create a {@link CodecInteraction} to represent accessing the field identified
+             * by the given token.
+             *
+             * <p>The supplied token must carry a {@link Signal#BEGIN_FIELD}
+             * or {@link Signal#BEGIN_VAR_DATA} signal.
+             *
+             * @param token the token identifying the field
+             * @return the {@link CodecInteraction} instance
+             */
+            public CodecInteraction accessField(final Token token)
             {
                 return accessFieldInteractions.computeIfAbsent(token,
                     t -> new AccessField(groupPathsByField.get(t), t, topLevelBlockFields.contains(t)));
             }
 
-            CodecInteraction determineGroupIsEmpty(final Token token)
+            /**
+             * Find or create a {@link CodecInteraction} to represent determining a
+             * repeating group is empty.
+             *
+             * <p>For encoding, this will be when the group count is supplied, e.g.,
+             * {@code encoder.myGroupCount(0)}.
+             *
+             * <p>For decoding, this will be when the group is read, e.g.,
+             * {@code decoder.myGroup()}.
+             *
+             * <p>The supplied token must carry a {@link Signal#BEGIN_GROUP} signal.
+             *
+             * @param token the token identifying the group
+             * @return the {@link CodecInteraction} instance
+             */
+            public CodecInteraction determineGroupIsEmpty(final Token token)
             {
                 return determineGroupIsEmptyInteractions.computeIfAbsent(token,
                     t -> new DetermineGroupIsEmpty(groupPathsByField.get(t), t));
             }
 
-            CodecInteraction determineGroupHasElements(final Token token)
+            /**
+             * Find or create a {@link CodecInteraction} to represent determining a
+             * repeating group has elements.
+             *
+             * <p>For encoding, this will be when the group count is supplied, e.g.,
+             * {@code encoder.myGroupCount(1)}.
+             *
+             * <p>For decoding, this will be when the group is read, e.g.,
+             * {@code decoder.myGroup()}.
+             *
+             * <p>The supplied token must carry a {@link Signal#BEGIN_GROUP} signal.
+             *
+             * @param token the token identifying the group
+             * @return the {@link CodecInteraction} instance
+             */
+            public CodecInteraction determineGroupHasElements(final Token token)
             {
                 return determineGroupHasElementsInteractions.computeIfAbsent(token,
                     t -> new DetermineGroupHasElements(groupPathsByField.get(t), t));
             }
 
-            CodecInteraction moveToNextElement(final Token token)
+            /**
+             * Find or create a {@link CodecInteraction} to represent moving to the next
+             * element in a repeating group.
+             *
+             * <p>For encoders, decoders, and codecs, this will be when the next element
+             * is accessed, e.g., {@code myGroup.next()} when {@code myGroup.count - myGroup.index > 1}.
+             *
+             * <p>The supplied token must carry a {@link Signal#BEGIN_GROUP} signal.
+             *
+             * @param token the token identifying the group
+             * @return the {@link CodecInteraction} instance
+             */
+            public CodecInteraction moveToNextElement(final Token token)
             {
                 return moveToNextElementInteractions.computeIfAbsent(token,
                     t -> new MoveToNextElement(groupPathsByField.get(t), t));
             }
 
-            CodecInteraction moveToLastElement(final Token token)
+            /**
+             * Find or create a {@link CodecInteraction} to represent moving to the last
+             * element in a repeating group.
+             *
+             * <p>For encoders, decoders, and codecs, this will be when the last element
+             * is accessed, e.g., {@code myGroup.next()} when {@code myGroup.count - myGroup.index == 1}.
+             *
+             * @param token the token identifying the group
+             * @return the {@link CodecInteraction} instance
+             */
+            public CodecInteraction moveToLastElement(final Token token)
             {
                 return moveToLastElementInteractions.computeIfAbsent(token,
                     t -> new MoveToLastElement(groupPathsByField.get(t), t));
