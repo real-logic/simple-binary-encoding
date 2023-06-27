@@ -167,7 +167,8 @@ public class CSharpGenerator implements CodeGenerator
 
                 out.append(generateVarData(accessOrderModel, varData, BASE_INDENT + INDENT));
 
-                out.append(generateDisplay(toUpperFirstChar(msgToken.name()), fields, groups, varData));
+                out.append(generateDisplay(toUpperFirstChar(msgToken.name()),
+                    fields, groups, varData, accessOrderModel));
 
                 out.append(INDENT + "}\n");
                 out.append("}\n");
@@ -2378,7 +2379,8 @@ public class CSharpGenerator implements CodeGenerator
         final String name,
         final List<Token> tokens,
         final List<Token> groups,
-        final List<Token> varData)
+        final List<Token> varData,
+        final AccessOrderModel accessOrderModel)
     {
         final StringBuilder sb = new StringBuilder(100);
 
@@ -2392,6 +2394,12 @@ public class CSharpGenerator implements CodeGenerator
         append(sb, TWO_INDENT, "    }");
         sb.append('\n');
         append(sb, TWO_INDENT, "    int originalLimit = this.Limit;");
+        sb.append("#if ENABLE_ACCESS_ORDER_CHECKS\n");
+        append(sb, TWO_INDENT, "    CodecState originalState = _codecState;");
+        sb.append(THREE_INDENT).append("_codecState = ")
+            .append(qualifiedStateCase(accessOrderModel.notWrappedState())).append(";\n");
+        append(sb, TWO_INDENT, "    OnWrapForDecode(_actingVersion);");
+        sb.append("#endif\n");
         append(sb, TWO_INDENT, "    this.Limit = _offset + _actingBlockLength;");
         append(sb, TWO_INDENT, "    builder.Append(\"[" + name + "](sbeTemplateId=\");");
         append(sb, TWO_INDENT, "    builder.Append(" + name + ".TemplateId);");
@@ -2415,6 +2423,9 @@ public class CSharpGenerator implements CodeGenerator
         sb.append('\n');
         appendDisplay(sb, tokens, groups, varData, THREE_INDENT);
         sb.append('\n');
+        sb.append("#if ENABLE_ACCESS_ORDER_CHECKS\n");
+        append(sb, TWO_INDENT, "    _codecState = originalState;");
+        sb.append("#endif\n");
         append(sb, TWO_INDENT, "    this.Limit = originalLimit;");
         sb.append('\n');
         append(sb, TWO_INDENT, "}");
