@@ -633,7 +633,7 @@ public class JavaGenerator implements CodeGenerator
             accessOrderModel,
             selectNextElementInGroup);
 
-        sb.append(indent).append("   }\n")
+        sb.append(indent).append("    }\n")
             .append(indent).append("    else if (remaining == 1)\n")
             .append(indent).append("    {\n");
 
