@@ -8,7 +8,7 @@ using Org.SbeTool.Sbe.Dll;
 
 namespace Org.SbeTool.Sbe.Tests
 {
-    [TestClass, Ignore]
+    [TestClass]
     public class FieldAccessOrderCheckTests
     {
         private const int Offset = 0;
