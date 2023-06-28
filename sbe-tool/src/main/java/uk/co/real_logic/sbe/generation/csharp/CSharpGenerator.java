@@ -255,6 +255,15 @@ public class CSharpGenerator implements CodeGenerator
                 groupName));
         }
 
+        sb.append("\n")
+            .append(indent).append(INDENT).append("public void NotPresent()\n")
+            .append(indent).append(INDENT).append("{\n")
+            .append(indent).append(TWO_INDENT).append("_count = 0;\n")
+            .append(indent).append(TWO_INDENT).append("_index = 0;\n")
+            .append(indent).append(TWO_INDENT).append("_buffer = null;\n")
+            .append(indent).append(TWO_INDENT).append("_offset = 0;\n")
+            .append(indent).append(INDENT).append("}\n");
+
         sb.append(String.format("\n" +
             indent + INDENT + "public void WrapForDecode(%s parentMessage, DirectBuffer buffer, int actingVersion)\n" +
             indent + INDENT + "{\n" +
@@ -407,15 +416,18 @@ public class CSharpGenerator implements CodeGenerator
 
         generateSinceActingDeprecated(sb, indent, toUpperFirstChar(groupName), token);
 
+        final String groupField = "_" + toLowerFirstChar(groupName);
+
         sb.append(String.format("\n" +
             "%1$s" +
             indent + "public %2$sGroup %3$s\n" +
             indent + "{\n" +
             indent + INDENT + "get\n" +
             indent + INDENT + "{\n" +
+            generateGroupNotPresentCondition(token.version(), indent + INDENT + INDENT, groupField) +
             indent + INDENT + INDENT + "_%4$s.WrapForDecode(_parentMessage, _buffer, _actingVersion);\n" +
             generateAccessOrderListenerCall(accessOrderModel, indent + TWO_INDENT, token,
-            "_" + groupName + ".Count", "\"decode\"") +
+            groupField + ".Count", "\"decode\"") +
             indent + INDENT + INDENT + "return _%4$s;\n" +
             indent + INDENT + "}\n" +
             indent + "}\n",
@@ -480,6 +492,7 @@ public class CSharpGenerator implements CodeGenerator
                 sb.append(String.format(indent + "\n" +
                     indent + "public int %1$sLength()\n" +
                     indent + "{\n" +
+                    generateArrayFieldNotPresentCondition(token.version(), indent, "0") +
                     accessOrderListenerCall +
                     indent + INDENT + "_buffer.CheckLimit(_parentMessage.Limit + %2$d);\n" +
                     indent + INDENT + "return (int)_buffer.%3$sGet%4$s(_parentMessage.Limit);\n" +
@@ -509,7 +522,7 @@ public class CSharpGenerator implements CodeGenerator
                     indent + INDENT + "return bytesCopied;\n" +
                     indent + "}\n",
                     propertyName,
-                    generateArrayFieldNotPresentCondition(token.version(), indent),
+                    generateArrayFieldNotPresentCondition(token.version(), indent, "0"),
                     sizeOfLengthField,
                     lengthTypePrefix,
                     byteOrderStr));
@@ -518,6 +531,7 @@ public class CSharpGenerator implements CodeGenerator
                     indent + "// Allocates and returns a new byte array\n" +
                     indent + "public byte[] Get%1$sBytes()\n" +
                     indent + "{\n" +
+                    generateArrayFieldNotPresentCondition(token.version(), indent, "new byte[0]") +
                     accessOrderListenerCall +
                     indent + INDENT + "const int sizeOfLengthField = %2$d;\n" +
                     indent + INDENT + "int limit = _parentMessage.Limit;\n" +
@@ -561,6 +575,7 @@ public class CSharpGenerator implements CodeGenerator
                         .append(String.format(
                         indent + "public string Get%1$s()\n" +
                         indent + "{\n" +
+                        generateArrayFieldNotPresentCondition(token.version(), indent, "\"\"") +
                         accessOrderListenerCall +
                         indent + INDENT + "const int sizeOfLengthField = %2$d;\n" +
                         indent + INDENT + "int limit = _parentMessage.Limit;\n" +
@@ -948,16 +963,34 @@ public class CSharpGenerator implements CodeGenerator
             literal);
     }
 
-    private CharSequence generateArrayFieldNotPresentCondition(final int sinceVersion, final String indent)
+    private CharSequence generateGroupNotPresentCondition(
+        final int sinceVersion,
+        final String indent,
+        final String groupInstanceField)
     {
         if (0 == sinceVersion)
         {
             return "";
         }
 
-        return String.format(
-            indent + INDENT + INDENT + "if (_actingVersion < %d) return 0;\n\n",
-            sinceVersion);
+        return indent + "if (_actingVersion < " + sinceVersion + ")" +
+            indent + "{\n" +
+            indent + INDENT + groupInstanceField + ".NotPresent();\n" +
+            indent + INDENT + "return " + groupInstanceField + ";\n" +
+            indent + "}\n\n";
+    }
+
+    private CharSequence generateArrayFieldNotPresentCondition(
+        final int sinceVersion,
+        final String indent,
+        final String defaultValue)
+    {
+        if (0 == sinceVersion)
+        {
+            return "";
+        }
+
+        return indent + INDENT + "if (_actingVersion < " + sinceVersion + ") return " + defaultValue + ";\n\n";
     }
 
     private CharSequence generateBitSetNotPresentCondition(
@@ -1053,6 +1086,7 @@ public class CSharpGenerator implements CodeGenerator
             indent + "{\n" +
             indent + INDENT + "get\n" +
             indent + INDENT + "{\n" +
+            generateArrayFieldNotPresentCondition(fieldToken.version(), indent + INDENT + INDENT, "new %2$s[0]") +
             accessOrderListenerCallDoubleIndent +
             indent + INDENT + INDENT + "return _buffer.AsReadOnlySpan<%2$s>(_offset + %4$s, %3$sLength);\n" +
             indent + INDENT + "}\n" +
@@ -1069,6 +1103,7 @@ public class CSharpGenerator implements CodeGenerator
             "%1$s" +
             indent + "public Span<%2$s> %3$sAsSpan()\n" +
             indent + "{\n" +
+            generateArrayFieldNotPresentCondition(fieldToken.version(), indent + INDENT + INDENT, "new %2$s[0]") +
             accessOrderListenerCall +
             indent + INDENT + "return _buffer.AsSpan<%2$s>(_offset + %4$s, %3$sLength);\n" +
             indent + "}\n",
@@ -1087,7 +1122,10 @@ public class CSharpGenerator implements CodeGenerator
                 accessOrderListenerCall +
                 indent + INDENT + "return Get%1$s(new Span<byte>(dst, dstOffset, length));\n" +
                 indent + "}\n",
-                propName, fieldLength, generateArrayFieldNotPresentCondition(fieldToken.version(), indent), offset));
+                propName,
+                fieldLength,
+                generateArrayFieldNotPresentCondition(fieldToken.version(), indent, "0"),
+                offset));
 
             sb.append(String.format("\n" +
                 indent + "public int Get%1$s(Span<byte> dst)\n" +
@@ -1102,7 +1140,10 @@ public class CSharpGenerator implements CodeGenerator
                 indent + INDENT + "_buffer.GetBytes(_offset + %4$d, dst);\n" +
                 indent + INDENT + "return length;\n" +
                 indent + "}\n",
-                propName, fieldLength, generateArrayFieldNotPresentCondition(fieldToken.version(), indent), offset));
+                propName,
+                fieldLength,
+                generateArrayFieldNotPresentCondition(fieldToken.version(), indent, "0"),
+                offset));
 
             sb.append(String.format("\n" +
                 indent + "public void Set%1$s(byte[] src, int srcOffset)\n" +
