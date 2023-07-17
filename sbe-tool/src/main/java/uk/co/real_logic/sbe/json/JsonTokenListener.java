@@ -336,12 +336,7 @@ public class JsonTokenListener implements TokenListener
             if (size > 1 && encoding.primitiveType() == CHAR)
             {
                 doubleQuote();
-
-                for (int i = 0; i < size; i++)
-                {
-                    escape((char)buffer.getByte(index + (i * elementSize)));
-                }
-
+                escapePrintableChar(buffer, index, size, elementSize);
                 doubleQuote();
             }
             else
@@ -365,6 +360,22 @@ public class JsonTokenListener implements TokenListener
 
                     output.append(']');
                 }
+            }
+        }
+    }
+
+    private void escapePrintableChar(final DirectBuffer buffer, final int index, final int size, final int elementSize)
+    {
+        for (int i = 0; i < size; i++)
+        {
+            final byte c = buffer.getByte(index + (i * elementSize));
+            if (c > 0)
+            {
+                escape((char)c);
+            }
+            else
+            {
+                break;
             }
         }
     }
