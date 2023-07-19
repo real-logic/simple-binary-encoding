@@ -15,6 +15,7 @@
  */
 package uk.co.real_logic.sbe.json;
 
+import baseline.CarEncoder;
 import baseline.CredentialsEncoder;
 import baseline.MessageHeaderEncoder;
 import org.agrona.concurrent.UnsafeBuffer;
@@ -154,6 +155,37 @@ class JsonPrinterTest extends EncodedCarTestBase
             "}",
             result);
     }
+
+    @Test
+    public void removeTrailingGarbage() throws Exception
+    {
+        final ByteBuffer encodedSchemaBuffer = ByteBuffer.allocate(SCHEMA_BUFFER_CAPACITY);
+        encodeSchema(encodedSchemaBuffer);
+
+        final ByteBuffer encodedMsgBuffer = ByteBuffer.allocate(MSG_BUFFER_CAPACITY);
+        final UnsafeBuffer buffer = new UnsafeBuffer(encodedMsgBuffer);
+        final CarEncoder encoder = new CarEncoder();
+        encoder.wrapAndApplyHeader(buffer, 0, new MessageHeaderEncoder());
+        encoder.vehicleCode("vc\0ﾉ�");
+        encodedMsgBuffer.position(encoder.encodedLength());
+        encodedSchemaBuffer.flip();
+        final Ir ir = decodeIr(encodedSchemaBuffer);
+
+        final JsonPrinter printer = new JsonPrinter(ir);
+        final String result = printer.print(encodedMsgBuffer);
+        assertEquals("{\n" + "    \"serialNumber\": 0,\n" +
+            "    \"modelYear\": 0,\n" +
+            "    \"available\": \"F\",\n" + "    \"code\": \"null\",\n" + "    \"someNumbers\": [0, 0, 0, 0, 0],\n" +
+            "    \"vehicleCode\": \"vc\",\n" + //trailing garbage removed
+            "    \"extras\": { \"sunRoof\": false, \"sportsPack\": false, \"cruiseControl\": false },\n" +
+            "    \"engine\": \n" + "    {\n" + "        \"capacity\": 0,\n" + "        \"numCylinders\": 0,\n" +
+            "        \"maxRpm\": 9000,\n" + "        \"manufacturerCode\": \"\",\n" +
+            "        \"fuel\": \"Petrol\"\n" + "    },\n" + "    \"uuid\": [0, 0],\n" + "    \"cupHolderCount\": 0,\n" +
+            "    \"fuelFigures\": [],\n" + "    \"performanceFigures\": [],\n" + "    \"manufacturer\": \"\",\n" +
+            "    \"model\": \"\",\n" + "    \"activationCode\": \"\"\n" + "}",
+            result);
+    }
+
 
     private static void encodeSchema(final ByteBuffer buffer) throws Exception
     {
