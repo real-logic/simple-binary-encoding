@@ -376,6 +376,13 @@ public class RustGenerator implements CodeGenerator
             indent(sb, level + 1, "let offset = self.%s;\n", getBufOffset(typeToken));
             indent(sb, level + 1, "let buf = self.get_buf_mut();\n");
 
+            if (rustPrimitiveType.equals("u8"))
+            {
+                indent(sb, level + 1, "buf.put_bytes_at(offset, value);\n");
+                indent(sb, level, "}\n\n");
+                return;
+            }
+
             for (int i = 0; i < arrayLength; i++)
             {
                 if (i == 0)
@@ -646,6 +653,14 @@ public class RustGenerator implements CodeGenerator
         }
 
         indent(sb, level + 1, "let buf = self.get_buf();\n");
+        if (rustPrimitiveType.equals("u8"))
+        {
+            indent(sb, level + 1, "ReadBuf::get_bytes_at(buf.data, self.%s)\n",
+                getBufOffset(typeToken));
+            indent(sb, level, "}\n\n");
+            return;
+        }
+
         indent(sb, level + 1, "[\n");
         for (int i = 0; i < arrayLength; i++)
         {
