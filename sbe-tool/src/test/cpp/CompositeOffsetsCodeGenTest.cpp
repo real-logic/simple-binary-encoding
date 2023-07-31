@@ -141,7 +141,7 @@ TEST_F(CompositeOffsetsCodeGenTest, shouldBeAbleToDecodeHeaderAndMsgCorrectly)
     m_msgDecoder.wrapForDecode(
         buffer, hdrSz, TestMessage1::sbeBlockLength(), TestMessage1::sbeSchemaVersion(), hdrSz + sz);
 
-    TestMessage1::Entries entries = m_msgDecoder.entries();
+    TestMessage1::Entries &entries = m_msgDecoder.entries();
     EXPECT_EQ(entries.count(), 2u);
 
     ASSERT_TRUE(entries.hasNext());

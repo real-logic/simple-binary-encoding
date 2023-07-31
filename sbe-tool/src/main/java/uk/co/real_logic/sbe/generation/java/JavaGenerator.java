@@ -410,19 +410,22 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append("    public void checkEncodingIsComplete()\n")
             .append("    {\n")
-            .append("        switch (codecState)\n")
-            .append("        {\n");
+            .append("        if (ENABLE_ACCESS_ORDER_CHECKS)\n")
+            .append("        {\n")
+            .append("            switch (codecState)\n")
+            .append("            {\n");
 
         accessOrderModel.forEachTerminalEncoderState(state ->
         {
-            sb.append("            case ").append(stateCaseForSwitchCase(state)).append(":\n")
-                .append("                return;\n");
+            sb.append("                case ").append(stateCaseForSwitchCase(state)).append(":\n")
+                .append("                    return;\n");
         });
 
-        sb.append("            default:\n")
-            .append("                throw new IllegalStateException(\"Not fully encoded, current state: \" +\n")
-            .append("                    CodecStates.name(codecState) + \", allowed transitions: \" +\n")
-            .append("                    CodecStates.transitions(codecState));\n")
+        sb.append("                default:\n")
+            .append("                    throw new IllegalStateException(\"Not fully encoded, current state: \" +\n")
+            .append("                        CodecStates.name(codecState) + \", allowed transitions: \" +\n")
+            .append("                        CodecStates.transitions(codecState));\n")
+            .append("            }\n")
             .append("        }\n")
             .append("    }\n\n");
     }
@@ -430,6 +433,11 @@ public class JavaGenerator implements CodeGenerator
     private static String accessOrderListenerMethodName(final Token token)
     {
         return "on" + Generators.toUpperFirstChar(token.name()) + "Accessed";
+    }
+
+    private static String accessOrderListenerMethodName(final Token token, final String suffix)
+    {
+        return "on" + Generators.toUpperFirstChar(token.name()) + suffix + "Accessed";
     }
 
     private static void generateAccessOrderListenerMethod(
@@ -647,6 +655,34 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append(indent).append("    }\n")
             .append(indent).append("}\n");
+    }
+
+    private static void generateAccessOrderListenerMethodForVarDataLength(
+        final StringBuilder sb,
+        final AccessOrderModel accessOrderModel,
+        final String indent,
+        final Token token)
+    {
+        if (null == accessOrderModel)
+        {
+            return;
+        }
+
+        sb.append("\n")
+            .append(indent).append("void ").append(accessOrderListenerMethodName(token, "Length")).append("()\n")
+            .append(indent).append("{\n");
+
+        final AccessOrderModel.CodecInteraction accessLength =
+            accessOrderModel.interactionFactory().accessVarDataLength(token);
+
+        generateAccessOrderListener(
+            sb,
+            indent + INDENT,
+            "decode length of var data",
+            accessOrderModel,
+            accessLength);
+
+        sb.append(indent).append("}\n");
     }
 
     private static CharSequence generateDecoderWrapListener(
@@ -1214,7 +1250,8 @@ public class JavaGenerator implements CodeGenerator
     private static void generateGroupDecoderProperty(
         final StringBuilder sb,
         final String groupName,
-        final AccessOrderModel accessOrderModel, final Token token,
+        final AccessOrderModel accessOrderModel,
+        final Token token,
         final String indent,
         final boolean isSubGroup)
     {
@@ -1263,12 +1300,13 @@ public class JavaGenerator implements CodeGenerator
             indent + "    {\n" +
             "%3$s" +
             indent + "        %2$s.wrap(buffer);\n" +
-            generateAccessOrderListenerCall(accessOrderModel, indent + "        ", token, propertyName + ".count") +
+            "%4$s" +
             indent + "        return %2$s;\n" +
             indent + "    }\n",
             className,
             propertyName,
-            actingVersionGuard);
+            actingVersionGuard,
+            generateAccessOrderListenerCall(accessOrderModel, indent + "        ", token, propertyName + ".count"));
     }
 
     private void generateGroupEncoderProperty(
@@ -1305,12 +1343,13 @@ public class JavaGenerator implements CodeGenerator
         new Formatter(sb).format("\n" +
             indent + "    public %1$s %2$sCount(final int count)\n" +
             indent + "    {\n" +
-            generateAccessOrderListenerCall(accessOrderModel, indent + "        ", token, "count") +
+            "%3$s" +
             indent + "        %2$s.wrap(buffer, count);\n" +
             indent + "        return %2$s;\n" +
             indent + "    }\n",
             className,
-            propertyName);
+            propertyName,
+            generateAccessOrderListenerCall(accessOrderModel, indent + "        ", token, "count"));
     }
 
     private void generateDecoderVarData(
@@ -1348,19 +1387,25 @@ public class JavaGenerator implements CodeGenerator
                 .append(indent).append("        return ").append(sizeOfLengthField).append(";\n")
                 .append(indent).append("    }\n");
 
+            generateAccessOrderListenerMethodForVarDataLength(sb, accessOrderModel, indent + "    ", token);
+
+            final CharSequence lengthAccessOrderListenerCall = generateAccessOrderListenerCall(
+                accessOrderModel, indent + "        ", accessOrderListenerMethodName(token, "Length"));
+
             generateAccessOrderListenerMethod(sb, accessOrderModel, indent + "    ", token);
-            final CharSequence accessOrderListenerCall =
-                generateAccessOrderListenerCall(accessOrderModel, indent + "        ", token);
 
             sb.append("\n")
                 .append(indent).append("    public int ").append(methodPropName).append("Length()\n")
                 .append(indent).append("    {\n")
                 .append(generateArrayFieldNotPresentCondition(token.version(), indent))
-                .append(accessOrderListenerCall)
+                .append(lengthAccessOrderListenerCall)
                 .append(indent).append("        final int limit = parentMessage.limit();\n")
                 .append(indent).append("        return ").append(PrimitiveType.UINT32 == lengthType ? "(int)" : "")
                 .append(generateGet(lengthType, "limit", byteOrderStr)).append(";\n")
                 .append(indent).append("    }\n");
+
+            final CharSequence accessOrderListenerCall =
+                generateAccessOrderListenerCall(accessOrderModel, indent + "        ", token);
 
             generateDataDecodeMethods(sb, token, propertyName, sizeOfLengthField, lengthType,
                 byteOrderStr, characterEncoding, accessOrderListenerCall, indent);
@@ -1440,7 +1485,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "    public int skip%1$s()\n" +
             indent + "    {\n" +
             "%2$s" +
-            accessOrderListenerCall +
+            "%6$s" +
             indent + "        final int headerLength = %3$d;\n" +
             indent + "        final int limit = parentMessage.limit();\n" +
             indent + "        final int dataLength = %4$s%5$s;\n" +
@@ -1452,7 +1497,8 @@ public class JavaGenerator implements CodeGenerator
             generateStringNotPresentConditionForAppendable(token.version(), indent),
             sizeOfLengthField,
             PrimitiveType.UINT32 == lengthType ? "(int)" : "",
-            generateGet(lengthType, "limit", byteOrderStr));
+            generateGet(lengthType, "limit", byteOrderStr),
+            accessOrderListenerCall);
 
         generateVarDataTypedDecoder(
             sb,
@@ -1492,7 +1538,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "    public String %1$s()\n" +
                 indent + "    {\n" +
                 "%2$s" +
-                accessOrderListenerCall +
+                "%7$s" +
                 indent + "        final int headerLength = %3$d;\n" +
                 indent + "        final int limit = parentMessage.limit();\n" +
                 indent + "        final int dataLength = %4$s%5$s;\n" +
@@ -1510,7 +1556,8 @@ public class JavaGenerator implements CodeGenerator
                 sizeOfLengthField,
                 PrimitiveType.UINT32 == lengthType ? "(int)" : "",
                 generateGet(lengthType, "limit", byteOrderStr),
-                charset(characterEncoding));
+                charset(characterEncoding),
+                accessOrderListenerCall);
 
             if (isAsciiEncoding(characterEncoding))
             {
@@ -1518,7 +1565,7 @@ public class JavaGenerator implements CodeGenerator
                     indent + "    public int get%1$s(final Appendable appendable)\n" +
                     indent + "    {\n" +
                     "%2$s" +
-                    accessOrderListenerCall +
+                    "%6$s" +
                     indent + "        final int headerLength = %3$d;\n" +
                     indent + "        final int limit = parentMessage.limit();\n" +
                     indent + "        final int dataLength = %4$s%5$s;\n" +
@@ -1531,7 +1578,8 @@ public class JavaGenerator implements CodeGenerator
                     generateStringNotPresentConditionForAppendable(token.version(), indent),
                     sizeOfLengthField,
                     PrimitiveType.UINT32 == lengthType ? "(int)" : "",
-                    generateGet(lengthType, "limit", byteOrderStr));
+                    generateGet(lengthType, "limit", byteOrderStr),
+                    accessOrderListenerCall);
             }
         }
     }
@@ -1550,7 +1598,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "    public void wrap%s(final %s wrapBuffer)\n" +
             indent + "    {\n" +
             "%s" +
-            accessOrderListenerCall +
+            "%s" +
             indent + "        final int headerLength = %d;\n" +
             indent + "        final int limit = parentMessage.limit();\n" +
             indent + "        final int dataLength = %s%s;\n" +
@@ -1560,6 +1608,7 @@ public class JavaGenerator implements CodeGenerator
             propertyName,
             readOnlyBuffer,
             generateWrapFieldNotPresentCondition(token.version(), indent),
+            accessOrderListenerCall,
             sizeOfLengthField,
             PrimitiveType.UINT32 == lengthType ? "(int)" : "",
             generateGet(lengthType, "limit", byteOrderStr));
@@ -1641,7 +1690,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "        {\n" +
                 indent + "            throw new IllegalStateException(\"length > maxValue for type: \" + length);\n" +
                 indent + "        }\n\n" +
-                accessOrderListenerCall +
+                "%6$s" +
                 indent + "        final int headerLength = %4$d;\n" +
                 indent + "        final int limit = parentMessage.limit();\n" +
                 indent + "        parentMessage.limit(limit + headerLength + length);\n" +
@@ -1653,7 +1702,8 @@ public class JavaGenerator implements CodeGenerator
                 formatPropertyName(propertyName),
                 maxLengthValue,
                 sizeOfLengthField,
-                generatePut(lengthPutType, "limit", "length", byteOrderStr));
+                generatePut(lengthPutType, "limit", "length", byteOrderStr),
+                accessOrderListenerCall);
 
             new Formatter(sb).format("\n" +
                 indent + "    public %1$s %2$s(final CharSequence value)\n" +
@@ -1663,7 +1713,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "        {\n" +
                 indent + "            throw new IllegalStateException(\"length > maxValue for type: \" + length);\n" +
                 indent + "        }\n\n" +
-                accessOrderListenerCall +
+                "%6$s" +
                 indent + "        final int headerLength = %4$d;\n" +
                 indent + "        final int limit = parentMessage.limit();\n" +
                 indent + "        parentMessage.limit(limit + headerLength + length);\n" +
@@ -1675,7 +1725,8 @@ public class JavaGenerator implements CodeGenerator
                 formatPropertyName(propertyName),
                 maxLengthValue,
                 sizeOfLengthField,
-                generatePut(lengthPutType, "limit", "length", byteOrderStr));
+                generatePut(lengthPutType, "limit", "length", byteOrderStr),
+                accessOrderListenerCall);
         }
         else
         {
@@ -1689,7 +1740,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "        {\n" +
                 indent + "            throw new IllegalStateException(\"length > maxValue for type: \" + length);\n" +
                 indent + "        }\n\n" +
-                accessOrderListenerCall +
+                "%7$s" +
                 indent + "        final int headerLength = %5$d;\n" +
                 indent + "        final int limit = parentMessage.limit();\n" +
                 indent + "        parentMessage.limit(limit + headerLength + length);\n" +
@@ -1702,7 +1753,8 @@ public class JavaGenerator implements CodeGenerator
                 charset(characterEncoding),
                 maxLengthValue,
                 sizeOfLengthField,
-                generatePut(lengthPutType, "limit", "length", byteOrderStr));
+                generatePut(lengthPutType, "limit", "length", byteOrderStr),
+                accessOrderListenerCall);
         }
     }
 
@@ -1721,7 +1773,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "    public int get%s(final %s dst, final int dstOffset, final int length)\n" +
             indent + "    {\n" +
             "%s" +
-            accessOrderListenerCall +
+            "%s" +
             indent + "        final int headerLength = %d;\n" +
             indent + "        final int limit = parentMessage.limit();\n" +
             indent + "        final int dataLength = %s%s;\n" +
@@ -1733,6 +1785,7 @@ public class JavaGenerator implements CodeGenerator
             propertyName,
             exchangeType,
             generateArrayFieldNotPresentCondition(token.version(), indent),
+            accessOrderListenerCall,
             sizeOfLengthField,
             PrimitiveType.UINT32 == lengthType ? "(int)" : "",
             generateGet(lengthType, "limit", byteOrderStr));
@@ -1759,7 +1812,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "        {\n" +
             indent + "            throw new IllegalStateException(\"length > maxValue for type: \" + length);\n" +
             indent + "        }\n\n" +
-            accessOrderListenerCall +
+            "%7$s" +
             indent + "        final int headerLength = %5$d;\n" +
             indent + "        final int limit = parentMessage.limit();\n" +
             indent + "        parentMessage.limit(limit + headerLength + length);\n" +
@@ -1772,7 +1825,8 @@ public class JavaGenerator implements CodeGenerator
             exchangeType,
             maxLengthValue,
             sizeOfLengthField,
-            generatePut(lengthPutType, "limit", "length", byteOrderStr));
+            generatePut(lengthPutType, "limit", "length", byteOrderStr),
+            accessOrderListenerCall);
     }
 
     private void generateBitSet(final List<Token> tokens) throws IOException
@@ -2522,12 +2576,13 @@ public class JavaGenerator implements CodeGenerator
             indent + "    public %s %s()\n" +
             indent + "    {\n" +
             "%s" +
-            accessOrderListenerCall +
+            "%s" +
             indent + "        return %s;\n" +
             indent + "    }\n\n",
             javaTypeName,
             formatPropertyName(propertyName),
             generateFieldNotPresentCondition(inComposite, propertyToken.version(), encoding, indent),
+            accessOrderListenerCall,
             generateGet(encoding.primitiveType(), "offset + " + offset, byteOrderStr));
     }
 
@@ -2547,13 +2602,14 @@ public class JavaGenerator implements CodeGenerator
             "\n" +
             indent + "    public %s %s(final %s value)\n" +
             indent + "    {\n" +
-            accessOrderListenerCall +
+            "%s" +
             indent + "        %s;\n" +
             indent + "        return this;\n" +
             indent + "    }\n\n",
             formatClassName(containingClassName),
             formatPropertyName(propertyName),
             javaTypeName,
+            accessOrderListenerCall,
             generatePut(encoding.primitiveType(), "offset + " + offset, "value", byteOrderStr));
     }
 
@@ -2678,7 +2734,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "            throw new IndexOutOfBoundsException(\"index out of range: index=\" + index);\n" +
             indent + "        }\n\n" +
             "%s" +
-            accessOrderListenerCall +
+            "%s" +
             indent + "        final int pos = offset + %d + (index * %d);\n\n" +
             indent + "        return %s;\n" +
             indent + "    }\n\n",
@@ -2686,6 +2742,7 @@ public class JavaGenerator implements CodeGenerator
             propertyName,
             fieldLength,
             generateFieldNotPresentCondition(inComposite, propertyToken.version(), encoding, indent),
+            accessOrderListenerCall,
             offset,
             typeSize,
             generateGet(encoding.primitiveType(), "pos", byteOrderStr));
@@ -2704,20 +2761,21 @@ public class JavaGenerator implements CodeGenerator
                 "\"Copy will go out of range: offset=\" + dstOffset);\n" +
                 indent + "        }\n\n" +
                 "%s" +
-                accessOrderListenerCall +
+                "%s" +
                 indent + "        buffer.getBytes(offset + %d, dst, dstOffset, length);\n\n" +
                 indent + "        return length;\n" +
                 indent + "    }\n",
                 Generators.toUpperFirstChar(propertyName),
                 fieldLength,
                 generateArrayFieldNotPresentCondition(propertyToken.version(), indent),
+                accessOrderListenerCall,
                 offset);
 
             new Formatter(sb).format("\n" +
                 indent + "    public String %s()\n" +
                 indent + "    {\n" +
                 "%s" +
-                accessOrderListenerCall +
+                "%s" +
                 indent + "        final byte[] dst = new byte[%d];\n" +
                 indent + "        buffer.getBytes(offset + %d, dst, 0, %d);\n\n" +
                 indent + "        int end = 0;\n" +
@@ -2726,6 +2784,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "    }\n\n",
                 propertyName,
                 generateStringNotPresentCondition(propertyToken.version(), indent),
+                accessOrderListenerCall,
                 fieldLength,
                 offset,
                 fieldLength,
@@ -2738,7 +2797,7 @@ public class JavaGenerator implements CodeGenerator
                     indent + "    public int get%1$s(final Appendable value)\n" +
                     indent + "    {\n" +
                     "%2$s" +
-                    accessOrderListenerCall +
+                    "%5$s" +
                     indent + "        for (int i = 0; i < %3$d; ++i)\n" +
                     indent + "        {\n" +
                     indent + "            final int c = buffer.getByte(offset + %4$d + i) & 0xFF;\n" +
@@ -2760,7 +2819,8 @@ public class JavaGenerator implements CodeGenerator
                     Generators.toUpperFirstChar(propertyName),
                     generateStringNotPresentConditionForAppendable(propertyToken.version(), indent),
                     fieldLength,
-                    offset);
+                    offset,
+                    accessOrderListenerCall);
             }
         }
         else if (encoding.primitiveType() == PrimitiveType.UINT8)
@@ -2769,13 +2829,14 @@ public class JavaGenerator implements CodeGenerator
                 indent + "    public int get%s(final byte[] dst, final int dstOffset, final int length)\n" +
                 indent + "    {\n" +
                 "%s" +
-                accessOrderListenerCall +
+                "%s" +
                 indent + "        final int bytesCopied = Math.min(length, %d);\n" +
                 indent + "        buffer.getBytes(offset + %d, dst, dstOffset, bytesCopied);\n\n" +
                 indent + "        return bytesCopied;\n" +
                 indent + "    }\n",
                 Generators.toUpperFirstChar(propertyName),
                 generateArrayFieldNotPresentCondition(propertyToken.version(), indent),
+                accessOrderListenerCall,
                 fieldLength,
                 offset);
 
@@ -2783,7 +2844,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "    public int get%s(final %s dst, final int dstOffset, final int length)\n" +
                 indent + "    {\n" +
                 "%s" +
-                accessOrderListenerCall +
+                "%s" +
                 indent + "        final int bytesCopied = Math.min(length, %d);\n" +
                 indent + "        buffer.getBytes(offset + %d, dst, dstOffset, bytesCopied);\n\n" +
                 indent + "        return bytesCopied;\n" +
@@ -2791,6 +2852,7 @@ public class JavaGenerator implements CodeGenerator
                 Generators.toUpperFirstChar(propertyName),
                 fqMutableBuffer,
                 generateArrayFieldNotPresentCondition(propertyToken.version(), indent),
+                accessOrderListenerCall,
                 fieldLength,
                 offset);
 
@@ -2798,12 +2860,13 @@ public class JavaGenerator implements CodeGenerator
                 indent + "    public void wrap%s(final %s wrapBuffer)\n" +
                 indent + "    {\n" +
                 "%s" +
-                accessOrderListenerCall +
+                "%s" +
                 indent + "        wrapBuffer.wrap(buffer, offset + %d, %d);\n" +
                 indent + "    }\n",
                 Generators.toUpperFirstChar(propertyName),
                 readOnlyBuffer,
                 generateWrapFieldNotPresentCondition(propertyToken.version(), indent),
+                accessOrderListenerCall,
                 offset,
                 fieldLength);
         }
@@ -2854,7 +2917,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "        {\n" +
             indent + "            throw new IndexOutOfBoundsException(\"index out of range: index=\" + index);\n" +
             indent + "        }\n\n" +
-            accessOrderListenerCall +
+            "%s" +
             indent + "        final int pos = offset + %d + (index * %d);\n" +
             indent + "        %s;\n\n" +
             indent + "        return this;\n" +
@@ -2863,6 +2926,7 @@ public class JavaGenerator implements CodeGenerator
             propertyName,
             javaTypeName,
             arrayLength,
+            accessOrderListenerCall,
             offset,
             typeSize,
             generatePut(primitiveType, "pos", "value", byteOrderStr));
@@ -2947,13 +3011,14 @@ public class JavaGenerator implements CodeGenerator
             indent + "            throw new IndexOutOfBoundsException(" +
             "\"Copy will go out of range: offset=\" + srcOffset);\n" +
             indent + "        }\n\n" +
-            accessOrderListenerCall +
+            "%s" +
             indent + "        buffer.putBytes(offset + %d, src, srcOffset, length);\n\n" +
             indent + "        return this;\n" +
             indent + "    }\n",
             formatClassName(containingClassName),
             Generators.toUpperFirstChar(propertyName),
             fieldLength,
+            accessOrderListenerCall,
             offset);
 
         if (isAsciiEncoding(encoding.characterEncoding()))
@@ -2968,7 +3033,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "            throw new IndexOutOfBoundsException(" +
                 "\"String too large for copy: byte length=\" + srcLength);\n" +
                 indent + "        }\n\n" +
-                accessOrderListenerCall +
+                "%5$s" +
                 indent + "        buffer.putStringWithoutLengthAscii(offset + %4$d, src);\n\n" +
                 indent + "        for (int start = srcLength; start < length; ++start)\n" +
                 indent + "        {\n" +
@@ -2979,7 +3044,8 @@ public class JavaGenerator implements CodeGenerator
                 formatClassName(containingClassName),
                 propertyName,
                 fieldLength,
-                offset);
+                offset,
+                accessOrderListenerCall);
 
             new Formatter(sb).format("\n" +
                 indent + "    public %1$s %2$s(final CharSequence src)\n" +
@@ -2991,7 +3057,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "            throw new IndexOutOfBoundsException(" +
                 "\"CharSequence too large for copy: byte length=\" + srcLength);\n" +
                 indent + "        }\n\n" +
-                accessOrderListenerCall +
+                "%5$s" +
                 indent + "        buffer.putStringWithoutLengthAscii(offset + %4$d, src);\n\n" +
                 indent + "        for (int start = srcLength; start < length; ++start)\n" +
                 indent + "        {\n" +
@@ -3002,7 +3068,8 @@ public class JavaGenerator implements CodeGenerator
                 formatClassName(containingClassName),
                 propertyName,
                 fieldLength,
-                offset);
+                offset,
+                accessOrderListenerCall);
         }
         else
         {
@@ -3017,7 +3084,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "            throw new IndexOutOfBoundsException(" +
                 "\"String too large for copy: byte length=\" + bytes.length);\n" +
                 indent + "        }\n\n" +
-                accessOrderListenerCall +
+                "%s" +
                 indent + "        buffer.putBytes(offset + %d, bytes, 0, bytes.length);\n\n" +
                 indent + "        for (int start = bytes.length; start < length; ++start)\n" +
                 indent + "        {\n" +
@@ -3029,6 +3096,7 @@ public class JavaGenerator implements CodeGenerator
                 propertyName,
                 fieldLength,
                 charset(encoding.characterEncoding()),
+                accessOrderListenerCall,
                 offset,
                 offset);
         }
@@ -3051,7 +3119,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "            throw new IllegalStateException(" +
             "\"length > maxValue for type: \" + length);\n" +
             indent + "        }\n\n" +
-            accessOrderListenerCall +
+            "%s" +
             indent + "        buffer.putBytes(offset + %d, src, srcOffset, length);\n" +
             indent + "        for (int i = length; i < %d; i++)\n" +
             indent + "        {\n" +
@@ -3062,6 +3130,7 @@ public class JavaGenerator implements CodeGenerator
             formatClassName(containingClassName),
             Generators.toUpperFirstChar(propertyName),
             fieldLength,
+            accessOrderListenerCall,
             offset,
             fieldLength,
             offset);
@@ -3074,7 +3143,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "            throw new IllegalStateException(" +
             "\"length > maxValue for type: \" + length);\n" +
             indent + "        }\n\n" +
-            accessOrderListenerCall +
+            "%s" +
             indent + "        buffer.putBytes(offset + %d, src, srcOffset, length);\n" +
             indent + "        for (int i = length; i < %d; i++)\n" +
             indent + "        {\n" +
@@ -3086,6 +3155,7 @@ public class JavaGenerator implements CodeGenerator
             Generators.toUpperFirstChar(propertyName),
             fqReadOnlyBuffer,
             fieldLength,
+            accessOrderListenerCall,
             offset,
             fieldLength,
             offset);
@@ -3753,12 +3823,13 @@ public class JavaGenerator implements CodeGenerator
                 indent + "    public %s %sRaw()\n" +
                 indent + "    {\n" +
                 "%s" +
-                accessOrderListenerCall +
+                "%s" +
                 indent + "        return %s;\n" +
                 indent + "    }\n",
                 javaTypeName,
                 formatPropertyName(propertyName),
                 generateFieldNotPresentCondition(inComposite, fieldToken.version(), encoding, indent),
+                accessOrderListenerCall,
                 rawGetStr);
 
             new Formatter(sb).format(
@@ -3766,12 +3837,13 @@ public class JavaGenerator implements CodeGenerator
                 indent + "    public %s %s()\n" +
                 indent + "    {\n" +
                 "%s" +
-                accessOrderListenerCall +
+                "%s" +
                 indent + "        return %s.get(%s);\n" +
                 indent + "    }\n\n",
                 enumName,
                 propertyName,
                 generatePropertyNotPresentCondition(inComposite, DECODER, fieldToken, enumName, indent),
+                accessOrderListenerCall,
                 enumName,
                 rawGetStr);
         }
@@ -3796,13 +3868,14 @@ public class JavaGenerator implements CodeGenerator
             new Formatter(sb).format("\n" +
                 indent + "    public %s %s(final %s value)\n" +
                 indent + "    {\n" +
-                accessOrderListenerCall +
+                "%s" +
                 indent + "        %s;\n" +
                 indent + "        return this;\n" +
                 indent + "    }\n",
                 formatClassName(containingClassName),
                 propertyName,
                 enumName,
+                accessOrderListenerCall,
                 generatePut(encoding.primitiveType(), "offset + " + offset, "value.value()", byteOrderString));
         }
     }
@@ -3829,13 +3902,14 @@ public class JavaGenerator implements CodeGenerator
             indent + "    public %s %s()\n" +
             indent + "    {\n" +
             "%s" +
-            accessOrderListenerCall +
+            "%s" +
             indent + "        %s.wrap(buffer, offset + %d);\n" +
             indent + "        return %s;\n" +
             indent + "    }\n",
             bitSetName,
             propertyName,
             generatePropertyNotPresentCondition(inComposite, codecType, propertyToken, null, indent),
+            accessOrderListenerCall,
             propertyName,
             bitsetToken.offset(),
             propertyName);
@@ -3863,13 +3937,14 @@ public class JavaGenerator implements CodeGenerator
             indent + "    public %s %s()\n" +
             indent + "    {\n" +
             "%s" +
-            accessOrderListenerCall +
+            "%s" +
             indent + "        %s.wrap(buffer, offset + %d);\n" +
             indent + "        return %s;\n" +
             indent + "    }\n",
             compositeName,
             propertyName,
             generatePropertyNotPresentCondition(inComposite, codecType, propertyToken, null, indent),
+            accessOrderListenerCall,
             propertyName,
             compositeToken.offset(),
             propertyName);

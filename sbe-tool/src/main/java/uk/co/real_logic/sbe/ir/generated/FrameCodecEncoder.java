@@ -30,8 +30,11 @@ public final class FrameCodecEncoder
      *       V0_BLOCK -> V0_BLOCK [label="  irId(?)  "];
      *       V0_BLOCK -> V0_BLOCK [label="  irVersion(?)  "];
      *       V0_BLOCK -> V0_BLOCK [label="  schemaVersion(?)  "];
+     *       V0_BLOCK -> V0_BLOCK [label="  packageNameLength()  "];
      *       V0_BLOCK -> V0_PACKAGENAME_DONE [label="  packageName(?)  "];
+     *       V0_PACKAGENAME_DONE -> V0_PACKAGENAME_DONE [label="  namespaceNameLength()  "];
      *       V0_PACKAGENAME_DONE -> V0_NAMESPACENAME_DONE [label="  namespaceName(?)  "];
+     *       V0_NAMESPACENAME_DONE -> V0_NAMESPACENAME_DONE [label="  semanticVersionLength()  "];
      *       V0_NAMESPACENAME_DONE -> V0_SEMANTICVERSION_DONE [label="  semanticVersion(?)  "];
      *   }
      * }</pre>
@@ -56,9 +59,9 @@ public final class FrameCodecEncoder
         private static final String[] STATE_TRANSITIONS_LOOKUP =
         {
             "\"wrap(version=0)\"",
-            "\"irId(?)\", \"irVersion(?)\", \"schemaVersion(?)\", \"packageName(?)\"",
-            "\"namespaceName(?)\"",
-            "\"semanticVersion(?)\"",
+            "\"irId(?)\", \"irVersion(?)\", \"schemaVersion(?)\", \"packageNameLength()\", \"packageName(?)\"",
+            "\"namespaceNameLength()\", \"namespaceName(?)\"",
+            "\"semanticVersionLength()\", \"semanticVersion(?)\"",
             "",
         };
 
@@ -731,14 +734,17 @@ public final class FrameCodecEncoder
 
     public void checkEncodingIsComplete()
     {
-        switch (codecState)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            case CodecStates.V0_SEMANTICVERSION_DONE:
-                return;
-            default:
-                throw new IllegalStateException("Not fully encoded, current state: " +
-                    CodecStates.name(codecState) + ", allowed transitions: " +
-                    CodecStates.transitions(codecState));
+            switch (codecState)
+            {
+                case CodecStates.V0_SEMANTICVERSION_DONE:
+                    return;
+                default:
+                    throw new IllegalStateException("Not fully encoded, current state: " +
+                        CodecStates.name(codecState) + ", allowed transitions: " +
+                        CodecStates.transitions(codecState));
+            }
         }
     }
 

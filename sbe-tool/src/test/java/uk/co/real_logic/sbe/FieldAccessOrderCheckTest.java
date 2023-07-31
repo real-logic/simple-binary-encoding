@@ -251,17 +251,21 @@ public class FieldAccessOrderCheckTest
     {
         final MultipleVarLengthDecoder decoder = decodeUntilVarLengthFields();
         final Exception exception =
-            assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, decoder::cLength);
+            assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> decoder.getC(new ExpandableArrayBuffer(), 0, 3));
         assertThat(exception.getMessage(), containsString("Cannot access field \"c\" in state: V0_BLOCK"));
     }
 
     @Test
-    void disallowsSkippingDecodingOfVariableLengthField6()
+    void allowsRepeatedDecodingOfVariableLengthDataLength()
     {
         final MultipleVarLengthDecoder decoder = decodeUntilVarLengthFields();
-        final Exception exception =
-            assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> decoder.getC(new ExpandableArrayBuffer(), 0, 3));
-        assertThat(exception.getMessage(), containsString("Cannot access field \"c\" in state: V0_BLOCK"));
+        assertThat(decoder.bLength(), equalTo(3));
+        assertThat(decoder.bLength(), equalTo(3));
+        assertThat(decoder.bLength(), equalTo(3));
+        assertThat(decoder.b(), equalTo("abc"));
+        assertThat(decoder.cLength(), equalTo(3));
+        assertThat(decoder.cLength(), equalTo(3));
+        assertThat(decoder.cLength(), equalTo(3));
     }
 
     @Test
@@ -2939,7 +2943,7 @@ public class FieldAccessOrderCheckTest
     }
 
     @Test
-    void allowsEncodeAndDecodeOfMessagesWithNoABlock()
+    void allowsEncodeAndDecodeOfMessagesWithNoBlock()
     {
         final NoBlockEncoder encoder = new NoBlockEncoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
@@ -3007,30 +3011,13 @@ public class FieldAccessOrderCheckTest
         bEncoder.c(43);
         final NestedGroupsEncoder.BEncoder.DEncoder dEncoder = bEncoder.dCount(0);
         bEncoder.fCount(0);
-        encoder.hCount(0);
-        final IllegalStateException exception =
-            assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> dEncoder.e(44));
-        assertThat(exception.getMessage(), containsString("Cannot access field \"b.d.e\" in state: V0_H_0"));
-    }
-
-    @Test
-    void disallowsEncodingElementOfEmptyGroup4()
-    {
-        final NestedGroupsEncoder encoder = new NestedGroupsEncoder()
-            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
-        encoder.a(42);
-        final NestedGroupsEncoder.BEncoder bEncoder = encoder.bCount(1);
-        bEncoder.next();
-        bEncoder.c(43);
-        final NestedGroupsEncoder.BEncoder.DEncoder dEncoder = bEncoder.dCount(0);
-        bEncoder.fCount(0);
         final IllegalStateException exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> dEncoder.e(44));
         assertThat(exception.getMessage(), containsString("Cannot access field \"b.d.e\" in state: V0_B_1_F_0"));
     }
 
     @Test
-    void disallowsEncodingElementOfEmptyGroup5()
+    void disallowsEncodingElementOfEmptyGroup4()
     {
         final AddPrimitiveInsideGroupV1Encoder encoder = new AddPrimitiveInsideGroupV1Encoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
@@ -3042,7 +3029,7 @@ public class FieldAccessOrderCheckTest
     }
 
     @Test
-    void disallowsEncodingElementOfEmptyGroup6()
+    void disallowsEncodingElementOfEmptyGroup5()
     {
         final GroupAndVarLengthEncoder encoder = new GroupAndVarLengthEncoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
@@ -3107,7 +3094,7 @@ public class FieldAccessOrderCheckTest
         assertThat(exception.getMessage(),
             containsString("Cannot access next element in repeating group \"b.d\" in state: " + expectedState));
         assertThat(exception.getMessage(),
-            containsString("Expected one of these transitions: [\"b.d.e(?)\", \"b.d.f(?)\"]."));
+            containsString("Expected one of these transitions: [\"b.d.e(?)\", \"b.d.fLength()\", \"b.d.f(?)\"]."));
     }
 
     @CsvSource(value = {
@@ -3129,7 +3116,7 @@ public class FieldAccessOrderCheckTest
         assertThat(exception.getMessage(),
             containsString("Cannot access next element in repeating group \"b\" in state: " + expectedState));
         assertThat(exception.getMessage(),
-            containsString("Expected one of these transitions: [\"b.d.e(?)\", \"b.d.f(?)\"]."));
+            containsString("Expected one of these transitions: [\"b.d.e(?)\", \"b.d.fLength()\", \"b.d.f(?)\"]."));
     }
 
     @Test
@@ -3155,7 +3142,7 @@ public class FieldAccessOrderCheckTest
         assertThat(exception.getMessage(),
             containsString("Cannot access next element in repeating group \"b.d\" in state: V0_B_1_D_N_BLOCK."));
         assertThat(exception.getMessage(),
-            containsString("Expected one of these transitions: [\"b.d.e(?)\", \"b.d.f(?)\"]."));
+            containsString("Expected one of these transitions: [\"b.d.e(?)\", \"b.d.fLength()\", \"b.d.f(?)\"]."));
     }
 
     @Test
@@ -3182,7 +3169,7 @@ public class FieldAccessOrderCheckTest
         assertThat(exception.getMessage(),
             containsString("Cannot access next element in repeating group \"b.d\" in state: V0_B_N_D_N_BLOCK."));
         assertThat(exception.getMessage(),
-            containsString("Expected one of these transitions: [\"b.d.e(?)\", \"b.d.f(?)\"]."));
+            containsString("Expected one of these transitions: [\"b.d.e(?)\", \"b.d.fLength()\", \"b.d.f(?)\"]."));
     }
 
     @Test
@@ -3209,7 +3196,7 @@ public class FieldAccessOrderCheckTest
         assertThat(exception.getMessage(),
             containsString("Cannot access next element in repeating group \"b\" in state: V0_B_N_D_N_BLOCK."));
         assertThat(exception.getMessage(),
-            containsString("Expected one of these transitions: [\"b.d.e(?)\", \"b.d.f(?)\"]."));
+            containsString("Expected one of these transitions: [\"b.d.e(?)\", \"b.d.fLength()\", \"b.d.f(?)\"]."));
     }
 
     @Test
@@ -3236,7 +3223,7 @@ public class FieldAccessOrderCheckTest
         assertThat(exception.getMessage(),
             containsString("Cannot access next element in repeating group \"b\" in state: V0_B_N_D_1_BLOCK."));
         assertThat(exception.getMessage(),
-            containsString("Expected one of these transitions: [\"b.d.e(?)\", \"b.d.f(?)\"]."));
+            containsString("Expected one of these transitions: [\"b.d.e(?)\", \"b.d.fLength()\", \"b.d.f(?)\"]."));
     }
 
     @Test
@@ -3246,8 +3233,8 @@ public class FieldAccessOrderCheckTest
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         encoder.a(1).b("abc");
         final Exception exception = assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, encoder::checkEncodingIsComplete);
-        assertThat(exception.getMessage(),
-            containsString("Not fully encoded, current state: V0_B_DONE, allowed transitions: \"c(?)\""));
+        assertThat(exception.getMessage(), containsString(
+            "Not fully encoded, current state: V0_B_DONE, allowed transitions: \"cLength()\", \"c(?)\""));
     }
 
     @Test
@@ -3256,8 +3243,8 @@ public class FieldAccessOrderCheckTest
         final NoBlockEncoder encoder = new NoBlockEncoder()
             .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
         final Exception exception = assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, encoder::checkEncodingIsComplete);
-        assertThat(exception.getMessage(),
-            containsString("Not fully encoded, current state: V0_BLOCK, allowed transitions: \"a(?)\""));
+        assertThat(exception.getMessage(), containsString(
+            "Not fully encoded, current state: V0_BLOCK, allowed transitions: \"aLength()\", \"a(?)\""));
     }
 
     @Test

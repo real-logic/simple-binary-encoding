@@ -37,16 +37,27 @@ public final class TokenCodecEncoder
      *       V0_BLOCK -> V0_BLOCK [label="  byteOrder(?)  "];
      *       V0_BLOCK -> V0_BLOCK [label="  presence(?)  "];
      *       V0_BLOCK -> V0_BLOCK [label="  deprecated(?)  "];
+     *       V0_BLOCK -> V0_BLOCK [label="  nameLength()  "];
      *       V0_BLOCK -> V0_NAME_DONE [label="  name(?)  "];
+     *       V0_NAME_DONE -> V0_NAME_DONE [label="  constValueLength()  "];
      *       V0_NAME_DONE -> V0_CONSTVALUE_DONE [label="  constValue(?)  "];
+     *       V0_CONSTVALUE_DONE -> V0_CONSTVALUE_DONE [label="  minValueLength()  "];
      *       V0_CONSTVALUE_DONE -> V0_MINVALUE_DONE [label="  minValue(?)  "];
+     *       V0_MINVALUE_DONE -> V0_MINVALUE_DONE [label="  maxValueLength()  "];
      *       V0_MINVALUE_DONE -> V0_MAXVALUE_DONE [label="  maxValue(?)  "];
+     *       V0_MAXVALUE_DONE -> V0_MAXVALUE_DONE [label="  nullValueLength()  "];
      *       V0_MAXVALUE_DONE -> V0_NULLVALUE_DONE [label="  nullValue(?)  "];
+     *       V0_NULLVALUE_DONE -> V0_NULLVALUE_DONE [label="  characterEncodingLength()  "];
      *       V0_NULLVALUE_DONE -> V0_CHARACTERENCODING_DONE [label="  characterEncoding(?)  "];
+     *       V0_CHARACTERENCODING_DONE -> V0_CHARACTERENCODING_DONE [label="  epochLength()  "];
      *       V0_CHARACTERENCODING_DONE -> V0_EPOCH_DONE [label="  epoch(?)  "];
+     *       V0_EPOCH_DONE -> V0_EPOCH_DONE [label="  timeUnitLength()  "];
      *       V0_EPOCH_DONE -> V0_TIMEUNIT_DONE [label="  timeUnit(?)  "];
+     *       V0_TIMEUNIT_DONE -> V0_TIMEUNIT_DONE [label="  semanticTypeLength()  "];
      *       V0_TIMEUNIT_DONE -> V0_SEMANTICTYPE_DONE [label="  semanticType(?)  "];
+     *       V0_SEMANTICTYPE_DONE -> V0_SEMANTICTYPE_DONE [label="  descriptionLength()  "];
      *       V0_SEMANTICTYPE_DONE -> V0_DESCRIPTION_DONE [label="  description(?)  "];
+     *       V0_DESCRIPTION_DONE -> V0_DESCRIPTION_DONE [label="  referencedNameLength()  "];
      *       V0_DESCRIPTION_DONE -> V0_REFERENCEDNAME_DONE [label="  referencedName(?)  "];
      *   }
      * }</pre>
@@ -87,17 +98,17 @@ public final class TokenCodecEncoder
         private static final String[] STATE_TRANSITIONS_LOOKUP =
         {
             "\"wrap(version=0)\"",
-            "\"tokenOffset(?)\", \"tokenSize(?)\", \"fieldId(?)\", \"tokenVersion(?)\", \"componentTokenCount(?)\", \"signal(?)\", \"primitiveType(?)\", \"byteOrder(?)\", \"presence(?)\", \"deprecated(?)\", \"name(?)\"",
-            "\"constValue(?)\"",
-            "\"minValue(?)\"",
-            "\"maxValue(?)\"",
-            "\"nullValue(?)\"",
-            "\"characterEncoding(?)\"",
-            "\"epoch(?)\"",
-            "\"timeUnit(?)\"",
-            "\"semanticType(?)\"",
-            "\"description(?)\"",
-            "\"referencedName(?)\"",
+            "\"tokenOffset(?)\", \"tokenSize(?)\", \"fieldId(?)\", \"tokenVersion(?)\", \"componentTokenCount(?)\", \"signal(?)\", \"primitiveType(?)\", \"byteOrder(?)\", \"presence(?)\", \"deprecated(?)\", \"nameLength()\", \"name(?)\"",
+            "\"constValueLength()\", \"constValue(?)\"",
+            "\"minValueLength()\", \"minValue(?)\"",
+            "\"maxValueLength()\", \"maxValue(?)\"",
+            "\"nullValueLength()\", \"nullValue(?)\"",
+            "\"characterEncodingLength()\", \"characterEncoding(?)\"",
+            "\"epochLength()\", \"epoch(?)\"",
+            "\"timeUnitLength()\", \"timeUnit(?)\"",
+            "\"semanticTypeLength()\", \"semanticType(?)\"",
+            "\"descriptionLength()\", \"description(?)\"",
+            "\"referencedNameLength()\", \"referencedName(?)\"",
             "",
         };
 
@@ -2030,14 +2041,17 @@ public final class TokenCodecEncoder
 
     public void checkEncodingIsComplete()
     {
-        switch (codecState)
+        if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            case CodecStates.V0_REFERENCEDNAME_DONE:
-                return;
-            default:
-                throw new IllegalStateException("Not fully encoded, current state: " +
-                    CodecStates.name(codecState) + ", allowed transitions: " +
-                    CodecStates.transitions(codecState));
+            switch (codecState)
+            {
+                case CodecStates.V0_REFERENCEDNAME_DONE:
+                    return;
+                default:
+                    throw new IllegalStateException("Not fully encoded, current state: " +
+                        CodecStates.name(codecState) + ", allowed transitions: " +
+                        CodecStates.transitions(codecState));
+            }
         }
     }
 

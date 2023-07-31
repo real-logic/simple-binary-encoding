@@ -33,6 +33,9 @@ out
 # cmake
 cmake-build-debug
 codecs
+.cmake
+CMakeFiles
+thirdparty
 
 # cpp build linux
 cppbuild/CMakeCache.txt

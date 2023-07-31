@@ -37,16 +37,27 @@ public final class TokenCodecDecoder
      *       V0_BLOCK -> V0_BLOCK [label="  byteOrder(?)  "];
      *       V0_BLOCK -> V0_BLOCK [label="  presence(?)  "];
      *       V0_BLOCK -> V0_BLOCK [label="  deprecated(?)  "];
+     *       V0_BLOCK -> V0_BLOCK [label="  nameLength()  "];
      *       V0_BLOCK -> V0_NAME_DONE [label="  name(?)  "];
+     *       V0_NAME_DONE -> V0_NAME_DONE [label="  constValueLength()  "];
      *       V0_NAME_DONE -> V0_CONSTVALUE_DONE [label="  constValue(?)  "];
+     *       V0_CONSTVALUE_DONE -> V0_CONSTVALUE_DONE [label="  minValueLength()  "];
      *       V0_CONSTVALUE_DONE -> V0_MINVALUE_DONE [label="  minValue(?)  "];
+     *       V0_MINVALUE_DONE -> V0_MINVALUE_DONE [label="  maxValueLength()  "];
      *       V0_MINVALUE_DONE -> V0_MAXVALUE_DONE [label="  maxValue(?)  "];
+     *       V0_MAXVALUE_DONE -> V0_MAXVALUE_DONE [label="  nullValueLength()  "];
      *       V0_MAXVALUE_DONE -> V0_NULLVALUE_DONE [label="  nullValue(?)  "];
+     *       V0_NULLVALUE_DONE -> V0_NULLVALUE_DONE [label="  characterEncodingLength()  "];
      *       V0_NULLVALUE_DONE -> V0_CHARACTERENCODING_DONE [label="  characterEncoding(?)  "];
+     *       V0_CHARACTERENCODING_DONE -> V0_CHARACTERENCODING_DONE [label="  epochLength()  "];
      *       V0_CHARACTERENCODING_DONE -> V0_EPOCH_DONE [label="  epoch(?)  "];
+     *       V0_EPOCH_DONE -> V0_EPOCH_DONE [label="  timeUnitLength()  "];
      *       V0_EPOCH_DONE -> V0_TIMEUNIT_DONE [label="  timeUnit(?)  "];
+     *       V0_TIMEUNIT_DONE -> V0_TIMEUNIT_DONE [label="  semanticTypeLength()  "];
      *       V0_TIMEUNIT_DONE -> V0_SEMANTICTYPE_DONE [label="  semanticType(?)  "];
+     *       V0_SEMANTICTYPE_DONE -> V0_SEMANTICTYPE_DONE [label="  descriptionLength()  "];
      *       V0_SEMANTICTYPE_DONE -> V0_DESCRIPTION_DONE [label="  description(?)  "];
+     *       V0_DESCRIPTION_DONE -> V0_DESCRIPTION_DONE [label="  referencedNameLength()  "];
      *       V0_DESCRIPTION_DONE -> V0_REFERENCEDNAME_DONE [label="  referencedName(?)  "];
      *   }
      * }</pre>
@@ -87,17 +98,17 @@ public final class TokenCodecDecoder
         private static final String[] STATE_TRANSITIONS_LOOKUP =
         {
             "\"wrap(version=0)\"",
-            "\"tokenOffset(?)\", \"tokenSize(?)\", \"fieldId(?)\", \"tokenVersion(?)\", \"componentTokenCount(?)\", \"signal(?)\", \"primitiveType(?)\", \"byteOrder(?)\", \"presence(?)\", \"deprecated(?)\", \"name(?)\"",
-            "\"constValue(?)\"",
-            "\"minValue(?)\"",
-            "\"maxValue(?)\"",
-            "\"nullValue(?)\"",
-            "\"characterEncoding(?)\"",
-            "\"epoch(?)\"",
-            "\"timeUnit(?)\"",
-            "\"semanticType(?)\"",
-            "\"description(?)\"",
-            "\"referencedName(?)\"",
+            "\"tokenOffset(?)\", \"tokenSize(?)\", \"fieldId(?)\", \"tokenVersion(?)\", \"componentTokenCount(?)\", \"signal(?)\", \"primitiveType(?)\", \"byteOrder(?)\", \"presence(?)\", \"deprecated(?)\", \"nameLength()\", \"name(?)\"",
+            "\"constValueLength()\", \"constValue(?)\"",
+            "\"minValueLength()\", \"minValue(?)\"",
+            "\"maxValueLength()\", \"maxValue(?)\"",
+            "\"nullValueLength()\", \"nullValue(?)\"",
+            "\"characterEncodingLength()\", \"characterEncoding(?)\"",
+            "\"epochLength()\", \"epoch(?)\"",
+            "\"timeUnitLength()\", \"timeUnit(?)\"",
+            "\"semanticTypeLength()\", \"semanticType(?)\"",
+            "\"descriptionLength()\", \"description(?)\"",
+            "\"referencedNameLength()\", \"referencedName(?)\"",
             "",
         };
 
@@ -957,6 +968,21 @@ public final class TokenCodecDecoder
         return 2;
     }
 
+    void onNameLengthAccessed()
+    {
+        switch (codecState())
+        {
+            case CodecStates.V0_BLOCK:
+                codecState(CodecStates.V0_BLOCK);
+                break;
+            default:
+                throw new IllegalStateException("Illegal field access order. " +
+                    "Cannot decode length of var data \"name\" in state: " + CodecStates.name(codecState()) +
+                    ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                    "]. Please see the diagram in the Javadoc of the inner class #CodecStates.");
+        }
+    }
+
     private void onNameAccessed()
     {
         switch (codecState())
@@ -976,7 +1002,7 @@ public final class TokenCodecDecoder
     {
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            onNameAccessed();
+            onNameLengthAccessed();
         }
 
         final int limit = parentMessage.limit();
@@ -1100,6 +1126,21 @@ public final class TokenCodecDecoder
         return 2;
     }
 
+    void onConstValueLengthAccessed()
+    {
+        switch (codecState())
+        {
+            case CodecStates.V0_NAME_DONE:
+                codecState(CodecStates.V0_NAME_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Illegal field access order. " +
+                    "Cannot decode length of var data \"constValue\" in state: " + CodecStates.name(codecState()) +
+                    ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                    "]. Please see the diagram in the Javadoc of the inner class #CodecStates.");
+        }
+    }
+
     private void onConstValueAccessed()
     {
         switch (codecState())
@@ -1119,7 +1160,7 @@ public final class TokenCodecDecoder
     {
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            onConstValueAccessed();
+            onConstValueLengthAccessed();
         }
 
         final int limit = parentMessage.limit();
@@ -1243,6 +1284,21 @@ public final class TokenCodecDecoder
         return 2;
     }
 
+    void onMinValueLengthAccessed()
+    {
+        switch (codecState())
+        {
+            case CodecStates.V0_CONSTVALUE_DONE:
+                codecState(CodecStates.V0_CONSTVALUE_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Illegal field access order. " +
+                    "Cannot decode length of var data \"minValue\" in state: " + CodecStates.name(codecState()) +
+                    ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                    "]. Please see the diagram in the Javadoc of the inner class #CodecStates.");
+        }
+    }
+
     private void onMinValueAccessed()
     {
         switch (codecState())
@@ -1262,7 +1318,7 @@ public final class TokenCodecDecoder
     {
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            onMinValueAccessed();
+            onMinValueLengthAccessed();
         }
 
         final int limit = parentMessage.limit();
@@ -1386,6 +1442,21 @@ public final class TokenCodecDecoder
         return 2;
     }
 
+    void onMaxValueLengthAccessed()
+    {
+        switch (codecState())
+        {
+            case CodecStates.V0_MINVALUE_DONE:
+                codecState(CodecStates.V0_MINVALUE_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Illegal field access order. " +
+                    "Cannot decode length of var data \"maxValue\" in state: " + CodecStates.name(codecState()) +
+                    ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                    "]. Please see the diagram in the Javadoc of the inner class #CodecStates.");
+        }
+    }
+
     private void onMaxValueAccessed()
     {
         switch (codecState())
@@ -1405,7 +1476,7 @@ public final class TokenCodecDecoder
     {
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            onMaxValueAccessed();
+            onMaxValueLengthAccessed();
         }
 
         final int limit = parentMessage.limit();
@@ -1529,6 +1600,21 @@ public final class TokenCodecDecoder
         return 2;
     }
 
+    void onNullValueLengthAccessed()
+    {
+        switch (codecState())
+        {
+            case CodecStates.V0_MAXVALUE_DONE:
+                codecState(CodecStates.V0_MAXVALUE_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Illegal field access order. " +
+                    "Cannot decode length of var data \"nullValue\" in state: " + CodecStates.name(codecState()) +
+                    ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                    "]. Please see the diagram in the Javadoc of the inner class #CodecStates.");
+        }
+    }
+
     private void onNullValueAccessed()
     {
         switch (codecState())
@@ -1548,7 +1634,7 @@ public final class TokenCodecDecoder
     {
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            onNullValueAccessed();
+            onNullValueLengthAccessed();
         }
 
         final int limit = parentMessage.limit();
@@ -1672,6 +1758,21 @@ public final class TokenCodecDecoder
         return 2;
     }
 
+    void onCharacterEncodingLengthAccessed()
+    {
+        switch (codecState())
+        {
+            case CodecStates.V0_NULLVALUE_DONE:
+                codecState(CodecStates.V0_NULLVALUE_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Illegal field access order. " +
+                    "Cannot decode length of var data \"characterEncoding\" in state: " + CodecStates.name(codecState()) +
+                    ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                    "]. Please see the diagram in the Javadoc of the inner class #CodecStates.");
+        }
+    }
+
     private void onCharacterEncodingAccessed()
     {
         switch (codecState())
@@ -1691,7 +1792,7 @@ public final class TokenCodecDecoder
     {
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            onCharacterEncodingAccessed();
+            onCharacterEncodingLengthAccessed();
         }
 
         final int limit = parentMessage.limit();
@@ -1815,6 +1916,21 @@ public final class TokenCodecDecoder
         return 2;
     }
 
+    void onEpochLengthAccessed()
+    {
+        switch (codecState())
+        {
+            case CodecStates.V0_CHARACTERENCODING_DONE:
+                codecState(CodecStates.V0_CHARACTERENCODING_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Illegal field access order. " +
+                    "Cannot decode length of var data \"epoch\" in state: " + CodecStates.name(codecState()) +
+                    ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                    "]. Please see the diagram in the Javadoc of the inner class #CodecStates.");
+        }
+    }
+
     private void onEpochAccessed()
     {
         switch (codecState())
@@ -1834,7 +1950,7 @@ public final class TokenCodecDecoder
     {
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            onEpochAccessed();
+            onEpochLengthAccessed();
         }
 
         final int limit = parentMessage.limit();
@@ -1958,6 +2074,21 @@ public final class TokenCodecDecoder
         return 2;
     }
 
+    void onTimeUnitLengthAccessed()
+    {
+        switch (codecState())
+        {
+            case CodecStates.V0_EPOCH_DONE:
+                codecState(CodecStates.V0_EPOCH_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Illegal field access order. " +
+                    "Cannot decode length of var data \"timeUnit\" in state: " + CodecStates.name(codecState()) +
+                    ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                    "]. Please see the diagram in the Javadoc of the inner class #CodecStates.");
+        }
+    }
+
     private void onTimeUnitAccessed()
     {
         switch (codecState())
@@ -1977,7 +2108,7 @@ public final class TokenCodecDecoder
     {
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            onTimeUnitAccessed();
+            onTimeUnitLengthAccessed();
         }
 
         final int limit = parentMessage.limit();
@@ -2101,6 +2232,21 @@ public final class TokenCodecDecoder
         return 2;
     }
 
+    void onSemanticTypeLengthAccessed()
+    {
+        switch (codecState())
+        {
+            case CodecStates.V0_TIMEUNIT_DONE:
+                codecState(CodecStates.V0_TIMEUNIT_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Illegal field access order. " +
+                    "Cannot decode length of var data \"semanticType\" in state: " + CodecStates.name(codecState()) +
+                    ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                    "]. Please see the diagram in the Javadoc of the inner class #CodecStates.");
+        }
+    }
+
     private void onSemanticTypeAccessed()
     {
         switch (codecState())
@@ -2120,7 +2266,7 @@ public final class TokenCodecDecoder
     {
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            onSemanticTypeAccessed();
+            onSemanticTypeLengthAccessed();
         }
 
         final int limit = parentMessage.limit();
@@ -2244,6 +2390,21 @@ public final class TokenCodecDecoder
         return 2;
     }
 
+    void onDescriptionLengthAccessed()
+    {
+        switch (codecState())
+        {
+            case CodecStates.V0_SEMANTICTYPE_DONE:
+                codecState(CodecStates.V0_SEMANTICTYPE_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Illegal field access order. " +
+                    "Cannot decode length of var data \"description\" in state: " + CodecStates.name(codecState()) +
+                    ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                    "]. Please see the diagram in the Javadoc of the inner class #CodecStates.");
+        }
+    }
+
     private void onDescriptionAccessed()
     {
         switch (codecState())
@@ -2263,7 +2424,7 @@ public final class TokenCodecDecoder
     {
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            onDescriptionAccessed();
+            onDescriptionLengthAccessed();
         }
 
         final int limit = parentMessage.limit();
@@ -2387,6 +2548,21 @@ public final class TokenCodecDecoder
         return 2;
     }
 
+    void onReferencedNameLengthAccessed()
+    {
+        switch (codecState())
+        {
+            case CodecStates.V0_DESCRIPTION_DONE:
+                codecState(CodecStates.V0_DESCRIPTION_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Illegal field access order. " +
+                    "Cannot decode length of var data \"referencedName\" in state: " + CodecStates.name(codecState()) +
+                    ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                    "]. Please see the diagram in the Javadoc of the inner class #CodecStates.");
+        }
+    }
+
     private void onReferencedNameAccessed()
     {
         switch (codecState())
@@ -2406,7 +2582,7 @@ public final class TokenCodecDecoder
     {
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            onReferencedNameAccessed();
+            onReferencedNameLengthAccessed();
         }
 
         final int limit = parentMessage.limit();

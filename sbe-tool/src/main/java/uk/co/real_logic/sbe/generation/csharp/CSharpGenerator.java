@@ -418,34 +418,51 @@ public class CSharpGenerator implements CodeGenerator
 
         final String groupField = "_" + toLowerFirstChar(groupName);
 
+        final CharSequence accessOrderListenerCallOnDecode = generateAccessOrderListenerCall(
+            accessOrderModel,
+            indent + TWO_INDENT,
+            token,
+            groupField + ".Count",
+            "\"decode\"");
+
         sb.append(String.format("\n" +
             "%1$s" +
             indent + "public %2$sGroup %3$s\n" +
             indent + "{\n" +
             indent + INDENT + "get\n" +
             indent + INDENT + "{\n" +
-            generateGroupNotPresentCondition(token.version(), indent + INDENT + INDENT, groupField) +
+            "%5$s" +
+
             indent + INDENT + INDENT + "_%4$s.WrapForDecode(_parentMessage, _buffer, _actingVersion);\n" +
-            generateAccessOrderListenerCall(accessOrderModel, indent + TWO_INDENT, token,
-            groupField + ".Count", "\"decode\"") +
+            "%6$s" +
+
             indent + INDENT + INDENT + "return _%4$s;\n" +
             indent + INDENT + "}\n" +
             indent + "}\n",
             generateDocumentation(indent, token),
             className,
             toUpperFirstChar(groupName),
-            toLowerFirstChar(groupName)));
+            toLowerFirstChar(groupName),
+            generateGroupNotPresentCondition(token.version(), indent + INDENT + INDENT, groupField),
+            accessOrderListenerCallOnDecode));
 
+        final CharSequence accessOrderListenerCallOnEncode = generateAccessOrderListenerCall(
+            accessOrderModel,
+            indent + INDENT,
+            token,
+            "count",
+            "\"encode\"");
         sb.append(String.format("\n" +
             indent + "public %1$sGroup %2$sCount(int count)\n" +
             indent + "{\n" +
-            generateAccessOrderListenerCall(accessOrderModel, indent + INDENT, token, "count", "\"encode\"") +
+            "%4$s" +
             indent + INDENT + "_%3$s.WrapForEncode(_parentMessage, _buffer, count);\n" +
             indent + INDENT + "return _%3$s;\n" +
             indent + "}\n",
             className,
             toUpperFirstChar(groupName),
-            toLowerFirstChar(groupName)));
+            toLowerFirstChar(groupName),
+            accessOrderListenerCallOnEncode));
 
         return sb;
     }
@@ -480,27 +497,34 @@ public class CSharpGenerator implements CodeGenerator
                 final ByteOrder byteOrder = lengthEncoding.byteOrder();
                 final String byteOrderStr = generateByteOrder(byteOrder, lengthEncoding.primitiveType().size());
 
+                generateAccessOrderListenerMethodForVarDataLength(sb, accessOrderModel, indent, token);
                 generateAccessOrderListenerMethod(sb, accessOrderModel, indent, token);
-                final CharSequence accessOrderListenerCall =
-                    generateAccessOrderListenerCall(accessOrderModel, indent + INDENT, token);
 
                 sb.append(String.format("\n" +
                     indent + "public const int %sHeaderSize = %d;\n",
                     propertyName,
                     sizeOfLengthField));
 
+                final CharSequence lengthAccessOrderListenerCall = generateAccessOrderListenerCall(
+                    accessOrderModel, indent + INDENT, accessOrderListenerMethodName(token, "Length"));
+
                 sb.append(String.format(indent + "\n" +
                     indent + "public int %1$sLength()\n" +
                     indent + "{\n" +
-                    generateArrayFieldNotPresentCondition(token.version(), indent, "0") +
-                    accessOrderListenerCall +
+                    "%5$s" +
+                    "%6$s" +
                     indent + INDENT + "_buffer.CheckLimit(_parentMessage.Limit + %2$d);\n" +
                     indent + INDENT + "return (int)_buffer.%3$sGet%4$s(_parentMessage.Limit);\n" +
                     indent + "}\n",
                     propertyName,
                     sizeOfLengthField,
                     lengthTypePrefix,
-                    byteOrderStr));
+                    byteOrderStr,
+                    generateArrayFieldNotPresentCondition(token.version(), indent, "0"),
+                    lengthAccessOrderListenerCall));
+
+                final CharSequence accessOrderListenerCall =
+                    generateAccessOrderListenerCall(accessOrderModel, indent + INDENT, token);
 
                 sb.append(String.format("\n" +
                     indent + "public int Get%1$s(byte[] dst, int dstOffset, int length) =>\n" +
@@ -511,7 +535,7 @@ public class CSharpGenerator implements CodeGenerator
                     indent + "public int Get%1$s(Span<byte> dst)\n" +
                     indent + "{\n" +
                     "%2$s" +
-                    accessOrderListenerCall +
+                    "%6$s" +
                     indent + INDENT + "const int sizeOfLengthField = %3$d;\n" +
                     indent + INDENT + "int limit = _parentMessage.Limit;\n" +
                     indent + INDENT + "_buffer.CheckLimit(limit + sizeOfLengthField);\n" +
@@ -525,14 +549,15 @@ public class CSharpGenerator implements CodeGenerator
                     generateArrayFieldNotPresentCondition(token.version(), indent, "0"),
                     sizeOfLengthField,
                     lengthTypePrefix,
-                    byteOrderStr));
+                    byteOrderStr,
+                    accessOrderListenerCall));
 
                 sb.append(String.format(indent + "\n" +
                     indent + "// Allocates and returns a new byte array\n" +
                     indent + "public byte[] Get%1$sBytes()\n" +
                     indent + "{\n" +
-                    generateArrayFieldNotPresentCondition(token.version(), indent, "new byte[0]") +
-                    accessOrderListenerCall +
+                    "%5$s" +
+                    "%6$s" +
                     indent + INDENT + "const int sizeOfLengthField = %2$d;\n" +
                     indent + INDENT + "int limit = _parentMessage.Limit;\n" +
                     indent + INDENT + "_buffer.CheckLimit(limit + sizeOfLengthField);\n" +
@@ -545,7 +570,9 @@ public class CSharpGenerator implements CodeGenerator
                     propertyName,
                     sizeOfLengthField,
                     lengthTypePrefix,
-                    byteOrderStr));
+                    byteOrderStr,
+                    generateArrayFieldNotPresentCondition(token.version(), indent, "new byte[0]"),
+                    accessOrderListenerCall));
 
                 sb.append(String.format("\n" +
                     indent + "public int Set%1$s(byte[] src, int srcOffset, int length) =>\n" +
@@ -555,7 +582,7 @@ public class CSharpGenerator implements CodeGenerator
                 sb.append(String.format("\n" +
                     indent + "public int Set%1$s(ReadOnlySpan<byte> src)\n" +
                     indent + "{\n" +
-                    accessOrderListenerCall +
+                    "%6$s" +
                     indent + INDENT + "const int sizeOfLengthField = %2$d;\n" +
                     indent + INDENT + "int limit = _parentMessage.Limit;\n" +
                     indent + INDENT + "_parentMessage.Limit = limit + sizeOfLengthField + src.Length;\n" +
@@ -567,7 +594,8 @@ public class CSharpGenerator implements CodeGenerator
                     sizeOfLengthField,
                     lengthTypePrefix,
                     lengthCSharpType,
-                    byteOrderStr));
+                    byteOrderStr,
+                    accessOrderListenerCall));
 
                 if (characterEncoding != null)  // only generate these string based methods if there is an encoding
                 {
@@ -575,8 +603,8 @@ public class CSharpGenerator implements CodeGenerator
                         .append(String.format(
                         indent + "public string Get%1$s()\n" +
                         indent + "{\n" +
-                        generateArrayFieldNotPresentCondition(token.version(), indent, "\"\"") +
-                        accessOrderListenerCall +
+                        "%6$s" +
+                        "%7$s" +
                         indent + INDENT + "const int sizeOfLengthField = %2$d;\n" +
                         indent + INDENT + "int limit = _parentMessage.Limit;\n" +
                         indent + INDENT + "_buffer.CheckLimit(limit + sizeOfLengthField);\n" +
@@ -587,7 +615,7 @@ public class CSharpGenerator implements CodeGenerator
                         indent + "}\n\n" +
                         indent + "public void Set%1$s(string value)\n" +
                         indent + "{\n" +
-                        accessOrderListenerCall +
+                        "%7$s" +
                         indent + INDENT + "var encoding = %1$sResolvedCharacterEncoding;\n" +
                         indent + INDENT + "const int sizeOfLengthField = %2$d;\n" +
                         indent + INDENT + "int limit = _parentMessage.Limit;\n" +
@@ -596,7 +624,13 @@ public class CSharpGenerator implements CodeGenerator
                         indent + INDENT + "_parentMessage.Limit = limit + sizeOfLengthField + byteCount;\n" +
                         indent + INDENT + "_buffer.%3$sPut%4$s(limit, (%5$s)byteCount);\n" +
                         indent + "}\n",
-                        propertyName, sizeOfLengthField, lengthTypePrefix, byteOrderStr, lengthCSharpType));
+                        propertyName,
+                        sizeOfLengthField,
+                        lengthTypePrefix,
+                        byteOrderStr,
+                        lengthCSharpType,
+                        generateArrayFieldNotPresentCondition(token.version(), indent, "\"\""),
+                        accessOrderListenerCall));
                 }
             }
         }
@@ -911,7 +945,6 @@ public class CSharpGenerator implements CodeGenerator
         final CharSequence accessOrderListenerCall =
             generateAccessOrderListenerCall(accessOrderModel, indent + TWO_INDENT, fieldToken);
 
-
         return String.format("\n" +
             "%1$s" +
             indent + "public %2$s %3$s\n" +
@@ -919,12 +952,12 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + "get\n" +
             indent + INDENT + "{\n" +
             "%4$s" +
-            accessOrderListenerCall +
+            "%8$s" +
             indent + INDENT + INDENT + "return _buffer.%5$sGet%7$s(_offset + %6$d);\n" +
             indent + INDENT + "}\n" +
             indent + INDENT + "set\n" +
             indent + INDENT + "{\n" +
-            accessOrderListenerCall +
+            "%8$s" +
             indent + INDENT + INDENT + "_buffer.%5$sPut%7$s(_offset + %6$d, value);\n" +
             indent + INDENT + "}\n" +
             indent + "}\n\n",
@@ -934,7 +967,8 @@ public class CSharpGenerator implements CodeGenerator
             generateFieldNotPresentCondition(fieldToken.version(), typeToken.encoding(), indent),
             typePrefix,
             offset,
-            byteOrderStr);
+            byteOrderStr,
+            accessOrderListenerCall);
     }
 
     private CharSequence generateFieldNotPresentCondition(
@@ -1058,13 +1092,14 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + INDENT + "ThrowHelper.ThrowIndexOutOfRangeException(index);\n" +
             indent + INDENT + "}\n\n" +
             "%5$s" +
-            accessOrderListenerCall +
+            "%10$s" +
             indent + INDENT + "return _buffer.%6$sGet%9$s(_offset + %7$d + (index * %8$d));\n" +
             indent + "}\n",
             generateDocumentation(indent, fieldToken),
             typeName, propName, fieldLength,
             generateFieldNotPresentCondition(fieldToken.version(), typeToken.encoding(), indent),
-            typePrefix, offset, typeSize, byteOrderStr));
+            typePrefix, offset, typeSize, byteOrderStr,
+            accessOrderListenerCall));
 
         sb.append(String.format("\n" +
             "%1$s" +
@@ -1074,11 +1109,12 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + "{\n" +
             indent + INDENT + INDENT + "ThrowHelper.ThrowIndexOutOfRangeException(index);\n" +
             indent + INDENT + "}\n\n" +
-            accessOrderListenerCall +
+            "%9$s" +
             indent + INDENT + "_buffer.%5$sPut%8$s(_offset + %6$d + (index * %7$d), value);\n" +
             indent + "}\n",
             generateDocumentation(indent, fieldToken),
-            propName, typeName, fieldLength, typePrefix, offset, typeSize, byteOrderStr));
+            propName, typeName, fieldLength, typePrefix, offset, typeSize, byteOrderStr,
+            accessOrderListenerCall));
 
         sb.append(String.format("\n" +
             "%1$s" +
@@ -1086,29 +1122,35 @@ public class CSharpGenerator implements CodeGenerator
             indent + "{\n" +
             indent + INDENT + "get\n" +
             indent + INDENT + "{\n" +
-            generateArrayFieldNotPresentCondition(fieldToken.version(), indent + INDENT + INDENT, "new %2$s[0]") +
-            accessOrderListenerCallDoubleIndent +
+            "%5$s" +
+            "%6$s" +
             indent + INDENT + INDENT + "return _buffer.AsReadOnlySpan<%2$s>(_offset + %4$s, %3$sLength);\n" +
             indent + INDENT + "}\n" +
             indent + INDENT + "set\n" +
             indent + INDENT + "{\n" +
-            accessOrderListenerCallDoubleIndent +
+            "%6$s" +
             indent + INDENT + INDENT + "value.CopyTo(_buffer.AsSpan<%2$s>(_offset + %4$s, %3$sLength));\n" +
             indent + INDENT + "}\n" +
             indent + "}\n",
             generateDocumentation(indent, fieldToken),
-            typeName, propName, offset));
+            typeName, propName, offset,
+            generateArrayFieldNotPresentCondition(fieldToken.version(),
+            indent + INDENT + INDENT, "new " + typeName + "[0]"),
+            accessOrderListenerCallDoubleIndent));
 
         sb.append(String.format("\n" +
             "%1$s" +
             indent + "public Span<%2$s> %3$sAsSpan()\n" +
             indent + "{\n" +
-            generateArrayFieldNotPresentCondition(fieldToken.version(), indent + INDENT + INDENT, "new %2$s[0]") +
-            accessOrderListenerCall +
+            "%5$s" +
+            "%6$s" +
             indent + INDENT + "return _buffer.AsSpan<%2$s>(_offset + %4$s, %3$sLength);\n" +
             indent + "}\n",
             generateDocumentation(indent, fieldToken),
-            typeName, propName, offset));
+            typeName, propName, offset,
+            generateArrayFieldNotPresentCondition(fieldToken.version(),
+            indent + INDENT + INDENT, "new " + typeName + "[0]"),
+            accessOrderListenerCall));
 
         if (typeToken.encoding().primitiveType() == PrimitiveType.CHAR)
         {
@@ -1119,13 +1161,13 @@ public class CSharpGenerator implements CodeGenerator
                 indent + "{\n" +
                 indent + INDENT + "const int length = %2$d;\n" +
                 "%3$s" +
-                accessOrderListenerCall +
+                "%4$s" +
                 indent + INDENT + "return Get%1$s(new Span<byte>(dst, dstOffset, length));\n" +
                 indent + "}\n",
                 propName,
                 fieldLength,
                 generateArrayFieldNotPresentCondition(fieldToken.version(), indent, "0"),
-                offset));
+                accessOrderListenerCall));
 
             sb.append(String.format("\n" +
                 indent + "public int Get%1$s(Span<byte> dst)\n" +
@@ -1136,14 +1178,15 @@ public class CSharpGenerator implements CodeGenerator
                 indent + INDENT + INDENT + "ThrowHelper.ThrowWhenSpanLengthTooSmall(dst.Length);\n" +
                 indent + INDENT + "}\n\n" +
                 "%3$s" +
-                accessOrderListenerCall +
+                "%5$s" +
                 indent + INDENT + "_buffer.GetBytes(_offset + %4$d, dst);\n" +
                 indent + INDENT + "return length;\n" +
                 indent + "}\n",
                 propName,
                 fieldLength,
                 generateArrayFieldNotPresentCondition(fieldToken.version(), indent, "0"),
-                offset));
+                offset,
+                accessOrderListenerCall));
 
             sb.append(String.format("\n" +
                 indent + "public void Set%1$s(byte[] src, int srcOffset)\n" +
@@ -1160,25 +1203,28 @@ public class CSharpGenerator implements CodeGenerator
                 indent + INDENT + "{\n" +
                 indent + INDENT + INDENT + "ThrowHelper.ThrowWhenSpanLengthTooLarge(src.Length);\n" +
                 indent + INDENT + "}\n\n" +
-                accessOrderListenerCall +
+                "%4$s" +
                 indent + INDENT + "_buffer.SetBytes(_offset + %3$d, src);\n" +
                 indent + "}\n",
-                propName, fieldLength, offset));
+                propName, fieldLength, offset,
+                accessOrderListenerCall));
 
             sb.append(String.format("\n" +
                 indent + "public void Set%1$s(string value)\n" +
                 indent + "{\n" +
-                accessOrderListenerCall +
+                "%3$s" +
                 indent + INDENT + "_buffer.SetNullTerminatedBytesFromString(%1$sResolvedCharacterEncoding, " +
                 "value, _offset + %2$s, %1$sLength, %1$sNullValue);\n" +
                 indent + "}\n" +
                 indent + "public string Get%1$s()\n" +
                 indent + "{\n" +
-                accessOrderListenerCall +
+                "%3$s" +
                 indent + INDENT + "return _buffer.GetStringFromNullTerminatedBytes(%1$sResolvedCharacterEncoding, " +
                 "_offset + %2$s, %1$sLength, %1$sNullValue);\n" +
                 indent + "}\n",
-                propName, offset));
+                propName,
+                offset,
+                accessOrderListenerCall));
         }
 
         return sb;
@@ -1334,7 +1380,7 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + "}\n\n" +
             indent + INDENT + "public %10$s WrapForEncode(DirectBuffer buffer, int offset)\n" +
             indent + INDENT + "{\n" +
-            generateEncoderWrapListener(accessOrderModel, indent + TWO_INDENT) +
+            "%12$s" +
             indent + INDENT + INDENT + "_buffer = buffer;\n" +
             indent + INDENT + INDENT + "_offset = offset;\n" +
             indent + INDENT + INDENT + "_actingBlockLength = BlockLength;\n" +
@@ -1353,11 +1399,11 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + INDENT + "\n" +
             indent + INDENT + INDENT + "return WrapForEncode(buffer, offset + MessageHeader.Size);\n" +
             indent + INDENT + "}\n\n" +
-            generateDecoderWrapListener(accessOrderModel, indent + INDENT) +
+            "%13$s" +
             indent + INDENT + "public %10$s WrapForDecode(DirectBuffer buffer, int offset, " +
                 "int actingBlockLength, int actingVersion)\n" +
             indent + INDENT + "{\n" +
-            generateAccessOrderListenerCall(accessOrderModel, indent + TWO_INDENT, "OnWrapForDecode", "actingVersion") +
+            "%14$s" +
             indent + INDENT + INDENT + "_buffer = buffer;\n" +
             indent + INDENT + INDENT + "_offset = offset;\n" +
             indent + INDENT + INDENT + "_actingBlockLength = actingBlockLength;\n" +
@@ -1402,7 +1448,10 @@ public class CSharpGenerator implements CodeGenerator
             generateLiteral(ir.headerStructure().schemaVersionType(), Integer.toString(ir.version())),
             semanticType,
             className,
-            semanticVersion);
+            semanticVersion,
+            generateEncoderWrapListener(accessOrderModel, indent + TWO_INDENT),
+            generateDecoderWrapListener(accessOrderModel, indent + INDENT),
+            generateAccessOrderListenerCall(accessOrderModel, indent + TWO_INDENT, "OnWrapForDecode", "actingVersion"));
     }
 
     private static CharSequence qualifiedStateCase(final AccessOrderModel.State state)
@@ -1530,6 +1579,7 @@ public class CSharpGenerator implements CodeGenerator
 
         sb.append(indent).append("public void CheckEncodingIsComplete()\n")
             .append(indent).append("{\n")
+            .append("#if ENABLE_ACCESS_ORDER_CHECKS\n")
             .append(indent).append(INDENT).append("switch (_codecState)\n")
             .append(indent).append(INDENT).append("{\n");
 
@@ -1547,6 +1597,7 @@ public class CSharpGenerator implements CodeGenerator
             .append(indent).append(THREE_INDENT)
             .append(INDENT).append("codecStateTransitions(_codecState));\n")
             .append(indent).append(INDENT).append("}\n")
+            .append("#endif\n")
             .append(indent).append("}\n\n");
 
         return sb;
@@ -1555,6 +1606,11 @@ public class CSharpGenerator implements CodeGenerator
     private static String accessOrderListenerMethodName(final Token token)
     {
         return "On" + Generators.toUpperFirstChar(token.name()) + "Accessed";
+    }
+
+    private static String accessOrderListenerMethodName(final Token token, final String suffix)
+    {
+        return "On" + Generators.toUpperFirstChar(token.name()) + suffix + "Accessed";
     }
 
     private static void generateAccessOrderListenerMethod(
@@ -1777,6 +1833,34 @@ public class CSharpGenerator implements CodeGenerator
             .append(indent).append("}\n");
     }
 
+    private static void generateAccessOrderListenerMethodForVarDataLength(
+        final StringBuilder sb,
+        final AccessOrderModel accessOrderModel,
+        final String indent,
+        final Token token)
+    {
+        if (null == accessOrderModel)
+        {
+            return;
+        }
+
+        sb.append("\n")
+            .append(indent).append("void ").append(accessOrderListenerMethodName(token, "Length")).append("()\n")
+            .append(indent).append("{\n");
+
+        final AccessOrderModel.CodecInteraction accessLength =
+            accessOrderModel.interactionFactory().accessVarDataLength(token);
+
+        generateAccessOrderListener(
+            sb,
+            indent + INDENT,
+            "decode length of var data",
+            accessOrderModel,
+            accessLength);
+
+        sb.append(indent).append("}\n");
+    }
+
     private static CharSequence generateDecoderWrapListener(
         final AccessOrderModel accessOrderModel,
         final String indent)
@@ -1985,12 +2069,12 @@ public class CSharpGenerator implements CodeGenerator
                 indent + INDENT + INDENT + "get\n" +
                 indent + INDENT + INDENT + "{\n" +
                 "%4$s" +
-                accessOrderListenerCall +
+                "%10$s" +
                 indent + INDENT + INDENT + INDENT + "return (%5$s)_buffer.%6$sGet%8$s(_offset + %7$d);\n" +
                 indent + INDENT + INDENT + "}\n" +
                 indent + INDENT + INDENT + "set\n" +
                 indent + INDENT + INDENT + "{\n" +
-                accessOrderListenerCall +
+                "%10$s" +
                 indent + INDENT + INDENT + INDENT + "_buffer.%6$sPut%8$s(_offset + %7$d, (%9$s)value);\n" +
                 indent + INDENT + INDENT + "}\n" +
                 indent + INDENT + "}\n\n",
@@ -2002,7 +2086,8 @@ public class CSharpGenerator implements CodeGenerator
                 typePrefix,
                 offset,
                 byteOrderStr,
-                enumUnderlyingType);
+                enumUnderlyingType,
+                accessOrderListenerCall);
         }
     }
 
@@ -2029,12 +2114,12 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + INDENT + "get\n" +
             indent + INDENT + INDENT + "{\n" +
             "%4$s" +
-            accessOrderListenerCall +
+            "%10$s" +
             indent + INDENT + INDENT + INDENT + "return (%5$s)_buffer.%6$sGet%8$s(_offset + %7$d);\n" +
             indent + INDENT + INDENT + "}\n" +
             indent + INDENT + INDENT + "set\n" +
             indent + INDENT + INDENT + "{\n" +
-            accessOrderListenerCall +
+            "%10$s" +
             indent + INDENT + INDENT + INDENT + "_buffer.%6$sPut%8$s(_offset + %7$d, (%9$s)value);\n" +
             indent + INDENT + INDENT + "}\n" +
             indent + INDENT + "}\n",
@@ -2046,7 +2131,8 @@ public class CSharpGenerator implements CodeGenerator
             typePrefix,
             offset,
             byteOrderStr,
-            typeName);
+            typeName,
+            accessOrderListenerCall);
     }
 
     private Object generateCompositeProperty(
@@ -2075,7 +2161,7 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + INDENT + "get\n" +
             indent + INDENT + INDENT + "{\n" +
             "%4$s" +
-            accessOrderListenerCall +
+            "%7$s" +
             indent + INDENT + INDENT + INDENT + "_%5$s.Wrap(_buffer, _offset + %6$d, _actingVersion);\n" +
             indent + INDENT + INDENT + INDENT + "return _%5$s;\n" +
             indent + INDENT + INDENT + "}\n" +
@@ -2085,7 +2171,8 @@ public class CSharpGenerator implements CodeGenerator
             toUpperFirstChar(propertyName),
             generateTypeFieldNotPresentCondition(fieldToken.version(), indent),
             toLowerFirstChar(propertyName),
-            offset));
+            offset,
+            accessOrderListenerCall));
 
         return sb;
     }

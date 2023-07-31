@@ -30,8 +30,11 @@ public final class FrameCodecDecoder
      *       V0_BLOCK -> V0_BLOCK [label="  irId(?)  "];
      *       V0_BLOCK -> V0_BLOCK [label="  irVersion(?)  "];
      *       V0_BLOCK -> V0_BLOCK [label="  schemaVersion(?)  "];
+     *       V0_BLOCK -> V0_BLOCK [label="  packageNameLength()  "];
      *       V0_BLOCK -> V0_PACKAGENAME_DONE [label="  packageName(?)  "];
+     *       V0_PACKAGENAME_DONE -> V0_PACKAGENAME_DONE [label="  namespaceNameLength()  "];
      *       V0_PACKAGENAME_DONE -> V0_NAMESPACENAME_DONE [label="  namespaceName(?)  "];
+     *       V0_NAMESPACENAME_DONE -> V0_NAMESPACENAME_DONE [label="  semanticVersionLength()  "];
      *       V0_NAMESPACENAME_DONE -> V0_SEMANTICVERSION_DONE [label="  semanticVersion(?)  "];
      *   }
      * }</pre>
@@ -56,9 +59,9 @@ public final class FrameCodecDecoder
         private static final String[] STATE_TRANSITIONS_LOOKUP =
         {
             "\"wrap(version=0)\"",
-            "\"irId(?)\", \"irVersion(?)\", \"schemaVersion(?)\", \"packageName(?)\"",
-            "\"namespaceName(?)\"",
-            "\"semanticVersion(?)\"",
+            "\"irId(?)\", \"irVersion(?)\", \"schemaVersion(?)\", \"packageNameLength()\", \"packageName(?)\"",
+            "\"namespaceNameLength()\", \"namespaceName(?)\"",
+            "\"semanticVersionLength()\", \"semanticVersion(?)\"",
             "",
         };
 
@@ -469,6 +472,21 @@ public final class FrameCodecDecoder
         return 2;
     }
 
+    void onPackageNameLengthAccessed()
+    {
+        switch (codecState())
+        {
+            case CodecStates.V0_BLOCK:
+                codecState(CodecStates.V0_BLOCK);
+                break;
+            default:
+                throw new IllegalStateException("Illegal field access order. " +
+                    "Cannot decode length of var data \"packageName\" in state: " + CodecStates.name(codecState()) +
+                    ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                    "]. Please see the diagram in the Javadoc of the inner class #CodecStates.");
+        }
+    }
+
     private void onPackageNameAccessed()
     {
         switch (codecState())
@@ -488,7 +506,7 @@ public final class FrameCodecDecoder
     {
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            onPackageNameAccessed();
+            onPackageNameLengthAccessed();
         }
 
         final int limit = parentMessage.limit();
@@ -612,6 +630,21 @@ public final class FrameCodecDecoder
         return 2;
     }
 
+    void onNamespaceNameLengthAccessed()
+    {
+        switch (codecState())
+        {
+            case CodecStates.V0_PACKAGENAME_DONE:
+                codecState(CodecStates.V0_PACKAGENAME_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Illegal field access order. " +
+                    "Cannot decode length of var data \"namespaceName\" in state: " + CodecStates.name(codecState()) +
+                    ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                    "]. Please see the diagram in the Javadoc of the inner class #CodecStates.");
+        }
+    }
+
     private void onNamespaceNameAccessed()
     {
         switch (codecState())
@@ -631,7 +664,7 @@ public final class FrameCodecDecoder
     {
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            onNamespaceNameAccessed();
+            onNamespaceNameLengthAccessed();
         }
 
         final int limit = parentMessage.limit();
@@ -755,6 +788,21 @@ public final class FrameCodecDecoder
         return 2;
     }
 
+    void onSemanticVersionLengthAccessed()
+    {
+        switch (codecState())
+        {
+            case CodecStates.V0_NAMESPACENAME_DONE:
+                codecState(CodecStates.V0_NAMESPACENAME_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Illegal field access order. " +
+                    "Cannot decode length of var data \"semanticVersion\" in state: " + CodecStates.name(codecState()) +
+                    ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                    "]. Please see the diagram in the Javadoc of the inner class #CodecStates.");
+        }
+    }
+
     private void onSemanticVersionAccessed()
     {
         switch (codecState())
@@ -774,7 +822,7 @@ public final class FrameCodecDecoder
     {
         if (ENABLE_ACCESS_ORDER_CHECKS)
         {
-            onSemanticVersionAccessed();
+            onSemanticVersionLengthAccessed();
         }
 
         final int limit = parentMessage.limit();

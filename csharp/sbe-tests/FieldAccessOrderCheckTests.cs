@@ -132,6 +132,19 @@ namespace Org.SbeTool.Sbe.Tests
         }
 
         [TestMethod]
+        public void AllowsRepeatedDecodingOfVariableLengthDataLength()
+        {
+            var decoder = DecodeUntilVarLengthFields();
+            Assert.AreEqual(3, decoder.BLength());
+            Assert.AreEqual(3, decoder.BLength());
+            Assert.AreEqual(3, decoder.BLength());
+            Assert.AreEqual("abc", decoder.GetB());
+            Assert.AreEqual(3, decoder.CLength());
+            Assert.AreEqual(3, decoder.CLength());
+            Assert.AreEqual(3, decoder.CLength());
+        }
+
+        [TestMethod]
         public void DisallowsReDecodingEarlierVariableLengthField()
         {
             var decoder = DecodeUntilVarLengthFields();
@@ -2806,7 +2819,8 @@ namespace Org.SbeTool.Sbe.Tests
             Assert.IsTrue(exception.Message.Contains("Cannot access next element in repeating group \"b\" in state: " +
                                                      expectedState));
             Assert.IsTrue(
-                exception.Message.Contains("Expected one of these transitions: [\"b.d.e(?)\", \"b.d.f(?)\"]."));
+                exception.Message.Contains(
+                    "Expected one of these transitions: [\"b.d.e(?)\", \"b.d.fLength()\", \"b.d.f(?)\"]."));
         }
 
         [TestMethod]
@@ -2841,7 +2855,8 @@ namespace Org.SbeTool.Sbe.Tests
                 exception.Message.Contains(
                     "Cannot access next element in repeating group \"b.d\" in state: V0_B_1_D_N_BLOCK."));
             Assert.IsTrue(
-                exception.Message.Contains("Expected one of these transitions: [\"b.d.e(?)\", \"b.d.f(?)\"]."));
+                exception.Message.Contains(
+                    "Expected one of these transitions: [\"b.d.e(?)\", \"b.d.fLength()\", \"b.d.f(?)\"]."));
         }
 
         [TestMethod]
@@ -2878,7 +2893,8 @@ namespace Org.SbeTool.Sbe.Tests
                 exception.Message.Contains(
                     "Cannot access next element in repeating group \"b.d\" in state: V0_B_N_D_N_BLOCK."));
             Assert.IsTrue(
-                exception.Message.Contains("Expected one of these transitions: [\"b.d.e(?)\", \"b.d.f(?)\"]."));
+                exception.Message.Contains(
+                    "Expected one of these transitions: [\"b.d.e(?)\", \"b.d.fLength()\", \"b.d.f(?)\"]."));
         }
 
         [TestMethod]
@@ -2915,7 +2931,8 @@ namespace Org.SbeTool.Sbe.Tests
                 exception.Message.Contains(
                     "Cannot access next element in repeating group \"b\" in state: V0_B_N_D_N_BLOCK."));
             Assert.IsTrue(
-                exception.Message.Contains("Expected one of these transitions: [\"b.d.e(?)\", \"b.d.f(?)\"]."));
+                exception.Message.Contains(
+                    "Expected one of these transitions: [\"b.d.e(?)\", \"b.d.fLength()\", \"b.d.f(?)\"]."));
         }
 
         [TestMethod]
@@ -2949,7 +2966,8 @@ namespace Org.SbeTool.Sbe.Tests
                 exception.Message.Contains(
                     "Cannot access next element in repeating group \"b\" in state: V0_B_N_D_1_BLOCK."));
             Assert.IsTrue(
-                exception.Message.Contains("Expected one of these transitions: [\"b.d.e(?)\", \"b.d.f(?)\"]."));
+                exception.Message.Contains(
+                    "Expected one of these transitions: [\"b.d.e(?)\", \"b.d.fLength()\", \"b.d.f(?)\"]."));
         }
 
         [TestMethod]
@@ -2962,7 +2980,7 @@ namespace Org.SbeTool.Sbe.Tests
             var exception = Assert.ThrowsException<InvalidOperationException>(() => encoder.CheckEncodingIsComplete());
             Assert.IsTrue(
                 exception.Message.Contains(
-                    "Not fully encoded, current state: V0_B_DONE, allowed transitions: \"c(?)\""));
+                    "Not fully encoded, current state: V0_B_DONE, allowed transitions: \"cLength()\", \"c(?)\""));
         }
 
         [TestMethod]
@@ -2973,7 +2991,7 @@ namespace Org.SbeTool.Sbe.Tests
             var exception = Assert.ThrowsException<InvalidOperationException>(() => encoder.CheckEncodingIsComplete());
             Assert.IsTrue(
                 exception.Message.Contains(
-                    "Not fully encoded, current state: V0_BLOCK, allowed transitions: \"a(?)\""));
+                    "Not fully encoded, current state: V0_BLOCK, allowed transitions: \"aLength()\", \"a(?)\""));
         }
 
         [TestMethod]

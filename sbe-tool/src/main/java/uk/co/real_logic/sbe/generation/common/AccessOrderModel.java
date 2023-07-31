@@ -117,6 +117,15 @@ public final class AccessOrderModel
     }
 
     /**
+     * Returns the number of schema versions.
+     * @return the number of schema versions.
+     */
+    public int versionCount()
+    {
+        return versionWrappedStates.size();
+    }
+
+    /**
      * Iterates over the states in which a codec is fully encoded.
      * @param consumer the consumer of the states.
      */
@@ -134,6 +143,15 @@ public final class AccessOrderModel
         transitionsByState.keySet().stream()
             .sorted(Comparator.comparingInt(s -> s.number))
             .forEach(consumer);
+    }
+
+    /**
+     * Returns the number of states in the state machine.
+     * @return the number of states in the state machine.
+     */
+    public int stateCount()
+    {
+        return transitionsByState.size();
     }
 
     /**
@@ -541,6 +559,12 @@ public final class AccessOrderModel
         {
             if (filter.test(token))
             {
+                final CodecInteraction lengthAccessInteraction = interactionFactory.accessVarDataLength(token);
+                currentStates.forEach(state ->
+                {
+                    allocateTransitions(lengthAccessInteraction, Collections.singleton(state), state);
+                });
+
                 final CodecInteraction codecInteraction = interactionFactory.accessField(token);
                 final State accessedState = allocateState(statePrefix + token.name().toUpperCase() + "_DONE");
                 allocateTransitions(codecInteraction, currentStates, accessedState);
@@ -633,6 +657,15 @@ public final class AccessOrderModel
         public State endState()
         {
             return to;
+        }
+
+        /**
+         * Returns {@code true} if the transitions in this group do not change state.
+         * @return {@code true} if the transitions in this group do not change state.
+         */
+        public boolean alwaysEndsInStartState()
+        {
+            return from.size() == 1 && from.contains(to);
         }
 
         /**
@@ -903,6 +936,42 @@ public final class AccessOrderModel
         }
 
         /**
+         * When the length of a variable length field is accessed without adjusting the position.
+         */
+        private static final class AccessVarDataLength extends CodecInteraction
+        {
+            private final String groupPath;
+            private final Token token;
+
+            private AccessVarDataLength(final String groupPath, final Token token)
+            {
+                assert groupPath != null;
+                assert token.signal() == Signal.BEGIN_VAR_DATA;
+                this.groupPath = groupPath;
+                this.token = token;
+            }
+
+            @Override
+            public String groupQualifiedName()
+            {
+                return groupPath + token.name();
+            }
+
+            @Override
+            String exampleCode()
+            {
+                return groupPath + token.name() + "Length()";
+            }
+
+            @Override
+            String exampleConditions()
+            {
+                return "";
+            }
+        }
+
+
+        /**
          * Factory for creating {@link CodecInteraction} instances. This factory
          * is used to hash-cons the instances, so that they can be compared by
          * reference.
@@ -915,6 +984,7 @@ public final class AccessOrderModel
             private final Map<Token, CodecInteraction> determineGroupHasElementsInteractions = new HashMap<>();
             private final Map<Token, CodecInteraction> moveToNextElementInteractions = new HashMap<>();
             private final Map<Token, CodecInteraction> moveToLastElementInteractions = new HashMap<>();
+            private final Map<Token, CodecInteraction> accessVarDataLengthInteractions = new HashMap<>();
             private final Map<Token, String> groupPathsByField;
             private final Set<Token> topLevelBlockFields;
 
@@ -1028,6 +1098,24 @@ public final class AccessOrderModel
             {
                 return moveToLastElementInteractions.computeIfAbsent(token,
                     t -> new MoveToLastElement(groupPathsByField.get(t), t));
+            }
+
+            /**
+             * Find or create a {@link CodecInteraction} to represent accessing the length
+             * of a variable-length data field without advancing the codec position.
+             *
+             * <p>For decoders and codecs, this will be when the length is accessed, e.g.,
+             * {@code decoder.myVarDataLength()}.
+             *
+             * <p>The supplied token must carry a {@link Signal#BEGIN_VAR_DATA} signal.
+             *
+             * @param token the token identifying the field
+             * @return the {@link CodecInteraction} instance
+             */
+            public CodecInteraction accessVarDataLength(final Token token)
+            {
+                return accessVarDataLengthInteractions.computeIfAbsent(token,
+                    t -> new AccessVarDataLength(groupPathsByField.get(t), t));
             }
         }
     }
