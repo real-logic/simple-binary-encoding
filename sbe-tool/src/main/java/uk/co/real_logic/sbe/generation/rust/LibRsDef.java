@@ -81,7 +81,7 @@ class LibRsDef
             // add re-export of modules
             for (final String module : modules)
             {
-                indent(libRs, 0, "pub use %s::*;\n", toLowerSnakeCase(module));
+                indent(libRs, 0, "pub use crate::%s::*;\n", toLowerSnakeCase(module));
             }
             indent(libRs, 0, "\n");
 

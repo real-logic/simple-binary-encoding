@@ -136,6 +136,8 @@ class RustUtilTest
         assertEquals("pricenull_9", formatFunctionName("PRICENULL9"));
         assertEquals("price_9_book", formatFunctionName("PRICE9Book"));
         assertEquals("issue_435", formatFunctionName("issue435"));
+        assertEquals("r#type", formatFunctionName("type"));
+
         assertEquals("upper_case", formatFunctionName("UPPERCase"));
         assertEquals("no_md_entries", formatFunctionName("NoMDEntries"));
         assertEquals("md_entry_type_book", formatFunctionName("MD_EntryTYPEBook"));
