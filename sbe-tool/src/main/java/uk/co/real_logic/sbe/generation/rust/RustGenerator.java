@@ -15,6 +15,7 @@
  */
 package uk.co.real_logic.sbe.generation.rust;
 
+import org.agrona.Strings;
 import org.agrona.Verify;
 import org.agrona.generation.OutputManager;
 import uk.co.real_logic.sbe.PrimitiveType;
@@ -151,8 +152,8 @@ public class RustGenerator implements CodeGenerator
             try (Writer out = outputManager.createOutput(codecModName))
             {
                 indent(out, 0, "use crate::*;\n\n");
-                indent(out, 0, "pub use encoder::*;\n");
-                indent(out, 0, "pub use decoder::*;\n\n");
+                indent(out, 0, "pub use encoder::%sEncoder;\n", formatStructName(msgToken.name()));
+                indent(out, 0, "pub use decoder::%sDecoder;\n\n", formatStructName(msgToken.name()));
                 final String blockLengthType = blockLengthType();
                 final String templateIdType = rustTypeName(ir.headerStructure().templateIdType());
                 final String schemaIdType = rustTypeName(ir.headerStructure().schemaIdType());
@@ -274,7 +275,18 @@ public class RustGenerator implements CodeGenerator
             final Token numInGroupToken = Generators.findFirst("numInGroup", tokens, index);
             final PrimitiveType numInGroupPrimitiveType = numInGroupToken.encoding().primitiveType();
 
-            indent(sb, level, "/// GROUP ENCODER\n");
+            final String description = groupToken.description();
+            if (!Strings.isEmpty(description))
+            {
+                indent(sb, level, "/// GROUP ENCODER (id=%s, description='%s')\n",
+                    groupToken.id(), description);
+            }
+            else
+            {
+                indent(sb, level, "/// GROUP ENCODER (id=%s)\n",
+                    groupToken.id());
+            }
+
             assert 4 == groupHeaderTokenCount;
             indent(sb, level, "#[inline]\n");
             indent(sb, level, "pub fn %s(self, count: %s, %1$s: %3$s<Self>) -> %3$s<Self> {\n",
@@ -897,9 +909,19 @@ public class RustGenerator implements CodeGenerator
             i = collectVarData(tokens, i, varData);
 
             final String groupName = decoderName(formatStructName(groupToken.name()));
-            indent(sb, level, "/// GROUP DECODER\n");
-            assert 4 == groupHeaderTokenCount;
+            final String description = groupToken.description();
+            if (!Strings.isEmpty(description))
+            {
+                indent(sb, level, "/// GROUP DECODER (id=%s, description='%s')\n",
+                    groupToken.id(), description);
+            }
+            else
+            {
+                indent(sb, level, "/// GROUP DECODER (id=%s)\n",
+                    groupToken.id());
+            }
 
+            assert 4 == groupHeaderTokenCount;
             indent(sb, level, "#[inline]\n");
             if (groupToken.version() > 0)
             {
@@ -1265,8 +1287,8 @@ public class RustGenerator implements CodeGenerator
         {
             indent(out, 0, "use crate::*;\n\n");
 
-            indent(out, 0, "pub use encoder::*;\n");
-            indent(out, 0, "pub use decoder::*;\n\n");
+            indent(out, 0, "pub use encoder::%sEncoder;\n", formatStructName(compositeName));
+            indent(out, 0, "pub use decoder::%sDecoder;\n\n", formatStructName(compositeName));
 
             final int encodedLength = tokens.get(0).encodedLength();
             if (encodedLength > 0)
