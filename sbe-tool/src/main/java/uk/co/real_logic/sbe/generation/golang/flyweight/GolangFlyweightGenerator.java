@@ -57,7 +57,10 @@ public class GolangFlyweightGenerator implements CodeGenerator
      * @param shouldDecodeUnknownEnumValues generate support for unknown enum values when decoding.
      * @param outputManager                 for generating the codecs to.
      */
-    public GolangFlyweightGenerator(final Ir ir, final boolean shouldDecodeUnknownEnumValues, final OutputManager outputManager)
+    public GolangFlyweightGenerator(
+        final Ir ir,
+        final boolean shouldDecodeUnknownEnumValues,
+        final OutputManager outputManager)
     {
         Verify.notNull(ir, "ir");
         Verify.notNull(outputManager, "outputManager");
@@ -1790,7 +1793,6 @@ public class GolangFlyweightGenerator implements CodeGenerator
             String.format("%d + (index * %d)", offset, primitiveType.size()),
             encodingToken.encoding().byteOrder(),
             indent);
-
 
         new Formatter(sb).format("\n" +
             indent + "    func (m *%6$s) %2$sIndex(index uint64) %1$s {\n" +
