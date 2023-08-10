@@ -1385,10 +1385,6 @@ public class GolangFlyweightGenerator implements CodeGenerator
                 final String choiceBitPosition = token.encoding().constValue().toString();
                 final CharSequence constantOne = generateLiteral(type, "1");
 
-                new Formatter(sb).format("    type %1$s %2$s\n",
-                    choiceName,
-                    typeName);
-
                 new Formatter(sb).format("\n" +
                     "    func (m *%5$s) %1$sValue(bits %2$s) bool {\n" +
                     "        return (bits & (%4$s << %3$s)) != 0\n" +
