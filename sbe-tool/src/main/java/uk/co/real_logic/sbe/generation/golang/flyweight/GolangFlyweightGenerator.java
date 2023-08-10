@@ -2308,7 +2308,7 @@ public class GolangFlyweightGenerator implements CodeGenerator
             "        buffer []byte,\n" +
             "        offset uint64,\n" +
             "        actingBlockLength uint64,\n" +
-            "        actingVersion uint64," +
+            "        actingVersion uint64,\n" +
             "        bufferLength uint64) *%10$s {\n" +
             "        return m.Wrap(\n" +
             "            buffer,\n" +
