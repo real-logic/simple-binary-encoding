@@ -1772,17 +1772,17 @@ public class GolangFlyweightGenerator implements CodeGenerator
             arrayLength,
             formatClassName(containingClassName));
 
-        // TODO return slice from array
-//        new Formatter(sb).format("\n" +
-//                        indent + "    func (m *%5$s) %1$s() []%2$s {\n" +
-//                        "%3$s" +
-//                        indent + "        return m.buffer[(m.offset + %4$d):]\n" +
-//                        indent + "    }\n",
-//                propertyName,
-//                goTypeName,
-//                generateTypeFieldNotPresentCondition(propertyToken.version(), indent),
-//                offset,
-//                formatClassName(containingClassName));
+        new Formatter(sb).format("\n" +
+            indent + "func (m *%6$s) %2$s() []byte {\n" +
+            "%4$s" +
+            indent + "    return m.buffer[m.offset+%5$d:m.offset+%5$d+%3$d]\n" +
+            indent + "}\n",
+            goTypeName,
+            toUpperFirstChar(propertyName),
+            arrayLength,
+            generateArrayFieldNotPresentCondition(propertyToken.version(), indent),
+            offset,
+            formatClassName(containingClassName));
 
         final CharSequence loadValue = generateLoadValue(
             primitiveType,
