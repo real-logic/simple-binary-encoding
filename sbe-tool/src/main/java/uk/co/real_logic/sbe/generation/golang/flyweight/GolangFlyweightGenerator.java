@@ -680,8 +680,7 @@ public class GolangFlyweightGenerator implements CodeGenerator
                 generateGroups(sb, groups, BASE_INDENT, className, className);
                 generateVarData(sb, className, varData, BASE_INDENT);
                 generateDisplay(sb, msgToken.name(), className, fields, groups, varData);
-                // TODO generate length
-                // sb.append(generateMessageLength(groups, varData, BASE_INDENT, className));
+                sb.append(generateMessageLength(groups, varData, BASE_INDENT, className));
                 out.append(sb);
 
                 fileOut.append(generateFileHeader(ir.namespaces()));
@@ -1080,8 +1079,7 @@ public class GolangFlyweightGenerator implements CodeGenerator
             generateVarData(sb, groupClassName, varData, indent + INDENT);
 
             sb.append(generateGroupDisplay(groupClassName, fields, groups, varData, indent + INDENT + INDENT));
-            // TODO generate length
-            // sb.append(generateMessageLength(groups, varData, indent + INDENT + INDENT, groupClassName));
+            sb.append(generateMessageLength(groups, varData, indent + INDENT + INDENT, groupClassName));
 
             generateGroupProperty(sb, groupName, groupClassName, outerClassName, groupToken, goTypeForNumInGroup,
                 indent);
@@ -2357,14 +2355,13 @@ public class GolangFlyweightGenerator implements CodeGenerator
             "        return m.SbePosition() - m.offset\n" +
             "    }\n\n" +
 
-            // TODO generate length
-//                        "    func (m *%10$s) DecodeLength() uint64 {\n" +
-//                        "        var skipper %10$s\n" +
-//                        "        skipper.WrapForDecode(m.buffer, m.offset, uint64(m.SbeBlockLength()),\n"
-//                        "            uint64(m.ActingVersion()), m.bufferLength)\n" +
-//                        "        skipper.Skip()\n" +
-//                        "        return skipper.EncodedLength()\n" +
-//                        "    }\n\n" +
+            "    func (m *%10$s) DecodeLength() uint64 {\n" +
+            "        var skipper %10$s\n" +
+            "        skipper.WrapForDecode(m.buffer, m.offset, uint64(m.SbeBlockLength()),\n" +
+            "            uint64(m.ActingVersion()), m.bufferLength)\n" +
+            "        skipper.Skip()\n" +
+            "        return skipper.EncodedLength()\n" +
+            "    }\n\n" +
 
             "    func (m *%10$s) Buffer() []byte {\n" +
             "        return m.buffer\n" +
@@ -3055,12 +3052,11 @@ public class GolangFlyweightGenerator implements CodeGenerator
         return sb;
     }
 
-
     private Object[] generateMessageLengthArgs(
         final List<Token> groups,
         final List<Token> varData,
         final String indent,
-        final boolean withName)
+        final boolean inStruct)
     {
         final StringBuilder sb = new StringBuilder();
         int count = 0;
@@ -3078,28 +3074,26 @@ public class GolangFlyweightGenerator implements CodeGenerator
 
             if (count > 0)
             {
-                sb.append(",\n").append(indent);
+                if (inStruct)
+                {
+                    sb.append("; ").append(indent);
+                }
+                else
+                {
+                    sb.append(",\n").append(indent);
+                }
             }
 
             final List<Token> thisGroup = groups.subList(i, endSignal + 1);
 
             if (isMessageConstLength(thisGroup))
             {
-                if (withName)
-                {
-                    sb.append(" ").append(groupName).append("Length ");
-                }
-                sb.append("int");
+                sb.append(" ").append(groupName).append("Length ").append("int");
             }
             else
             {
-                if (withName)
-                {
-                    sb.append(groupName).append("ItemLengths ");
-                }
-
-                sb.append("[]struct{");
-                sb.append(generateMessageLengthArgs(thisGroup, indent + INDENT, false)[0]);
+                sb.append(groupName).append("ItemLengths ").append("[]struct{");
+                sb.append(generateMessageLengthArgs(thisGroup, indent + INDENT, true)[0]);
                 sb.append("}");
             }
 
@@ -3118,13 +3112,17 @@ public class GolangFlyweightGenerator implements CodeGenerator
 
             if (count > 0)
             {
-                sb.append(",\n").append(indent);
+                if (inStruct)
+                {
+                    sb.append("; ").append(indent);
+                }
+                else
+                {
+                    sb.append(",\n").append(indent);
+                }
             }
 
-            if (withName)
-            {
-                sb.append(" ").append(formatPropertyName(varDataToken.name())).append("Length").append(" int");
-            }
+            sb.append(" ").append(formatPropertyName(varDataToken.name())).append("Length").append(" int");
 
             count += 1;
 
@@ -3141,7 +3139,7 @@ public class GolangFlyweightGenerator implements CodeGenerator
     }
 
 
-    private Object[] generateMessageLengthArgs(final List<Token> tokens, final String indent, final boolean withName)
+    private Object[] generateMessageLengthArgs(final List<Token> tokens, final String indent, final boolean inStruct)
     {
         int i = 0;
 
@@ -3164,7 +3162,7 @@ public class GolangFlyweightGenerator implements CodeGenerator
         final List<Token> varData = new ArrayList<>();
         collectVarData(tokens, i, varData);
 
-        return generateMessageLengthArgs(groups, varData, indent, withName);
+        return generateMessageLengthArgs(groups, varData, indent, inStruct);
     }
 
     private boolean isMessageConstLength(final List<Token> tokens)
@@ -3172,6 +3170,94 @@ public class GolangFlyweightGenerator implements CodeGenerator
         final Integer count = (Integer)generateMessageLengthArgs(tokens, BASE_INDENT, false)[1];
 
         return count == 0;
+    }
+
+    private String generateMessageLengthCallHelper(
+        final List<Token> groups,
+        final List<Token> varData)
+    {
+        final StringBuilder sb = new StringBuilder();
+        int count = 0;
+
+        for (int i = 0, size = groups.size(); i < size; i++)
+        {
+            final Token groupToken = groups.get(i);
+            if (groupToken.signal() != Signal.BEGIN_GROUP)
+            {
+                throw new IllegalStateException("tokens must begin with BEGIN_GROUP: token=" + groupToken);
+            }
+
+            final int endSignal = findEndSignal(groups, i, Signal.END_GROUP, groupToken.name());
+            final String groupName = formatPropertyName(groupToken.name());
+
+            if (count > 0)
+            {
+                sb.append(", ");
+            }
+
+            final List<Token> thisGroup = groups.subList(i, endSignal + 1);
+
+            if (isMessageConstLength(thisGroup))
+            {
+                sb.append("e.").append(groupName).append("Length");
+            }
+            else
+            {
+                sb.append("e.").append(groupName).append("ItemLengths");
+            }
+
+            count += 1;
+
+            i = endSignal;
+        }
+
+        for (int i = 0, size = varData.size(); i < size; )
+        {
+            final Token varDataToken = varData.get(i);
+            if (varDataToken.signal() != Signal.BEGIN_VAR_DATA)
+            {
+                throw new IllegalStateException("tokens must begin with BEGIN_VAR_DATA: token=" + varDataToken);
+            }
+
+            if (count > 0)
+            {
+                sb.append(", ");
+            }
+
+            sb.append("e.").append(formatPropertyName(varDataToken.name())).append("Length");
+
+            count += 1;
+
+            i += varDataToken.componentTokenCount();
+        }
+
+        return sb.toString();
+    }
+
+    private CharSequence generateMessageLengthCallHelper(final List<Token> tokens)
+    {
+        int i = 0;
+
+        final Token groupToken = tokens.get(i);
+        if (groupToken.signal() != Signal.BEGIN_GROUP)
+        {
+            throw new IllegalStateException("tokens must begin with BEGIN_GROUP: token=" + groupToken);
+        }
+
+        ++i;
+        final int groupHeaderTokenCount = tokens.get(i).componentTokenCount();
+        i += groupHeaderTokenCount;
+
+        final List<Token> fields = new ArrayList<>();
+        i = collectFields(tokens, i, fields);
+
+        final List<Token> groups = new ArrayList<>();
+        i = collectGroups(tokens, i, groups);
+
+        final List<Token> varData = new ArrayList<>();
+        collectVarData(tokens, i, varData);
+
+        return generateMessageLengthCallHelper(groups, varData);
     }
 
     private CharSequence generateMessageLength(
@@ -3199,8 +3285,9 @@ public class GolangFlyweightGenerator implements CodeGenerator
             final long minCount = numInGroupToken.encoding().applicableMinValue().longValue();
             final long maxCount = numInGroupToken.encoding().applicableMaxValue().longValue();
 
-            final String countName = formatPropertyName(groupToken.name()) +
-                (isMessageConstLength(thisGroup) ? "Length" : "len(ItemLengths)");
+            final String countName = isMessageConstLength(thisGroup) ?
+                formatPropertyName(groupToken.name()) + "Length" :
+                "len(" + formatPropertyName(groupToken.name()) + "ItemLengths)";
 
             final String minCheck = minCount > 0 ? countName + " < " + minCount + " || " : "";
             final String maxCheck = countName + " > " + maxCount;
@@ -3230,13 +3317,18 @@ public class GolangFlyweightGenerator implements CodeGenerator
                     indent + "        panic(\"%5$s outside of allowed range [E110]\")\n" +
                     indent + "    }\n\n" +
                     indent + "    for _, e := range %1$sItemLengths {\n" +
-                    indent + "        length += %2$s.ComputeLength(0)\n" +
+                    indent + "        l, err := m.%1$s().ComputeLength(%6$s)\n" +
+                    indent + "        if err != nil {\n" +
+                    indent + "            return 0, err\n" +
+                    indent + "        }\n" +
+                    indent + "        length += uint64(l)\n" +
                     indent + "    }\n",
                     formatPropertyName(groupToken.name()),
                     formatClassName(groupToken.name()),
                     minCheck,
                     maxCheck,
-                    countName);
+                    countName,
+                    generateMessageLengthCallHelper(thisGroup));
             }
 
             new Formatter(sbSkip).format(
@@ -3287,11 +3379,11 @@ public class GolangFlyweightGenerator implements CodeGenerator
             indent + "}\n\n" +
 
             indent + "func (m *%2$s) ComputeLength(%1$s) (int, error) {\n" +
-            indent + "    length := m.SbeBlockLength()\n" +
+            indent + "    length := uint64(m.SbeBlockLength())\n" +
             sbEncode + "\n" +
             indent + "    return int(length), nil\n" +
             indent + "}\n",
-            generateMessageLengthArgs(groups, varData, indent + INDENT, true)[0],
+            generateMessageLengthArgs(groups, varData, indent + INDENT, false)[0],
             className);
 
         return sb;
