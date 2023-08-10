@@ -357,6 +357,21 @@ public class GolangFlyweightGenerator implements CodeGenerator
 
         return String.format(
             indent + "        if m.actingVersion < %1$d {\n" +
+                indent + "            return nil\n" +
+                indent + "        }\n\n",
+            sinceVersion);
+    }
+
+    private static CharSequence generateArrayLengthNotPresentCondition(
+        final int sinceVersion, final String indent)
+    {
+        if (0 == sinceVersion)
+        {
+            return "";
+        }
+
+        return String.format(
+            indent + "        if m.actingVersion < %1$d {\n" +
                 indent + "            return 0\n" +
                 indent + "        }\n\n",
             sinceVersion);
@@ -1113,7 +1128,7 @@ public class GolangFlyweightGenerator implements CodeGenerator
                 indent + "        return dataLength\n" +
                 indent + "    }\n",
                 propertyName,
-                generateArrayFieldNotPresentCondition(token.version(), indent),
+                generateArrayLengthNotPresentCondition(token.version(), indent),
                 lengthOfLengthField,
                 lengthByteOrderReadStr,
                 className);
@@ -1153,7 +1168,7 @@ public class GolangFlyweightGenerator implements CodeGenerator
                 indent + "    return int(bytesToCopy)\n" +
                 indent + "}\n",
                 propertyName,
-                generateArrayFieldNotPresentCondition(token.version(), indent),
+                generateArrayLengthNotPresentCondition(token.version(), indent),
                 lengthOfLengthField,
                 lengthByteOrderReadStr,
                 className);
@@ -1271,7 +1286,7 @@ public class GolangFlyweightGenerator implements CodeGenerator
             indent + "        return %3$s(m.buffer[m.SbePosition():])\n" +
             indent + "}\n",
             formatPropertyName(propertyName),
-            generateArrayFieldNotPresentCondition(version, BASE_INDENT),
+            generateArrayLengthNotPresentCondition(version, BASE_INDENT),
             formatReadBytes(lengthToken.encoding().byteOrder(), lengthToken.encoding().primitiveType()),
             lengthGoType,
             className);
