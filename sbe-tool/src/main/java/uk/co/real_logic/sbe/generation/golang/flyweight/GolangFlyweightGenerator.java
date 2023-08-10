@@ -417,7 +417,7 @@ public class GolangFlyweightGenerator implements CodeGenerator
 
         return String.format(
             indent + "        if m.actingVersion < %1$d {\n" +
-                indent + "            return nil\n" +
+                indent + "            return \"\"\n" +
                 indent + "        }\n\n",
             sinceVersion);
     }
