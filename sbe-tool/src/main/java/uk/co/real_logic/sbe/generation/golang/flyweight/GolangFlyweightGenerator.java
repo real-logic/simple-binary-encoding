@@ -112,11 +112,6 @@ public class GolangFlyweightGenerator implements CodeGenerator
                 switch (encodingToken.signal())
                 {
                     case BEGIN_SET:
-                        new Formatter(sb).format(indent + "    _%1$s %2$s\n",
-                            propertyName,
-                            typeName);
-                        break;
-
                     case BEGIN_COMPOSITE:
                         new Formatter(sb).format(indent + "    _%1$s %2$s\n",
                             propertyName,
@@ -407,21 +402,6 @@ public class GolangFlyweightGenerator implements CodeGenerator
             sinceVersion);
     }
 
-    private static CharSequence generateStringViewNotPresentCondition(
-        final int sinceVersion, final String indent)
-    {
-        if (0 == sinceVersion)
-        {
-            return "";
-        }
-
-        return String.format(
-            indent + "        if m.actingVersion < %1$d {\n" +
-                indent + "            return \"\"\n" +
-                indent + "        }\n\n",
-            sinceVersion);
-    }
-
     private static CharSequence generateTypeFieldNotPresentCondition(
         final int sinceVersion, final String indent)
     {
@@ -586,10 +566,8 @@ public class GolangFlyweightGenerator implements CodeGenerator
         generateComposite(ir.headerStructure().tokens());
     }
 
-    private List<String> generateTypeStubs() throws IOException
+    private void generateTypeStubs() throws IOException
     {
-        final List<String> typesToInclude = new ArrayList<>();
-
         for (final List<Token> tokens : ir.types())
         {
             switch (tokens.get(0).signal())
@@ -609,33 +587,7 @@ public class GolangFlyweightGenerator implements CodeGenerator
                 default:
                     break;
             }
-
-            typesToInclude.add(tokens.get(0).applicableTypeName());
         }
-
-        return typesToInclude;
-    }
-
-    private List<String> generateTypesToIncludes(final List<Token> tokens)
-    {
-        final List<String> typesToInclude = new ArrayList<>();
-
-        for (final Token token : tokens)
-        {
-            switch (token.signal())
-            {
-                case BEGIN_ENUM:
-                case BEGIN_SET:
-                case BEGIN_COMPOSITE:
-                    typesToInclude.add(token.applicableTypeName());
-                    break;
-
-                default:
-                    break;
-            }
-        }
-
-        return typesToInclude;
     }
 
     /**
@@ -647,7 +599,7 @@ public class GolangFlyweightGenerator implements CodeGenerator
         generateUtils(ir.namespaces());
 
         generateMessageHeaderStub();
-        final List<String> typesToInclude = generateTypeStubs();
+        generateTypeStubs();
 
         for (final List<Token> tokens : ir.messages())
         {
@@ -677,7 +629,7 @@ public class GolangFlyweightGenerator implements CodeGenerator
 
                 final StringBuilder sb = new StringBuilder();
                 generateFields(sb, className, fields, BASE_INDENT);
-                generateGroups(sb, groups, BASE_INDENT, className, className);
+                generateGroups(sb, groups, BASE_INDENT, className);
                 generateVarData(sb, className, varData, BASE_INDENT);
                 generateDisplay(sb, msgToken.name(), className, fields, groups, varData);
                 sb.append(generateMessageLength(groups, varData, BASE_INDENT, className));
@@ -1040,8 +992,7 @@ public class GolangFlyweightGenerator implements CodeGenerator
         final StringBuilder sb,
         final List<Token> tokens,
         final String indent,
-        final String outerClassName,
-        final String className)
+        final String outerClassName)
     {
         for (int i = 0, size = tokens.size(); i < size; i++)
         {
@@ -1072,7 +1023,7 @@ public class GolangFlyweightGenerator implements CodeGenerator
                 indent + INDENT, fields, groups);
 
             generateFields(sb, groupClassName, fields, indent + INDENT);
-            generateGroups(sb, groups, indent + INDENT, groupClassName, className);
+            generateGroups(sb, groups, indent + INDENT, groupClassName);
 
             final List<Token> varData = new ArrayList<>();
             i = collectVarData(tokens, i, varData);
@@ -1355,7 +1306,7 @@ public class GolangFlyweightGenerator implements CodeGenerator
 
             out.append("\n");
 
-            fileOut.append(generateEnumFileHeader(ir.namespaces(), enumName));
+            fileOut.append(generateEnumFileHeader(ir.namespaces()));
             fileOut.append(out);
         }
     }
@@ -1430,9 +1381,7 @@ public class GolangFlyweightGenerator implements CodeGenerator
                     bitsetClassName,
                     choiceName,
                     generateChoiceNotPresentCondition(token.version()),
-                    formatReadBytes(token.encoding().byteOrder(), type),
-                    typeName,
-                    choiceBitPosition);
+                    formatReadBytes(token.encoding().byteOrder(), type));
 
                 new Formatter(sb).format("\n" +
                     "func (m *%1$s) Set%2$s(value bool) *%1$s{\n" +
@@ -1536,9 +1485,7 @@ public class GolangFlyweightGenerator implements CodeGenerator
         return sb;
     }
 
-    private CharSequence generateEnumFileHeader(
-        final CharSequence[] namespaces,
-        final String className)
+    private CharSequence generateEnumFileHeader(final CharSequence[] namespaces)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -2083,11 +2030,6 @@ public class GolangFlyweightGenerator implements CodeGenerator
             switch (signalToken.signal())
             {
                 case BEGIN_SET:
-                    new Formatter(sb).format("    _%1$s %2$s\n",
-                        propertyName,
-                        typeName);
-                    break;
-
                 case BEGIN_COMPOSITE:
                     new Formatter(sb).format("    _%1$s %2$s\n",
                         propertyName,
@@ -2200,11 +2142,6 @@ public class GolangFlyweightGenerator implements CodeGenerator
                 switch (encodingToken.signal())
                 {
                     case BEGIN_SET:
-                        new Formatter(sb).format("    _%1$s %2$s\n",
-                            propertyName,
-                            typeName);
-                        break;
-
                     case BEGIN_COMPOSITE:
                         new Formatter(sb).format("    _%1$s %2$s\n",
                             propertyName,
