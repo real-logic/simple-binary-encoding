@@ -115,6 +115,7 @@ gocode/src/flyweight/example-schema/cpu.out
 gocode/src/flyweight/example-socket-clientserver/example-socket-clientserver
 gocode/src/flyweight/extension
 gocode/src/flyweight/extension2
+gocode/src/flyweight/otf/*.sbeir
 
 # csharp
 csharp/*/bin
