@@ -694,6 +694,105 @@ TEST_F(FieldAccessOrderCheckTest, allowsEncodingAndDecodingEmptyGroupAndVariable
     EXPECT_EQ(decoder.getDAsString(), "abc");
 }
 
+TEST_F(FieldAccessOrderCheckTest, allowsEncoderToResetZeroGroupLengthToNonZero)
+{
+    GroupAndVarLength encoder;
+    encoder.wrapForEncode(m_buffer, OFFSET, BUFFER_LEN);
+    encoder.a(42);
+    encoder.bCount(0).resetCountToIndex();
+    encoder.putD("abc");
+    encoder.checkEncodingIsComplete();
+
+    GroupAndVarLength decoder;
+    decoder.wrapForDecode(
+        m_buffer,
+        OFFSET,
+        GroupAndVarLength::sbeBlockLength(),
+        GroupAndVarLength::sbeSchemaVersion(),
+        BUFFER_LEN
+    );
+    EXPECT_EQ(decoder.a(), 42);
+    GroupAndVarLength::B &bDecoder = decoder.b();
+    EXPECT_EQ(bDecoder.count(), 0u);
+    EXPECT_EQ(decoder.getDAsString(), "abc");
+}
+
+TEST_F(FieldAccessOrderCheckTest, allowsEncoderToResetNonZeroGroupLengthToNonZeroBeforeCallingNext)
+{
+    GroupAndVarLength encoder;
+    encoder.wrapForEncode(m_buffer, OFFSET, BUFFER_LEN);
+    encoder.a(42);
+    encoder.bCount(2).resetCountToIndex();
+    encoder.putD("abc");
+    encoder.checkEncodingIsComplete();
+
+    GroupAndVarLength decoder;
+    decoder.wrapForDecode(
+        m_buffer,
+        OFFSET,
+        GroupAndVarLength::sbeBlockLength(),
+        GroupAndVarLength::sbeSchemaVersion(),
+        BUFFER_LEN
+    );
+    EXPECT_EQ(decoder.a(), 42);
+    GroupAndVarLength::B &bDecoder = decoder.b();
+    EXPECT_EQ(bDecoder.count(), 0u);
+    EXPECT_EQ(decoder.getDAsString(), "abc");
+}
+
+TEST_F(FieldAccessOrderCheckTest, allowsEncoderToResetNonZeroGroupLengthToNonZero)
+{
+    GroupAndVarLength encoder;
+    encoder.wrapForEncode(m_buffer, OFFSET, BUFFER_LEN);
+    encoder.a(42);
+    GroupAndVarLength::B &bEncoder = encoder.bCount(2).next();
+    bEncoder.c(43);
+    bEncoder.resetCountToIndex();
+    encoder.putD("abc");
+    encoder.checkEncodingIsComplete();
+
+    GroupAndVarLength decoder;
+    decoder.wrapForDecode(
+        m_buffer,
+        OFFSET,
+        GroupAndVarLength::sbeBlockLength(),
+        GroupAndVarLength::sbeSchemaVersion(),
+        BUFFER_LEN
+    );
+    EXPECT_EQ(decoder.a(), 42);
+    GroupAndVarLength::B &bDecoder = decoder.b();
+    EXPECT_EQ(bDecoder.count(), 1u);
+    EXPECT_EQ(bDecoder.next().c(), 43);
+    EXPECT_EQ(decoder.getDAsString(), "abc");
+}
+
+TEST_F(FieldAccessOrderCheckTest, disallowsEncoderToResetGroupLengthMidGroupElement)
+{
+    NestedGroups encoder;
+    encoder.wrapForEncode(m_buffer, OFFSET, BUFFER_LEN);
+    encoder.a(42);
+    NestedGroups::B &bEncoder = encoder.bCount(2).next();
+    bEncoder.c(43);
+    EXPECT_THROW(
+        {
+            try
+            {
+                bEncoder.resetCountToIndex();
+            }
+            catch (const std::logic_error &e)
+            {
+                EXPECT_THAT(
+                    e.what(),
+                    HasSubstr("Cannot reset count of repeating group \"b\" in state: V0_B_N_BLOCK")
+                );
+                throw;
+            }
+        },
+        std::logic_error
+    );
+}
+
+
 TEST_F(FieldAccessOrderCheckTest, disallowsEncodingGroupElementBeforeCallingNext)
 {
     GroupAndVarLength encoder;
@@ -4214,7 +4313,7 @@ TEST_F(FieldAccessOrderCheckTest, disallowsEncodingElementOfEmptyGroup2)
             }
             catch (const std::logic_error &e)
             {
-                EXPECT_THAT(e.what(), testing::HasSubstr("Cannot access field \"b.d.e\" in state: V0_H_0"));
+                EXPECT_THAT(e.what(), testing::HasSubstr("Cannot access field \"b.d.e\" in state: V0_H_DONE"));
                 throw e;
             }
         },
@@ -4241,7 +4340,7 @@ TEST_F(FieldAccessOrderCheckTest, disallowsEncodingElementOfEmptyGroup3)
             }
             catch (const std::logic_error &e)
             {
-                EXPECT_THAT(e.what(), testing::HasSubstr("Cannot access field \"b.d.e\" in state: V0_B_1_F_0"));
+                EXPECT_THAT(e.what(), testing::HasSubstr("Cannot access field \"b.d.e\" in state: V0_B_1_F_DONE"));
                 throw e;
             }
         },
@@ -4264,7 +4363,7 @@ TEST_F(FieldAccessOrderCheckTest, disallowsEncodingElementOfEmptyGroup4)
             }
             catch (const std::logic_error &e)
             {
-                EXPECT_THAT(e.what(), testing::HasSubstr("Cannot access field \"b.c\" in state: V1_B_0"));
+                EXPECT_THAT(e.what(), testing::HasSubstr("Cannot access field \"b.c\" in state: V1_B_DONE"));
                 throw e;
             }
         },
@@ -4653,7 +4752,8 @@ TEST_F(FieldAccessOrderCheckTest, disallowsIncompleteMessagesDueToMissingTopLeve
             catch (const std::logic_error &e)
             {
                 EXPECT_THAT(e.what(), testing::HasSubstr(
-                    "Not fully encoded, current state: V0_B_0, allowed transitions: \"dCount(0)\", \"dCount(>0)\""));
+                    "Not fully encoded, current state: V0_B_DONE, allowed transitions:"
+                    " \"b.resetCountToIndex()\", \"dCount(0)\", \"dCount(>0)\""));
                 throw e;
             }
         },
@@ -4677,7 +4777,7 @@ TEST_F(FieldAccessOrderCheckTest, disallowsIncompleteMessagesDueToMissingTopLeve
             {
                 EXPECT_THAT(e.what(), testing::HasSubstr(
                     "Not fully encoded, current state: V0_B_1_BLOCK, allowed transitions: "
-                    "\"b.c(?)\", \"dCount(0)\", \"dCount(>0)\""));
+                    "\"b.c(?)\", \"b.resetCountToIndex()\", \"dCount(0)\", \"dCount(>0)\""));
                 throw e;
             }
         },
@@ -4787,7 +4887,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(
         std::make_tuple(1, 1, "V0_B_1_D_N"),
         std::make_tuple(1, 2, "V0_B_1_D_N"),
-        std::make_tuple(2, 0, "V0_B_N_D_0"),
+        std::make_tuple(2, 0, "V0_B_N_D_DONE"),
         std::make_tuple(2, 1, "V0_B_N_D_N"),
         std::make_tuple(2, 2, "V0_B_N_D_N")
     )

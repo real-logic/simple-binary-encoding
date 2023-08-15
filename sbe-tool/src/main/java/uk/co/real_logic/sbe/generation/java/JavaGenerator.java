@@ -657,6 +657,33 @@ public class JavaGenerator implements CodeGenerator
             .append(indent).append("}\n");
     }
 
+    private static void generateAccessOrderListenerMethodForResetGroupCount(
+        final StringBuilder sb,
+        final AccessOrderModel accessOrderModel,
+        final String indent,
+        final Token token)
+    {
+        if (null == accessOrderModel)
+        {
+            return;
+        }
+
+        sb.append(indent).append("private void onResetCountToIndex()\n")
+            .append(indent).append("{\n");
+
+        final AccessOrderModel.CodecInteraction resetCountToIndex =
+            accessOrderModel.interactionFactory().resetCountToIndex(token);
+
+        generateAccessOrderListener(
+            sb,
+            indent + "   ",
+            "reset count of repeating group",
+            accessOrderModel,
+            resetCountToIndex);
+
+        sb.append(indent).append("}\n");
+    }
+
     private static void generateAccessOrderListenerMethodForVarDataLength(
         final StringBuilder sb,
         final AccessOrderModel accessOrderModel,
@@ -1076,6 +1103,7 @@ public class JavaGenerator implements CodeGenerator
             numInGroupPut);
 
         generateAccessOrderListenerMethodForNextGroupElement(sb, accessOrderModel, ind + "    ", groupToken);
+        generateAccessOrderListenerMethodForResetGroupCount(sb, accessOrderModel, ind + "    ", groupToken);
 
         sb.append("\n")
             .append(ind).append("    public ").append(encoderName(groupName)).append(" next()\n")
@@ -1089,7 +1117,7 @@ public class JavaGenerator implements CodeGenerator
             .append(ind).append("        parentMessage.limit(offset + sbeBlockLength());\n")
             .append(ind).append("        ++index;\n\n")
             .append(ind).append("        return this;\n")
-            .append(ind).append("    }\n");
+            .append(ind).append("    }\n\n");
 
         final String countOffset = "initialLimit + " + numInGroupToken.offset();
         final String resetCountPut = generatePut(
@@ -1098,6 +1126,7 @@ public class JavaGenerator implements CodeGenerator
         sb.append("\n")
             .append(ind).append("    public int resetCountToIndex()\n")
             .append(ind).append("    {\n")
+            .append(generateAccessOrderListenerCall(accessOrderModel, ind + "        ", "onResetCountToIndex"))
             .append(ind).append("        count = index;\n")
             .append(ind).append("        ").append(resetCountPut).append(";\n\n")
             .append(ind).append("        return count;\n")

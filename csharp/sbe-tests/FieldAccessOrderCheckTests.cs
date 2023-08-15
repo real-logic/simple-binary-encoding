@@ -225,6 +225,79 @@ namespace Org.SbeTool.Sbe.Tests
         }
 
         [TestMethod]
+        public void AllowsEncoderToResetZeroGroupLengthToZero()
+        {
+            var encoder = new GroupAndVarLength();
+            encoder.WrapForEncodeAndApplyHeader(_buffer, Offset, _messageHeader);
+            encoder.A = 42;
+            encoder.BCount(0).ResetCountToIndex();
+            encoder.SetD("abc");
+            encoder.CheckEncodingIsComplete();
+
+            var decoder = new GroupAndVarLength();
+            decoder.WrapForDecodeAndApplyHeader(_buffer, Offset, _messageHeader);
+            Assert.AreEqual(42, decoder.A);
+            var bDecoder = decoder.B;
+            Assert.AreEqual(0, bDecoder.Count);
+            Assert.AreEqual("abc", decoder.GetD());
+            Assert.IsTrue(decoder.ToString().Contains("A=42|B=[]|D='abc'"));
+        }
+
+        [TestMethod]
+        public void AllowsEncoderToResetNonZeroGroupLengthToZeroBeforeCallingNext()
+        {
+            var encoder = new GroupAndVarLength();
+            encoder.WrapForEncodeAndApplyHeader(_buffer, Offset, _messageHeader);
+            encoder.A = 42;
+            encoder.BCount(2).ResetCountToIndex();
+            encoder.SetD("abc");
+            encoder.CheckEncodingIsComplete();
+
+            var decoder = new GroupAndVarLength();
+            decoder.WrapForDecodeAndApplyHeader(_buffer, Offset, _messageHeader);
+            Assert.AreEqual(42, decoder.A);
+            var bDecoder = decoder.B;
+            Assert.AreEqual(0, bDecoder.Count);
+            Assert.AreEqual("abc", decoder.GetD());
+            Assert.IsTrue(decoder.ToString().Contains("A=42|B=[]|D='abc'"));
+        }
+
+        [TestMethod]
+        public void AllowsEncoderToResetNonZeroGroupLengthToNonZero()
+        {
+            var encoder = new GroupAndVarLength();
+            encoder.WrapForEncodeAndApplyHeader(_buffer, Offset, _messageHeader);
+            encoder.A = 42;
+            var bEncoder = encoder.BCount(2);
+            bEncoder.Next().C = 43;
+            bEncoder.ResetCountToIndex();
+            encoder.SetD("abc");
+            encoder.CheckEncodingIsComplete();
+
+            var decoder = new GroupAndVarLength();
+            decoder.WrapForDecodeAndApplyHeader(_buffer, Offset, _messageHeader);
+            Assert.AreEqual(42, decoder.A);
+            var bDecoder = decoder.B;
+            Assert.AreEqual(1, bDecoder.Count);
+            Assert.AreEqual(43, bDecoder.Next().C);
+            Assert.AreEqual("abc", decoder.GetD());
+            Assert.IsTrue(decoder.ToString().Contains("A=42|B=[(C=43)]|D='abc'"));
+        }
+
+        [TestMethod]
+        public void DisallowsEncoderToResetGroupLengthMidGroupElement()
+        {
+            var encoder = new NestedGroups();
+            encoder.WrapForEncodeAndApplyHeader(_buffer, Offset, _messageHeader);
+            encoder.A = 42;
+            var bEncoder = encoder.BCount(2).Next();
+            bEncoder.C = 43;
+            var exception = Assert.ThrowsException<InvalidOperationException>(() => bEncoder.ResetCountToIndex());
+            Assert.IsTrue(exception.Message.Contains(
+                "Cannot reset count of repeating group \"b\" in state: V0_B_N_BLOCK"));
+        }
+
+        [TestMethod]
         public void DisallowsEncodingGroupElementBeforeCallingNext()
         {
             var encoder = new GroupAndVarLength()
@@ -2311,7 +2384,7 @@ namespace Org.SbeTool.Sbe.Tests
         {
             var bEncoder = EncodeUntilGroupWithAsciiInside();
 
-            Exception exception = Assert.ThrowsException<InvalidOperationException>(() => 
+            Exception exception = Assert.ThrowsException<InvalidOperationException>(() =>
                 bEncoder.SetC(Encoding.ASCII.GetBytes("EURUSD"), 0));
 
             Assert.IsTrue(exception.Message.Contains("Cannot access field \"b.c\" in state: V0_B_N"));
@@ -2322,7 +2395,7 @@ namespace Org.SbeTool.Sbe.Tests
         {
             var bEncoder = EncodeUntilGroupWithAsciiInside();
 
-            Exception exception = Assert.ThrowsException<InvalidOperationException>(() => 
+            Exception exception = Assert.ThrowsException<InvalidOperationException>(() =>
                 bEncoder.SetC(Encoding.ASCII.GetBytes("EURUSD")));
 
             Assert.IsTrue(exception.Message.Contains("Cannot access field \"b.c\" in state: V0_B_N"));
@@ -2693,7 +2766,7 @@ namespace Org.SbeTool.Sbe.Tests
             encoder.HCount(0);
 
             var ex = Assert.ThrowsException<InvalidOperationException>(() => dEncoder.E = 44);
-            Assert.IsTrue(ex.Message.Contains("Cannot access field \"b.d.e\" in state: V0_H_0"));
+            Assert.IsTrue(ex.Message.Contains("Cannot access field \"b.d.e\" in state: V0_H_DONE"));
         }
 
         [TestMethod]
@@ -2710,7 +2783,7 @@ namespace Org.SbeTool.Sbe.Tests
             encoder.HCount(0);
 
             var ex = Assert.ThrowsException<InvalidOperationException>(() => dEncoder.E = 44);
-            Assert.IsTrue(ex.Message.Contains("Cannot access field \"b.d.e\" in state: V0_H_0"));
+            Assert.IsTrue(ex.Message.Contains("Cannot access field \"b.d.e\" in state: V0_H_DONE"));
         }
 
         [TestMethod]
@@ -2726,7 +2799,7 @@ namespace Org.SbeTool.Sbe.Tests
             bEncoder.FCount(0);
 
             var ex = Assert.ThrowsException<InvalidOperationException>(() => dEncoder.E = 44);
-            Assert.IsTrue(ex.Message.Contains("Cannot access field \"b.d.e\" in state: V0_B_1_F_0"));
+            Assert.IsTrue(ex.Message.Contains("Cannot access field \"b.d.e\" in state: V0_B_1_F_DONE"));
         }
 
 
@@ -2738,7 +2811,7 @@ namespace Org.SbeTool.Sbe.Tests
             encoder.A = 42;
             var bEncoder = encoder.BCount(0);
             var exception = Assert.ThrowsException<InvalidOperationException>(() => bEncoder.C = 43);
-            Assert.IsTrue(exception.Message.Contains("Cannot access field \"b.c\" in state: V1_B_0"));
+            Assert.IsTrue(exception.Message.Contains("Cannot access field \"b.c\" in state: V1_B_DONE"));
         }
 
         [TestMethod]
@@ -3003,7 +3076,8 @@ namespace Org.SbeTool.Sbe.Tests
             encoder.BCount(0);
             var exception = Assert.ThrowsException<InvalidOperationException>(encoder.CheckEncodingIsComplete);
             StringAssert.Contains(exception.Message,
-                "Not fully encoded, current state: V0_B_0, allowed transitions: \"dCount(0)\", \"dCount(>0)\"");
+                "Not fully encoded, current state: V0_B_DONE, allowed transitions: " +
+                "\"b.resetCountToIndex()\", \"dCount(0)\", \"dCount(>0)\"");
         }
 
         [TestMethod]
@@ -3016,7 +3090,8 @@ namespace Org.SbeTool.Sbe.Tests
             bEncoder.C = 2;
             var exception = Assert.ThrowsException<InvalidOperationException>(encoder.CheckEncodingIsComplete);
             StringAssert.Contains(exception.Message,
-                "Not fully encoded, current state: V0_B_1_BLOCK, allowed transitions: \"b.c(?)\", \"dCount(0)\", \"dCount(>0)\"");
+                "Not fully encoded, current state: V0_B_1_BLOCK, allowed transitions:" +
+                " \"b.c(?)\", \"b.resetCountToIndex()\", \"dCount(0)\", \"dCount(>0)\"");
         }
 
         [TestMethod]
@@ -3047,7 +3122,7 @@ namespace Org.SbeTool.Sbe.Tests
         [DataTestMethod]
         [DataRow(1, 1, "V0_B_1_D_N")]
         [DataRow(1, 2, "V0_B_1_D_N")]
-        [DataRow(2, 0, "V0_B_N_D_0")]
+        [DataRow(2, 0, "V0_B_N_D_DONE")]
         [DataRow(2, 1, "V0_B_N_D_N")]
         [DataRow(2, 2, "V0_B_N_D_N")]
         public void DisallowsIncompleteMessagesDueToMissingNestedGroup2(

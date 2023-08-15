@@ -499,13 +499,13 @@ public final class AccessOrderModel
                 final State nRemainingGroup = allocateState(groupPrefix + "N");
                 final State nRemainingGroupElement = allocateState(groupPrefix + "N_BLOCK");
                 final State oneRemainingGroupElement = allocateState(groupPrefix + "1_BLOCK");
-                final State emptyGroup = allocateState(groupPrefix + "0");
+                final State doneGroup = allocateState(groupPrefix + "DONE");
 
                 final Set<State> beginGroupStates = new HashSet<>(currentStates);
 
                 // fooCount(0)
                 final CodecInteraction emptyGroupInteraction = interactionFactory.determineGroupIsEmpty(token);
-                allocateTransitions(emptyGroupInteraction, beginGroupStates, emptyGroup);
+                allocateTransitions(emptyGroupInteraction, beginGroupStates, doneGroup);
 
                 // fooCount(N) where N > 0
                 final CodecInteraction nonEmptyGroupInteraction = interactionFactory.determineGroupHasElements(token);
@@ -548,8 +548,16 @@ public final class AccessOrderModel
                 );
                 walkSchemaLevel(oneRemainingCollector, groupFields, groupGroups, groupVarData);
 
+                final CodecInteraction resetCountToIndexInteraction = interactionFactory.resetCountToIndex(token);
                 currentStates.clear();
-                currentStates.add(emptyGroup);
+                currentStates.add(doneGroup);
+                currentStates.add(nRemainingGroup);
+                currentStates.addAll(nRemainingCollector.exitStates());
+                currentStates.addAll(oneRemainingCollector.exitStates());
+                allocateTransitions(resetCountToIndexInteraction, currentStates, doneGroup);
+
+                currentStates.clear();
+                currentStates.add(doneGroup);
                 currentStates.addAll(oneRemainingCollector.exitStates());
             }
         }
@@ -936,6 +944,41 @@ public final class AccessOrderModel
         }
 
         /**
+         * When the number of elements in a repeating group is set to be its current extent.
+         */
+        private static final class ResetCountToIndex extends CodecInteraction
+        {
+            private final String groupPath;
+            private final Token token;
+
+            private ResetCountToIndex(final String groupPath, final Token token)
+            {
+                assert groupPath != null;
+                assert token.signal() == Signal.BEGIN_GROUP;
+                this.groupPath = groupPath;
+                this.token = token;
+            }
+
+            @Override
+            public String groupQualifiedName()
+            {
+                return groupPath + token.name();
+            }
+
+            @Override
+            String exampleCode()
+            {
+                return groupPath + token.name() + ".resetCountToIndex()";
+            }
+
+            @Override
+            String exampleConditions()
+            {
+                return "";
+            }
+        }
+
+        /**
          * When the length of a variable length field is accessed without adjusting the position.
          */
         private static final class AccessVarDataLength extends CodecInteraction
@@ -984,6 +1027,7 @@ public final class AccessOrderModel
             private final Map<Token, CodecInteraction> determineGroupHasElementsInteractions = new HashMap<>();
             private final Map<Token, CodecInteraction> moveToNextElementInteractions = new HashMap<>();
             private final Map<Token, CodecInteraction> moveToLastElementInteractions = new HashMap<>();
+            private final Map<Token, CodecInteraction> resetCountToIndexInteractions = new HashMap<>();
             private final Map<Token, CodecInteraction> accessVarDataLengthInteractions = new HashMap<>();
             private final Map<Token, String> groupPathsByField;
             private final Set<Token> topLevelBlockFields;
@@ -1098,6 +1142,25 @@ public final class AccessOrderModel
             {
                 return moveToLastElementInteractions.computeIfAbsent(token,
                     t -> new MoveToLastElement(groupPathsByField.get(t), t));
+            }
+
+
+            /**
+             * Find or create a {@link CodecInteraction} to represent resetting the count
+             * of a repeating group to the current index.
+             *
+             * <p>For encoders, decoders, and codecs, this will be when the {@code resetCountToIndex}
+             * method is called, e.g., {@code myGroup.resetCountToIndex()}.
+             *
+             * <p>The supplied token must carry a {@link Signal#BEGIN_GROUP} signal.
+             *
+             * @param token the token identifying the group
+             * @return the {@link CodecInteraction} instance
+             */
+            public CodecInteraction resetCountToIndex(final Token token)
+            {
+                return resetCountToIndexInteractions.computeIfAbsent(token,
+                    t -> new ResetCountToIndex(groupPathsByField.get(t), t));
             }
 
             /**

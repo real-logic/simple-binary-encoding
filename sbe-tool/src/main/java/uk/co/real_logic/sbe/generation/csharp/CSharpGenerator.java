@@ -344,19 +344,22 @@ public class CSharpGenerator implements CodeGenerator
         final String indent)
     {
         generateAccessOrderListenerMethodForNextGroupElement(sb, accessOrderModel, indent + INDENT, groupToken);
+        generateAccessOrderListenerMethodForResetGroupCount(sb, accessOrderModel, indent + INDENT, groupToken);
 
         sb.append(
             indent + INDENT + "public int ActingBlockLength { get { return _blockLength; } }\n\n" +
             indent + INDENT + "public int Count { get { return _count; } }\n\n" +
-            indent + INDENT + "public bool HasNext { get { return _index < _count; } }\n");
+            indent + INDENT + "public bool HasNext { get { return _index < _count; } }\n\n");
 
         sb.append(String.format("\n" +
             indent + INDENT + "public int ResetCountToIndex()\n" +
             indent + INDENT + "{\n" +
+            "%s" +
             indent + INDENT + INDENT + "_count = _index;\n" +
             indent + INDENT + INDENT + "_dimensions.NumInGroup = (%s) _count;\n\n" +
             indent + INDENT + INDENT + "return _count;\n" +
             indent + INDENT + "}\n",
+            generateAccessOrderListenerCall(accessOrderModel, indent + TWO_INDENT, "OnResetCountToIndex"),
             typeForNumInGroup));
 
         sb.append(String.format("\n" +
@@ -1831,6 +1834,33 @@ public class CSharpGenerator implements CodeGenerator
 
         sb.append(indent).append(INDENT).append("}\n")
             .append(indent).append("}\n");
+    }
+
+    private static void generateAccessOrderListenerMethodForResetGroupCount(
+        final StringBuilder sb,
+        final AccessOrderModel accessOrderModel,
+        final String indent,
+        final Token token)
+    {
+        if (null == accessOrderModel)
+        {
+            return;
+        }
+
+        sb.append(indent).append("private void OnResetCountToIndex()\n")
+            .append(indent).append("{\n");
+
+        final AccessOrderModel.CodecInteraction resetCountToIndex =
+            accessOrderModel.interactionFactory().resetCountToIndex(token);
+
+        generateAccessOrderListener(
+            sb,
+            indent + "   ",
+            "reset count of repeating group",
+            accessOrderModel,
+            resetCountToIndex);
+
+        sb.append(indent).append("}\n");
     }
 
     private static void generateAccessOrderListenerMethodForVarDataLength(

@@ -521,6 +521,33 @@ public class CppGenerator implements CodeGenerator
             .append(indent).append("}\n");
     }
 
+    private static void generateAccessOrderListenerMethodForResetGroupCount(
+        final StringBuilder sb,
+        final AccessOrderModel accessOrderModel,
+        final String indent,
+        final Token token)
+    {
+        if (null == accessOrderModel)
+        {
+            return;
+        }
+
+        sb.append(indent).append("void onResetCountToIndex()\n")
+            .append(indent).append("{\n");
+
+        final AccessOrderModel.CodecInteraction resetCountToIndex =
+            accessOrderModel.interactionFactory().resetCountToIndex(token);
+
+        generateAccessOrderListener(
+            sb,
+            indent + "   ",
+            "reset count of repeating group",
+            accessOrderModel,
+            resetCountToIndex);
+
+        sb.append(indent).append("}\n");
+    }
+
     private void generateGroups(
         final StringBuilder sb,
         final List<Token> tokens,
@@ -733,6 +760,7 @@ public class CppGenerator implements CodeGenerator
         }
 
         generateAccessOrderListenerMethodForNextGroupElement(sb, accessOrderModel, indent + INDENT, groupToken);
+        generateAccessOrderListenerMethodForResetGroupCount(sb, accessOrderModel, indent, groupToken);
 
         final CharSequence onNextAccessOrderCall = null == accessOrderModel ? "" :
             generateAccessOrderListenerCall(accessOrderModel, indent + TWO_INDENT, "onNextElementAccessed");
@@ -803,6 +831,7 @@ public class CppGenerator implements CodeGenerator
         sb.append("\n")
             .append(indent).append("    inline std::uint64_t resetCountToIndex()\n")
             .append(indent).append("    {\n")
+            .append(generateAccessOrderListenerCall(accessOrderModel, indent + TWO_INDENT, "onResetCountToIndex"))
             .append(indent).append("        m_count = m_index;\n")
             .append(indent).append("        ").append(dimensionsClassName)
             .append(" dimensions(m_buffer, m_initialPosition, m_bufferLength, m_actingVersion);\n")

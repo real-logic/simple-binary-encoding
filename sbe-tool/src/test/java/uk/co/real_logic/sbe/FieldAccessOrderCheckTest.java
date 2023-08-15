@@ -331,6 +331,76 @@ public class FieldAccessOrderCheckTest
     }
 
     @Test
+    void allowsEncoderToResetZeroGroupLengthToZero()
+    {
+        final GroupAndVarLengthEncoder encoder = new GroupAndVarLengthEncoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(42);
+        encoder.bCount(0).resetCountToIndex();
+        encoder.d("abc");
+        encoder.checkEncodingIsComplete();
+
+        final GroupAndVarLengthDecoder decoder = new GroupAndVarLengthDecoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
+        assertThat(decoder.a(), equalTo(42));
+        final GroupAndVarLengthDecoder.BDecoder bs = decoder.b();
+        assertThat(bs.count(), equalTo(0));
+        assertThat(decoder.d(), equalTo("abc"));
+        assertThat(decoder.toString(), containsString("a=42|b=[]|d='abc'"));
+    }
+
+    @Test
+    void allowsEncoderToResetNonZeroGroupLengthToZeroBeforeCallingNext()
+    {
+        final GroupAndVarLengthEncoder encoder = new GroupAndVarLengthEncoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(42);
+        encoder.bCount(2).resetCountToIndex();
+        encoder.d("abc");
+        encoder.checkEncodingIsComplete();
+
+        final GroupAndVarLengthDecoder decoder = new GroupAndVarLengthDecoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
+        assertThat(decoder.a(), equalTo(42));
+        final GroupAndVarLengthDecoder.BDecoder bs = decoder.b();
+        assertThat(bs.count(), equalTo(0));
+        assertThat(decoder.d(), equalTo("abc"));
+        assertThat(decoder.toString(), containsString("a=42|b=[]|d='abc'"));
+    }
+
+    @Test
+    void allowsEncoderToResetNonZeroGroupLengthToNonZero()
+    {
+        final GroupAndVarLengthEncoder encoder = new GroupAndVarLengthEncoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(42);
+        encoder.bCount(2).next().c(43).resetCountToIndex();
+        encoder.d("abc");
+        encoder.checkEncodingIsComplete();
+
+        final GroupAndVarLengthDecoder decoder = new GroupAndVarLengthDecoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
+        assertThat(decoder.a(), equalTo(42));
+        final GroupAndVarLengthDecoder.BDecoder bs = decoder.b();
+        assertThat(bs.count(), equalTo(1));
+        assertThat(bs.next().c(), equalTo(43));
+        assertThat(decoder.d(), equalTo("abc"));
+        assertThat(decoder.toString(), containsString("a=42|b=[(c=43)]|d='abc'"));
+    }
+
+    @Test
+    void disallowsEncoderToResetGroupLengthMidGroupElement()
+    {
+        final NestedGroupsEncoder encoder = new NestedGroupsEncoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderEncoder);
+        encoder.a(42);
+        final NestedGroupsEncoder.BEncoder bEncoder = encoder.bCount(2).next().c(43);
+        final IllegalStateException exception = assertThrows(IllegalStateException.class, bEncoder::resetCountToIndex);
+        assertThat(exception.getMessage(),
+            containsString("Cannot reset count of repeating group \"b\" in state: V0_B_N_BLOCK"));
+    }
+
+    @Test
     void allowsDecodingGroupAndVariableLengthFieldsAfterRewind()
     {
         final GroupAndVarLengthEncoder encoder = new GroupAndVarLengthEncoder()
@@ -2997,7 +3067,7 @@ public class FieldAccessOrderCheckTest
         encoder.hCount(0);
         final IllegalStateException exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> dEncoder.e(44));
-        assertThat(exception.getMessage(), containsString("Cannot access field \"b.d.e\" in state: V0_H_0"));
+        assertThat(exception.getMessage(), containsString("Cannot access field \"b.d.e\" in state: V0_H_DONE"));
     }
 
     @Test
@@ -3013,7 +3083,7 @@ public class FieldAccessOrderCheckTest
         bEncoder.fCount(0);
         final IllegalStateException exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> dEncoder.e(44));
-        assertThat(exception.getMessage(), containsString("Cannot access field \"b.d.e\" in state: V0_B_1_F_0"));
+        assertThat(exception.getMessage(), containsString("Cannot access field \"b.d.e\" in state: V0_B_1_F_DONE"));
     }
 
     @Test
@@ -3025,7 +3095,7 @@ public class FieldAccessOrderCheckTest
         final AddPrimitiveInsideGroupV1Encoder.BEncoder bEncoder = encoder.bCount(0);
         final IllegalStateException exception =
             assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, () -> bEncoder.c(43));
-        assertThat(exception.getMessage(), containsString("Cannot access field \"b.c\" in state: V1_B_0"));
+        assertThat(exception.getMessage(), containsString("Cannot access field \"b.c\" in state: V1_B_DONE"));
     }
 
     @Test
@@ -3255,7 +3325,8 @@ public class FieldAccessOrderCheckTest
         encoder.a(1).bCount(0);
         final Exception exception = assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, encoder::checkEncodingIsComplete);
         assertThat(exception.getMessage(), containsString(
-            "Not fully encoded, current state: V0_B_0, allowed transitions: \"dCount(0)\", \"dCount(>0)\""));
+            "Not fully encoded, current state: V0_B_DONE, allowed transitions: " +
+            "\"b.resetCountToIndex()\", \"dCount(0)\", \"dCount(>0)\""));
     }
 
     @Test
@@ -3267,7 +3338,7 @@ public class FieldAccessOrderCheckTest
         final Exception exception = assertThrows(INCORRECT_ORDER_EXCEPTION_CLASS, encoder::checkEncodingIsComplete);
         assertThat(exception.getMessage(), containsString(
             "Not fully encoded, current state: V0_B_1_BLOCK, allowed transitions: " +
-            "\"b.c(?)\", \"dCount(0)\", \"dCount(>0)\""));
+            "\"b.c(?)\", \"b.resetCountToIndex()\", \"dCount(0)\", \"dCount(>0)\""));
     }
 
     @Test
@@ -3299,7 +3370,7 @@ public class FieldAccessOrderCheckTest
     @CsvSource(value = {
         "1,1,V0_B_1_D_N",
         "1,2,V0_B_1_D_N",
-        "2,0,V0_B_N_D_0",
+        "2,0,V0_B_N_D_DONE",
         "2,1,V0_B_N_D_N",
         "2,2,V0_B_N_D_N",
     })
