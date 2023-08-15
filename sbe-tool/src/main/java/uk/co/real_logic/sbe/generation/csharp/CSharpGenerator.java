@@ -156,8 +156,8 @@ public class CSharpGenerator implements CodeGenerator
                 out.append(generateClassDeclaration(className));
                 out.append(generateMessageFlyweightCode(className, msgToken, accessOrderModel, BASE_INDENT));
 
-                out.append(generateFieldOrderStates(BASE_INDENT, accessOrderModel));
-                out.append(generateFullyEncodedCheck(BASE_INDENT, accessOrderModel));
+                out.append(generateFieldOrderStates(BASE_INDENT + INDENT, accessOrderModel));
+                out.append(generateFullyEncodedCheck(BASE_INDENT + INDENT, accessOrderModel));
 
                 out.append(generateFields(accessOrderModel, fields, BASE_INDENT));
 
@@ -412,7 +412,7 @@ public class CSharpGenerator implements CodeGenerator
             toUpperFirstChar(groupName),
             token.id()));
 
-        generateAccessOrderListenerMethodForGroupWrap(sb, accessOrderModel, indent + INDENT, token);
+        generateAccessOrderListenerMethodForGroupWrap(sb, accessOrderModel, indent, token);
 
         generateSinceActingDeprecated(sb, indent, toUpperFirstChar(groupName), token);
 
@@ -1927,13 +1927,13 @@ public class CSharpGenerator implements CodeGenerator
                 final Token encodingToken = tokens.get(i + 1);
                 final String propertyName = signalToken.name();
 
-                generateFieldIdMethod(sb, signalToken, indent);
+                generateFieldIdMethod(sb, signalToken, indent + INDENT);
                 generateSinceActingDeprecated(
-                    sb, indent, CSharpUtil.formatPropertyName(signalToken.name()), signalToken);
+                    sb, indent + INDENT, CSharpUtil.formatPropertyName(signalToken.name()), signalToken);
                 generateOffsetMethod(sb, signalToken, indent + INDENT);
                 generateFieldMetaAttributeMethod(sb, signalToken, indent + INDENT);
 
-                generateAccessOrderListenerMethod(sb, accessOrderModel, indent, signalToken);
+                generateAccessOrderListenerMethod(sb, accessOrderModel, indent + INDENT, signalToken);
 
                 switch (encodingToken.signal())
                 {
