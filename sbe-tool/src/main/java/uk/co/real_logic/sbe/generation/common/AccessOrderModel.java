@@ -41,7 +41,7 @@ import static uk.co.real_logic.sbe.ir.GenerationUtil.collectVarData;
 public final class AccessOrderModel
 {
     private static final boolean GENERATE_ACCESS_ORDER_CHECKS = Boolean.parseBoolean(
-        System.getProperty("sbe.generate.access.order.checks", "true"));
+        System.getProperty("sbe.generate.access.order.checks", "false"));
     private final Map<Token, String> groupPathsByField = new HashMap<>();
     private final Set<Token> topLevelBlockFields = new HashSet<>();
     private final CodecInteraction.HashConsingFactory interactionFactory =

@@ -63,6 +63,8 @@ add_custom_command(
             -Dsbe.output.dir=${CXX_CODEC_TARGET_DIR}
             -Dsbe.generate.ir="true"
             -Dsbe.target.language="cpp"
+            -Dsbe.generate.access.order.checks="true"
+            -Dsbe.cpp.disable.implicit.copying="true"
             -jar ${SBE_JAR}
             ${CODE_GENERATION_SCHEMA}
             ${COMPOSITE_OFFSETS_SCHEMA}

@@ -47,7 +47,7 @@ import static uk.co.real_logic.sbe.ir.GenerationUtil.*;
 public class CppGenerator implements CodeGenerator
 {
     private static final boolean DISABLE_IMPLICIT_COPYING = Boolean.parseBoolean(
-        System.getProperty("sbe.disable.implicit.copying", "true"));
+        System.getProperty("sbe.cpp.disable.implicit.copying", "false"));
     private static final String BASE_INDENT = "";
     private static final String INDENT = "    ";
     private static final String TWO_INDENT = INDENT + INDENT;

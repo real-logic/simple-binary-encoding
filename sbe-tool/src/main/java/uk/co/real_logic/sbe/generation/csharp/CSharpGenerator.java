@@ -2552,12 +2552,15 @@ public class CSharpGenerator implements CodeGenerator
         append(sb, TWO_INDENT, "    }");
         sb.append('\n');
         append(sb, TWO_INDENT, "    int originalLimit = this.Limit;");
-        sb.append("#if ENABLE_ACCESS_ORDER_CHECKS\n");
-        append(sb, TWO_INDENT, "    CodecState originalState = _codecState;");
-        sb.append(THREE_INDENT).append("_codecState = ")
-            .append(qualifiedStateCase(accessOrderModel.notWrappedState())).append(";\n");
-        append(sb, TWO_INDENT, "    OnWrapForDecode(_actingVersion);");
-        sb.append("#endif\n");
+        if (null != accessOrderModel)
+        {
+            sb.append("#if ENABLE_ACCESS_ORDER_CHECKS\n");
+            append(sb, TWO_INDENT, "    CodecState originalState = _codecState;");
+            sb.append(THREE_INDENT).append("_codecState = ")
+                .append(qualifiedStateCase(accessOrderModel.notWrappedState())).append(";\n");
+            append(sb, TWO_INDENT, "    OnWrapForDecode(_actingVersion);");
+            sb.append("#endif\n");
+        }
         append(sb, TWO_INDENT, "    this.Limit = _offset + _actingBlockLength;");
         append(sb, TWO_INDENT, "    builder.Append(\"[" + name + "](sbeTemplateId=\");");
         append(sb, TWO_INDENT, "    builder.Append(" + name + ".TemplateId);");
@@ -2581,9 +2584,12 @@ public class CSharpGenerator implements CodeGenerator
         sb.append('\n');
         appendDisplay(sb, tokens, groups, varData, THREE_INDENT);
         sb.append('\n');
-        sb.append("#if ENABLE_ACCESS_ORDER_CHECKS\n");
-        append(sb, TWO_INDENT, "    _codecState = originalState;");
-        sb.append("#endif\n");
+        if (null != accessOrderModel)
+        {
+            sb.append("#if ENABLE_ACCESS_ORDER_CHECKS\n");
+            append(sb, TWO_INDENT, "    _codecState = originalState;");
+            sb.append("#endif\n");
+        }
         append(sb, TWO_INDENT, "    this.Limit = originalLimit;");
         sb.append('\n');
         append(sb, TWO_INDENT, "}");
