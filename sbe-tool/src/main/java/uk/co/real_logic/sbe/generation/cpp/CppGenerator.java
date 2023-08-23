@@ -259,18 +259,20 @@ public class CppGenerator implements CodeGenerator
         final String constDeclaration = canChangeState(accessOrderModel, fieldAccess) ? "" : " const";
 
         sb.append("\n")
-            .append(indent).append("void ").append(accessOrderListenerMethodName(token)).append("()")
+            .append(indent).append("private:\n")
+            .append(indent).append(INDENT).append("void ").append(accessOrderListenerMethodName(token)).append("()")
             .append(constDeclaration).append("\n")
-            .append(indent).append("{\n");
+            .append(indent).append(INDENT).append("{\n");
 
         generateAccessOrderListener(
             sb,
-            indent + INDENT,
+            indent + TWO_INDENT,
             "access field",
             accessOrderModel,
             fieldAccess);
 
-        sb.append(indent).append("}\n");
+        sb.append(indent).append(INDENT).append("}\n\n")
+            .append(indent).append("public:");
     }
 
     private static boolean canChangeState(
@@ -349,38 +351,40 @@ public class CppGenerator implements CodeGenerator
         }
 
         sb.append("\n")
-            .append(indent).append("void ").append(accessOrderListenerMethodName(token))
+            .append(indent).append("private:\n")
+            .append(indent).append(INDENT).append("void ").append(accessOrderListenerMethodName(token))
             .append("(std::uint64_t remaining, std::string action)\n")
-            .append(indent).append("{\n")
-            .append(indent).append(INDENT).append("if (0 == remaining)\n")
-            .append(indent).append(INDENT).append("{\n");
+            .append(indent).append(INDENT).append("{\n")
+            .append(indent).append(TWO_INDENT).append("if (0 == remaining)\n")
+            .append(indent).append(TWO_INDENT).append("{\n");
 
         final AccessOrderModel.CodecInteraction selectEmptyGroup =
             accessOrderModel.interactionFactory().determineGroupIsEmpty(token);
 
         generateAccessOrderListener(
             sb,
-            indent + TWO_INDENT,
+            indent + THREE_INDENT,
             "\" + action + \" count of repeating group",
             accessOrderModel,
             selectEmptyGroup);
 
-        sb.append(indent).append(INDENT).append("}\n")
-            .append(indent).append(INDENT).append("else\n")
-            .append(indent).append(INDENT).append("{\n");
+        sb.append(indent).append(TWO_INDENT).append("}\n")
+            .append(indent).append(TWO_INDENT).append("else\n")
+            .append(indent).append(TWO_INDENT).append("{\n");
 
         final AccessOrderModel.CodecInteraction selectNonEmptyGroup =
             accessOrderModel.interactionFactory().determineGroupHasElements(token);
 
         generateAccessOrderListener(
             sb,
-            indent + TWO_INDENT,
+            indent + THREE_INDENT,
             "\" + action + \" count of repeating group",
             accessOrderModel,
             selectNonEmptyGroup);
 
-        sb.append(indent).append(INDENT).append("}\n")
-            .append(indent).append("}\n");
+        sb.append(indent).append(TWO_INDENT).append("}\n")
+            .append(indent).append(INDENT).append("}\n\n")
+            .append(indent).append("public:");
     }
 
     private static void generateAccessOrderListenerMethodForVarDataLength(
@@ -395,21 +399,23 @@ public class CppGenerator implements CodeGenerator
         }
 
         sb.append("\n")
-            .append(indent).append("void ").append(accessOrderListenerMethodName(token, "Length"))
+            .append(indent).append("private:\n")
+            .append(indent).append(INDENT).append("void ").append(accessOrderListenerMethodName(token, "Length"))
             .append("() const\n")
-            .append(indent).append("{\n");
+            .append(indent).append(INDENT).append("{\n");
 
         final AccessOrderModel.CodecInteraction accessLength =
             accessOrderModel.interactionFactory().accessVarDataLength(token);
 
         generateAccessOrderListener(
             sb,
-            indent + INDENT,
+            indent + TWO_INDENT,
             "decode length of var data",
             accessOrderModel,
             accessLength);
 
-        sb.append(indent).append("}\n");
+        sb.append(indent).append(INDENT).append("}\n\n")
+            .append(indent).append("public:");
     }
 
     private static void generateAccessOrderListener(
@@ -487,38 +493,38 @@ public class CppGenerator implements CodeGenerator
 
         sb.append("\n");
 
-        sb.append(indent).append("void onNextElementAccessed()\n")
-            .append(indent).append("{\n")
-            .append(indent).append(INDENT).append("std::uint64_t remaining = m_count - m_index;\n")
-            .append(indent).append(INDENT).append("if (remaining > 1)\n")
-            .append(indent).append(INDENT).append("{\n");
+        sb.append(indent).append(INDENT).append("void onNextElementAccessed()\n")
+            .append(indent).append(INDENT).append("{\n")
+            .append(indent).append(TWO_INDENT).append("std::uint64_t remaining = m_count - m_index;\n")
+            .append(indent).append(TWO_INDENT).append("if (remaining > 1)\n")
+            .append(indent).append(TWO_INDENT).append("{\n");
 
         final AccessOrderModel.CodecInteraction selectNextElementInGroup =
             accessOrderModel.interactionFactory().moveToNextElement(token);
 
         generateAccessOrderListener(
             sb,
-            indent + TWO_INDENT,
+            indent + THREE_INDENT,
             "access next element in repeating group",
             accessOrderModel,
             selectNextElementInGroup);
 
-        sb.append(indent).append(INDENT).append("}\n")
-            .append(indent).append(INDENT).append("else if (1 == remaining)\n")
-            .append(indent).append(INDENT).append("{\n");
+        sb.append(indent).append(TWO_INDENT).append("}\n")
+            .append(indent).append(TWO_INDENT).append("else if (1 == remaining)\n")
+            .append(indent).append(TWO_INDENT).append("{\n");
 
         final AccessOrderModel.CodecInteraction selectLastElementInGroup =
             accessOrderModel.interactionFactory().moveToLastElement(token);
 
         generateAccessOrderListener(
             sb,
-            indent + TWO_INDENT,
+            indent + THREE_INDENT,
             "access next element in repeating group",
             accessOrderModel,
             selectLastElementInGroup);
 
-        sb.append(indent).append(INDENT).append("}\n")
-            .append(indent).append("}\n");
+        sb.append(indent).append(TWO_INDENT).append("}\n")
+            .append(indent).append(INDENT).append("}\n");
     }
 
     private static void generateAccessOrderListenerMethodForResetGroupCount(
@@ -532,20 +538,21 @@ public class CppGenerator implements CodeGenerator
             return;
         }
 
-        sb.append(indent).append("void onResetCountToIndex()\n")
-            .append(indent).append("{\n");
+        sb.append("\n")
+            .append(indent).append(INDENT).append("void onResetCountToIndex()\n")
+            .append(indent).append(INDENT).append("{\n");
 
         final AccessOrderModel.CodecInteraction resetCountToIndex =
             accessOrderModel.interactionFactory().resetCountToIndex(token);
 
         generateAccessOrderListener(
             sb,
-            indent + "   ",
+            indent + TWO_INDENT,
             "reset count of repeating group",
             accessOrderModel,
             resetCountToIndex);
 
-        sb.append(indent).append("}\n");
+        sb.append(indent).append(INDENT).append("}\n");
     }
 
     private void generateGroups(
@@ -759,8 +766,11 @@ public class CppGenerator implements CodeGenerator
                 codecStateNullAssignment);
         }
 
-        generateAccessOrderListenerMethodForNextGroupElement(sb, accessOrderModel, indent + INDENT, groupToken);
+
+        sb.append("\n").append(indent).append("private:");
+        generateAccessOrderListenerMethodForNextGroupElement(sb, accessOrderModel, indent, groupToken);
         generateAccessOrderListenerMethodForResetGroupCount(sb, accessOrderModel, indent, groupToken);
+        sb.append("\n").append(indent).append("public:");
 
         final CharSequence onNextAccessOrderCall = null == accessOrderModel ? "" :
             generateAccessOrderListenerCall(accessOrderModel, indent + TWO_INDENT, "onNextElementAccessed");
@@ -883,7 +893,7 @@ public class CppGenerator implements CodeGenerator
             generateAccessOrderListenerMethodForGroupWrap(
                 sb,
                 accessOrderModel,
-                indent + INDENT,
+                indent,
                 token
             );
         }
@@ -995,7 +1005,7 @@ public class CppGenerator implements CodeGenerator
             generateVarDataDescriptors(
                 sb, token, propertyName, characterEncoding, lengthOfLengthField, indent);
 
-            generateAccessOrderListenerMethodForVarDataLength(sb, accessOrderModel, indent + INDENT, token);
+            generateAccessOrderListenerMethodForVarDataLength(sb, accessOrderModel, indent, token);
 
             final CharSequence lengthAccessListenerCall = generateAccessOrderListenerCall(
                 accessOrderModel, indent + TWO_INDENT,
@@ -1016,7 +1026,7 @@ public class CppGenerator implements CodeGenerator
                 lengthCppType,
                 lengthAccessListenerCall);
 
-            generateAccessOrderListenerMethod(sb, accessOrderModel, indent + INDENT, token);
+            generateAccessOrderListenerMethod(sb, accessOrderModel, indent, token);
 
             final CharSequence accessOrderListenerCall =
                 generateAccessOrderListenerCall(accessOrderModel, indent + TWO_INDENT, token);
@@ -3114,7 +3124,7 @@ public class CppGenerator implements CodeGenerator
                 generateFieldMetaAttributeMethod(sb, signalToken, indent);
                 generateFieldCommonMethods(indent, sb, signalToken, encodingToken, propertyName);
 
-                generateAccessOrderListenerMethod(sb, accessOrderModel, indent + INDENT, signalToken);
+                generateAccessOrderListenerMethod(sb, accessOrderModel, indent, signalToken);
 
                 switch (encodingToken.signal())
                 {
