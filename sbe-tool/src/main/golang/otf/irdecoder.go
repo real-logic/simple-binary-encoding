@@ -209,6 +209,10 @@ func (decoder *IrDecoder) readMessage(offset uint64) uint64 {
 	return size
 }
 
+func (decoder *IrDecoder) Id() int32 {
+	return decoder.id
+}
+
 func readFileIntoBuffer(buffer []byte, filename string, length uint64) error {
 	f, err := os.Open(filename)
 	if err != nil {

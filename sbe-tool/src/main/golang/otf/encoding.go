@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"math"
 	"strconv"
+	"strings"
 )
 
 type ByteOrder int
@@ -160,6 +161,48 @@ func (p *PrimitiveValue) String() string {
 		return strconv.FormatFloat(p.asDouble, 'f', -1, 64)
 	default:
 		return ""
+	}
+}
+
+func AppendPrimitiveValue(sb *strings.Builder, p PrimitiveValue) {
+	switch p.PrimitiveType {
+	case CHAR:
+		if p.size > 1 {
+			sb.WriteString(p.arrayValue)
+			return
+		}
+		sb.WriteByte(byte(p.asInt))
+	case INT8, INT16, INT32, INT64:
+		sb.WriteString(strconv.FormatInt(p.asInt, 10))
+	case UINT8, UINT16, UINT32, UINT64:
+		sb.WriteString(strconv.FormatUint(p.asUInt, 10))
+	case FLOAT, DOUBLE:
+		sb.WriteString(strconv.FormatFloat(p.asDouble, 'f', -1, 64))
+	}
+}
+
+func AppendPrimitiveValueJson(sb *strings.Builder, p PrimitiveValue) {
+	switch p.PrimitiveType {
+	case CHAR:
+		if p.size > 1 {
+			sb.WriteString(p.arrayValue)
+			return
+		}
+		sb.WriteRune('"')
+		sb.WriteByte(byte(p.asInt))
+		sb.WriteRune('"')
+	case INT8, INT16, INT32, INT64:
+		sb.WriteString(strconv.FormatInt(p.asInt, 10))
+	case UINT8:
+		sb.WriteString(strconv.FormatUint(p.asUInt&0xFF, 10))
+	case UINT16:
+		sb.WriteString(strconv.FormatUint(p.asUInt&0xFFFF, 10))
+	case UINT32:
+		sb.WriteString(strconv.FormatUint(p.asUInt&0xFFFFFFFF, 10))
+	case UINT64:
+		sb.WriteString(strconv.FormatUint(p.asUInt, 10))
+	case FLOAT, DOUBLE:
+		sb.WriteString(strconv.FormatFloat(p.asDouble, 'f', -1, 64))
 	}
 }
 
