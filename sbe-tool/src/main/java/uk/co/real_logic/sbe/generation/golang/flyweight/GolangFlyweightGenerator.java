@@ -2046,7 +2046,8 @@ public class GolangFlyweightGenerator implements CodeGenerator
         String sizeValue = String.format("%1$d", size);
         if (size == -1)
         {
-            sizeValue = "SbeNullValueUint64()";
+            addInclude("math");
+            sizeValue = "math.MaxUint64";
         }
 
         return String.format(
@@ -2057,6 +2058,12 @@ public class GolangFlyweightGenerator implements CodeGenerator
                 "%7$s\n" +
                 "}\n\n" +
 
+                "    const (\n" +
+                "        %1$sEncodedLength    uint64 = %2$s\n" +
+                "        %1$sSbeSchemaID        %3$s = %4$s\n" +
+                "        %1$sSbeSchemaVersion   %5$s = %6$s\n" +
+                "    )\n\n" +
+
                 "    func (m *%1$s) Wrap(\n" +
                 "        buffer []byte,\n" +
                 "        offset uint64,\n" +
@@ -2066,7 +2073,7 @@ public class GolangFlyweightGenerator implements CodeGenerator
                 "        m.bufferLength = bufferLength\n" +
                 "        m.offset = offset\n" +
                 "        m.actingVersion = actingVersion\n" +
-                "        if !SbeNoBoundsCheck && (uint64(int(m.offset) + int(%2$s)) > m.bufferLength) {\n" +
+                "        if !SbeNoBoundsCheck && ((m.offset + %2$s) > m.bufferLength) {\n" +
                 "            panic(\"buffer too short for flyweight [E107]\")\n" +
                 "        }\n" +
                 "    }\n\n" +
@@ -2190,7 +2197,7 @@ public class GolangFlyweightGenerator implements CodeGenerator
             "    }\n\n" +
 
             "    func (m *%10$s) SbeBlockAndHeaderLength() uint64 {\n" +
-            "        return m.EncodedLength() + uint64(m.SbeBlockLength())\n" +
+            "        return MessageHeaderEncodedLength + uint64(m.SbeBlockLength())\n" +
             "    }\n\n" +
 
             "    func (m *%10$s) SbeTemplateId() %3$s {\n" +

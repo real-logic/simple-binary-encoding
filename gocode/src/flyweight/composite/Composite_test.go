@@ -9,6 +9,14 @@ func TestEncodeDecode(t *testing.T) {
 	var in Composite
 	in.WrapForEncode(data[:], 0, uint64(len(data)))
 
+	if in.SbeBlockAndHeaderLength() != 50 {
+		t.Logf("Failed to encode, expected %d, got %d",
+			50,
+			in.SbeBlockAndHeaderLength(),
+		)
+		t.Fail()
+	}
+
 	in.Start().
 		SetName("start").
 		SetD(3.14).
