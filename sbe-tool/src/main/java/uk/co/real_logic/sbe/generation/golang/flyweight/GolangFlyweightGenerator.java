@@ -1300,7 +1300,7 @@ public class GolangFlyweightGenerator implements CodeGenerator
 
             out.append(generateEnumValues(tokens.subList(1, tokens.size() - 1), enumName, enumToken));
 
-//            out.append(generateEnumLookupMethod(tokens.subList(1, tokens.size() - 1), enumToken));
+            out.append(generateEnumLookupMethod(tokens.subList(1, tokens.size() - 1), enumToken));
 
             out.append(generateEnumDisplay(tokens.subList(1, tokens.size() - 1), enumToken));
 
@@ -1441,6 +1441,53 @@ public class GolangFlyweightGenerator implements CodeGenerator
 
         return sb;
     }
+
+
+    private CharSequence generateEnumLookupMethod(final List<Token> tokens, final Token encodingToken)
+    {
+        final String enumName = formatClassName(encodingToken.applicableTypeName());
+        final StringBuilder sb = new StringBuilder();
+        final String goTypeName = goTypeName(encodingToken.encoding().primitiveType());
+
+        addInclude("errors");
+        new Formatter(sb).format(
+            "    var %1$sLookupErr = errors.New(\"unknown value for enum %1$s [E103]\")\n" +
+            "    func Lookup%1$s(value %2$s) (%1$s, error) {\n" +
+            "        switch value {\n",
+            enumName,
+            goTypeName);
+
+        for (final Token token : tokens)
+        {
+            final CharSequence constVal = generateLiteral(
+                token.encoding().primitiveType(), token.encoding().constValue().toString());
+
+            sb.append("            case ").append(constVal)
+                .append(": return ").append(enumName).append("_")
+                .append(token.name()).append(", nil\n");
+        }
+
+        final CharSequence nullVal = generateLiteral(
+            encodingToken.encoding().primitiveType(), encodingToken.encoding().applicableNullValue().toString());
+
+        sb.append("            case ").append(nullVal).append(": return ")
+            .append(enumName).append("_").append("NULL_VALUE, nil\n")
+            .append("        }\n\n");
+
+        if (shouldDecodeUnknownEnumValues)
+        {
+
+            sb.append("    return ").append(enumName).append("_").append("UNKNOWN").append(", nil\n}\n");
+        }
+        else
+        {
+            new Formatter(sb).format("        return 0, %1$sLookupErr\n}\n",
+                enumName);
+        }
+
+        return sb;
+    }
+
 
     private CharSequence generateFieldNotPresentCondition(
         final int sinceVersion, final Encoding encoding, final String indent)
