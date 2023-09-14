@@ -120,6 +120,11 @@ public final class FrameCodecDecoder
         return decodedLength;
     }
 
+    public int actingVersion()
+    {
+        return actingVersion;
+    }
+
     public int encodedLength()
     {
         return limit - offset;
