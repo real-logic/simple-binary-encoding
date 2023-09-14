@@ -2716,6 +2716,11 @@ public class JavaGenerator implements CodeGenerator
             "        final int decodedLength = encodedLength();\n" +
             "        limit(currentLimit);\n\n" +
             "        return decodedLength;\n" +
+            "    }\n\n" +
+
+            "    public int actingVersion()\n" +
+            "    {\n" +
+            "        return actingVersion;\n" +
             "    }\n\n";
 
         return generateFlyweightCode(DECODER, className, token, methods, readOnlyBuffer);
