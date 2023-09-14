@@ -75,8 +75,13 @@ type Token struct {
 	componentTokenCount int32
 	signal              Signal
 	name                string
+	referencedName      string
 	description         string
 	encoding            Encoding
+}
+
+func (token Token) ReferencedName() string {
+	return token.referencedName
 }
 
 func (token Token) Signal() Signal {
