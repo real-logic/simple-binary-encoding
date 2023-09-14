@@ -3,6 +3,8 @@ package otf
 import (
 	ir "github.com/real-logic/simple-binary-encoding/uk_co_real_logic_sbe_ir_generated"
 	"os"
+	"sort"
+	"strings"
 )
 
 type IrDecoder struct {
@@ -11,10 +13,13 @@ type IrDecoder struct {
 	buffer       []byte
 	length       uint64
 	id           int32
+	typesByName  map[string][]Token
 }
 
 func NewIrDecoder() *IrDecoder {
-	return &IrDecoder{}
+	return &IrDecoder{
+		typesByName: make(map[string][]Token),
+	}
 }
 
 func (decoder *IrDecoder) Decode(irBuffer []byte) int {
@@ -75,6 +80,11 @@ func (decoder *IrDecoder) MessageByID(id int32) []Token {
 	return nil
 }
 
+// TypeByName gets the type representation for a given type name.
+func (decoder *IrDecoder) TypeByName(name string) []Token {
+	return decoder.typesByName[name]
+}
+
 func (decoder *IrDecoder) decodeIr() int {
 	var frame ir.FrameCodec
 	offset := uint64(0)
@@ -110,6 +120,8 @@ func (decoder *IrDecoder) decodeIr() int {
 	for offset < decoder.length {
 		offset += decoder.readMessage(offset)
 	}
+
+	decoder.captureTypes(decoder.headerTokens, 0, len(decoder.headerTokens)-1)
 
 	return 0
 }
@@ -150,7 +162,7 @@ func (decoder *IrDecoder) decodeAndAddToken(tokens *[]Token, offset uint64) uint
 	timeUnit := tokenCodec.GetTimeUnitAsString()
 	semanticType := tokenCodec.GetSemanticTypeAsString()
 	description := tokenCodec.GetDescriptionAsString()
-	tokenCodec.GetReferencedNameAsString()
+	referencedName := tokenCodec.GetReferencedNameAsString()
 
 	encoding := NewEncoding(
 		primitiveType,
@@ -174,6 +186,7 @@ func (decoder *IrDecoder) decodeAndAddToken(tokens *[]Token, offset uint64) uint
 		componentTokenCount: componentTokenCount,
 		signal:              signal,
 		name:                name,
+		referencedName:      referencedName,
 		description:         description,
 		encoding:            encoding,
 	}
@@ -205,6 +218,10 @@ func (decoder *IrDecoder) readMessage(offset uint64) uint64 {
 			break
 		}
 	}
+
+	decoder.captureTypes(tokensForMessage, 0, len(tokensForMessage)-1)
+	decoder.updateComponentTokenCounts(tokensForMessage)
+
 	decoder.messages = append(decoder.messages, tokensForMessage)
 	return size
 }
@@ -234,4 +251,103 @@ func readFileIntoBuffer(buffer []byte, filename string, length uint64) error {
 	}
 
 	return nil
+}
+
+func (decoder *IrDecoder) captureTypes(tokens []Token, beginIndex, endIndex int) {
+	for i := beginIndex; i < endIndex; i++ {
+		token := tokens[i]
+		typeBeginIndex := i
+		switch token.Signal() {
+		case SignalBeginComposite:
+			i = decoder.captureType(
+				tokens,
+				i,
+				SignalEndComposite,
+				token.Name(),
+				token.ReferencedName(),
+			)
+			decoder.captureTypes(tokens, typeBeginIndex+1, i-1)
+		case SignalBeginEnum:
+			i = decoder.captureType(
+				tokens,
+				i,
+				SignalEndEnum,
+				token.Name(),
+				token.ReferencedName(),
+			)
+		case SignalBeginSet:
+			i = decoder.captureType(
+				tokens,
+				i,
+				SignalEndSet,
+				token.Name(),
+				token.ReferencedName(),
+			)
+		default:
+		}
+	}
+}
+
+func (decoder *IrDecoder) captureType(
+	tokens []Token,
+	index int,
+	endSignal Signal,
+	name, referencedName string,
+) int {
+	var typeTokens []Token
+	i := index
+	token := tokens[i]
+	typeTokens = append(typeTokens, token)
+	for {
+		i++
+		token = tokens[i]
+		typeTokens = append(typeTokens, token)
+		if token.Signal() == endSignal || name == token.Name() {
+			break
+		}
+	}
+
+	decoder.updateComponentTokenCounts(typeTokens)
+
+	typeName := referencedName
+	if typeName == "" {
+		typeName = name
+	}
+	decoder.typesByName[typeName] = typeTokens
+	return i
+}
+
+// updateComponentTokenCounts iterates over a list of Tokens and updates
+// their counts of how many tokens make up each component.
+func (decoder *IrDecoder) updateComponentTokenCounts(tokens []Token) {
+	beginIndexMap := make(map[string][]int)
+	for i, size := 0, len(tokens); i < size; i++ {
+		token := tokens[i]
+		signal := token.Signal()
+		if strings.HasPrefix(signal.String(), "Begin") {
+			componentType := signal.String()[5:]
+			beginIndexMap[componentType] = append(beginIndexMap[componentType], i)
+		} else if strings.HasPrefix(signal.String(), "End") {
+			componentType := signal.String()[3:]
+			beginIndices := beginIndexMap[componentType]
+			beginIndex := beginIndices[0]
+			beginIndexMap[componentType] = beginIndices[1:]
+			componentTokenCount := int32((i - beginIndex) + 1)
+			tokens[beginIndex].componentTokenCount = componentTokenCount
+			token.componentTokenCount = componentTokenCount
+		}
+	}
+}
+
+func (decoder *IrDecoder) Types() [][]Token {
+	var typeNames []string
+	for name := range decoder.typesByName {
+		typeNames = append(typeNames, name)
+	}
+	sort.Strings(typeNames)
+	var types [][]Token
+	for _, name := range typeNames {
+		types = append(types, decoder.typesByName[name])
+	}
+	return types
 }
