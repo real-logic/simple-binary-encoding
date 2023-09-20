@@ -2222,7 +2222,7 @@ public class CppGenerator implements CodeGenerator
 
             new Formatter(sb).format("\n" +
                 indent + "    #if __cplusplus >= 201703L\n" +
-                indent + "    SBE_NODISCARD std::string_view get%1$sAsStringView() const %6$s\n" +
+                indent + "    SBE_NODISCARD std::string_view get%1$sAsStringView() const%6$s\n" +
                 indent + "    {\n" +
                 "%4$s" +
                 "%5$s" +

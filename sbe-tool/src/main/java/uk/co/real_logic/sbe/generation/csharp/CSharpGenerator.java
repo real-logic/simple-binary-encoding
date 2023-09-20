@@ -256,7 +256,8 @@ public class CSharpGenerator implements CodeGenerator
         }
 
         sb.append("\n")
-            .append(indent).append(INDENT).append("public void NotPresent()\n")
+            // The "file" access modifier is more suitable but only available from C# 11 onwards.
+            .append(indent).append(INDENT).append("internal void NotPresent()\n")
             .append(indent).append(INDENT).append("{\n")
             .append(indent).append(TWO_INDENT).append("_count = 0;\n")
             .append(indent).append(TWO_INDENT).append("_index = 0;\n")
@@ -1875,7 +1876,8 @@ public class CSharpGenerator implements CodeGenerator
         }
 
         sb.append("\n")
-            .append(indent).append("void ").append(accessOrderListenerMethodName(token, "Length")).append("()\n")
+            .append(indent).append("private void ")
+            .append(accessOrderListenerMethodName(token, "Length")).append("()\n")
             .append(indent).append("{\n");
 
         final AccessOrderModel.CodecInteraction accessLength =
