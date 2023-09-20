@@ -654,7 +654,7 @@ public class JavaGenerator implements CodeGenerator
             selectLastElementInGroup);
 
         sb.append(indent).append("    }\n")
-            .append(indent).append("}\n");
+            .append(indent).append("}\n\n");
     }
 
     private static void generateAccessOrderListenerMethodForResetGroupCount(
@@ -681,7 +681,7 @@ public class JavaGenerator implements CodeGenerator
             accessOrderModel,
             resetCountToIndex);
 
-        sb.append(indent).append("}\n");
+        sb.append(indent).append("}\n\n");
     }
 
     private static void generateAccessOrderListenerMethodForVarDataLength(
@@ -964,8 +964,7 @@ public class JavaGenerator implements CodeGenerator
 
         generateAccessOrderListenerMethodForNextGroupElement(sb, accessOrderModel, indent + "    ", groupToken);
 
-        sb.append("\n")
-            .append(indent).append("    public ").append(className).append(" next()\n")
+        sb.append(indent).append("    public ").append(className).append(" next()\n")
             .append(indent).append("    {\n")
             .append(indent).append("        if (index >= count)\n")
             .append(indent).append("        {\n")
@@ -1105,8 +1104,7 @@ public class JavaGenerator implements CodeGenerator
         generateAccessOrderListenerMethodForNextGroupElement(sb, accessOrderModel, ind + "    ", groupToken);
         generateAccessOrderListenerMethodForResetGroupCount(sb, accessOrderModel, ind + "    ", groupToken);
 
-        sb.append("\n")
-            .append(ind).append("    public ").append(encoderName(groupName)).append(" next()\n")
+        sb.append(ind).append("    public ").append(encoderName(groupName)).append(" next()\n")
             .append(ind).append("    {\n")
             .append(generateAccessOrderListenerCall(accessOrderModel, ind + "        ", "onNextElementAccessed"))
             .append(ind).append("        if (index >= count)\n")
@@ -1123,8 +1121,7 @@ public class JavaGenerator implements CodeGenerator
         final String resetCountPut = generatePut(
             numInGroupTypeCast, countOffset, numInGroupValue, byteOrderString(numInGroupToken.encoding()));
 
-        sb.append("\n")
-            .append(ind).append("    public int resetCountToIndex()\n")
+        sb.append(ind).append("    public int resetCountToIndex()\n")
             .append(ind).append("    {\n")
             .append(generateAccessOrderListenerCall(accessOrderModel, ind + "        ", "onResetCountToIndex"))
             .append(ind).append("        count = index;\n")

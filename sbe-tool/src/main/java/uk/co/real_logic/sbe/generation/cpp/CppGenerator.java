@@ -767,10 +767,13 @@ public class CppGenerator implements CodeGenerator
         }
 
 
-        sb.append("\n").append(indent).append("private:");
-        generateAccessOrderListenerMethodForNextGroupElement(sb, accessOrderModel, indent, groupToken);
-        generateAccessOrderListenerMethodForResetGroupCount(sb, accessOrderModel, indent, groupToken);
-        sb.append("\n").append(indent).append("public:");
+        if (null != accessOrderModel)
+        {
+            sb.append("\n").append(indent).append("private:");
+            generateAccessOrderListenerMethodForNextGroupElement(sb, accessOrderModel, indent, groupToken);
+            generateAccessOrderListenerMethodForResetGroupCount(sb, accessOrderModel, indent, groupToken);
+            sb.append("\n").append(indent).append("public:");
+        }
 
         final CharSequence onNextAccessOrderCall = null == accessOrderModel ? "" :
             generateAccessOrderListenerCall(accessOrderModel, indent + TWO_INDENT, "onNextElementAccessed");
