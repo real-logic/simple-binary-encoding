@@ -735,7 +735,7 @@ tasks.register('generateCSharpCodecsWithXIncludes', JavaExec) {
             'sbe-samples/src/main/resources/example-extension-schema.xml']
 }
 
-tasks.register('generateCSharpCodecsTests', JavaExec) {
+tasks.register('generateCSharpTestCodecs', JavaExec) {
     mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
     systemProperties(
@@ -754,9 +754,21 @@ tasks.register('generateCSharpCodecsTests', JavaExec) {
             'sbe-benchmarks/src/main/resources/fix-message-samples.xml']
 }
 
+tasks.register('generateCSharpTestDtos', JavaExec) {
+    mainClass.set('uk.co.real_logic.sbe.SbeTool')
+    classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
+    systemProperties(
+            'sbe.output.dir': 'csharp/sbe-generated',
+            'sbe.target.language': 'uk.co.real_logic.sbe.generation.csharp.CSharpDtos',
+            'sbe.xinclude.aware': 'true',
+            'sbe.validation.xsd': validationXsdPath)
+    args = ['sbe-samples/src/main/resources/example-extension-schema.xml']
+}
+
 tasks.register('generateCSharpCodecs') {
     description = 'Generate csharp codecs'
-    dependsOn 'generateCSharpCodecsTests',
+    dependsOn 'generateCSharpTestCodecs',
+            'generateCSharpTestDtos',
             'generateCSharpCodecsWithXIncludes'
 }
 
