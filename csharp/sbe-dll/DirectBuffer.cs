@@ -694,7 +694,6 @@ namespace Org.SbeTool.Sbe.Dll
 
         /// <summary>
         /// Writes a string into the underlying buffer, encoding using the provided <see cref="System.Text.Encoding"/>.
-        /// If there is not enough room in the buffer for the bytes it will throw IndexOutOfRangeException.
         /// </summary>
         /// <param name="encoding">encoding to use to write the bytes from the string</param>
         /// <param name="src">source string</param>
@@ -702,13 +701,9 @@ namespace Org.SbeTool.Sbe.Dll
         /// <returns>count of bytes written</returns>
         public unsafe int SetBytesFromString(Encoding encoding, string src, int index)
         {
-           int available = _capacity - index;
            int byteCount = encoding.GetByteCount(src);
 
-           if (byteCount > available)
-           {
-               ThrowHelper.ThrowIndexOutOfRangeException(_capacity);
-           }
+           CheckLimit(index + byteCount);
 
            fixed (char* ptr = src)
            {
