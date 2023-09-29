@@ -1136,7 +1136,7 @@ public class CppGenerator implements CodeGenerator
             sb.append("\n");
             for (final String incName : typesToInclude)
             {
-                sb.append(String.format("#include \"%1$s.h\"\n", toUpperFirstChar(incName)));
+                sb.append("#include \"").append(toUpperFirstChar(incName)).append(".h\"\n");
             }
         }
 
