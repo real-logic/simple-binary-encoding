@@ -1051,18 +1051,6 @@ public class CppGenerator implements CodeGenerator
             "#ifndef _%1$s_%2$s_CXX_H_\n" +
             "#define _%1$s_%2$s_CXX_H_\n\n" +
 
-            "#if defined(SBE_HAVE_CMATH)\n" +
-            "/* cmath needed for std::numeric_limits<double>::quiet_NaN() */\n" +
-            "#  include <cmath>\n" +
-            "#  define SBE_FLOAT_NAN std::numeric_limits<float>::quiet_NaN()\n" +
-            "#  define SBE_DOUBLE_NAN std::numeric_limits<double>::quiet_NaN()\n" +
-            "#else\n" +
-            "/* math.h needed for NAN */\n" +
-            "#  include <math.h>\n" +
-            "#  define SBE_FLOAT_NAN NAN\n" +
-            "#  define SBE_DOUBLE_NAN NAN\n" +
-            "#endif\n\n" +
-
             "#if __cplusplus >= 201103L\n" +
             "#  define SBE_CONSTEXPR constexpr\n" +
             "#  define SBE_NOEXCEPT noexcept\n" +
@@ -1083,9 +1071,9 @@ public class CppGenerator implements CodeGenerator
             "#endif\n\n" +
 
             "#include <cstdint>\n" +
+            "#include <limits>\n" +
             "#include <cstring>\n" +
             "#include <iomanip>\n" +
-            "#include <limits>\n" +
             "#include <ostream>\n" +
             "#include <stdexcept>\n" +
             "#include <sstream>\n" +
@@ -1130,6 +1118,8 @@ public class CppGenerator implements CodeGenerator
             "#  endif\n\n" +
             "#endif\n\n" +
 
+            "#define SBE_FLOAT_NAN std::numeric_limits<float>::quiet_NaN()\n" +
+            "#define SBE_DOUBLE_NAN std::numeric_limits<double>::quiet_NaN()\n" +
             "#define SBE_NULLVALUE_INT8 (std::numeric_limits<std::int8_t>::min)()\n" +
             "#define SBE_NULLVALUE_INT16 (std::numeric_limits<std::int16_t>::min)()\n" +
             "#define SBE_NULLVALUE_INT32 (std::numeric_limits<std::int32_t>::min)()\n" +
@@ -1141,7 +1131,7 @@ public class CppGenerator implements CodeGenerator
             String.join("_", namespaces).toUpperCase(),
             className.toUpperCase()));
 
-        if (typesToInclude != null && typesToInclude.size() != 0)
+        if (typesToInclude != null && !typesToInclude.isEmpty())
         {
             sb.append("\n");
             for (final String incName : typesToInclude)
