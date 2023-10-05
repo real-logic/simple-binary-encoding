@@ -94,7 +94,7 @@ public abstract class Type
      * @param presence     of the type.
      * @param description  of the type or null.
      * @param sinceVersion for the type
-     * @param deprecated   version in which this wa.s deprecated.
+     * @param deprecated   version in which this was deprecated.
      * @param semanticType of the type or null.
      */
     public Type(
