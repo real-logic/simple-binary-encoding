@@ -28,7 +28,7 @@ import java.nio.charset.StandardCharsets;
 
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
-public class ParserPropertyTest
+class ParserPropertyTest
 {
     @Property
     void shouldParseAnyValidSchema(@ForAll("schemas") final SchemaDomain.MessageSchema schema) throws Exception

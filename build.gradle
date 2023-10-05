@@ -31,6 +31,7 @@ buildscript {
 
 plugins {
     id 'java-library'
+    id 'jvm-test-suite'
     id 'com.github.johnrengelman.shadow' version '8.1.1' apply false
     id 'com.github.ben-manes.versions' version '0.51.0'
 }
@@ -165,6 +166,7 @@ jar.enabled = false
 
 subprojects {
     apply plugin: 'java-library'
+    apply plugin: 'jvm-test-suite'
     apply plugin: 'checkstyle'
 
     group = sbeGroup
@@ -217,22 +219,34 @@ subprojects {
         }
     }
 
-    test {
-        useJUnitPlatform()
+    testing {
+        suites {
+            test {
+                useJUnitJupiter junitVersion
 
-        testLogging {
-            for (def level : LogLevel.values())
-            {
-                def testLogging = get(level)
-                testLogging.exceptionFormat = 'full'
-                testLogging.events = ["FAILED", "STANDARD_OUT", "STANDARD_ERROR"]
+                targets {
+                    all {
+                        testTask.configure {
+                            useJUnitPlatform()
+
+                            testLogging {
+                                for (def level : LogLevel.values())
+                                {
+                                    def testLogging = get(level)
+                                    testLogging.exceptionFormat = 'full'
+                                    testLogging.events = ["FAILED", "STANDARD_OUT", "STANDARD_ERROR"]
+                                }
+                            }
+
+                            javaLauncher.set(toolchainLauncher)
+
+                            systemProperty 'sbe.enable.ir.precedence.checks', 'true'
+                            systemProperty 'sbe.enable.test.precedence.checks', 'true'
+                        }
+                    }
+                }
             }
         }
-
-        javaLauncher.set(toolchainLauncher)
-
-        systemProperty 'sbe.enable.ir.precedence.checks', 'true'
-        systemProperty 'sbe.enable.test.precedence.checks', 'true'
     }
 }
 
@@ -249,12 +263,6 @@ project(':sbe-tool') {
                 prefer(agronaVersion)
             }
         }
-        testImplementation files('build/classes/java/generated')
-        testImplementation "org.hamcrest:hamcrest:${hamcrestVersion}"
-        testImplementation "org.mockito:mockito-core:${mockitoVersion}"
-        testImplementation "net.jqwik:jqwik:${jqwikVersion}"
-        testImplementation "org.junit.jupiter:junit-jupiter-params:${junitVersion}"
-        testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
     }
 
     def generatedDir = 'build/generated-src'
@@ -275,6 +283,39 @@ project(':sbe-tool') {
     }
 
     compileTestJava.dependsOn compileGeneratedJava
+
+    testing {
+        suites {
+            test {
+                dependencies {
+                    implementation files('build/classes/java/generated')
+                    implementation "org.hamcrest:hamcrest:${hamcrestVersion}"
+                    implementation "org.mockito:mockito-core:${mockitoVersion}"
+                    implementation "org.junit.jupiter:junit-jupiter-params:${junitVersion}"
+                }
+            }
+
+            propertyTest(JvmTestSuite) {
+                useJUnitJupiter junitVersion
+
+                dependencies {
+                    implementation project()
+                    implementation "net.jqwik:jqwik:${jqwikVersion}"
+                }
+
+                targets {
+                    all {
+                        testTask.configure {
+                            minHeapSize = '2g'
+                            maxHeapSize = '2g'
+
+                            javaLauncher.set(toolchainLauncher)
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     tasks.register('generateTestCodecs', JavaExec) {
         dependsOn 'compileJava'

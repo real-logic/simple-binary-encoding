@@ -22,9 +22,7 @@ import org.w3c.dom.Element;
 
 import java.io.File;
 import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -35,7 +33,6 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import static java.util.Objects.requireNonNull;
-import static uk.co.real_logic.sbe.generation.Generators.toLowerFirstChar;
 
 final class XmlSchemaWriter
 {
@@ -83,7 +80,9 @@ final class XmlSchemaWriter
                 typeToName
             );
 
+            final Set<SchemaDomain.TypeSchema> visitedTypes = new HashSet<>();
             appendTypes(
+                visitedTypes,
                 topLevelTypes,
                 typeSchemaConverter,
                 schema.blockFields(),
@@ -93,7 +92,7 @@ final class XmlSchemaWriter
             message.setAttribute("name", "TestMessage");
             message.setAttribute("id", "1");
             root.appendChild(message);
-            final MutableInteger nextMemberId = new MutableInteger(1);
+            final MutableInteger nextMemberId = new MutableInteger(0);
             appendMembers(
                 document,
                 typeToName,
@@ -319,6 +318,7 @@ final class XmlSchemaWriter
     }
 
     private static void appendTypes(
+        final Set<SchemaDomain.TypeSchema> visitedTypes,
         final Element topLevelTypes,
         final TypeSchemaConverter typeSchemaConverter,
         final List<SchemaDomain.TypeSchema> blockFields,
@@ -326,7 +326,7 @@ final class XmlSchemaWriter
     {
         for (final SchemaDomain.TypeSchema field : blockFields)
         {
-            if (!field.isEmbedded())
+            if (!field.isEmbedded() && visitedTypes.add(field))
             {
                 topLevelTypes.appendChild(typeSchemaConverter.convert(field));
             }
@@ -334,7 +334,7 @@ final class XmlSchemaWriter
 
         for (final SchemaDomain.GroupSchema group : groups)
         {
-            appendTypes(topLevelTypes, typeSchemaConverter, group.blockFields(), group.groups());
+            appendTypes(visitedTypes, topLevelTypes, typeSchemaConverter, group.blockFields(), group.groups());
         }
     }
 
@@ -370,13 +370,18 @@ final class XmlSchemaWriter
         @Override
         public void onComposite(final SchemaDomain.CompositeTypeSchema type)
         {
-            final Element[] parts = type.fields().stream()
+            final Element[] members = type.fields().stream()
                 .map(this::embedOrReference)
                 .toArray(Element[]::new);
+            for (int i = 0; i < members.length; i++)
+            {
+                final Element member = members[i];
+                member.setAttribute("name", "member" + i + "Of" + member.getAttribute("name"));
+            }
             result = createCompositeElement(
                 document,
                 typeToName.computeIfAbsent(type, nextName),
-                parts
+                members
             );
         }
 
@@ -419,7 +424,7 @@ final class XmlSchemaWriter
                 final String typeName = requireNonNull(typeToName.get(type));
                 return createRefElement(
                     document,
-                    toLowerFirstChar(typeName),
+                    typeName,
                     typeName
                 );
             }
