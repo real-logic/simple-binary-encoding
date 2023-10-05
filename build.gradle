@@ -57,6 +57,7 @@ def checkstyleVersion = '9.3'
 def hamcrestVersion = '2.2'
 def mockitoVersion = '4.11.0'
 def junitVersion = '5.10.2'
+def jqwikVersion = '1.8.0'
 def jmhVersion = '1.37'
 def agronaVersion = '1.21.2'
 def agronaVersionRange = '[1.21.2,2.0[' // allow any release >= 1.21.2 and < 2.0.0
@@ -251,6 +252,7 @@ project(':sbe-tool') {
         testImplementation files('build/classes/java/generated')
         testImplementation "org.hamcrest:hamcrest:${hamcrestVersion}"
         testImplementation "org.mockito:mockito-core:${mockitoVersion}"
+        testImplementation "net.jqwik:jqwik:${jqwikVersion}"
         testImplementation "org.junit.jupiter:junit-jupiter-params:${junitVersion}"
         testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
     }
