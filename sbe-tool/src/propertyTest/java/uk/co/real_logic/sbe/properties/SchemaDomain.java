@@ -19,19 +19,71 @@ package uk.co.real_logic.sbe.properties;
 import net.jqwik.api.Arbitraries;
 import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Combinators;
+import net.jqwik.api.arbitraries.ListArbitrary;
 import uk.co.real_logic.sbe.PrimitiveType;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public final class SchemaDomain
+final class SchemaDomain
 {
     private static final int MAX_COMPOSITE_DEPTH = 3;
     private static final int MAX_GROUP_DEPTH = 3;
 
     private SchemaDomain()
     {
+    }
+
+    /**
+     * This combinator adds duplicates to an arbitrary list. We prefer this to JQwik's built-in functionality,
+     * as that is inefficient and dominates test runs.
+     * <p>
+     * This method works by generating a list of integers, which represent, in an alternating manner,
+     * the number of items to skip before <i>selecting</i> an item to duplicate
+     * and the number of items to skip before <i>inserting</i> the duplicate.
+     *
+     * @param maxDuplicates the maximum number of duplicates to add
+     * @param arbitrary     the arbitrary list to duplicate items in
+     * @param <T>           the type of the list
+     * @return an arbitrary list with duplicates
+     */
+    private static <T> Arbitrary<List<T>> withDuplicates(
+        final int maxDuplicates,
+        final ListArbitrary<T> arbitrary)
+    {
+        return Combinators.combine(
+            Arbitraries.integers().list().ofMaxSize(2 * maxDuplicates),
+            arbitrary
+        ).as((positions, originalItems) ->
+        {
+            if (originalItems.isEmpty())
+            {
+                return originalItems;
+            }
+
+            final List<T> items = new ArrayList<>(originalItems);
+            T itemToDupe = null;
+            int j = 0;
+
+            for (final int position : positions)
+            {
+                j += position;
+                j %= items.size();
+                j = Math.abs(j);
+                if (itemToDupe == null)
+                {
+                    itemToDupe = items.get(j);
+                }
+                else
+                {
+                    items.add(j, itemToDupe);
+                    itemToDupe = null;
+                }
+            }
+
+            return items;
+        });
     }
 
     static final class EncodedDataTypeSchema implements TypeSchema
@@ -90,11 +142,7 @@ public final class SchemaDomain
 
         static Arbitrary<TypeSchema> arbitrary(final int depth)
         {
-            return TypeSchema.arbitrary(depth - 1)
-                .list()
-                .ofMinSize(1)
-                .ofMaxSize(3)
-                .injectDuplicates(0.2)
+            return withDuplicates(2, TypeSchema.arbitrary(depth - 1).list().ofMinSize(1).ofMaxSize(3))
                 .map(CompositeTypeSchema::new);
         }
 
@@ -309,7 +357,7 @@ public final class SchemaDomain
                 arbitrary(depth - 1).list().ofMaxSize(3);
 
             return Combinators.combine(
-                TypeSchema.arbitrary(MAX_COMPOSITE_DEPTH).list().ofMaxSize(5),
+                withDuplicates(2, TypeSchema.arbitrary(MAX_COMPOSITE_DEPTH).list().ofMaxSize(5)),
                 subGroups,
                 VarDataSchema.arbitrary().list().ofMaxSize(3)
             ).as(GroupSchema::new);
@@ -351,7 +399,7 @@ public final class SchemaDomain
         static Arbitrary<MessageSchema> arbitrary()
         {
             return Combinators.combine(
-                TypeSchema.arbitrary(MAX_COMPOSITE_DEPTH).list().ofMaxSize(10),
+                withDuplicates(3, TypeSchema.arbitrary(MAX_COMPOSITE_DEPTH).list().ofMaxSize(10)),
                 GroupSchema.arbitrary(MAX_GROUP_DEPTH).list().ofMaxSize(3),
                 VarDataSchema.arbitrary().list().ofMaxSize(3)
             ).as(MessageSchema::new);
