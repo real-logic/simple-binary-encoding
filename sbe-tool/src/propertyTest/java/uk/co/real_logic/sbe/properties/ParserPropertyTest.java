@@ -22,7 +22,7 @@ import net.jqwik.api.Property;
 import net.jqwik.api.Provide;
 import uk.co.real_logic.sbe.properties.arbitraries.SbeArbitraries;
 import uk.co.real_logic.sbe.properties.schema.MessageSchema;
-import uk.co.real_logic.sbe.properties.schema.XmlSchemaWriter;
+import uk.co.real_logic.sbe.properties.schema.TestXmlSchemaWriter;
 import uk.co.real_logic.sbe.xml.ParserOptions;
 
 import java.io.ByteArrayInputStream;
@@ -36,7 +36,7 @@ class ParserPropertyTest
     @Property
     void shouldParseAnyValidSchema(@ForAll("schemas") final MessageSchema schema) throws Exception
     {
-        final String xml = XmlSchemaWriter.writeString(schema);
+        final String xml = TestXmlSchemaWriter.writeString(schema);
         try (InputStream in = new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)))
         {
             parse(in, ParserOptions.DEFAULT);
@@ -46,6 +46,6 @@ class ParserPropertyTest
     @Provide
     Arbitrary<MessageSchema> schemas()
     {
-        return SbeArbitraries.message();
+        return SbeArbitraries.messageSchema();
     }
 }

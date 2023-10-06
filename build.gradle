@@ -59,6 +59,7 @@ def hamcrestVersion = '2.2'
 def mockitoVersion = '4.11.0'
 def junitVersion = '5.10.2'
 def jqwikVersion = '1.8.0'
+def jsonVersion = '20230618'
 def jmhVersion = '1.37'
 def agronaVersion = '1.21.2'
 def agronaVersionRange = '[1.21.2,2.0[' // allow any release >= 1.21.2 and < 2.0.0
@@ -301,6 +302,7 @@ project(':sbe-tool') {
                 dependencies {
                     implementation project()
                     implementation "net.jqwik:jqwik:${jqwikVersion}"
+                    implementation "org.json:json:${jsonVersion}"
                 }
 
                 targets {
