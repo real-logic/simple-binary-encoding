@@ -34,9 +34,9 @@ import javax.xml.transform.stream.StreamResult;
 
 import static java.util.Objects.requireNonNull;
 
-public final class XmlSchemaWriter
+public final class TestXmlSchemaWriter
 {
-    private XmlSchemaWriter()
+    private TestXmlSchemaWriter()
     {
     }
 
@@ -65,7 +65,7 @@ public final class XmlSchemaWriter
             final Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
 
             final Element root = document.createElementNS("http://fixprotocol.io/2016/sbe", "sbe:messageSchema");
-            root.setAttribute("id", "42");
+            root.setAttribute("id", Short.toString(schema.schemaId()));
             root.setAttribute("package", "uk.co.real_logic.sbe.properties");
             document.appendChild(root);
 
@@ -90,7 +90,7 @@ public final class XmlSchemaWriter
 
             final Element message = document.createElement("sbe:message");
             message.setAttribute("name", "TestMessage");
-            message.setAttribute("id", "1");
+            message.setAttribute("id", Short.toString(schema.templateId()));
             root.appendChild(message);
             final MutableInteger nextMemberId = new MutableInteger(0);
             appendMembers(

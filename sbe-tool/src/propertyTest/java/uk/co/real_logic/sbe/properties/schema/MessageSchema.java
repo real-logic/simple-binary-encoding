@@ -35,6 +35,16 @@ public final class MessageSchema
         this.varData = varData;
     }
 
+    public short schemaId()
+    {
+        return 42;
+    }
+
+    public short templateId()
+    {
+        return 1;
+    }
+
     public List<TypeSchema> blockFields()
     {
         return blockFields;
