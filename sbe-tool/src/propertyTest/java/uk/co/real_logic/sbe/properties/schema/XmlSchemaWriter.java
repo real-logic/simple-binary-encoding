@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package uk.co.real_logic.sbe.properties;
+package uk.co.real_logic.sbe.properties.schema;
 
 import org.agrona.collections.MutableInteger;
 import org.w3c.dom.Document;
@@ -34,13 +34,13 @@ import javax.xml.transform.stream.StreamResult;
 
 import static java.util.Objects.requireNonNull;
 
-final class XmlSchemaWriter
+public final class XmlSchemaWriter
 {
     private XmlSchemaWriter()
     {
     }
 
-    public static String writeString(final SchemaDomain.MessageSchema schema)
+    public static String writeString(final MessageSchema schema)
     {
         final StringWriter writer = new StringWriter();
         final StreamResult result = new StreamResult(writer);
@@ -49,7 +49,7 @@ final class XmlSchemaWriter
     }
 
     public static void writeFile(
-        final SchemaDomain.MessageSchema schema,
+        final MessageSchema schema,
         final File destination)
     {
         final StreamResult result = new StreamResult(destination);
@@ -57,7 +57,7 @@ final class XmlSchemaWriter
     }
 
     private static void writeTo(
-        final SchemaDomain.MessageSchema schema,
+        final MessageSchema schema,
         final StreamResult destination)
     {
         try
@@ -72,7 +72,7 @@ final class XmlSchemaWriter
             final Element topLevelTypes = createTypesElement(document);
             root.appendChild(topLevelTypes);
 
-            final HashMap<SchemaDomain.TypeSchema, String> typeToName = new HashMap<>();
+            final HashMap<TypeSchema, String> typeToName = new HashMap<>();
 
             final TypeSchemaConverter typeSchemaConverter = new TypeSchemaConverter(
                 document,
@@ -80,7 +80,7 @@ final class XmlSchemaWriter
                 typeToName
             );
 
-            final Set<SchemaDomain.TypeSchema> visitedTypes = new HashSet<>();
+            final Set<TypeSchema> visitedTypes = new HashSet<>();
             appendTypes(
                 visitedTypes,
                 topLevelTypes,
@@ -127,20 +127,20 @@ final class XmlSchemaWriter
 
     private static void appendMembers(
         final Document document,
-        final HashMap<SchemaDomain.TypeSchema, String> typeToName,
-        final List<SchemaDomain.TypeSchema> blockFields,
-        final List<SchemaDomain.GroupSchema> groups,
-        final List<SchemaDomain.VarDataSchema> varData,
+        final HashMap<TypeSchema, String> typeToName,
+        final List<TypeSchema> blockFields,
+        final List<GroupSchema> groups,
+        final List<VarDataSchema> varData,
         final MutableInteger nextMemberId,
         final Element parent)
     {
-        for (final SchemaDomain.TypeSchema field : blockFields)
+        for (final TypeSchema field : blockFields)
         {
             final int id = nextMemberId.getAndIncrement();
 
-            final boolean usePrimitiveName = field.isEmbedded() && field instanceof SchemaDomain.EncodedDataTypeSchema;
+            final boolean usePrimitiveName = field.isEmbedded() && field instanceof EncodedDataTypeSchema;
             final String typeName = usePrimitiveName ?
-                ((SchemaDomain.EncodedDataTypeSchema)field).primitiveType().primitiveName() :
+                ((EncodedDataTypeSchema)field).primitiveType().primitiveName() :
                 requireNonNull(typeToName.get(field));
 
             final Element element = document.createElement("field");
@@ -150,7 +150,7 @@ final class XmlSchemaWriter
             parent.appendChild(element);
         }
 
-        for (final SchemaDomain.GroupSchema group : groups)
+        for (final GroupSchema group : groups)
         {
             final int id = nextMemberId.getAndIncrement();
 
@@ -168,7 +168,7 @@ final class XmlSchemaWriter
             parent.appendChild(element);
         }
 
-        for (final SchemaDomain.VarDataSchema data : varData)
+        for (final VarDataSchema data : varData)
         {
             final int id = nextMemberId.getAndIncrement();
 
@@ -318,13 +318,13 @@ final class XmlSchemaWriter
     }
 
     private static void appendTypes(
-        final Set<SchemaDomain.TypeSchema> visitedTypes,
+        final Set<TypeSchema> visitedTypes,
         final Element topLevelTypes,
         final TypeSchemaConverter typeSchemaConverter,
-        final List<SchemaDomain.TypeSchema> blockFields,
-        final List<SchemaDomain.GroupSchema> groups)
+        final List<TypeSchema> blockFields,
+        final List<GroupSchema> groups)
     {
-        for (final SchemaDomain.TypeSchema field : blockFields)
+        for (final TypeSchema field : blockFields)
         {
             if (!field.isEmbedded() && visitedTypes.add(field))
             {
@@ -332,24 +332,24 @@ final class XmlSchemaWriter
             }
         }
 
-        for (final SchemaDomain.GroupSchema group : groups)
+        for (final GroupSchema group : groups)
         {
             appendTypes(visitedTypes, topLevelTypes, typeSchemaConverter, group.blockFields(), group.groups());
         }
     }
 
-    private static final class TypeSchemaConverter implements SchemaDomain.TypeSchemaVisitor
+    private static final class TypeSchemaConverter implements TypeSchemaVisitor
     {
         private final Document document;
         private final Element topLevelTypes;
-        private final Map<SchemaDomain.TypeSchema, String> typeToName;
-        private final Function<SchemaDomain.TypeSchema, String> nextName;
+        private final Map<TypeSchema, String> typeToName;
+        private final Function<TypeSchema, String> nextName;
         private Element result;
 
         private TypeSchemaConverter(
             final Document document,
             final Element topLevelTypes,
-            final Map<SchemaDomain.TypeSchema, String> typeToName)
+            final Map<TypeSchema, String> typeToName)
         {
             this.document = document;
             this.topLevelTypes = topLevelTypes;
@@ -358,7 +358,7 @@ final class XmlSchemaWriter
         }
 
         @Override
-        public void onEncoded(final SchemaDomain.EncodedDataTypeSchema type)
+        public void onEncoded(final EncodedDataTypeSchema type)
         {
             result = createTypeElement(
                 document,
@@ -368,7 +368,7 @@ final class XmlSchemaWriter
         }
 
         @Override
-        public void onComposite(final SchemaDomain.CompositeTypeSchema type)
+        public void onComposite(final CompositeTypeSchema type)
         {
             final Element[] members = type.fields().stream()
                 .map(this::embedOrReference)
@@ -386,7 +386,7 @@ final class XmlSchemaWriter
         }
 
         @Override
-        public void onEnum(final SchemaDomain.EnumTypeSchema type)
+        public void onEnum(final EnumTypeSchema type)
         {
             result = createEnumElement(
                 document,
@@ -397,7 +397,7 @@ final class XmlSchemaWriter
         }
 
         @Override
-        public void onSet(final SchemaDomain.SetSchema type)
+        public void onSet(final SetSchema type)
         {
             result = createSetElement(
                 document,
@@ -407,7 +407,7 @@ final class XmlSchemaWriter
             );
         }
 
-        private Element embedOrReference(final SchemaDomain.TypeSchema type)
+        private Element embedOrReference(final TypeSchema type)
         {
             if (type.isEmbedded())
             {
@@ -430,7 +430,7 @@ final class XmlSchemaWriter
             }
         }
 
-        public Element convert(final SchemaDomain.TypeSchema type)
+        public Element convert(final TypeSchema type)
         {
             result = null;
             type.accept(this);
