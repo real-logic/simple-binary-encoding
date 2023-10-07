@@ -266,7 +266,7 @@ public class CSharpDtoGenerator implements CodeGenerator
                 break;
 
             case BEGIN_COMPOSITE:
-                generateComplexDecodeFrom(sb, fieldToken, indent);
+                generateComplexDecodeFrom(sb, fieldToken, typeToken, indent);
                 break;
 
             default:
@@ -389,10 +389,12 @@ public class CSharpDtoGenerator implements CodeGenerator
     private void generateComplexDecodeFrom(
         final StringBuilder sb,
         final Token fieldToken,
+        final Token typeToken,
         final String indent)
     {
         final String propertyName = fieldToken.name();
         final String formattedPropertyName = formatPropertyName(propertyName);
+        final String dtoClassName = formatDtoClassName(typeToken.applicableTypeName());
 
         wrapInActingVersionCheck(
             sb,
@@ -401,7 +403,7 @@ public class CSharpDtoGenerator implements CodeGenerator
             (blkSb, blkIndent) ->
             {
                 blkSb.append(blkIndent).append(formattedPropertyName).append(" = new ")
-                    .append(formatDtoClassName(propertyName)).append("();\n")
+                    .append(dtoClassName).append("();\n")
                     .append(blkIndent).append(formattedPropertyName).append(".DecodeFrom(codec.")
                     .append(formattedPropertyName).append(");\n");
             },
@@ -577,7 +579,6 @@ public class CSharpDtoGenerator implements CodeGenerator
         final Token typeToken,
         final String indent)
     {
-
         switch (typeToken.signal())
         {
             case ENCODING:
