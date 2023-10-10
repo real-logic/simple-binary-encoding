@@ -21,20 +21,28 @@ import uk.co.real_logic.sbe.PrimitiveType;
 public final class EncodedDataTypeSchema implements TypeSchema
 {
     private final PrimitiveType primitiveType;
+    private final int length;
     private final boolean isEmbedded;
 
     public EncodedDataTypeSchema(
         final PrimitiveType primitiveType,
+        final int length,
         final boolean isEmbedded
     )
     {
         this.primitiveType = primitiveType;
+        this.length = length;
         this.isEmbedded = isEmbedded;
     }
 
     public PrimitiveType primitiveType()
     {
         return primitiveType;
+    }
+
+    public int length()
+    {
+        return length;
     }
 
     @Override
