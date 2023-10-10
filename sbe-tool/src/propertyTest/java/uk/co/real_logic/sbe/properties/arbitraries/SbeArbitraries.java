@@ -111,6 +111,7 @@ public final class SbeArbitraries
     {
         return Combinators.combine(
             Arbitraries.of(PrimitiveType.values()),
+            Arbitraries.of(1, 1, 1, 2, 13),
             Arbitraries.of(true, false)
         ).as(EncodedDataTypeSchema::new);
     }
@@ -324,13 +325,15 @@ public final class SbeArbitraries
         }
         else
         {
-            return arbEncoder.map(encoder -> (buffer, bufferOffset, limit) ->
-            {
-                for (int i = 0; i < typeToken.arrayLength(); i++)
+            return arbEncoder.list().ofSize(typeToken.arrayLength())
+                .map(encoders -> (buffer, bufferOffset, limit) ->
                 {
-                    encoder.encode(buffer, bufferOffset + offset + i * encoding.primitiveType().size(), limit);
-                }
-            });
+                    for (int i = 0; i < typeToken.arrayLength(); i++)
+                    {
+                        final int elementOffset = bufferOffset + offset + i * encoding.primitiveType().size();
+                        encoders.get(i).encode(buffer, elementOffset, limit);
+                    }
+                });
         }
     }
 
@@ -476,6 +479,11 @@ public final class SbeArbitraries
             final Encoding encoding = token.encoding();
             final Encoder choiceEncoder = choiceEncoder(encoding);
             encoders.add(choiceEncoder);
+        }
+
+        if (encoders.isEmpty())
+        {
+            return Arbitraries.of(emptyEncoder());
         }
 
         return Arbitraries.subsetOf(encoders)

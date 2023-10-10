@@ -305,6 +305,23 @@ public final class TestXmlSchemaWriter
         return blockLength;
     }
 
+    private static Element createTypeElement(
+        final Document document,
+        final String name,
+        final String primitiveType,
+        final int length)
+    {
+        final Element blockLength = document.createElement("type");
+        blockLength.setAttribute("name", name);
+        blockLength.setAttribute("primitiveType", primitiveType);
+        if (length > 1)
+        {
+            blockLength.setAttribute("length", Integer.toString(length));
+        }
+
+        return blockLength;
+    }
+
     private static Element createRefElement(
         final Document document,
         final String name,
@@ -362,7 +379,8 @@ public final class TestXmlSchemaWriter
             result = createTypeElement(
                 document,
                 typeToName.computeIfAbsent(type, nextName),
-                type.primitiveType().primitiveName()
+                type.primitiveType().primitiveName(),
+                type.length()
             );
         }
 
