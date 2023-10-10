@@ -36,6 +36,8 @@ import java.util.Arrays;
 
 public class CSharpDtosPropertyTest
 {
+    private static final String DOTNET_EXECUTABLE = System.getProperty("sbe.tests.dotnet.executable", "dotnet");
+
     @Property
     void dtoEncodeShouldBeTheInverseOfDtoDecode(
         @ForAll("encodedMessage") final SbeArbitraries.EncodedMessage encodedMessage
@@ -68,7 +70,7 @@ public class CSharpDtosPropertyTest
 
             final Path stdout = tempDir.resolve("stdout.txt");
             final Path stderr = tempDir.resolve("stderr.txt");
-            final ProcessBuilder processBuilder = new ProcessBuilder("dotnet", "run", "--", "input.dat")
+            final ProcessBuilder processBuilder = new ProcessBuilder(DOTNET_EXECUTABLE, "run", "--", "input.dat")
                 .directory(tempDir.toFile())
                 .redirectOutput(stdout.toFile())
                 .redirectError(stderr.toFile());
