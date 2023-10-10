@@ -16,17 +16,19 @@
 
 package uk.co.real_logic.sbe.properties.schema;
 
+import java.util.Set;
+
 public final class SetSchema implements TypeSchema
 {
     private final String encodingType;
-    private final int choiceCount;
+    private final Set<Integer> choices;
 
     public SetSchema(
         final String encodingType,
-        final int choiceCount)
+        final Set<Integer> choices)
     {
-        this.choiceCount = choiceCount;
         this.encodingType = encodingType;
+        this.choices = choices;
     }
 
     public String encodingType()
@@ -34,9 +36,9 @@ public final class SetSchema implements TypeSchema
         return encodingType;
     }
 
-    public int choiceCount()
+    public Set<Integer> choices()
     {
-        return choiceCount;
+        return choices;
     }
 
     @Override
@@ -44,5 +46,4 @@ public final class SetSchema implements TypeSchema
     {
         visitor.onSet(this);
     }
-
 }
