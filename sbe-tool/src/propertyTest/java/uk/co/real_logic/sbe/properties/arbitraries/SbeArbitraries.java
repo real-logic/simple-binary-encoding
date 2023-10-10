@@ -147,15 +147,12 @@ public final class SbeArbitraries
 
     private static Arbitrary<SetSchema> setTypeSchema()
     {
-        return Combinators.combine(
-            Arbitraries.of(
-                "uint8",
-                "uint16",
-                "uint32",
-                "uint64"
-            ),
-            Arbitraries.integers().between(1, 4)
-        ).as(SetSchema::new);
+        return Arbitraries.oneOf(
+            Arbitraries.integers().between(0, 7).set().map(choices -> new SetSchema("uint8", choices)),
+            Arbitraries.integers().between(0, 15).set().map(choices -> new SetSchema("uint16", choices)),
+            Arbitraries.integers().between(0, 31).set().map(choices -> new SetSchema("uint32", choices)),
+            Arbitraries.integers().between(0, 63).set().map(choices -> new SetSchema("uint64", choices))
+        );
     }
 
     private static Arbitrary<TypeSchema> compositeTypeSchema(final int depth)

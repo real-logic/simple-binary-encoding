@@ -238,18 +238,17 @@ public final class TestXmlSchemaWriter
         final Document document,
         final String name,
         final String encodingType,
-        final int choiceCount)
+        final Set<Integer> choices)
     {
         final Element enumElement = document.createElement("set");
         enumElement.setAttribute("name", name);
         enumElement.setAttribute("encodingType", encodingType);
 
-        int caseId = 0;
-        for (int i = 0; i < choiceCount; i++)
+        for (final Integer value : choices)
         {
             final Element choice = document.createElement("choice");
-            choice.setAttribute("name", "option" + caseId++);
-            choice.setTextContent(Integer.toString(i));
+            choice.setAttribute("name", "option" + value);
+            choice.setTextContent(value.toString());
             enumElement.appendChild(choice);
         }
 
@@ -403,7 +402,7 @@ public final class TestXmlSchemaWriter
                 document,
                 typeToName.computeIfAbsent(type, nextName),
                 type.encodingType(),
-                type.choiceCount()
+                type.choices()
             );
         }
 
