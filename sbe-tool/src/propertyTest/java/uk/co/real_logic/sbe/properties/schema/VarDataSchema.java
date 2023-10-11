@@ -16,18 +16,29 @@
 
 package uk.co.real_logic.sbe.properties.schema;
 
+import uk.co.real_logic.sbe.PrimitiveType;
+
 public final class VarDataSchema
 {
-    private final Encoding encoding;
+    private final Encoding dataEncoding;
+    private final PrimitiveType lengthEncoding;
 
-    public VarDataSchema(final Encoding encoding)
+    public VarDataSchema(
+        final Encoding dataEncoding,
+        final PrimitiveType lengthEncoding)
     {
-        this.encoding = encoding;
+        this.dataEncoding = dataEncoding;
+        this.lengthEncoding = lengthEncoding;
     }
 
-    public Encoding encoding()
+    public Encoding dataEncoding()
     {
-        return encoding;
+        return dataEncoding;
+    }
+
+    public PrimitiveType lengthEncoding()
+    {
+        return lengthEncoding;
     }
 
     public enum Encoding

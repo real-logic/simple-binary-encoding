@@ -150,10 +150,18 @@ public final class SbeArbitraries
     private static Arbitrary<SetSchema> setTypeSchema()
     {
         return Arbitraries.oneOf(
-            Arbitraries.integers().between(0, 7).set().map(choices -> new SetSchema("uint8", choices)),
-            Arbitraries.integers().between(0, 15).set().map(choices -> new SetSchema("uint16", choices)),
-            Arbitraries.integers().between(0, 31).set().map(choices -> new SetSchema("uint32", choices)),
-            Arbitraries.integers().between(0, 63).set().map(choices -> new SetSchema("uint64", choices))
+            Arbitraries.integers().between(0, 7).set()
+                .ofMaxSize(8)
+                .map(choices -> new SetSchema("uint8", choices)),
+            Arbitraries.integers().between(0, 15).set()
+                .ofMaxSize(16)
+                .map(choices -> new SetSchema("uint16", choices)),
+            Arbitraries.integers().between(0, 31).set()
+                .ofMaxSize(32)
+                .map(choices -> new SetSchema("uint32", choices)),
+            Arbitraries.integers().between(0, 63).set()
+                .ofMaxSize(64)
+                .map(choices -> new SetSchema("uint64", choices))
         );
     }
 
@@ -213,14 +221,19 @@ public final class SbeArbitraries
 
     private static Arbitrary<VarDataSchema> varDataSchema()
     {
-        return Arbitraries.of(VarDataSchema.Encoding.values())
-            .map(VarDataSchema::new);
+        return Combinators.combine(
+            Arbitraries.of(VarDataSchema.Encoding.values()),
+            Arbitraries.of(
+                PrimitiveType.UINT8,
+                PrimitiveType.UINT16,
+                PrimitiveType.UINT32
+            )
+        ).as(VarDataSchema::new);
     }
 
     public static Arbitrary<MessageSchema> messageSchema()
     {
         return Combinators.combine(
-
             withDuplicates(
                 3,
                 Combinators.combine(
