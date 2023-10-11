@@ -20,12 +20,12 @@ import java.util.List;
 
 public final class MessageSchema
 {
-    private final List<TypeSchema> blockFields;
+    private final List<FieldSchema> blockFields;
     private final List<GroupSchema> groups;
     private final List<VarDataSchema> varData;
 
     public MessageSchema(
-        final List<TypeSchema> blockFields,
+        final List<FieldSchema> blockFields,
         final List<GroupSchema> groups,
         final List<VarDataSchema> varData
     )
@@ -45,7 +45,7 @@ public final class MessageSchema
         return 1;
     }
 
-    public List<TypeSchema> blockFields()
+    public List<FieldSchema> blockFields()
     {
         return blockFields;
     }

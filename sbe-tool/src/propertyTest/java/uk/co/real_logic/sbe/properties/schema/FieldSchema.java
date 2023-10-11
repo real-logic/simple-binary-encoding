@@ -16,37 +16,29 @@
 
 package uk.co.real_logic.sbe.properties.schema;
 
-import java.util.List;
+import uk.co.real_logic.sbe.ir.Encoding;
 
-public final class GroupSchema
+public final class FieldSchema
 {
-    private final List<FieldSchema> blockFields;
-    private final List<GroupSchema> groups;
-    private final List<VarDataSchema> varData;
+    private final TypeSchema type;
+    private final Encoding.Presence presence;
 
-    public GroupSchema(
-        final List<FieldSchema> blockFields,
-        final List<GroupSchema> groups,
-        final List<VarDataSchema> varData)
+    public FieldSchema(
+        final TypeSchema type,
+        final Encoding.Presence presence
+    )
     {
-        this.blockFields = blockFields;
-        this.groups = groups;
-        this.varData = varData;
+        this.type = type;
+        this.presence = presence;
     }
 
-    public List<FieldSchema> blockFields()
+    public TypeSchema type()
     {
-        return blockFields;
+        return type;
     }
 
-    public List<GroupSchema> groups()
+    public Encoding.Presence presence()
     {
-        return groups;
+        return presence;
     }
-
-    public List<VarDataSchema> varData()
-    {
-        return varData;
-    }
-
 }

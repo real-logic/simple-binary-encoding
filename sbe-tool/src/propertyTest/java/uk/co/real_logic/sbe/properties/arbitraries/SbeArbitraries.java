@@ -112,6 +112,7 @@ public final class SbeArbitraries
         return Combinators.combine(
             Arbitraries.of(PrimitiveType.values()),
             Arbitraries.of(1, 1, 1, 2, 13),
+            presence(),
             Arbitraries.of(true, false)
         ).as(EncodedDataTypeSchema::new);
     }
@@ -190,10 +191,24 @@ public final class SbeArbitraries
             groupSchema(depth - 1).list().ofMaxSize(3);
 
         return Combinators.combine(
-            withDuplicates(2, typeSchema(MAX_COMPOSITE_DEPTH).list().ofMaxSize(5)),
+            withDuplicates(
+                2,
+                Combinators.combine(
+                    typeSchema(MAX_COMPOSITE_DEPTH),
+                    presence()
+                ).as(FieldSchema::new).list().ofMaxSize(5)
+            ),
             subGroups,
             varDataSchema().list().ofMaxSize(3)
         ).as(GroupSchema::new);
+    }
+
+    private static Arbitrary<Encoding.Presence> presence()
+    {
+        return Arbitraries.of(
+            Encoding.Presence.REQUIRED,
+            Encoding.Presence.OPTIONAL
+        );
     }
 
     private static Arbitrary<VarDataSchema> varDataSchema()
@@ -205,7 +220,14 @@ public final class SbeArbitraries
     public static Arbitrary<MessageSchema> messageSchema()
     {
         return Combinators.combine(
-            withDuplicates(3, typeSchema(MAX_COMPOSITE_DEPTH).list().ofMaxSize(10)),
+
+            withDuplicates(
+                3,
+                Combinators.combine(
+                    typeSchema(MAX_COMPOSITE_DEPTH),
+                    presence()
+                ).as(FieldSchema::new).list().ofMaxSize(10)
+            ),
             groupSchema(MAX_GROUP_DEPTH).list().ofMaxSize(3),
             varDataSchema().list().ofMaxSize(3)
         ).as(MessageSchema::new);
@@ -752,7 +774,12 @@ public final class SbeArbitraries
             final String xml = TestXmlSchemaWriter.writeString(testSchema);
             try (InputStream in = new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)))
             {
-                final uk.co.real_logic.sbe.xml.MessageSchema parsedSchema = parse(in, ParserOptions.DEFAULT);
+                final ParserOptions options = ParserOptions.builder()
+                    .suppressOutput(false)
+                    .warningsFatal(true)
+                    .stopOnError(true)
+                    .build();
+                final uk.co.real_logic.sbe.xml.MessageSchema parsedSchema = parse(in, options);
                 final Ir ir = new IrGenerator().generate(parsedSchema);
                 return SbeArbitraries.messageValueEncoder(ir, testSchema.templateId(), mode)
                     .map(encoder ->
