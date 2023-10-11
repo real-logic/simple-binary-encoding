@@ -17,21 +17,25 @@
 package uk.co.real_logic.sbe.properties.schema;
 
 import uk.co.real_logic.sbe.PrimitiveType;
+import uk.co.real_logic.sbe.ir.Encoding;
 
 public final class EncodedDataTypeSchema implements TypeSchema
 {
     private final PrimitiveType primitiveType;
     private final int length;
+    private final Encoding.Presence presence;
     private final boolean isEmbedded;
 
     public EncodedDataTypeSchema(
         final PrimitiveType primitiveType,
         final int length,
+        final Encoding.Presence presence,
         final boolean isEmbedded
     )
     {
         this.primitiveType = primitiveType;
         this.length = length;
+        this.presence = presence;
         this.isEmbedded = isEmbedded;
     }
 
@@ -43,6 +47,11 @@ public final class EncodedDataTypeSchema implements TypeSchema
     public int length()
     {
         return length;
+    }
+
+    public Encoding.Presence presence()
+    {
+        return presence;
     }
 
     @Override

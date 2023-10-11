@@ -16,6 +16,7 @@
 
 package uk.co.real_logic.sbe.properties.schema;
 
+import uk.co.real_logic.sbe.ir.Encoding;
 import org.agrona.collections.MutableInteger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -24,6 +25,7 @@ import java.io.File;
 import java.io.StringWriter;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
@@ -85,7 +87,7 @@ public final class TestXmlSchemaWriter
                 visitedTypes,
                 topLevelTypes,
                 typeSchemaConverter,
-                schema.blockFields(),
+                schema.blockFields().stream().map(FieldSchema::type).collect(Collectors.toList()),
                 schema.groups());
 
             final Element message = document.createElement("sbe:message");
@@ -128,25 +130,26 @@ public final class TestXmlSchemaWriter
     private static void appendMembers(
         final Document document,
         final HashMap<TypeSchema, String> typeToName,
-        final List<TypeSchema> blockFields,
+        final List<FieldSchema> blockFields,
         final List<GroupSchema> groups,
         final List<VarDataSchema> varData,
         final MutableInteger nextMemberId,
         final Element parent)
     {
-        for (final TypeSchema field : blockFields)
+        for (final FieldSchema field : blockFields)
         {
             final int id = nextMemberId.getAndIncrement();
 
-            final boolean usePrimitiveName = field.isEmbedded() && field instanceof EncodedDataTypeSchema;
+            final boolean usePrimitiveName = field.type().isEmbedded() && field.type() instanceof EncodedDataTypeSchema;
             final String typeName = usePrimitiveName ?
-                ((EncodedDataTypeSchema)field).primitiveType().primitiveName() :
-                requireNonNull(typeToName.get(field));
+                ((EncodedDataTypeSchema)field.type()).primitiveType().primitiveName() :
+                requireNonNull(typeToName.get(field.type()));
 
             final Element element = document.createElement("field");
             element.setAttribute("id", Integer.toString(id));
             element.setAttribute("name", "member" + id);
             element.setAttribute("type", typeName);
+            element.setAttribute("presence", field.presence().name().toLowerCase());
             parent.appendChild(element);
         }
 
@@ -309,17 +312,35 @@ public final class TestXmlSchemaWriter
         final Document document,
         final String name,
         final String primitiveType,
-        final int length)
+        final int length,
+        final Encoding.Presence presence)
     {
-        final Element blockLength = document.createElement("type");
-        blockLength.setAttribute("name", name);
-        blockLength.setAttribute("primitiveType", primitiveType);
+        final Element typeElement = document.createElement("type");
+        typeElement.setAttribute("name", name);
+        typeElement.setAttribute("primitiveType", primitiveType);
+
         if (length > 1)
         {
-            blockLength.setAttribute("length", Integer.toString(length));
+            typeElement.setAttribute("length", Integer.toString(length));
         }
 
-        return blockLength;
+        switch (presence)
+        {
+
+            case REQUIRED:
+                typeElement.setAttribute("presence", "required");
+                break;
+            case OPTIONAL:
+                typeElement.setAttribute("presence", "optional");
+                break;
+            case CONSTANT:
+                typeElement.setAttribute("presence", "constant");
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown presence: " + presence);
+        }
+
+        return typeElement;
     }
 
     private static Element createRefElement(
@@ -350,7 +371,13 @@ public final class TestXmlSchemaWriter
 
         for (final GroupSchema group : groups)
         {
-            appendTypes(visitedTypes, topLevelTypes, typeSchemaConverter, group.blockFields(), group.groups());
+            appendTypes(
+                visitedTypes,
+                topLevelTypes,
+                typeSchemaConverter,
+                group.blockFields().stream().map(FieldSchema::type).collect(Collectors.toList()),
+                group.groups()
+            );
         }
     }
 
@@ -380,7 +407,8 @@ public final class TestXmlSchemaWriter
                 document,
                 typeToName.computeIfAbsent(type, nextName),
                 type.primitiveType().primitiveName(),
-                type.length()
+                type.length(),
+                type.presence()
             );
         }
 
