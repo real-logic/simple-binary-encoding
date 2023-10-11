@@ -20,6 +20,7 @@ import uk.co.real_logic.sbe.ir.Encoding;
 import org.agrona.collections.MutableInteger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 import java.io.File;
 import java.io.StringWriter;
@@ -74,7 +75,7 @@ public final class TestXmlSchemaWriter
             final Element topLevelTypes = createTypesElement(document);
             root.appendChild(topLevelTypes);
 
-            final HashMap<TypeSchema, String> typeToName = new HashMap<>();
+            final HashMap<Object, String> typeToName = new HashMap<>();
 
             final TypeSchemaConverter typeSchemaConverter = new TypeSchemaConverter(
                 document,
@@ -88,7 +89,8 @@ public final class TestXmlSchemaWriter
                 topLevelTypes,
                 typeSchemaConverter,
                 schema.blockFields().stream().map(FieldSchema::type).collect(Collectors.toList()),
-                schema.groups());
+                schema.groups(),
+                schema.varData());
 
             final Element message = document.createElement("sbe:message");
             message.setAttribute("name", "TestMessage");
@@ -129,7 +131,7 @@ public final class TestXmlSchemaWriter
 
     private static void appendMembers(
         final Document document,
-        final HashMap<TypeSchema, String> typeToName,
+        final HashMap<Object, String> typeToName,
         final List<FieldSchema> blockFields,
         final List<GroupSchema> groups,
         final List<VarDataSchema> varData,
@@ -174,21 +176,10 @@ public final class TestXmlSchemaWriter
         for (final VarDataSchema data : varData)
         {
             final int id = nextMemberId.getAndIncrement();
-
             final Element element = document.createElement("data");
             element.setAttribute("id", Integer.toString(id));
             element.setAttribute("name", "member" + id);
-            switch (data.encoding())
-            {
-                case ASCII:
-                    element.setAttribute("type", "varStringEncoding");
-                    break;
-                case BYTES:
-                    element.setAttribute("type", "varDataEncoding");
-                    break;
-                default:
-                    throw new IllegalStateException("Unknown encoding: " + data.encoding());
-            }
+            element.setAttribute("type", requireNonNull(typeToName.get(data)));
             parent.appendChild(element);
         }
     }
@@ -211,27 +202,6 @@ public final class TestXmlSchemaWriter
             "groupSizeEncoding",
             createTypeElement(document, "blockLength", "uint16"),
             createTypeElement(document, "numInGroup", "uint16")
-        ));
-
-        final Element varString = createTypeElement(document, "varData", "uint8");
-        varString.setAttribute("length", "0");
-        varString.setAttribute("characterEncoding", "US-ASCII");
-        types.appendChild(createCompositeElement(
-            document,
-            "varStringEncoding",
-            createTypeElement(document, "length", "uint16"),
-            varString
-        ));
-
-        final Element varData = createTypeElement(document, "varData", "uint8");
-        final Element varDataLength = createTypeElement(document, "length", "uint32");
-        varDataLength.setAttribute("maxValue", "1000000");
-        varData.setAttribute("length", "0");
-        types.appendChild(createCompositeElement(
-            document,
-            "varDataEncoding",
-            varDataLength,
-            varData
         ));
 
         return types;
@@ -359,7 +329,8 @@ public final class TestXmlSchemaWriter
         final Element topLevelTypes,
         final TypeSchemaConverter typeSchemaConverter,
         final List<TypeSchema> blockFields,
-        final List<GroupSchema> groups)
+        final List<GroupSchema> groups,
+        final List<VarDataSchema> varDataFields)
     {
         for (final TypeSchema field : blockFields)
         {
@@ -376,23 +347,29 @@ public final class TestXmlSchemaWriter
                 topLevelTypes,
                 typeSchemaConverter,
                 group.blockFields().stream().map(FieldSchema::type).collect(Collectors.toList()),
-                group.groups()
-            );
+                group.groups(),
+                group.varData());
+        }
+
+        for (final VarDataSchema varData : varDataFields)
+        {
+            topLevelTypes.appendChild(typeSchemaConverter.convert(varData));
         }
     }
 
+    @SuppressWarnings("EnhancedSwitchMigration")
     private static final class TypeSchemaConverter implements TypeSchemaVisitor
     {
         private final Document document;
         private final Element topLevelTypes;
-        private final Map<TypeSchema, String> typeToName;
-        private final Function<TypeSchema, String> nextName;
+        private final Map<Object, String> typeToName;
+        private final Function<Object, String> nextName;
         private Element result;
 
         private TypeSchemaConverter(
             final Document document,
             final Element topLevelTypes,
-            final Map<TypeSchema, String> typeToName)
+            final Map<Object, String> typeToName)
         {
             this.document = document;
             this.topLevelTypes = topLevelTypes;
@@ -480,6 +457,32 @@ public final class TestXmlSchemaWriter
             result = null;
             type.accept(this);
             return requireNonNull(result);
+        }
+
+        public Node convert(final VarDataSchema varData)
+        {
+            final Element lengthElement = createTypeElement(document, "length",
+                varData.lengthEncoding().primitiveName());
+
+            if (varData.lengthEncoding().size() >= 4)
+            {
+                lengthElement.setAttribute("maxValue", Integer.toString(1_000_000));
+            }
+
+            final Element varDataElement = createTypeElement(document, "varData", "uint8");
+            varDataElement.setAttribute("length", "0");
+
+            if (varData.dataEncoding().equals(VarDataSchema.Encoding.ASCII))
+            {
+                varDataElement.setAttribute("characterEncoding", "US-ASCII");
+            }
+
+            return createCompositeElement(
+                document,
+                typeToName.computeIfAbsent(varData, nextName),
+                lengthElement,
+                varDataElement
+            );
         }
     }
 }
