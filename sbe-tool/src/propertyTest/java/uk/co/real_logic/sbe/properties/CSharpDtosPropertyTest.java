@@ -57,7 +57,11 @@ public class CSharpDtosPropertyTest
             copyResourceToFile("/CSharpDtosPropertyTest/SbePropertyTest.csproj", tempDir);
             copyResourceToFile("/CSharpDtosPropertyTest/Program.cs", tempDir);
             try (
-                DirectBufferInputStream inputStream = new DirectBufferInputStream(encodedMessage.buffer());
+                DirectBufferInputStream inputStream = new DirectBufferInputStream(
+                    encodedMessage.buffer(),
+                    0,
+                    encodedMessage.length()
+                );
                 OutputStream outputStream = Files.newOutputStream(tempDir.resolve("input.dat")))
             {
                 final byte[] buffer = new byte[2048];
@@ -85,7 +89,8 @@ public class CSharpDtosPropertyTest
                         "SCHEMA:\n" + encodedMessage.schema());
             }
 
-            final byte[] inputBytes = encodedMessage.buffer().byteArray();
+            final byte[] inputBytes = new byte[encodedMessage.length()];
+            encodedMessage.buffer().getBytes(0, inputBytes);
             final byte[] outputBytes = Files.readAllBytes(tempDir.resolve("output.dat"));
             if (!Arrays.equals(inputBytes, outputBytes))
             {

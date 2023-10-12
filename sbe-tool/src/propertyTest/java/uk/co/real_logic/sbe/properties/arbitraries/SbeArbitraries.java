@@ -756,12 +756,18 @@ public final class SbeArbitraries
         private final String schema;
         private final Ir ir;
         private final ExpandableArrayBuffer buffer;
+        private final int length;
 
-        private EncodedMessage(final String schema, final Ir ir, final ExpandableArrayBuffer buffer)
+        private EncodedMessage(
+            final String schema,
+            final Ir ir,
+            final ExpandableArrayBuffer buffer,
+            final int length)
         {
             this.schema = schema;
             this.ir = ir;
             this.buffer = buffer;
+            this.length = length;
         }
 
         public String schema()
@@ -777,6 +783,11 @@ public final class SbeArbitraries
         public ExpandableArrayBuffer buffer()
         {
             return buffer;
+        }
+
+        public int length()
+        {
+            return length;
         }
     }
 
@@ -800,7 +811,7 @@ public final class SbeArbitraries
                         final ExpandableArrayBuffer buffer = new ExpandableArrayBuffer();
                         final MutableInteger limit = new MutableInteger();
                         encoder.encode(buffer, 0, limit);
-                        return new EncodedMessage(xml, ir, buffer);
+                        return new EncodedMessage(xml, ir, buffer, limit.get());
                     });
             }
             catch (final Exception e)
