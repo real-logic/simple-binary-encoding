@@ -103,7 +103,7 @@ public class CSharpDtoGenerator implements CodeGenerator
                 out.append(generateFileHeader(ir.applicableNamespace(), "using System.Collections.Generic;\n"));
                 out.append(generateDocumentation(BASE_INDENT, msgToken));
 
-                out.append(BASE_INDENT).append("public sealed partial class ").append(className).append("\n")
+                out.append(BASE_INDENT).append("public sealed partial record ").append(className).append("\n")
                     .append(BASE_INDENT).append("{")
                     .append(sb)
                     .append(BASE_INDENT).append("}\n")
@@ -136,7 +136,7 @@ public class CSharpDtoGenerator implements CodeGenerator
 
             sb.append("\n")
                 .append(generateDocumentation(indent, groupToken))
-                .append(indent).append("public sealed partial class ").append(groupClassName).append("\n")
+                .append(indent).append("public sealed partial record ").append(groupClassName).append("\n")
                 .append(indent).append("{");
 
             i++;
@@ -1031,7 +1031,7 @@ public class CSharpDtoGenerator implements CodeGenerator
             generateCompositeEncodeInto(sb, codecClassName, compositeTokens, BASE_INDENT + INDENT);
             generateDisplay(sb, codecClassName, "Wrap", codecClassName + ".SbeSchemaVersion", BASE_INDENT + INDENT);
 
-            out.append(BASE_INDENT).append("public sealed partial class ").append(className).append("\n")
+            out.append(BASE_INDENT).append("public sealed partial record ").append(className).append("\n")
                 .append(BASE_INDENT).append("{")
                 .append(sb)
                 .append(BASE_INDENT).append("}\n")
