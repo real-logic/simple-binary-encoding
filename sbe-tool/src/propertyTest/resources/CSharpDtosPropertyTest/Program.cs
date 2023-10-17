@@ -17,8 +17,7 @@ namespace SbePropertyTest {
       messageHeader.Wrap(buffer, 0, 0);
       var decoder = new TestMessage();
       decoder.WrapForDecode(buffer, 8, messageHeader.BlockLength, messageHeader.Version);
-      var dto = new TestMessageDto();
-      dto.DecodeFrom(decoder);
+      var dto = TestMessageDto.DecodeFrom(decoder);
       var outputBytes = new byte[inputBytes.Length];
       var outputBuffer = new DirectBuffer(outputBytes);
       var encoder = new TestMessage();
