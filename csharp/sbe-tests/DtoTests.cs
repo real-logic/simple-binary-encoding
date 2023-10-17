@@ -16,14 +16,13 @@ namespace Org.SbeTool.Sbe.Tests
             var decoder = new Car();
             decoder.WrapForDecode(inputBuffer, 0, Car.BlockLength, Car.SchemaVersion);
             var decoderString = decoder.ToString();
-            var dto = new CarDto();
-            dto.DecodeFrom(decoder);
+            var dto = CarDto.DecodeFrom(decoder);
             var outputByteArray = new byte[1024];
             var outputBuffer = new DirectBuffer(outputByteArray);
             var encoder = new Car();
             encoder.WrapForEncode(outputBuffer, 0);
             dto.EncodeInto(encoder);
-            var dtoString = dto.ToString();
+            var dtoString = dto.ToSbeString();
             CollectionAssert.AreEqual(inputByteArray, outputByteArray);
             Assert.AreEqual(decoderString, dtoString);
         }
