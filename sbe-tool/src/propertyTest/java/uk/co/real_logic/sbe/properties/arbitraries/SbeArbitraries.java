@@ -324,7 +324,12 @@ public final class SbeArbitraries
 
             case UINT64:
                 return Arbitraries.longs()
-                    .map(l -> (buffer, offset, limit) -> buffer.putLong(offset, l, encoding.byteOrder()));
+                    .map(l -> (buffer, offset, limit) ->
+                    {
+                        final long nullValue = encoding.applicableNullValue().longValue();
+                        final long nonNullValue = l == nullValue ? minValue.longValue() : l;
+                        buffer.putLong(offset, nonNullValue, encoding.byteOrder());
+                    });
 
             case INT64:
                 assert minValue.longValue() <= maxValue.longValue();
