@@ -79,22 +79,25 @@ public class CSharpDtoGenerator implements CodeGenerator
             int offset = 0;
 
             final StringBuilder sb = new StringBuilder();
+            final StringBuilder ctorArgs = new StringBuilder();
 
             final List<Token> fields = new ArrayList<>();
             offset = collectFields(messageBody, offset, fields);
-            generateFields(sb, fields, BASE_INDENT + INDENT);
+            generateFields(sb, ctorArgs, codecClassName, fields, BASE_INDENT + INDENT);
 
             final List<Token> groups = new ArrayList<>();
             offset = collectGroups(messageBody, offset, groups);
-            generateGroups(sb, codecClassName, groups, BASE_INDENT + INDENT);
+            generateGroups(sb, ctorArgs, className, codecClassName, groups, BASE_INDENT + INDENT);
 
             final List<Token> varData = new ArrayList<>();
             collectVarData(messageBody, offset, varData);
-            generateVarData(sb, varData, BASE_INDENT + INDENT);
+            generateVarData(sb, ctorArgs, varData, BASE_INDENT + INDENT);
 
             generateDecodeFrom(sb, className, codecClassName, fields, groups, varData, BASE_INDENT + INDENT);
             generateEncodeInto(sb, codecClassName, fields, groups, varData, BASE_INDENT + INDENT);
             generateDisplay(sb, codecClassName, "WrapForEncode", null, BASE_INDENT + INDENT);
+
+            removeTrailingComma(ctorArgs);
 
             try (Writer out = outputManager.createOutput(className))
             {
@@ -105,7 +108,9 @@ public class CSharpDtoGenerator implements CodeGenerator
                     "using System.Linq;\n"));
                 out.append(generateDocumentation(BASE_INDENT, msgToken));
 
-                out.append(BASE_INDENT).append("public sealed partial record ").append(className).append("\n")
+                out.append(BASE_INDENT).append("public sealed partial record ").append(className).append("(\n")
+                    .append(ctorArgs)
+                    .append(BASE_INDENT).append(")\n")
                     .append(BASE_INDENT).append("{")
                     .append(sb)
                     .append(BASE_INDENT).append("}\n")
@@ -116,7 +121,9 @@ public class CSharpDtoGenerator implements CodeGenerator
 
     private void generateGroups(
         final StringBuilder sb,
-        final String parentMessageClassName,
+        final StringBuilder ctorArgs,
+        final String qualifiedParentDtoClassName,
+        final String qualifiedParentCodecClassName,
         final List<Token> tokens,
         final String indent)
     {
@@ -130,38 +137,58 @@ public class CSharpDtoGenerator implements CodeGenerator
             final String groupName = groupToken.name();
             final String groupClassName = formatDtoClassName(groupName);
 
-            sb.append("\n")
-                .append(generateDocumentation(indent, groupToken))
-                .append(indent).append("public IReadOnlyList<").append(groupClassName).append("> ")
-                .append(formatPropertyName(groupName))
-                .append(" { get; init; }\n");
+            final String formattedPropertyName = formatPropertyName(groupName);
+
+            ctorArgs.append(indent).append("IReadOnlyList<")
+                .append(qualifiedParentDtoClassName).append(".").append(groupClassName).append("> ")
+                .append(formattedPropertyName).append(",\n");
 
             sb.append("\n")
                 .append(generateDocumentation(indent, groupToken))
-                .append(indent).append("public sealed partial record ").append(groupClassName).append("\n")
-                .append(indent).append("{");
+                .append(indent).append("public IReadOnlyList<").append(groupClassName).append("> ")
+                .append(formattedPropertyName)
+                .append(" { get; init; } = ").append(formattedPropertyName).append(";\n");
+
+            final StringBuilder groupCtorArgs = new StringBuilder();
+            final StringBuilder groupRecordBody = new StringBuilder();
 
             i++;
             i += tokens.get(i).componentTokenCount();
 
+            final String qualifiedDtoClassName = qualifiedParentDtoClassName + "." + groupClassName;
+            final String qualifiedCodecClassName =
+                qualifiedParentCodecClassName + "." + formatClassName(groupName) + "Group";
+
             final List<Token> fields = new ArrayList<>();
             i = collectFields(tokens, i, fields);
-            generateFields(sb, fields, indent + INDENT);
+            generateFields(groupRecordBody, groupCtorArgs, qualifiedCodecClassName, fields, indent + INDENT);
 
             final List<Token> groups = new ArrayList<>();
             i = collectGroups(tokens, i, groups);
-            final String codecClassName = parentMessageClassName + "." + formatClassName(groupName) + "Group";
-            generateGroups(sb, codecClassName, groups, indent + INDENT);
+            generateGroups(groupRecordBody, groupCtorArgs, qualifiedDtoClassName,
+                qualifiedCodecClassName, groups, indent + INDENT);
 
             final List<Token> varData = new ArrayList<>();
             i = collectVarData(tokens, i, varData);
-            generateVarData(sb, varData, indent + INDENT);
+            generateVarData(groupRecordBody, groupCtorArgs, varData, indent + INDENT);
 
-            generateDecodeListFrom(sb, groupClassName, codecClassName, indent + INDENT);
-            generateDecodeFrom(sb, groupClassName, codecClassName, fields, groups, varData, indent + INDENT);
-            generateEncodeInto(sb, codecClassName, fields, groups, varData, indent + INDENT);
+            generateDecodeListFrom(
+                groupRecordBody, groupClassName, qualifiedCodecClassName, indent + INDENT);
+            generateDecodeFrom(
+                groupRecordBody, groupClassName, qualifiedCodecClassName, fields, groups, varData, indent + INDENT);
+            generateEncodeInto(
+                groupRecordBody, qualifiedCodecClassName, fields, groups, varData, indent + INDENT);
 
-            sb.append(indent).append("}\n");
+            removeTrailingComma(groupCtorArgs);
+
+            sb.append("\n")
+                .append(generateDocumentation(indent, groupToken))
+                .append(indent).append("public sealed partial record ").append(groupClassName).append("(\n")
+                .append(groupCtorArgs)
+                .append(indent).append(")\n")
+                .append(indent).append("{\n")
+                .append(groupRecordBody)
+                .append(indent).append("}\n");
         }
     }
 
@@ -177,8 +204,7 @@ public class CSharpDtoGenerator implements CodeGenerator
             .append(codecClassName).append(" codec)\n")
             .append(indent).append("{\n");
 
-        sb.append(indent).append(INDENT).append("return new ").append(dtoClassName).append("()\n")
-            .append(indent).append(INDENT).append("{\n");
+        sb.append(indent).append(INDENT).append("return new ").append(dtoClassName).append("(\n");
 
         for (int i = 0; i < tokens.size(); )
         {
@@ -189,7 +215,9 @@ public class CSharpDtoGenerator implements CodeGenerator
             i += tokens.get(i).componentTokenCount();
         }
 
-        sb.append(indent).append(INDENT).append("};\n");
+        removeTrailingComma(sb);
+
+        sb.append(indent).append(INDENT).append(");\n");
         sb.append(indent).append("}\n");
     }
 
@@ -256,12 +284,12 @@ public class CSharpDtoGenerator implements CodeGenerator
             .append(" DecodeFrom(").append(codecClassName).append(" codec)\n")
             .append(indent).append("{\n");
 
-        sb.append(indent).append(INDENT).append("return new ").append(dtoClassName).append("()\n")
-            .append(indent).append(INDENT).append("{\n");
+        sb.append(indent).append(INDENT).append("return new ").append(dtoClassName).append("(\n");
         generateFieldsDecodeFrom(sb, fields, codecClassName, indent + INDENT + INDENT);
         generateGroupsDecodeFrom(sb, groups, indent + INDENT + INDENT);
         generateVarDataDecodeFrom(sb, varData, indent + INDENT + INDENT);
-        sb.append(indent).append(INDENT).append("};\n");
+        removeTrailingComma(sb);
+        sb.append(indent).append(INDENT).append(");\n");
 
         sb.append(indent).append("}\n");
     }
@@ -297,13 +325,13 @@ public class CSharpDtoGenerator implements CodeGenerator
                 break;
 
             case BEGIN_SET:
-                generatePropertyDecodeFrom(sb, codecClassName, fieldToken, "0", indent);
+                generatePropertyDecodeFrom(sb, fieldToken, "0", null, indent);
                 break;
 
             case BEGIN_ENUM:
                 final String enumName = formatClassName(typeToken.applicableTypeName());
                 final String nullValue = formatNamespace(ir.packageName()) + "." + enumName + ".NULL_VALUE";
-                generatePropertyDecodeFrom(sb, codecClassName, fieldToken, nullValue, indent);
+                generatePropertyDecodeFrom(sb, fieldToken, nullValue, null, indent);
                 break;
 
             case BEGIN_COMPOSITE:
@@ -331,8 +359,8 @@ public class CSharpDtoGenerator implements CodeGenerator
 
         if (arrayLength == 1)
         {
-            final String nullValue = codecClassName + "." + formatPropertyName(fieldToken.name()) + "NullValue";
-            generatePropertyDecodeFrom(sb, codecClassName, fieldToken, nullValue, indent);
+            final String codecNullValue = codecClassName + "." + formatPropertyName(fieldToken.name()) + "NullValue";
+            generatePropertyDecodeFrom(sb, fieldToken, "null", codecNullValue, indent);
         }
         else if (arrayLength > 1)
         {
@@ -356,7 +384,7 @@ public class CSharpDtoGenerator implements CodeGenerator
 
         if (typeToken.encoding().primitiveType() == PrimitiveType.CHAR)
         {
-            wrapInActingVersionCheck(
+            generateRecordPropertyAssignment(
                 sb,
                 fieldToken,
                 indent,
@@ -367,7 +395,7 @@ public class CSharpDtoGenerator implements CodeGenerator
         }
         else
         {
-            wrapInActingVersionCheck(
+            generateRecordPropertyAssignment(
                 sb,
                 fieldToken,
                 indent,
@@ -380,12 +408,11 @@ public class CSharpDtoGenerator implements CodeGenerator
 
     private void generatePropertyDecodeFrom(
         final StringBuilder sb,
-        final String codecClassName,
         final Token fieldToken,
-        final String nullValue,
+        final String dtoNullValue,
+        final String codecNullValue,
         final String indent)
     {
-
         if (fieldToken.isConstantEncoding())
         {
             return;
@@ -394,13 +421,13 @@ public class CSharpDtoGenerator implements CodeGenerator
         final String propertyName = fieldToken.name();
         final String formattedPropertyName = formatPropertyName(propertyName);
 
-        wrapInActingVersionCheck(
+        generateRecordPropertyAssignment(
             sb,
             fieldToken,
             indent,
             "codec." + formattedPropertyName,
-            nullValue,
-            codecClassName + "." + formattedPropertyName + "NullValue"
+            dtoNullValue,
+            codecNullValue
         );
     }
 
@@ -414,7 +441,7 @@ public class CSharpDtoGenerator implements CodeGenerator
         final String formattedPropertyName = formatPropertyName(propertyName);
         final String dtoClassName = formatDtoClassName(typeToken.applicableTypeName());
 
-        wrapInActingVersionCheck(
+        generateRecordPropertyAssignment(
             sb,
             fieldToken,
             indent,
@@ -440,7 +467,7 @@ public class CSharpDtoGenerator implements CodeGenerator
             final String formattedPropertyName = formatPropertyName(groupName);
             final String groupDtoClassName = formatDtoClassName(groupName);
 
-            wrapInActingVersionCheck(
+            generateRecordPropertyAssignment(
                 sb,
                 groupToken,
                 indent,
@@ -482,7 +509,7 @@ public class CSharpDtoGenerator implements CodeGenerator
                     "Get" + formattedPropertyName + "Bytes" :
                     "Get" + formattedPropertyName;
 
-                wrapInActingVersionCheck(
+                generateRecordPropertyAssignment(
                     sb,
                     token,
                     indent,
@@ -494,7 +521,7 @@ public class CSharpDtoGenerator implements CodeGenerator
         }
     }
 
-    private void wrapInActingVersionCheck(
+    private void generateRecordPropertyAssignment(
         final StringBuilder sb,
         final Token token,
         final String indent,
@@ -505,7 +532,7 @@ public class CSharpDtoGenerator implements CodeGenerator
         final String propertyName = token.name();
         final String formattedPropertyName = formatPropertyName(propertyName);
 
-        sb.append(indent).append(formattedPropertyName).append(" = ");
+        sb.append(indent).append(formattedPropertyName).append(": ");
 
         if (token.version() > 0)
         {
@@ -699,6 +726,17 @@ public class CSharpDtoGenerator implements CodeGenerator
     {
         final String propertyName = fieldToken.name();
         final String formattedPropertyName = formatPropertyName(propertyName);
+
+        if (fieldToken.isOptionalEncoding())
+        {
+            sb.append(indent).append("if (null == ").append(formattedPropertyName).append(")\n")
+                .append(indent).append("{")
+                .append(indent).append(INDENT).append("throw new System.InvalidOperationException(\"")
+                .append("Null composite value encoding (").append(formattedPropertyName)
+                .append(") is not supported via DTOs\");\n")
+                .append(indent).append("}\n\n");
+        }
+
         sb.append(indent).append(formattedPropertyName).append(".EncodeInto(codec.")
             .append(formattedPropertyName).append(");\n");
     }
@@ -789,6 +827,8 @@ public class CSharpDtoGenerator implements CodeGenerator
 
     private void generateFields(
         final StringBuilder sb,
+        final StringBuilder ctorArgs,
+        final String codecClassName,
         final List<Token> tokens,
         final String indent)
     {
@@ -803,19 +843,20 @@ public class CSharpDtoGenerator implements CodeGenerator
                 switch (encodingToken.signal())
                 {
                     case ENCODING:
-                        generatePrimitiveProperty(sb, propertyName, signalToken, encodingToken, indent);
+                        generatePrimitiveProperty(
+                            sb, ctorArgs, codecClassName, propertyName, signalToken, encodingToken, indent);
                         break;
 
                     case BEGIN_ENUM:
-                        generateEnumProperty(sb, propertyName, signalToken, encodingToken, indent);
+                        generateEnumProperty(sb, ctorArgs, propertyName, signalToken, encodingToken, indent);
                         break;
 
                     case BEGIN_SET:
-                        generateBitSetProperty(sb, propertyName, signalToken, encodingToken, indent);
+                        generateBitSetProperty(sb, ctorArgs, propertyName, signalToken, encodingToken, indent);
                         break;
 
                     case BEGIN_COMPOSITE:
-                        generateCompositeProperty(sb, propertyName, signalToken, encodingToken, indent);
+                        generateCompositeProperty(sb, ctorArgs, propertyName, signalToken, encodingToken, indent);
                         break;
 
                     default:
@@ -825,49 +866,59 @@ public class CSharpDtoGenerator implements CodeGenerator
         }
     }
 
-    private String optionality(final Token fieldToken, final Token typeToken)
-    {
-        return fieldToken.isOptionalEncoding() ? "?" : "";
-    }
-
     private void generateCompositeProperty(
         final StringBuilder sb,
+        final StringBuilder ctorArgs,
         final String propertyName,
         final Token fieldToken,
         final Token typeToken,
         final String indent)
     {
         final String compositeName = formatDtoClassName(typeToken.applicableTypeName());
+        final String nullableSuffix = fieldToken.isOptionalEncoding() ? "?" : "";
+        final String formattedPropertyName = formatPropertyName(propertyName);
+
+        ctorArgs.append(indent).append(compositeName).append(" ").append(formattedPropertyName).append(",\n");
+
         sb.append("\n")
             .append(generateDocumentation(indent, fieldToken))
             .append(indent).append("public ").append(compositeName)
-            .append(optionality(fieldToken, typeToken)).append(" ").append(formatPropertyName(propertyName))
-            .append(" { get; init; }\n");
+            .append(nullableSuffix).append(" ").append(formattedPropertyName)
+            .append(" { get; init; } = ").append(formattedPropertyName).append(";\n");
     }
 
     private void generateBitSetProperty(
         final StringBuilder sb,
+        final StringBuilder ctorArgs,
         final String propertyName,
         final Token fieldToken,
         final Token typeToken,
         final String indent)
     {
         final String enumName = formatClassName(typeToken.applicableTypeName());
+
+        final String formattedPropertyName = formatPropertyName(propertyName);
+
+        ctorArgs.append(indent).append(enumName).append(" ").append(formattedPropertyName).append(",\n");
 
         sb.append("\n")
             .append(generateDocumentation(indent, fieldToken))
             .append(indent).append("public ").append(enumName).append(" ")
-            .append(formatPropertyName(propertyName)).append(" { get; init; }\n");
+            .append(formattedPropertyName).append(" { get; init; } = ")
+            .append(formattedPropertyName).append(";\n");
     }
 
     private void generateEnumProperty(
         final StringBuilder sb,
+        final StringBuilder ctorArgs,
         final String propertyName,
         final Token fieldToken,
         final Token typeToken,
         final String indent)
     {
         final String enumName = formatClassName(typeToken.applicableTypeName());
+
+        final String formattedPropertyName = formatPropertyName(propertyName);
 
         if (fieldToken.isConstantEncoding())
         {
@@ -876,7 +927,7 @@ public class CSharpDtoGenerator implements CodeGenerator
             sb.append("\n")
                 .append(generateDocumentation(indent, fieldToken))
                 .append(indent).append("public static ").append(enumName).append(" ")
-                .append(formatPropertyName(propertyName)).append("\n")
+                .append(formattedPropertyName).append("\n")
                 .append(indent).append("{\n")
                 .append(indent).append(INDENT).append("get { return ")
                 .append(formatNamespace(ir.packageName())).append(".").append(constValue)
@@ -885,15 +936,19 @@ public class CSharpDtoGenerator implements CodeGenerator
         }
         else
         {
+            ctorArgs.append(indent).append(enumName).append(" ").append(formattedPropertyName).append(",\n");
+
             sb.append("\n")
                 .append(generateDocumentation(indent, fieldToken))
                 .append(indent).append("public ").append(enumName).append(" ")
-                .append(formatPropertyName(propertyName)).append(" { get; init; }\n");
+                .append(formattedPropertyName).append(" { get; init; } = ").append(formattedPropertyName).append(";\n");
         }
     }
 
     private void generatePrimitiveProperty(
         final StringBuilder sb,
+        final StringBuilder ctorArgs,
+        final String codecClassName,
         final String propertyName,
         final Token fieldToken,
         final Token typeToken,
@@ -905,12 +960,14 @@ public class CSharpDtoGenerator implements CodeGenerator
         }
         else
         {
-            generatePrimitivePropertyMethods(sb, propertyName, fieldToken, typeToken, indent);
+            generatePrimitivePropertyMethods(sb, ctorArgs, codecClassName, propertyName, fieldToken, typeToken, indent);
         }
     }
 
     private void generatePrimitivePropertyMethods(
         final StringBuilder sb,
+        final StringBuilder ctorArgs,
+        final String codecClassName,
         final String propertyName,
         final Token fieldToken,
         final Token typeToken,
@@ -920,54 +977,162 @@ public class CSharpDtoGenerator implements CodeGenerator
 
         if (arrayLength == 1)
         {
-            generateSingleValueProperty(sb, propertyName, fieldToken, typeToken, indent);
+            generateSingleValueProperty(sb, ctorArgs, codecClassName, propertyName, fieldToken, typeToken, indent);
         }
         else if (arrayLength > 1)
         {
-            generateArrayProperty(sb, propertyName, fieldToken, typeToken, indent);
+            generateArrayProperty(sb, ctorArgs, codecClassName, propertyName, fieldToken, typeToken, indent);
         }
     }
 
     private void generateArrayProperty(
         final StringBuilder sb,
+        final StringBuilder ctorArgs,
+        final String codecClassName,
         final String propertyName,
         final Token fieldToken,
         final Token typeToken,
         final String indent)
     {
+        final String formattedPropertyName = formatPropertyName(propertyName);
+
         if (typeToken.encoding().primitiveType() == PrimitiveType.CHAR)
         {
+            ctorArgs.append(indent).append("string ").append(formattedPropertyName).append(",\n");
+
             sb.append("\n")
                 .append(generateDocumentation(indent, fieldToken))
                 .append(indent).append("public string ")
-                .append(formatPropertyName(propertyName)).append(" { get; init; }\n");
+                .append(formattedPropertyName).append(" { get; init; } = ")
+                .append(formattedPropertyName).append(";\n");
         }
         else
         {
             final String typeName = cSharpTypeName(typeToken.encoding().primitiveType());
+            final String fieldName = "_" + toLowerFirstChar(propertyName);
+            final String nullableSuffix = fieldToken.isOptionalEncoding() ? "?" : "";
+            final String listTypeName = "IReadOnlyList<" + typeName + ">" + nullableSuffix;
+
+            ctorArgs.append(indent).append(listTypeName).append(" ").append(formattedPropertyName).append(",\n");
+
+            sb.append("\n")
+                .append(indent).append("private ").append(listTypeName).append(" ").append(fieldName)
+                .append(" = Validate").append(formattedPropertyName).append("(").append(formattedPropertyName)
+                .append(");\n");
 
             sb.append("\n")
                 .append(generateDocumentation(indent, fieldToken))
-                .append(indent).append("public IReadOnlyList<").append(typeName).append(">")
-                .append(optionality(fieldToken, typeToken)).append(" ")
-                .append(formatPropertyName(propertyName)).append(" { get; init; }\n");
+                .append(indent).append("public ").append(listTypeName).append(" ")
+                .append(formattedPropertyName).append("\n")
+                .append(indent).append("{\n")
+                .append(indent).append(INDENT).append("get => ").append(fieldName).append(";\n")
+                .append(indent).append(INDENT).append("init => ").append(fieldName).append(" = Validate")
+                .append(formattedPropertyName).append("(value);\n")
+                .append(indent).append("}\n");
+
+            sb.append("\n")
+                .append(indent).append("private static ").append(listTypeName).append(" Validate")
+                .append(formattedPropertyName).append("(").append(listTypeName).append(" value)\n")
+                .append(indent).append("{\n");
+
+            if (fieldToken.isOptionalEncoding())
+            {
+                sb.append(indent).append(INDENT)
+                    .append("if (value == null)\n")
+                    .append(indent).append(INDENT)
+                    .append("{\n")
+                    .append(indent).append(INDENT).append(INDENT)
+                    .append("return null;\n")
+                    .append(indent).append(INDENT)
+                    .append("}\n");
+            }
+
+            sb.append(indent).append(INDENT)
+                .append("if (value.Count > ").append(codecClassName).append(".")
+                .append(formattedPropertyName).append("Length)\n")
+                .append(indent).append(INDENT)
+                .append("{\n")
+                .append(indent).append(INDENT).append(INDENT)
+                .append("throw new ArgumentException(\"too many elements: \" + value.Count);\n")
+                .append(indent).append(INDENT)
+                .append("}\n")
+                .append(indent).append(INDENT)
+                .append("return value;\n")
+                .append(indent).append("}\n");
         }
     }
 
     private void generateSingleValueProperty(
         final StringBuilder sb,
+        final StringBuilder ctorArgs,
+        final String codecClassName,
         final String propertyName,
         final Token fieldToken,
         final Token typeToken,
         final String indent)
     {
-        final String typeName = cSharpTypeName(typeToken.encoding().primitiveType());
+        final String nullableSuffix = fieldToken.isOptionalEncoding() ? "?" : "";
+        final String typeName = cSharpTypeName(typeToken.encoding().primitiveType()) + nullableSuffix;
+        final String formattedPropertyName = formatPropertyName(propertyName);
+        final String fieldName = "_" + toLowerFirstChar(propertyName);
+
+        ctorArgs.append(indent).append(typeName).append(" ").append(formattedPropertyName).append(",\n");
+
+        sb.append("\n")
+            .append(indent).append("private ").append(typeName).append(" ").append(fieldName)
+            .append(" = Validate").append(formattedPropertyName)
+            .append("(").append(formattedPropertyName).append(");\n");
 
         sb.append("\n")
             .append(generateDocumentation(indent, fieldToken))
-            .append(indent).append("public ").append(typeName)
-            .append(optionality(fieldToken, typeToken)).append(" ")
-            .append(formatPropertyName(propertyName)).append(" { get; init; }\n");
+            .append(indent).append("public ").append(typeName).append(" ")
+            .append(formattedPropertyName).append("\n")
+            .append(indent).append("{\n")
+            .append(indent).append(INDENT).append("get => ").append(fieldName).append(";\n")
+            .append(indent).append(INDENT).append("init => ").append(fieldName).append(" = Validate")
+            .append(formattedPropertyName).append("(value);\n")
+            .append(indent).append("}\n");
+
+        sb.append("\n")
+            .append(indent).append("private static ").append(typeName).append(" Validate")
+            .append(formattedPropertyName).append("(").append(typeName).append(" value)\n")
+            .append(indent).append("{\n");
+
+        if (fieldToken.isOptionalEncoding())
+        {
+            sb.append(indent).append(INDENT)
+                .append("if (value == null)\n")
+                .append(indent).append(INDENT)
+                .append("{\n")
+                .append(indent).append(INDENT).append(INDENT)
+                .append("return null;\n")
+                .append(indent).append(INDENT)
+                .append("}\n");
+
+            sb.append(indent).append(INDENT)
+                .append("if (value == ").append(codecClassName).append(".")
+                .append(formattedPropertyName).append("NullValue)\n")
+                .append(indent).append(INDENT)
+                .append("{\n")
+                .append(indent).append(INDENT).append(INDENT)
+                .append("throw new ArgumentException(\"null value is reserved: \" + value);\n")
+                .append(indent).append(INDENT)
+                .append("}\n");
+        }
+
+        sb.append(indent).append(INDENT)
+            .append("if (value < ")
+            .append(codecClassName).append(".").append(formattedPropertyName).append("MinValue || value > ")
+            .append(codecClassName).append(".").append(formattedPropertyName).append("MaxValue)\n")
+            .append(indent).append(INDENT)
+            .append("{\n")
+            .append(indent).append(INDENT).append(INDENT)
+            .append("throw new ArgumentException(\"value is out of allowed range: \" + value);\n")
+            .append(indent).append(INDENT)
+            .append("}\n")
+            .append(indent).append(INDENT)
+            .append("return value;\n")
+            .append(indent).append("}\n");
     }
 
     private void generateConstPropertyMethods(
@@ -1004,6 +1169,7 @@ public class CSharpDtoGenerator implements CodeGenerator
 
     private void generateVarData(
         final StringBuilder sb,
+        final StringBuilder ctorArgs,
         final List<Token> tokens,
         final String indent)
     {
@@ -1017,11 +1183,14 @@ public class CSharpDtoGenerator implements CodeGenerator
                 final String characterEncoding = varDataToken.encoding().characterEncoding();
                 final String dtoType = characterEncoding == null ? "byte[]" : "string";
 
-                final String optionality = token.version() > 0 ? "?" : "";
+                final String formattedPropertyName = formatPropertyName(propertyName);
+
+                ctorArgs.append(indent).append(dtoType).append(" ").append(formattedPropertyName).append(",\n");
 
                 sb.append("\n")
                     .append(indent).append("public ").append(dtoType).append(" ")
-                    .append(formatPropertyName(propertyName)).append(" { get; init; }\n");
+                    .append(formattedPropertyName).append(" { get; init; } = ")
+                    .append(formattedPropertyName).append(";\n");
             }
         }
     }
@@ -1062,14 +1231,19 @@ public class CSharpDtoGenerator implements CodeGenerator
             out.append(generateDocumentation(BASE_INDENT, tokens.get(0)));
 
             final StringBuilder sb = new StringBuilder();
+            final StringBuilder ctorArgs = new StringBuilder();
 
             final List<Token> compositeTokens = tokens.subList(1, tokens.size() - 1);
-            generateCompositePropertyElements(sb, compositeTokens, BASE_INDENT + INDENT);
+            generateCompositePropertyElements(sb, ctorArgs, codecClassName, compositeTokens, BASE_INDENT + INDENT);
             generateCompositeDecodeFrom(sb, className, codecClassName, compositeTokens, BASE_INDENT + INDENT);
             generateCompositeEncodeInto(sb, codecClassName, compositeTokens, BASE_INDENT + INDENT);
             generateDisplay(sb, codecClassName, "Wrap", codecClassName + ".SbeSchemaVersion", BASE_INDENT + INDENT);
 
-            out.append(BASE_INDENT).append("public sealed partial record ").append(className).append("\n")
+            removeTrailingComma(ctorArgs);
+
+            out.append(BASE_INDENT).append("public sealed partial record ").append(className).append("(\n")
+                .append(ctorArgs)
+                .append(BASE_INDENT).append(")\n")
                 .append(BASE_INDENT).append("{")
                 .append(sb)
                 .append(BASE_INDENT).append("}\n")
@@ -1077,8 +1251,31 @@ public class CSharpDtoGenerator implements CodeGenerator
         }
     }
 
+    private static void removeTrailingComma(final StringBuilder ctorArgs)
+    {
+        if (ctorArgs.length() < 2)
+        {
+            return;
+        }
+
+        if (ctorArgs.charAt(ctorArgs.length() - 1) != '\n')
+        {
+            return;
+        }
+
+        if (ctorArgs.charAt(ctorArgs.length() - 2) != ',')
+        {
+            return;
+        }
+
+        ctorArgs.setLength(ctorArgs.length() - 2);
+        ctorArgs.append("\n");
+    }
+
     private void generateCompositePropertyElements(
         final StringBuilder sb,
+        final StringBuilder ctorArgs,
+        final String codecClassName,
         final List<Token> tokens,
         final String indent)
     {
@@ -1090,19 +1287,19 @@ public class CSharpDtoGenerator implements CodeGenerator
             switch (token.signal())
             {
                 case ENCODING:
-                    generatePrimitiveProperty(sb, propertyName, token, token, indent);
+                    generatePrimitiveProperty(sb, ctorArgs, codecClassName, propertyName, token, token, indent);
                     break;
 
                 case BEGIN_ENUM:
-                    generateEnumProperty(sb, propertyName, token, token, indent);
+                    generateEnumProperty(sb, ctorArgs, propertyName, token, token, indent);
                     break;
 
                 case BEGIN_SET:
-                    generateBitSetProperty(sb, propertyName, token, token, indent);
+                    generateBitSetProperty(sb, ctorArgs, propertyName, token, token, indent);
                     break;
 
                 case BEGIN_COMPOSITE:
-                    generateCompositeProperty(sb, propertyName, token, token, indent);
+                    generateCompositeProperty(sb, ctorArgs, propertyName, token, token, indent);
                     break;
 
                 default:
