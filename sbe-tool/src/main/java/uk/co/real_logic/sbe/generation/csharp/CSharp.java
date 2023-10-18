@@ -26,14 +26,30 @@ import uk.co.real_logic.sbe.ir.Ir;
  */
 public class CSharp implements TargetCodeGenerator
 {
+    private static final boolean GENERATE_DTOS = Boolean.getBoolean("sbe.csharp.generate.dtos");
+
     /**
      * {@inheritDoc}
      */
     public CodeGenerator newInstance(final Ir ir, final String outputDir)
     {
-        return new CSharpGenerator(
+        final CSharpGenerator flyweightGenerator = new CSharpGenerator(
             ir,
             TargetCodeGeneratorLoader.precedenceChecks(),
             new CSharpNamespaceOutputManager(outputDir, ir.applicableNamespace()));
+
+        if (GENERATE_DTOS)
+        {
+            final CSharpDtoGenerator dtoGenerator =
+                new CSharpDtoGenerator(ir, new CSharpNamespaceOutputManager(outputDir, ir.applicableNamespace()));
+
+            return () ->
+            {
+                flyweightGenerator.generate();
+                dtoGenerator.generate();
+            };
+        }
+
+        return flyweightGenerator;
     }
 }
