@@ -70,6 +70,7 @@ public final class TestXmlSchemaWriter
             final Element root = document.createElementNS("http://fixprotocol.io/2016/sbe", "sbe:messageSchema");
             root.setAttribute("id", Short.toString(schema.schemaId()));
             root.setAttribute("package", "uk.co.real_logic.sbe.properties");
+            root.setAttribute("version", Short.toString(schema.version()));
             document.appendChild(root);
 
             final Element topLevelTypes = createTypesElement(document);
@@ -152,6 +153,7 @@ public final class TestXmlSchemaWriter
             element.setAttribute("name", "member" + id);
             element.setAttribute("type", typeName);
             element.setAttribute("presence", field.presence().name().toLowerCase());
+            element.setAttribute("sinceVersion", Short.toString(field.sinceVersion()));
             parent.appendChild(element);
         }
 
@@ -180,6 +182,7 @@ public final class TestXmlSchemaWriter
             element.setAttribute("id", Integer.toString(id));
             element.setAttribute("name", "member" + id);
             element.setAttribute("type", requireNonNull(typeToName.get(data)));
+            element.setAttribute("sinceVersion", Short.toString(data.sinceVersion()));
             parent.appendChild(element);
         }
     }

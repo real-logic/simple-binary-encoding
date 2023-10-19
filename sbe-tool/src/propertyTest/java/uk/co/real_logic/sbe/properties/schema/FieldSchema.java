@@ -22,14 +22,18 @@ public final class FieldSchema
 {
     private final TypeSchema type;
     private final Encoding.Presence presence;
+    private final short sinceVersion;
 
     public FieldSchema(
         final TypeSchema type,
-        final Encoding.Presence presence
+        final Encoding.Presence presence,
+        final short sinceVersion
     )
     {
+        assert sinceVersion == 0 || presence.equals(Encoding.Presence.OPTIONAL);
         this.type = type;
         this.presence = presence;
+        this.sinceVersion = sinceVersion;
     }
 
     public TypeSchema type()
@@ -40,5 +44,10 @@ public final class FieldSchema
     public Encoding.Presence presence()
     {
         return presence;
+    }
+
+    public short sinceVersion()
+    {
+        return sinceVersion;
     }
 }

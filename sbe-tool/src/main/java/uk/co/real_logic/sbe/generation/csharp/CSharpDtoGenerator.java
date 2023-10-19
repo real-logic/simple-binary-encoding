@@ -93,8 +93,8 @@ public class CSharpDtoGenerator implements CodeGenerator
             collectVarData(messageBody, offset, varData);
             generateVarData(sb, ctorArgs, varData, BASE_INDENT + INDENT);
 
-            generateDecodeFrom(sb, className, codecClassName, fields, groups, varData, BASE_INDENT + INDENT);
-            generateEncodeInto(sb, codecClassName, fields, groups, varData, BASE_INDENT + INDENT);
+            generateMessageDecodeFrom(sb, className, codecClassName, fields, groups, varData, BASE_INDENT + INDENT);
+            generateMessageEncodeInto(sb, codecClassName, fields, groups, varData, BASE_INDENT + INDENT);
             generateDisplay(sb, codecClassName, "WrapForEncode", null, BASE_INDENT + INDENT);
 
             removeTrailingComma(ctorArgs);
@@ -117,6 +117,12 @@ public class CSharpDtoGenerator implements CodeGenerator
                     .append("}\n");
             }
         }
+    }
+
+    private enum DefinitionKind
+    {
+        Composite,
+        Message
     }
 
     private void generateGroups(
@@ -174,9 +180,9 @@ public class CSharpDtoGenerator implements CodeGenerator
 
             generateDecodeListFrom(
                 groupRecordBody, groupClassName, qualifiedCodecClassName, indent + INDENT);
-            generateDecodeFrom(
+            generateMessageDecodeFrom(
                 groupRecordBody, groupClassName, qualifiedCodecClassName, fields, groups, varData, indent + INDENT);
-            generateEncodeInto(
+            generateMessageEncodeInto(
                 groupRecordBody, qualifiedCodecClassName, fields, groups, varData, indent + INDENT);
 
             removeTrailingComma(groupCtorArgs);
@@ -210,7 +216,8 @@ public class CSharpDtoGenerator implements CodeGenerator
         {
             final Token token = tokens.get(i);
 
-            generateFieldDecodeFrom(sb, token, token, codecClassName, indent + INDENT + INDENT);
+            generateFieldDecodeFrom(
+                sb, DefinitionKind.Composite, token, token, codecClassName, indent + INDENT + INDENT);
 
             i += tokens.get(i).componentTokenCount();
         }
@@ -270,7 +277,7 @@ public class CSharpDtoGenerator implements CodeGenerator
             .append(indent).append("}\n");
     }
 
-    private void generateDecodeFrom(
+    private void generateMessageDecodeFrom(
         final StringBuilder sb,
         final String dtoClassName,
         final String codecClassName,
@@ -285,7 +292,7 @@ public class CSharpDtoGenerator implements CodeGenerator
             .append(indent).append("{\n");
 
         sb.append(indent).append(INDENT).append("return new ").append(dtoClassName).append("(\n");
-        generateFieldsDecodeFrom(sb, fields, codecClassName, indent + INDENT + INDENT);
+        generateMessageFieldsDecodeFrom(sb, fields, codecClassName, indent + INDENT + INDENT);
         generateGroupsDecodeFrom(sb, groups, indent + INDENT + INDENT);
         generateVarDataDecodeFrom(sb, varData, indent + INDENT + INDENT);
         removeTrailingComma(sb);
@@ -294,7 +301,7 @@ public class CSharpDtoGenerator implements CodeGenerator
         sb.append(indent).append("}\n");
     }
 
-    private void generateFieldsDecodeFrom(
+    private void generateMessageFieldsDecodeFrom(
         final StringBuilder sb,
         final List<Token> tokens,
         final String codecClassName,
@@ -307,35 +314,37 @@ public class CSharpDtoGenerator implements CodeGenerator
             {
                 final Token encodingToken = tokens.get(i + 1);
 
-                generateFieldDecodeFrom(sb, signalToken, encodingToken, codecClassName, indent);
+                generateFieldDecodeFrom(sb, DefinitionKind.Message, signalToken, encodingToken, codecClassName, indent);
             }
         }
     }
 
     private void generateFieldDecodeFrom(
         final StringBuilder sb,
+        final DefinitionKind rootKind,
         final Token fieldToken,
         final Token typeToken,
-        final String codecClassName, final String indent)
+        final String codecClassName,
+        final String indent)
     {
         switch (typeToken.signal())
         {
             case ENCODING:
-                generatePrimitiveDecodeFrom(sb, fieldToken, typeToken, codecClassName, indent);
+                generatePrimitiveDecodeFrom(sb, rootKind, fieldToken, typeToken, codecClassName, indent);
                 break;
 
             case BEGIN_SET:
-                generatePropertyDecodeFrom(sb, fieldToken, "0", null, indent);
+                generatePropertyDecodeFrom(sb, rootKind, fieldToken, "0", null, indent);
                 break;
 
             case BEGIN_ENUM:
                 final String enumName = formatClassName(typeToken.applicableTypeName());
                 final String nullValue = formatNamespace(ir.packageName()) + "." + enumName + ".NULL_VALUE";
-                generatePropertyDecodeFrom(sb, fieldToken, nullValue, null, indent);
+                generatePropertyDecodeFrom(sb, rootKind, fieldToken, nullValue, null, indent);
                 break;
 
             case BEGIN_COMPOSITE:
-                generateComplexDecodeFrom(sb, fieldToken, typeToken, indent);
+                generateComplexDecodeFrom(sb, rootKind, fieldToken, typeToken, indent);
                 break;
 
             default:
@@ -345,6 +354,7 @@ public class CSharpDtoGenerator implements CodeGenerator
 
     private void generatePrimitiveDecodeFrom(
         final StringBuilder sb,
+        final DefinitionKind rootKind,
         final Token fieldToken,
         final Token typeToken,
         final String codecClassName,
@@ -360,16 +370,17 @@ public class CSharpDtoGenerator implements CodeGenerator
         if (arrayLength == 1)
         {
             final String codecNullValue = codecClassName + "." + formatPropertyName(fieldToken.name()) + "NullValue";
-            generatePropertyDecodeFrom(sb, fieldToken, "null", codecNullValue, indent);
+            generatePropertyDecodeFrom(sb, rootKind, fieldToken, "null", codecNullValue, indent);
         }
         else if (arrayLength > 1)
         {
-            generateArrayDecodeFrom(sb, fieldToken, typeToken, indent);
+            generateArrayDecodeFrom(sb, rootKind, fieldToken, typeToken, indent);
         }
     }
 
     private void generateArrayDecodeFrom(
         final StringBuilder sb,
+        final DefinitionKind rootKind,
         final Token fieldToken,
         final Token typeToken,
         final String indent)
@@ -386,6 +397,7 @@ public class CSharpDtoGenerator implements CodeGenerator
         {
             generateRecordPropertyAssignment(
                 sb,
+                rootKind,
                 fieldToken,
                 indent,
                 "codec.Get" + formattedPropertyName + "()",
@@ -397,6 +409,7 @@ public class CSharpDtoGenerator implements CodeGenerator
         {
             generateRecordPropertyAssignment(
                 sb,
+                rootKind,
                 fieldToken,
                 indent,
                 "codec." + formattedPropertyName + "AsSpan().ToArray()",
@@ -408,6 +421,7 @@ public class CSharpDtoGenerator implements CodeGenerator
 
     private void generatePropertyDecodeFrom(
         final StringBuilder sb,
+        final DefinitionKind rootKind,
         final Token fieldToken,
         final String dtoNullValue,
         final String codecNullValue,
@@ -423,6 +437,7 @@ public class CSharpDtoGenerator implements CodeGenerator
 
         generateRecordPropertyAssignment(
             sb,
+            rootKind,
             fieldToken,
             indent,
             "codec." + formattedPropertyName,
@@ -433,6 +448,7 @@ public class CSharpDtoGenerator implements CodeGenerator
 
     private void generateComplexDecodeFrom(
         final StringBuilder sb,
+        final DefinitionKind rootKind,
         final Token fieldToken,
         final Token typeToken,
         final String indent)
@@ -443,6 +459,7 @@ public class CSharpDtoGenerator implements CodeGenerator
 
         generateRecordPropertyAssignment(
             sb,
+            rootKind,
             fieldToken,
             indent,
             dtoClassName + ".DecodeFrom(codec." + formattedPropertyName + ")",
@@ -469,6 +486,7 @@ public class CSharpDtoGenerator implements CodeGenerator
 
             generateRecordPropertyAssignment(
                 sb,
+                DefinitionKind.Message,
                 groupToken,
                 indent,
                 groupDtoClassName + ".DecodeListFrom(codec." + formattedPropertyName + ")",
@@ -511,6 +529,7 @@ public class CSharpDtoGenerator implements CodeGenerator
 
                 generateRecordPropertyAssignment(
                     sb,
+                    DefinitionKind.Message,
                     token,
                     indent,
                     "codec." + accessor + "()",
@@ -523,6 +542,7 @@ public class CSharpDtoGenerator implements CodeGenerator
 
     private void generateRecordPropertyAssignment(
         final StringBuilder sb,
+        final DefinitionKind rootKind,
         final Token token,
         final String indent,
         final String presentExpression,
@@ -534,8 +554,20 @@ public class CSharpDtoGenerator implements CodeGenerator
 
         sb.append(indent).append(formattedPropertyName).append(": ");
 
-        if (token.version() > 0)
+        // N.B., in the IR, the composite information is "embedded" into each message/group field.
+        // When we are looking at a composite "field" (i.e., a type) the `token.version()` method
+        // returns the "sinceVersion" of the containing field. Therefore, we cannot decide presence
+        // based on `token.version()` when dealing with composites.
+        if (rootKind.equals(DefinitionKind.Message) && token.version() > 0)
         {
+            if (token.signal() != Signal.BEGIN_VAR_DATA && !token.isOptionalEncoding())
+            {
+                throw new IllegalStateException(
+                    "Expected added field " + propertyName +
+                    " (sinceVersion=" + token.version() + ") to have optional presence."
+                );
+            }
+
             sb.append("codec.").append(formattedPropertyName).append("InActingVersion()");
 
             if (null != nullCodecValueOrNull)
@@ -553,7 +585,7 @@ public class CSharpDtoGenerator implements CodeGenerator
         }
     }
 
-    private void generateEncodeInto(
+    private void generateMessageEncodeInto(
         final StringBuilder sb,
         final String codecClassName,
         final List<Token> fields,
@@ -674,7 +706,7 @@ public class CSharpDtoGenerator implements CodeGenerator
         final String expression,
         final String nullValue)
     {
-        return fieldToken.version() > 0 || fieldToken.isOptionalEncoding() ?
+        return fieldToken.isOptionalEncoding() ?
             expression + " ?? " + nullValue :
             expression;
     }
@@ -791,9 +823,19 @@ public class CSharpDtoGenerator implements CodeGenerator
             if (token.signal() == Signal.BEGIN_VAR_DATA)
             {
                 final String propertyName = token.name();
+                final String formattedPropertyName = formatPropertyName(propertyName);
 
-                sb.append(indent).append("codec.Set").append(formatPropertyName(propertyName))
-                    .append("(").append(formatPropertyName(propertyName)).append(");\n");
+                if (token.version() > 0)
+                {
+                    sb.append(indent).append("if (null == ").append(formattedPropertyName).append(")\n")
+                        .append(indent).append("{\n")
+                        .append(indent).append(INDENT).append("throw new System.InvalidOperationException(\"")
+                        .append(formattedPropertyName).append(" must not be null.\");\n")
+                        .append(indent).append("}\n\n");
+                }
+
+                sb.append(indent).append("codec.Set").append(formattedPropertyName)
+                    .append("(").append(formattedPropertyName).append(");\n");
             }
         }
     }
@@ -1181,7 +1223,8 @@ public class CSharpDtoGenerator implements CodeGenerator
                 final String propertyName = token.name();
                 final Token varDataToken = Generators.findFirst("varData", tokens, i);
                 final String characterEncoding = varDataToken.encoding().characterEncoding();
-                final String dtoType = characterEncoding == null ? "byte[]" : "string";
+                final String nullableSuffix = token.version() > 0 ? "?" : "";
+                final String dtoType = (characterEncoding == null ? "byte[]" : "string") + nullableSuffix;
 
                 final String formattedPropertyName = formatPropertyName(propertyName);
 

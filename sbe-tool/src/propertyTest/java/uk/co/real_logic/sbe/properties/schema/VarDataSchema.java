@@ -22,13 +22,16 @@ public final class VarDataSchema
 {
     private final Encoding dataEncoding;
     private final PrimitiveType lengthEncoding;
+    private final short sinceVersion;
 
     public VarDataSchema(
         final Encoding dataEncoding,
-        final PrimitiveType lengthEncoding)
+        final PrimitiveType lengthEncoding,
+        final short sinceVersion)
     {
         this.dataEncoding = dataEncoding;
         this.lengthEncoding = lengthEncoding;
+        this.sinceVersion = sinceVersion;
     }
 
     public Encoding dataEncoding()
@@ -39,6 +42,11 @@ public final class VarDataSchema
     public PrimitiveType lengthEncoding()
     {
         return lengthEncoding;
+    }
+
+    public short sinceVersion()
+    {
+        return sinceVersion;
     }
 
     public enum Encoding
