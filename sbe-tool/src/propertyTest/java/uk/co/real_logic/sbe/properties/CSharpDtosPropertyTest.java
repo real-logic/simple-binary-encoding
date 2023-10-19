@@ -89,6 +89,17 @@ public class CSharpDtosPropertyTest
                         "SCHEMA:\n" + encodedMessage.schema());
             }
 
+            final byte[] errorBytes = Files.readAllBytes(stderr);
+            if (errorBytes.length != 0)
+            {
+                throw new AssertionError(
+                    "Process wrote to stderr.\n\n" +
+                        "STDOUT:\n" + new String(Files.readAllBytes(stdout)) + "\n\n" +
+                        "STDERR:\n" + new String(errorBytes) + "\n\n" +
+                        "SCHEMA:\n" + encodedMessage.schema() + "\n\n"
+                );
+            }
+
             final byte[] inputBytes = new byte[encodedMessage.length()];
             encodedMessage.buffer().getBytes(0, inputBytes);
             final byte[] outputBytes = Files.readAllBytes(tempDir.resolve("output.dat"));

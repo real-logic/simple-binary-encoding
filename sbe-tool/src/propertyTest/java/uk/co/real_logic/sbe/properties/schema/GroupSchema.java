@@ -16,7 +16,9 @@
 
 package uk.co.real_logic.sbe.properties.schema;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public final class GroupSchema
 {
@@ -29,9 +31,13 @@ public final class GroupSchema
         final List<GroupSchema> groups,
         final List<VarDataSchema> varData)
     {
-        this.blockFields = blockFields;
+        this.blockFields = blockFields.stream()
+            .sorted(Comparator.comparing(FieldSchema::sinceVersion))
+            .collect(Collectors.toList());
         this.groups = groups;
-        this.varData = varData;
+        this.varData = varData.stream()
+            .sorted(Comparator.comparing(VarDataSchema::sinceVersion))
+            .collect(Collectors.toList());
     }
 
     public List<FieldSchema> blockFields()

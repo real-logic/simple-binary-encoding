@@ -192,6 +192,37 @@ public final class SbeArbitraries
         }
     }
 
+    private static Arbitrary<FieldSchema> addedField()
+    {
+        return Combinators.combine(
+            typeSchema(MAX_COMPOSITE_DEPTH),
+            Arbitraries.of(Encoding.Presence.OPTIONAL),
+            Arbitraries.of((short)1, (short)2)
+        ).as(FieldSchema::new);
+    }
+
+    private static Arbitrary<FieldSchema> originalField()
+    {
+        return Combinators.combine(
+            typeSchema(MAX_COMPOSITE_DEPTH),
+            presence(),
+            Arbitraries.of((short)0)
+        ).as(FieldSchema::new);
+    }
+
+    private static Arbitrary<FieldSchema> skewedFieldDistribution()
+    {
+        final Arbitrary<FieldSchema> originalField = originalField();
+        final Arbitrary<FieldSchema> addedField = addedField();
+
+        return Arbitraries.oneOf(
+            originalField,
+            originalField,
+            originalField,
+            addedField
+        );
+    }
+
     private static Arbitrary<GroupSchema> groupSchema(final int depth)
     {
         final Arbitrary<List<GroupSchema>> subGroups = depth == 1 ?
@@ -201,10 +232,7 @@ public final class SbeArbitraries
         return Combinators.combine(
             withDuplicates(
                 2,
-                Combinators.combine(
-                    typeSchema(MAX_COMPOSITE_DEPTH),
-                    presence()
-                ).as(FieldSchema::new).list().ofMaxSize(5)
+                skewedFieldDistribution().list().ofMaxSize(5)
             ),
             subGroups,
             varDataSchema().list().ofMaxSize(3)
@@ -227,6 +255,13 @@ public final class SbeArbitraries
                 PrimitiveType.UINT8,
                 PrimitiveType.UINT16,
                 PrimitiveType.UINT32
+            ),
+            Arbitraries.of(
+                (short)0,
+                (short)0,
+                (short)0,
+                (short)1,
+                (short)2
             )
         ).as(VarDataSchema::new);
     }
@@ -236,10 +271,7 @@ public final class SbeArbitraries
         return Combinators.combine(
             withDuplicates(
                 3,
-                Combinators.combine(
-                    typeSchema(MAX_COMPOSITE_DEPTH),
-                    presence()
-                ).as(FieldSchema::new).list().ofMaxSize(10)
+                skewedFieldDistribution().list().ofMaxSize(10)
             ),
             groupSchema(MAX_GROUP_DEPTH).list().ofMaxSize(3),
             varDataSchema().list().ofMaxSize(3)
@@ -747,7 +779,7 @@ public final class SbeArbitraries
                 buffer.putShort(0, (short)blockLength, ir.byteOrder());
                 buffer.putShort(2, messageId, ir.byteOrder());
                 buffer.putShort(4, (short)ir.id(), ir.byteOrder());
-                buffer.putShort(6, (short)0, ir.byteOrder());
+                buffer.putShort(6, (short)ir.version(), ir.byteOrder());
                 final int headerLength = 8;
                 fields.encode(buffer, offset + headerLength, null);
                 limit.set(offset + headerLength + blockLength);
@@ -821,7 +853,10 @@ public final class SbeArbitraries
             }
             catch (final Exception e)
             {
-                throw new RuntimeException(e);
+                throw new AssertionError(
+                    "Failed to generate encoded value for schema.\n\n" +
+                    "SCHEMA:\n" + xml,
+                    e);
             }
         }).withoutEdgeCases();
     }

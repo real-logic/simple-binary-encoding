@@ -16,13 +16,16 @@
 
 package uk.co.real_logic.sbe.properties.schema;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public final class MessageSchema
 {
     private final List<FieldSchema> blockFields;
     private final List<GroupSchema> groups;
     private final List<VarDataSchema> varData;
+    private final short version;
 
     public MessageSchema(
         final List<FieldSchema> blockFields,
@@ -30,9 +33,14 @@ public final class MessageSchema
         final List<VarDataSchema> varData
     )
     {
-        this.blockFields = blockFields;
+        this.blockFields = blockFields.stream()
+            .sorted(Comparator.comparing(FieldSchema::sinceVersion))
+            .collect(Collectors.toList());
         this.groups = groups;
-        this.varData = varData;
+        this.varData = varData.stream()
+            .sorted(Comparator.comparing(VarDataSchema::sinceVersion))
+            .collect(Collectors.toList());
+        this.version = findMaxVersion(blockFields, groups, varData);
     }
 
     public short schemaId()
@@ -43,6 +51,11 @@ public final class MessageSchema
     public short templateId()
     {
         return 1;
+    }
+
+    public short version()
+    {
+        return version;
     }
 
     public List<FieldSchema> blockFields()
@@ -58,5 +71,23 @@ public final class MessageSchema
     public List<VarDataSchema> varData()
     {
         return varData;
+    }
+
+    private static short findMaxVersion(
+        final List<FieldSchema> fields,
+        final List<GroupSchema> groups,
+        final List<VarDataSchema> varData
+    )
+    {
+        final int maxFieldVersion = fields.stream()
+            .mapToInt(FieldSchema::sinceVersion)
+            .max().orElse(0);
+        final int maxGroupVersion = groups.stream()
+            .mapToInt(group -> findMaxVersion(group.blockFields(), group.groups(), group.varData()))
+            .max().orElse(0);
+        final int maxVarDataVersion = varData.stream()
+            .mapToInt(VarDataSchema::sinceVersion)
+            .max().orElse(0);
+        return (short)Math.max(maxFieldVersion, Math.max(maxGroupVersion, maxVarDataVersion));
     }
 }
