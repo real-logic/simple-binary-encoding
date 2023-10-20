@@ -13,8 +13,8 @@ public final class TokenCodecDecoder
 {
     private static final boolean ENABLE_BOUNDS_CHECKS = !Boolean.getBoolean("agrona.disable.bounds.checks");
 
-    private static final boolean ENABLE_ACCESS_ORDER_CHECKS = Boolean.parseBoolean(System.getProperty(
-        "sbe.enable.access.order.checks",
+    private static final boolean SBE_ENABLE_SEQUENCING_CHECKS = Boolean.parseBoolean(System.getProperty(
+        "sbe.enable.sequencing.checks",
         Boolean.toString(ENABLE_BOUNDS_CHECKS)));
 
     /**
@@ -219,7 +219,7 @@ public final class TokenCodecDecoder
         this.actingVersion = actingVersion;
         limit(offset + actingBlockLength);
 
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onWrap(actingVersion);
         }
@@ -260,7 +260,7 @@ public final class TokenCodecDecoder
         final int decodedLength = encodedLength();
         limit(currentLimit);
 
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             codecState(currentCodecState);
         }
@@ -346,7 +346,7 @@ public final class TokenCodecDecoder
 
     public int tokenOffset()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onTokenOffsetAccessed();
         }
@@ -413,7 +413,7 @@ public final class TokenCodecDecoder
 
     public int tokenSize()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onTokenSizeAccessed();
         }
@@ -480,7 +480,7 @@ public final class TokenCodecDecoder
 
     public int fieldId()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onFieldIdAccessed();
         }
@@ -547,7 +547,7 @@ public final class TokenCodecDecoder
 
     public int tokenVersion()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onTokenVersionAccessed();
         }
@@ -614,7 +614,7 @@ public final class TokenCodecDecoder
 
     public int componentTokenCount()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onComponentTokenCountAccessed();
         }
@@ -666,7 +666,7 @@ public final class TokenCodecDecoder
 
     public short signalRaw()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onSignalAccessed();
         }
@@ -676,7 +676,7 @@ public final class TokenCodecDecoder
 
     public SignalCodec signal()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onSignalAccessed();
         }
@@ -728,7 +728,7 @@ public final class TokenCodecDecoder
 
     public short primitiveTypeRaw()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onPrimitiveTypeAccessed();
         }
@@ -738,7 +738,7 @@ public final class TokenCodecDecoder
 
     public PrimitiveTypeCodec primitiveType()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onPrimitiveTypeAccessed();
         }
@@ -790,7 +790,7 @@ public final class TokenCodecDecoder
 
     public short byteOrderRaw()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onByteOrderAccessed();
         }
@@ -800,7 +800,7 @@ public final class TokenCodecDecoder
 
     public ByteOrderCodec byteOrder()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onByteOrderAccessed();
         }
@@ -852,7 +852,7 @@ public final class TokenCodecDecoder
 
     public short presenceRaw()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onPresenceAccessed();
         }
@@ -862,7 +862,7 @@ public final class TokenCodecDecoder
 
     public PresenceCodec presence()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onPresenceAccessed();
         }
@@ -929,7 +929,7 @@ public final class TokenCodecDecoder
 
     public int deprecated()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onDeprecatedAccessed();
         }
@@ -1000,7 +1000,7 @@ public final class TokenCodecDecoder
 
     public int nameLength()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onNameLengthAccessed();
         }
@@ -1011,7 +1011,7 @@ public final class TokenCodecDecoder
 
     public int skipName()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onNameAccessed();
         }
@@ -1027,7 +1027,7 @@ public final class TokenCodecDecoder
 
     public int getName(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onNameAccessed();
         }
@@ -1044,7 +1044,7 @@ public final class TokenCodecDecoder
 
     public int getName(final byte[] dst, final int dstOffset, final int length)
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onNameAccessed();
         }
@@ -1061,7 +1061,7 @@ public final class TokenCodecDecoder
 
     public void wrapName(final DirectBuffer wrapBuffer)
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onNameAccessed();
         }
@@ -1075,7 +1075,7 @@ public final class TokenCodecDecoder
 
     public String name()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onNameAccessed();
         }
@@ -1158,7 +1158,7 @@ public final class TokenCodecDecoder
 
     public int constValueLength()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onConstValueLengthAccessed();
         }
@@ -1169,7 +1169,7 @@ public final class TokenCodecDecoder
 
     public int skipConstValue()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onConstValueAccessed();
         }
@@ -1185,7 +1185,7 @@ public final class TokenCodecDecoder
 
     public int getConstValue(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onConstValueAccessed();
         }
@@ -1202,7 +1202,7 @@ public final class TokenCodecDecoder
 
     public int getConstValue(final byte[] dst, final int dstOffset, final int length)
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onConstValueAccessed();
         }
@@ -1219,7 +1219,7 @@ public final class TokenCodecDecoder
 
     public void wrapConstValue(final DirectBuffer wrapBuffer)
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onConstValueAccessed();
         }
@@ -1233,7 +1233,7 @@ public final class TokenCodecDecoder
 
     public String constValue()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onConstValueAccessed();
         }
@@ -1316,7 +1316,7 @@ public final class TokenCodecDecoder
 
     public int minValueLength()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onMinValueLengthAccessed();
         }
@@ -1327,7 +1327,7 @@ public final class TokenCodecDecoder
 
     public int skipMinValue()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onMinValueAccessed();
         }
@@ -1343,7 +1343,7 @@ public final class TokenCodecDecoder
 
     public int getMinValue(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onMinValueAccessed();
         }
@@ -1360,7 +1360,7 @@ public final class TokenCodecDecoder
 
     public int getMinValue(final byte[] dst, final int dstOffset, final int length)
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onMinValueAccessed();
         }
@@ -1377,7 +1377,7 @@ public final class TokenCodecDecoder
 
     public void wrapMinValue(final DirectBuffer wrapBuffer)
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onMinValueAccessed();
         }
@@ -1391,7 +1391,7 @@ public final class TokenCodecDecoder
 
     public String minValue()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onMinValueAccessed();
         }
@@ -1474,7 +1474,7 @@ public final class TokenCodecDecoder
 
     public int maxValueLength()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onMaxValueLengthAccessed();
         }
@@ -1485,7 +1485,7 @@ public final class TokenCodecDecoder
 
     public int skipMaxValue()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onMaxValueAccessed();
         }
@@ -1501,7 +1501,7 @@ public final class TokenCodecDecoder
 
     public int getMaxValue(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onMaxValueAccessed();
         }
@@ -1518,7 +1518,7 @@ public final class TokenCodecDecoder
 
     public int getMaxValue(final byte[] dst, final int dstOffset, final int length)
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onMaxValueAccessed();
         }
@@ -1535,7 +1535,7 @@ public final class TokenCodecDecoder
 
     public void wrapMaxValue(final DirectBuffer wrapBuffer)
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onMaxValueAccessed();
         }
@@ -1549,7 +1549,7 @@ public final class TokenCodecDecoder
 
     public String maxValue()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onMaxValueAccessed();
         }
@@ -1632,7 +1632,7 @@ public final class TokenCodecDecoder
 
     public int nullValueLength()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onNullValueLengthAccessed();
         }
@@ -1643,7 +1643,7 @@ public final class TokenCodecDecoder
 
     public int skipNullValue()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onNullValueAccessed();
         }
@@ -1659,7 +1659,7 @@ public final class TokenCodecDecoder
 
     public int getNullValue(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onNullValueAccessed();
         }
@@ -1676,7 +1676,7 @@ public final class TokenCodecDecoder
 
     public int getNullValue(final byte[] dst, final int dstOffset, final int length)
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onNullValueAccessed();
         }
@@ -1693,7 +1693,7 @@ public final class TokenCodecDecoder
 
     public void wrapNullValue(final DirectBuffer wrapBuffer)
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onNullValueAccessed();
         }
@@ -1707,7 +1707,7 @@ public final class TokenCodecDecoder
 
     public String nullValue()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onNullValueAccessed();
         }
@@ -1790,7 +1790,7 @@ public final class TokenCodecDecoder
 
     public int characterEncodingLength()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onCharacterEncodingLengthAccessed();
         }
@@ -1801,7 +1801,7 @@ public final class TokenCodecDecoder
 
     public int skipCharacterEncoding()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onCharacterEncodingAccessed();
         }
@@ -1817,7 +1817,7 @@ public final class TokenCodecDecoder
 
     public int getCharacterEncoding(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onCharacterEncodingAccessed();
         }
@@ -1834,7 +1834,7 @@ public final class TokenCodecDecoder
 
     public int getCharacterEncoding(final byte[] dst, final int dstOffset, final int length)
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onCharacterEncodingAccessed();
         }
@@ -1851,7 +1851,7 @@ public final class TokenCodecDecoder
 
     public void wrapCharacterEncoding(final DirectBuffer wrapBuffer)
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onCharacterEncodingAccessed();
         }
@@ -1865,7 +1865,7 @@ public final class TokenCodecDecoder
 
     public String characterEncoding()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onCharacterEncodingAccessed();
         }
@@ -1948,7 +1948,7 @@ public final class TokenCodecDecoder
 
     public int epochLength()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onEpochLengthAccessed();
         }
@@ -1959,7 +1959,7 @@ public final class TokenCodecDecoder
 
     public int skipEpoch()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onEpochAccessed();
         }
@@ -1975,7 +1975,7 @@ public final class TokenCodecDecoder
 
     public int getEpoch(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onEpochAccessed();
         }
@@ -1992,7 +1992,7 @@ public final class TokenCodecDecoder
 
     public int getEpoch(final byte[] dst, final int dstOffset, final int length)
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onEpochAccessed();
         }
@@ -2009,7 +2009,7 @@ public final class TokenCodecDecoder
 
     public void wrapEpoch(final DirectBuffer wrapBuffer)
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onEpochAccessed();
         }
@@ -2023,7 +2023,7 @@ public final class TokenCodecDecoder
 
     public String epoch()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onEpochAccessed();
         }
@@ -2106,7 +2106,7 @@ public final class TokenCodecDecoder
 
     public int timeUnitLength()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onTimeUnitLengthAccessed();
         }
@@ -2117,7 +2117,7 @@ public final class TokenCodecDecoder
 
     public int skipTimeUnit()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onTimeUnitAccessed();
         }
@@ -2133,7 +2133,7 @@ public final class TokenCodecDecoder
 
     public int getTimeUnit(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onTimeUnitAccessed();
         }
@@ -2150,7 +2150,7 @@ public final class TokenCodecDecoder
 
     public int getTimeUnit(final byte[] dst, final int dstOffset, final int length)
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onTimeUnitAccessed();
         }
@@ -2167,7 +2167,7 @@ public final class TokenCodecDecoder
 
     public void wrapTimeUnit(final DirectBuffer wrapBuffer)
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onTimeUnitAccessed();
         }
@@ -2181,7 +2181,7 @@ public final class TokenCodecDecoder
 
     public String timeUnit()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onTimeUnitAccessed();
         }
@@ -2264,7 +2264,7 @@ public final class TokenCodecDecoder
 
     public int semanticTypeLength()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onSemanticTypeLengthAccessed();
         }
@@ -2275,7 +2275,7 @@ public final class TokenCodecDecoder
 
     public int skipSemanticType()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onSemanticTypeAccessed();
         }
@@ -2291,7 +2291,7 @@ public final class TokenCodecDecoder
 
     public int getSemanticType(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onSemanticTypeAccessed();
         }
@@ -2308,7 +2308,7 @@ public final class TokenCodecDecoder
 
     public int getSemanticType(final byte[] dst, final int dstOffset, final int length)
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onSemanticTypeAccessed();
         }
@@ -2325,7 +2325,7 @@ public final class TokenCodecDecoder
 
     public void wrapSemanticType(final DirectBuffer wrapBuffer)
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onSemanticTypeAccessed();
         }
@@ -2339,7 +2339,7 @@ public final class TokenCodecDecoder
 
     public String semanticType()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onSemanticTypeAccessed();
         }
@@ -2422,7 +2422,7 @@ public final class TokenCodecDecoder
 
     public int descriptionLength()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onDescriptionLengthAccessed();
         }
@@ -2433,7 +2433,7 @@ public final class TokenCodecDecoder
 
     public int skipDescription()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onDescriptionAccessed();
         }
@@ -2449,7 +2449,7 @@ public final class TokenCodecDecoder
 
     public int getDescription(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onDescriptionAccessed();
         }
@@ -2466,7 +2466,7 @@ public final class TokenCodecDecoder
 
     public int getDescription(final byte[] dst, final int dstOffset, final int length)
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onDescriptionAccessed();
         }
@@ -2483,7 +2483,7 @@ public final class TokenCodecDecoder
 
     public void wrapDescription(final DirectBuffer wrapBuffer)
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onDescriptionAccessed();
         }
@@ -2497,7 +2497,7 @@ public final class TokenCodecDecoder
 
     public String description()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onDescriptionAccessed();
         }
@@ -2580,7 +2580,7 @@ public final class TokenCodecDecoder
 
     public int referencedNameLength()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onReferencedNameLengthAccessed();
         }
@@ -2591,7 +2591,7 @@ public final class TokenCodecDecoder
 
     public int skipReferencedName()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onReferencedNameAccessed();
         }
@@ -2607,7 +2607,7 @@ public final class TokenCodecDecoder
 
     public int getReferencedName(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onReferencedNameAccessed();
         }
@@ -2624,7 +2624,7 @@ public final class TokenCodecDecoder
 
     public int getReferencedName(final byte[] dst, final int dstOffset, final int length)
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onReferencedNameAccessed();
         }
@@ -2641,7 +2641,7 @@ public final class TokenCodecDecoder
 
     public void wrapReferencedName(final DirectBuffer wrapBuffer)
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onReferencedNameAccessed();
         }
@@ -2655,7 +2655,7 @@ public final class TokenCodecDecoder
 
     public String referencedName()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onReferencedNameAccessed();
         }

@@ -207,7 +207,7 @@ public class CppGenerator implements CodeGenerator
 
         sb.append(indent).append("void checkEncodingIsComplete()\n")
             .append(indent).append("{\n")
-            .append("#if defined(ENABLE_ACCESS_ORDER_CHECKS)\n")
+            .append("#if defined(SBE_ENABLE_SEQUENCING_CHECKS)\n")
             .append(indent).append(INDENT).append("switch (m_codecState)\n")
             .append(indent).append(INDENT).append("{\n");
 
@@ -321,7 +321,7 @@ public class CppGenerator implements CodeGenerator
         }
 
         final StringBuilder sb = new StringBuilder();
-        sb.append("#if defined(ENABLE_ACCESS_ORDER_CHECKS)\n")
+        sb.append("#if defined(SBE_ENABLE_SEQUENCING_CHECKS)\n")
             .append(indent).append(methodName).append("(");
 
         for (int i = 0; i < arguments.length; i++)
@@ -3083,7 +3083,7 @@ public class CppGenerator implements CodeGenerator
         if (accessOrderModel.versionCount() == 1)
         {
             final StringBuilder sb = new StringBuilder();
-            sb.append("#if defined(ENABLE_ACCESS_ORDER_CHECKS)\n")
+            sb.append("#if defined(SBE_ENABLE_SEQUENCING_CHECKS)\n")
                 .append(TWO_INDENT).append("codecState(")
                 .append(qualifiedStateCase(accessOrderModel.latestVersionWrappedState())).append(");\n")
                 .append("#endif\n");
@@ -3101,7 +3101,7 @@ public class CppGenerator implements CodeGenerator
         }
 
         final StringBuilder sb = new StringBuilder();
-        sb.append("#if defined(ENABLE_ACCESS_ORDER_CHECKS)\n")
+        sb.append("#if defined(SBE_ENABLE_SEQUENCING_CHECKS)\n")
             .append(TWO_INDENT).append("codecState(")
             .append(qualifiedStateCase(accessOrderModel.latestVersionWrappedState()))
             .append(");\n")

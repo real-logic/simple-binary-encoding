@@ -13,8 +13,8 @@ public final class TokenCodecEncoder
 {
     private static final boolean ENABLE_BOUNDS_CHECKS = !Boolean.getBoolean("agrona.disable.bounds.checks");
 
-    private static final boolean ENABLE_ACCESS_ORDER_CHECKS = Boolean.parseBoolean(System.getProperty(
-        "sbe.enable.access.order.checks",
+    private static final boolean SBE_ENABLE_SEQUENCING_CHECKS = Boolean.parseBoolean(System.getProperty(
+        "sbe.enable.sequencing.checks",
         Boolean.toString(ENABLE_BOUNDS_CHECKS)));
 
     /**
@@ -198,7 +198,7 @@ public final class TokenCodecEncoder
         this.offset = offset;
         limit(offset + BLOCK_LENGTH);
 
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             codecState(CodecStates.V0_BLOCK);
         }
@@ -292,7 +292,7 @@ public final class TokenCodecEncoder
 
     public TokenCodecEncoder tokenOffset(final int value)
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onTokenOffsetAccessed();
         }
@@ -360,7 +360,7 @@ public final class TokenCodecEncoder
 
     public TokenCodecEncoder tokenSize(final int value)
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onTokenSizeAccessed();
         }
@@ -428,7 +428,7 @@ public final class TokenCodecEncoder
 
     public TokenCodecEncoder fieldId(final int value)
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onFieldIdAccessed();
         }
@@ -496,7 +496,7 @@ public final class TokenCodecEncoder
 
     public TokenCodecEncoder tokenVersion(final int value)
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onTokenVersionAccessed();
         }
@@ -564,7 +564,7 @@ public final class TokenCodecEncoder
 
     public TokenCodecEncoder componentTokenCount(final int value)
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onComponentTokenCountAccessed();
         }
@@ -617,7 +617,7 @@ public final class TokenCodecEncoder
 
     public TokenCodecEncoder signal(final SignalCodec value)
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onSignalAccessed();
         }
@@ -669,7 +669,7 @@ public final class TokenCodecEncoder
 
     public TokenCodecEncoder primitiveType(final PrimitiveTypeCodec value)
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onPrimitiveTypeAccessed();
         }
@@ -721,7 +721,7 @@ public final class TokenCodecEncoder
 
     public TokenCodecEncoder byteOrder(final ByteOrderCodec value)
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onByteOrderAccessed();
         }
@@ -773,7 +773,7 @@ public final class TokenCodecEncoder
 
     public TokenCodecEncoder presence(final PresenceCodec value)
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onPresenceAccessed();
         }
@@ -840,7 +840,7 @@ public final class TokenCodecEncoder
 
     public TokenCodecEncoder deprecated(final int value)
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onDeprecatedAccessed();
         }
@@ -897,7 +897,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onNameAccessed();
         }
@@ -918,7 +918,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onNameAccessed();
         }
@@ -942,7 +942,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onNameAccessed();
         }
@@ -1003,7 +1003,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onConstValueAccessed();
         }
@@ -1024,7 +1024,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onConstValueAccessed();
         }
@@ -1048,7 +1048,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onConstValueAccessed();
         }
@@ -1109,7 +1109,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onMinValueAccessed();
         }
@@ -1130,7 +1130,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onMinValueAccessed();
         }
@@ -1154,7 +1154,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onMinValueAccessed();
         }
@@ -1215,7 +1215,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onMaxValueAccessed();
         }
@@ -1236,7 +1236,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onMaxValueAccessed();
         }
@@ -1260,7 +1260,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onMaxValueAccessed();
         }
@@ -1321,7 +1321,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onNullValueAccessed();
         }
@@ -1342,7 +1342,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onNullValueAccessed();
         }
@@ -1366,7 +1366,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onNullValueAccessed();
         }
@@ -1427,7 +1427,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onCharacterEncodingAccessed();
         }
@@ -1448,7 +1448,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onCharacterEncodingAccessed();
         }
@@ -1472,7 +1472,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onCharacterEncodingAccessed();
         }
@@ -1533,7 +1533,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onEpochAccessed();
         }
@@ -1554,7 +1554,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onEpochAccessed();
         }
@@ -1578,7 +1578,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onEpochAccessed();
         }
@@ -1639,7 +1639,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onTimeUnitAccessed();
         }
@@ -1660,7 +1660,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onTimeUnitAccessed();
         }
@@ -1684,7 +1684,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onTimeUnitAccessed();
         }
@@ -1745,7 +1745,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onSemanticTypeAccessed();
         }
@@ -1766,7 +1766,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onSemanticTypeAccessed();
         }
@@ -1790,7 +1790,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onSemanticTypeAccessed();
         }
@@ -1851,7 +1851,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onDescriptionAccessed();
         }
@@ -1872,7 +1872,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onDescriptionAccessed();
         }
@@ -1896,7 +1896,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onDescriptionAccessed();
         }
@@ -1957,7 +1957,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onReferencedNameAccessed();
         }
@@ -1978,7 +1978,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onReferencedNameAccessed();
         }
@@ -2002,7 +2002,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             onReferencedNameAccessed();
         }
@@ -2041,7 +2041,7 @@ public final class TokenCodecEncoder
 
     public void checkEncodingIsComplete()
     {
-        if (ENABLE_ACCESS_ORDER_CHECKS)
+        if (SBE_ENABLE_SEQUENCING_CHECKS)
         {
             switch (codecState)
             {

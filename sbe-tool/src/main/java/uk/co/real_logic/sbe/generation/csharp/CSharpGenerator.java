@@ -1583,7 +1583,7 @@ public class CSharpGenerator implements CodeGenerator
 
         sb.append(indent).append("public void CheckEncodingIsComplete()\n")
             .append(indent).append("{\n")
-            .append("#if ENABLE_ACCESS_ORDER_CHECKS\n")
+            .append("#if SBE_ENABLE_SEQUENCING_CHECKS\n")
             .append(indent).append(INDENT).append("switch (_codecState)\n")
             .append(indent).append(INDENT).append("{\n");
 
@@ -1670,7 +1670,7 @@ public class CSharpGenerator implements CodeGenerator
         }
 
         final StringBuilder sb = new StringBuilder();
-        sb.append("#if ENABLE_ACCESS_ORDER_CHECKS\n")
+        sb.append("#if SBE_ENABLE_SEQUENCING_CHECKS\n")
             .append(indent).append(methodName).append("(");
 
         for (int i = 0; i < arguments.length; i++)
@@ -1936,7 +1936,7 @@ public class CSharpGenerator implements CodeGenerator
         }
 
         final StringBuilder sb = new StringBuilder();
-        sb.append("#if ENABLE_ACCESS_ORDER_CHECKS\n")
+        sb.append("#if SBE_ENABLE_SEQUENCING_CHECKS\n")
             .append(indent).append("codecState(")
             .append(qualifiedStateCase(accessOrderModel.latestVersionWrappedState()))
             .append(");\n")
@@ -2556,7 +2556,7 @@ public class CSharpGenerator implements CodeGenerator
         append(sb, TWO_INDENT, "    int originalLimit = this.Limit;");
         if (null != accessOrderModel)
         {
-            sb.append("#if ENABLE_ACCESS_ORDER_CHECKS\n");
+            sb.append("#if SBE_ENABLE_SEQUENCING_CHECKS\n");
             append(sb, TWO_INDENT, "    CodecState originalState = _codecState;");
             sb.append(THREE_INDENT).append("_codecState = ")
                 .append(qualifiedStateCase(accessOrderModel.notWrappedState())).append(";\n");
@@ -2588,7 +2588,7 @@ public class CSharpGenerator implements CodeGenerator
         sb.append('\n');
         if (null != accessOrderModel)
         {
-            sb.append("#if ENABLE_ACCESS_ORDER_CHECKS\n");
+            sb.append("#if SBE_ENABLE_SEQUENCING_CHECKS\n");
             append(sb, TWO_INDENT, "    _codecState = originalState;");
             sb.append("#endif\n");
         }

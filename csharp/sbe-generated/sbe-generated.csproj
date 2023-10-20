@@ -8,11 +8,11 @@
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <DefineConstants>TRACE,ENABLE_ACCESS_ORDER_CHECKS</DefineConstants>
+    <DefineConstants>TRACE,SBE_ENABLE_SEQUENCING_CHECKS</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <DefineConstants>TRACE,ENABLE_ACCESS_ORDER_CHECKS</DefineConstants>
+    <DefineConstants>TRACE,SBE_ENABLE_SEQUENCING_CHECKS</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
