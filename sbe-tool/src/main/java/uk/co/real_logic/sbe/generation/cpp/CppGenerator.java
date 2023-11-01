@@ -53,7 +53,7 @@ public class CppGenerator implements CodeGenerator
     private final boolean shouldDecodeUnknownEnumValues;
 
     /**
-     * Create a new Go language {@link CodeGenerator}.
+     * Create a new Cpp language {@link CodeGenerator}.
      *
      * @param ir                            for the messages and types.
      * @param shouldDecodeUnknownEnumValues generate support for unknown enum values when decoding.
