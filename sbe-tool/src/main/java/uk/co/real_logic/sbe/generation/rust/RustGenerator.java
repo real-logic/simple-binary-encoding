@@ -15,6 +15,7 @@
  */
 package uk.co.real_logic.sbe.generation.rust;
 
+import org.agrona.Strings;
 import org.agrona.Verify;
 import org.agrona.generation.OutputManager;
 import uk.co.real_logic.sbe.PrimitiveType;
@@ -119,7 +120,7 @@ public class RustGenerator implements CodeGenerator
             indent(writer, 0, "version = \"0.1.0\"\n");
             indent(writer, 0, "authors = [\"sbetool\"]\n");
             indent(writer, 0, "description = \"%s\"\n", ir.description());
-            indent(writer, 0, "edition = \"2018\"\n\n");
+            indent(writer, 0, "edition = \"2021\"\n\n");
             indent(writer, 0, "[lib]\n");
             indent(writer, 0, "name = \"%s\"\n", namespace);
             indent(writer, 0, "path = \"src/lib.rs\"\n");
@@ -151,8 +152,8 @@ public class RustGenerator implements CodeGenerator
             try (Writer out = outputManager.createOutput(codecModName))
             {
                 indent(out, 0, "use crate::*;\n\n");
-                indent(out, 0, "pub use encoder::*;\n");
-                indent(out, 0, "pub use decoder::*;\n\n");
+                indent(out, 0, "pub use encoder::%sEncoder;\n", formatStructName(msgToken.name()));
+                indent(out, 0, "pub use decoder::%sDecoder;\n\n", formatStructName(msgToken.name()));
                 final String blockLengthType = blockLengthType();
                 final String templateIdType = rustTypeName(ir.headerStructure().templateIdType());
                 final String schemaIdType = rustTypeName(ir.headerStructure().schemaIdType());
@@ -274,7 +275,18 @@ public class RustGenerator implements CodeGenerator
             final Token numInGroupToken = Generators.findFirst("numInGroup", tokens, index);
             final PrimitiveType numInGroupPrimitiveType = numInGroupToken.encoding().primitiveType();
 
-            indent(sb, level, "/// GROUP ENCODER\n");
+            final String description = groupToken.description();
+            if (!Strings.isEmpty(description))
+            {
+                indent(sb, level, "/// GROUP ENCODER (id=%s, description='%s')\n",
+                    groupToken.id(), description);
+            }
+            else
+            {
+                indent(sb, level, "/// GROUP ENCODER (id=%s)\n",
+                    groupToken.id());
+            }
+
             assert 4 == groupHeaderTokenCount;
             indent(sb, level, "#[inline]\n");
             indent(sb, level, "pub fn %s(self, count: %s, %1$s: %3$s<Self>) -> %3$s<Self> {\n",
@@ -553,7 +565,7 @@ public class RustGenerator implements CodeGenerator
                 decoderName,
                 decoderTypeName);
 
-            indent(sb, level + 1, "if self.acting_version < %d {\n", fieldToken.version());
+            indent(sb, level + 1, "if self.acting_version > 0 && self.acting_version < %d {\n", fieldToken.version());
             indent(sb, level + 2, "return Either::Left(self);\n");
             indent(sb, level + 1, "}\n\n");
 
@@ -587,7 +599,7 @@ public class RustGenerator implements CodeGenerator
 
         if (bitsetToken.version() > 0)
         {
-            indent(sb, level + 1, "if self.acting_version < %d {\n", bitsetToken.version());
+            indent(sb, level + 1, "if self.acting_version > 0 && self.acting_version < %d {\n", bitsetToken.version());
             indent(sb, level + 2, "return %s::default();\n", structTypeName);
             indent(sb, level + 1, "}\n\n");
         }
@@ -647,7 +659,7 @@ public class RustGenerator implements CodeGenerator
 
         if (fieldToken.version() > 0)
         {
-            indent(sb, level + 1, "if self.acting_version < %d {\n", fieldToken.version());
+            indent(sb, level + 1, "if self.acting_version > 0 && self.acting_version < %d {\n", fieldToken.version());
             indent(sb, level + 2, "return [%s; %d];\n", encoding.applicableNullValue(), arrayLength);
             indent(sb, level + 1, "}\n\n");
         }
@@ -756,7 +768,7 @@ public class RustGenerator implements CodeGenerator
 
         if (fieldToken.version() > 0)
         {
-            indent(sb, level + 1, "if self.acting_version < %d {\n", fieldToken.version());
+            indent(sb, level + 1, "if self.acting_version > 0 && self.acting_version < %d {\n", fieldToken.version());
             indent(sb, level + 2, "return None;\n");
             indent(sb, level + 1, "}\n\n");
         }
@@ -809,7 +821,7 @@ public class RustGenerator implements CodeGenerator
 
         if (fieldToken.version() > 0)
         {
-            indent(sb, level + 1, "if self.acting_version < %d {\n", fieldToken.version());
+            indent(sb, level + 1, "if self.acting_version > 0 && self.acting_version < %d {\n", fieldToken.version());
             indent(sb, level + 2, "return %s;\n",
                 generateRustLiteral(encoding.primitiveType(), encoding.applicableNullValue().toString()));
             indent(sb, level + 1, "}\n\n");
@@ -897,9 +909,19 @@ public class RustGenerator implements CodeGenerator
             i = collectVarData(tokens, i, varData);
 
             final String groupName = decoderName(formatStructName(groupToken.name()));
-            indent(sb, level, "/// GROUP DECODER\n");
-            assert 4 == groupHeaderTokenCount;
+            final String description = groupToken.description();
+            if (!Strings.isEmpty(description))
+            {
+                indent(sb, level, "/// GROUP DECODER (id=%s, description='%s')\n",
+                    groupToken.id(), description);
+            }
+            else
+            {
+                indent(sb, level, "/// GROUP DECODER (id=%s)\n",
+                    groupToken.id());
+            }
 
+            assert 4 == groupHeaderTokenCount;
             indent(sb, level, "#[inline]\n");
             if (groupToken.version() > 0)
             {
@@ -910,18 +932,14 @@ public class RustGenerator implements CodeGenerator
                 indent(sb, level + 2, "return None;\n");
                 indent(sb, level + 1, "}\n\n");
 
-                indent(sb, level + 1, "let acting_version = self.acting_version;\n");
-                indent(sb, level + 1, "Some(%s::default().wrap(self, acting_version as usize))\n",
-                    groupName);
+                indent(sb, level + 1, "Some(%s::default().wrap(self))\n", groupName);
             }
             else
             {
                 indent(sb, level, "pub fn %s(self) -> %2$s<Self> {\n",
                     formatFunctionName(groupName), groupName);
 
-                indent(sb, level + 1, "let acting_version = self.acting_version;\n");
-                indent(sb, level + 1, "%s::default().wrap(self, acting_version as usize)\n",
-                    groupName);
+                indent(sb, level + 1, "%s::default().wrap(self)\n", groupName);
             }
             indent(sb, level, "}\n\n");
 
@@ -958,7 +976,8 @@ public class RustGenerator implements CodeGenerator
             {
                 if (varDataToken.version() > 0)
                 {
-                    indent(sb, level + 1, "if self.acting_version < %d {\n", varDataToken.version());
+                    indent(sb, level + 1, "if self.acting_version > 0 && self.acting_version < %d {\n",
+                        varDataToken.version());
                     indent(sb, level + 2, "return (self.parent.as_ref().unwrap().get_limit(), 0);\n");
                     indent(sb, level + 1, "}\n\n");
                 }
@@ -973,7 +992,8 @@ public class RustGenerator implements CodeGenerator
             {
                 if (varDataToken.version() > 0)
                 {
-                    indent(sb, level + 1, "if self.acting_version < %d {\n", varDataToken.version());
+                    indent(sb, level + 1, "if self.acting_version > 0 && self.acting_version < %d {\n",
+                        varDataToken.version());
                     indent(sb, level + 2, "return (self.get_limit(), 0);\n");
                     indent(sb, level + 1, "}\n\n");
                 }
@@ -992,7 +1012,8 @@ public class RustGenerator implements CodeGenerator
 
             if (varDataToken.version() > 0)
             {
-                indent(sb, level + 1, "if self.acting_version < %d {\n", varDataToken.version());
+                indent(sb, level + 1, "if self.acting_version > 0 && self.acting_version < %d {\n",
+                    varDataToken.version());
                 indent(sb, level + 2, "return &[] as &[u8];\n");
                 indent(sb, level + 1, "}\n\n");
             }
@@ -1199,7 +1220,7 @@ public class RustGenerator implements CodeGenerator
             throw new IllegalArgumentException("No valid values provided for enum " + originalEnumName);
         }
 
-        indent(writer, 0, "#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]\n");
+        indent(writer, 0, "#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]\n");
         final String primitiveType = rustTypeName(messageBody.get(0).encoding().primitiveType());
         indent(writer, 0, "#[repr(%s)]\n", primitiveType);
         indent(writer, 0, "pub enum %s {\n", enumRustName);
@@ -1216,14 +1237,9 @@ public class RustGenerator implements CodeGenerator
             final Encoding encoding = messageBody.get(0).encoding();
             final CharSequence nullVal = generateRustLiteral(encoding.primitiveType(),
                 encoding.applicableNullValue().toString());
+            indent(writer, 1, "#[default]\n");
             indent(writer, 1, "NullVal = %s, \n", nullVal);
         }
-        indent(writer, 0, "}\n");
-
-        // Default implementation to support Default in other structs
-        indent(writer, 0, "impl Default for %s {\n", enumRustName);
-        indent(writer, 1, "#[inline]\n");
-        indent(writer, 1, "fn default() -> Self { %s::%s }\n", enumRustName, "NullVal");
         indent(writer, 0, "}\n");
 
         // From impl
@@ -1271,8 +1287,8 @@ public class RustGenerator implements CodeGenerator
         {
             indent(out, 0, "use crate::*;\n\n");
 
-            indent(out, 0, "pub use encoder::*;\n");
-            indent(out, 0, "pub use decoder::*;\n\n");
+            indent(out, 0, "pub use encoder::%sEncoder;\n", formatStructName(compositeName));
+            indent(out, 0, "pub use decoder::%sDecoder;\n\n", formatStructName(compositeName));
 
             final int encodedLength = tokens.get(0).encodedLength();
             if (encodedLength > 0)

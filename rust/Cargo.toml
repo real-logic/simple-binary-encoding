@@ -17,7 +17,7 @@ baseline_bigendian = { path = "../generated/rust/baseline-bigendian" }
 nested_composite_name = { path = "../generated/rust/nested-composite-name" }
 
 [dev-dependencies]
-criterion = "0.3"
+criterion = "0.5"
 
 [[bench]]
 name = "car_benchmark"

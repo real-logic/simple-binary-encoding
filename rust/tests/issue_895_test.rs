@@ -1,10 +1,12 @@
-use ::issue_895::*;
+use issue_895::{
+    issue_895_codec::{decoder::Issue895Decoder, encoder::Issue895Encoder},
+    MessageHeaderDecoder, ReadBuf, SbeResult, WriteBuf, ENCODED_LENGTH, SBE_BLOCK_LENGTH,
+    SBE_SCHEMA_ID, SBE_SCHEMA_VERSION, SBE_TEMPLATE_ID,
+};
 
 fn create_encoder(buffer: &mut Vec<u8>) -> Issue895Encoder {
-    let issue_895 = Issue895Encoder::default().wrap(
-        WriteBuf::new(buffer.as_mut_slice()),
-        ENCODED_LENGTH,
-    );
+    let issue_895 =
+        Issue895Encoder::default().wrap(WriteBuf::new(buffer.as_mut_slice()), ENCODED_LENGTH);
     let mut header = issue_895.header(0);
     header.parent().unwrap()
 }

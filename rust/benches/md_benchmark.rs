@@ -1,5 +1,6 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use examples_uk_co_real_logic_sbe_benchmarks_fix::*;
+use market_data_incremental_refresh_trades_codec::encoder::*;
 
 struct State {
     buffer: Vec<u8>,

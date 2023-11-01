@@ -1,4 +1,5 @@
 use baseline_bigendian::*;
+use car_codec::encoder::*;
 
 #[test]
 fn big_endian_baseline_example() -> SbeResult<()> {
