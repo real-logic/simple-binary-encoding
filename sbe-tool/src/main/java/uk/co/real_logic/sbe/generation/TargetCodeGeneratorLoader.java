@@ -18,6 +18,7 @@ package uk.co.real_logic.sbe.generation;
 import uk.co.real_logic.sbe.generation.c.CGenerator;
 import uk.co.real_logic.sbe.generation.c.COutputManager;
 import uk.co.real_logic.sbe.generation.common.PrecedenceChecks;
+import uk.co.real_logic.sbe.generation.cpp.CppDtoGenerator;
 import uk.co.real_logic.sbe.generation.cpp.CppGenerator;
 import uk.co.real_logic.sbe.generation.cpp.NamespaceOutputManager;
 import uk.co.real_logic.sbe.generation.golang.GolangGenerator;
@@ -83,11 +84,21 @@ public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
          */
         public CodeGenerator newInstance(final Ir ir, final String outputDir)
         {
-            return new CppGenerator(
-                ir,
-                "true".equals(System.getProperty(DECODE_UNKNOWN_ENUM_VALUES)),
-                precedenceChecks(),
-                new NamespaceOutputManager(outputDir, ir.applicableNamespace()));
+            final NamespaceOutputManager outputManager = new NamespaceOutputManager(
+                outputDir, ir.applicableNamespace());
+            final boolean decodeUnknownEnumValues = "true".equals(System.getProperty(DECODE_UNKNOWN_ENUM_VALUES));
+
+            final CodeGenerator codecGenerator = new CppGenerator(ir, decodeUnknownEnumValues, precedenceChecks(),
+                outputManager);
+            final CodeGenerator dtoGenerator = new CppDtoGenerator(ir, outputManager);
+            final CodeGenerator combinedGenerator = () ->
+            {
+                codecGenerator.generate();
+                dtoGenerator.generate();
+            };
+
+            final boolean generateDtos = "true".equals(System.getProperty(GENERATE_CPP_DTOS));
+            return generateDtos ? combinedGenerator : codecGenerator;
         }
     },
 

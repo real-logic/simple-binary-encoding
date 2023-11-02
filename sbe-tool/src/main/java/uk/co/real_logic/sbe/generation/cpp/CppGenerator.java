@@ -3503,64 +3503,6 @@ public class CppGenerator implements CodeGenerator
         return generateLiteral(primitiveType, encoding.applicableNullValue().toString());
     }
 
-    private static CharSequence generateLiteral(final PrimitiveType type, final String value)
-    {
-        String literal = "";
-
-        switch (type)
-        {
-            case CHAR:
-            case UINT8:
-            case UINT16:
-            case INT8:
-            case INT16:
-                literal = "static_cast<" + cppTypeName(type) + ">(" + value + ")";
-                break;
-
-            case UINT32:
-                literal = "UINT32_C(0x" + Integer.toHexString((int)Long.parseLong(value)) + ")";
-                break;
-
-            case INT32:
-                final long intValue = Long.parseLong(value);
-                if (intValue == Integer.MIN_VALUE)
-                {
-                    literal = "INT32_MIN";
-                }
-                else
-                {
-                    literal = "INT32_C(" + value + ")";
-                }
-                break;
-
-            case FLOAT:
-                literal = value.endsWith("NaN") ? "SBE_FLOAT_NAN" : value + "f";
-                break;
-
-            case INT64:
-                final long longValue = Long.parseLong(value);
-                if (longValue == Long.MIN_VALUE)
-                {
-                    literal = "INT64_MIN";
-                }
-                else
-                {
-                    literal = "INT64_C(" + value + ")";
-                }
-                break;
-
-            case UINT64:
-                literal = "UINT64_C(0x" + Long.toHexString(Long.parseLong(value)) + ")";
-                break;
-
-            case DOUBLE:
-                literal = value.endsWith("NaN") ? "SBE_DOUBLE_NAN" : value;
-                break;
-        }
-
-        return literal;
-    }
-
     private void generateDisplay(
         final StringBuilder sb,
         final String name,
