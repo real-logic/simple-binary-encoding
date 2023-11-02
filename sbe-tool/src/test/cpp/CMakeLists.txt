@@ -87,5 +87,27 @@ sbe_test(Rc3OtfFullIrTest codecs)
 sbe_test(CompositeElementsTest codecs)
 sbe_test(Issue835Test codecs)
 sbe_test(Issue889Test codecs)
-sbe_test(DtoTest codecs)
-target_compile_features(DtoTest PRIVATE cxx_std_17)
+
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    # Check if the GCC version supports C++17
+    if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "7.0")
+        sbe_test(DtoTest codecs)
+        target_compile_features(DtoTest PRIVATE cxx_std_17)
+    endif()
+endif()
+
+if (CMAKE_CXX_COMPILER_ID STREQUAL "CLang")
+    # Check if CLang version supports C++17
+    if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "4.0")
+        sbe_test(DtoTest codecs)
+        target_compile_features(DtoTest PRIVATE cxx_std_17)
+    endif()
+endif()
+
+if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    # Check if MSVC version supports C++17
+    if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "19.14")
+        sbe_test(DtoTest codecs)
+        target_compile_options(DtoTest PRIVATE /std:c++17)
+    endif()
+endif()
