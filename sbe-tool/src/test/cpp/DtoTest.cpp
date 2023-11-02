@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#if __cplusplus < 201703L
+#if (defined(_MSVC_LANG) && _MSVC_LANG < 201703L) || (!defined(_MSVC_LANG) && defined(__cplusplus) && __cplusplus < 201703L)
 #error DTO code requires at least C++17.
 #endif
 
