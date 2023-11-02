@@ -1777,7 +1777,8 @@ public class CppDtoGenerator implements CodeGenerator
             String.join("_", namespaces).toUpperCase(),
             className.toUpperCase()));
 
-        sb.append("#if __cplusplus < 201703L\n")
+        sb.append("#if (defined(_MSVC_LANG) && _MSVC_LANG < 201703L) || ")
+            .append("(!defined(_MSVC_LANG) && defined(__cplusplus) && __cplusplus < 201703L)\n")
             .append("#error DTO code requires at least C++17.\n")
             .append("#endif\n\n");
 
@@ -1790,7 +1791,8 @@ public class CppDtoGenerator implements CodeGenerator
             .append("#include <sstream>\n")
             .append("#include <string>\n")
             .append("#include <vector>\n")
-            .append("#include <tuple>\n");
+            .append("#include <tuple>\n")
+            .append("#include <optional>\n");
 
         if (typesToInclude != null && !typesToInclude.isEmpty())
         {
