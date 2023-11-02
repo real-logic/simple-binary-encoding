@@ -38,6 +38,7 @@ set(COMPOSITE_ELEMENTS_SCHEMA ${CODEC_SCHEMA_DIR}/composite-elements-schema.xml)
 set(COMPOSITE_OFFSETS_SCHEMA ${CODEC_SCHEMA_DIR}/composite-offsets-schema.xml)
 set(MESSAGE_BLOCK_LENGTH_TEST ${CODEC_SCHEMA_DIR}/message-block-length-test.xml)
 set(GROUP_WITH_DATA_SCHEMA ${CODEC_SCHEMA_DIR}/group-with-data-schema.xml)
+set(DTO_SCHEMA ${CODEC_SCHEMA_DIR}/dto-test-schema.xml)
 set(ISSUE835_SCHEMA ${CODEC_SCHEMA_DIR}/issue835.xml)
 set(ISSUE889_SCHEMA ${CODEC_SCHEMA_DIR}/issue889.xml)
 
@@ -52,6 +53,7 @@ add_custom_command(
         ${COMPOSITE_OFFSETS_SCHEMA}
         ${MESSAGE_BLOCK_LENGTH_TEST}
         ${GROUP_WITH_DATA_SCHEMA}
+        ${DTO_SCHEMA}
         ${ISSUE835_SCHEMA}
         ${ISSUE889_SCHEMA}
     sbe-jar ${SBE_JAR}
@@ -60,12 +62,14 @@ add_custom_command(
             -Dsbe.output.dir=${CXX_CODEC_TARGET_DIR}
             -Dsbe.generate.ir="true"
             -Dsbe.target.language="cpp"
+            -Dsbe.cpp.generate.dtos="true"
             -jar ${SBE_JAR}
             ${CODE_GENERATION_SCHEMA}
             ${COMPOSITE_OFFSETS_SCHEMA}
             ${MESSAGE_BLOCK_LENGTH_TEST}
             ${GROUP_WITH_DATA_SCHEMA}
             ${COMPOSITE_ELEMENTS_SCHEMA}
+            ${DTO_SCHEMA}
             ${ISSUE835_SCHEMA}
             ${ISSUE889_SCHEMA}
 )
@@ -83,3 +87,5 @@ sbe_test(Rc3OtfFullIrTest codecs)
 sbe_test(CompositeElementsTest codecs)
 sbe_test(Issue835Test codecs)
 sbe_test(Issue889Test codecs)
+sbe_test(DtoTest codecs)
+target_compile_features(DtoTest PRIVATE cxx_std_17)
