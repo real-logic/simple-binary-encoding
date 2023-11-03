@@ -104,6 +104,14 @@ func (token Token) TokenVersion() int32 {
 	return token.version
 }
 
+// ApplicableTypeName returns the name of the type that should be applied in context.
+func (token Token) ApplicableTypeName() string {
+	if token.referencedName == "" {
+		return token.name
+	}
+	return token.referencedName
+}
+
 func (token Token) Encoding() Encoding {
 	return token.encoding
 }

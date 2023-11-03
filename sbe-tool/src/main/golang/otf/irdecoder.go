@@ -330,8 +330,9 @@ func (decoder *IrDecoder) updateComponentTokenCounts(tokens []Token) {
 		} else if strings.HasPrefix(signal.String(), "End") {
 			componentType := signal.String()[3:]
 			beginIndices := beginIndexMap[componentType]
-			beginIndex := beginIndices[0]
-			beginIndexMap[componentType] = beginIndices[1:]
+			last := len(beginIndices) - 1
+			beginIndex := beginIndices[last]
+			beginIndexMap[componentType] = beginIndices[:last]
 			componentTokenCount := int32((i - beginIndex) + 1)
 			tokens[beginIndex].componentTokenCount = componentTokenCount
 			token.componentTokenCount = componentTokenCount
