@@ -2,9 +2,10 @@ package json
 
 import (
 	"encoding/hex"
-	"github.com/real-logic/simple-binary-encoding/otf"
 	"strconv"
 	"strings"
+
+	"github.com/real-logic/simple-binary-encoding/otf"
 )
 
 // JsonTokenListener dynamically decodes to convert them to JSON for output.

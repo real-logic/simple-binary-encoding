@@ -2,8 +2,9 @@ package json
 
 import (
 	"fmt"
-	"github.com/real-logic/simple-binary-encoding/otf"
 	"strings"
+
+	"github.com/real-logic/simple-binary-encoding/otf"
 )
 
 // JsonPrinter pretty prints JSON based upon the given Ir.
