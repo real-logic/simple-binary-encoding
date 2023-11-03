@@ -100,7 +100,9 @@ public class CppDtoGenerator implements CodeGenerator
                 groups, varData, BASE_INDENT + INDENT);
             generateMessageEncodeInto(classBuilder, className, codecClassName, fields, groups, varData,
                 BASE_INDENT + INDENT);
-            generateDisplay(classBuilder, codecClassName, "wrapForEncode", null, BASE_INDENT + INDENT);
+            generateComputeEncodedLength(classBuilder, codecClassName, groups, varData, BASE_INDENT + INDENT);
+            generateDisplay(classBuilder, className, codecClassName, "dto.computeEncodedLength()",
+                "wrapForEncode", null, BASE_INDENT + INDENT);
 
             try (Writer out = outputManager.createOutput(className))
             {
@@ -227,6 +229,8 @@ public class CppDtoGenerator implements CodeGenerator
                 fields, groups, varData, indent + INDENT);
             generateMessageEncodeInto(
                 groupClassBuilder, groupClassName, qualifiedCodecClassName, fields, groups, varData, indent + INDENT);
+            generateComputeEncodedLength(groupClassBuilder, qualifiedCodecClassName, groups, varData,
+                indent + INDENT);
 
             groupClassBuilder.appendTo(
                 classBuilder.appendPublic().append("\n").append(generateDocumentation(indent, groupToken))
@@ -264,6 +268,103 @@ public class CppDtoGenerator implements CodeGenerator
                 .append(indent).append(INDENT).append(fieldName).append(" = std::move(values);\n")
                 .append(indent).append("}\n");
         }
+    }
+
+    private void generateComputeEncodedLength(
+        final ClassBuilder classBuilder,
+        final String qualifiedCodecClassName,
+        final List<Token> groupTokens,
+        final List<Token> varDataTokens,
+        final String indent)
+    {
+        final StringBuilder lengthBuilder = classBuilder.appendPublic()
+            .append("\n")
+            .append(indent).append("[[nodiscard]] std::size_t computeEncodedLength() const\n")
+            .append(indent).append("{\n");
+
+        final StringBuilder arguments = new StringBuilder();
+
+        for (int i = 0, size = groupTokens.size(); i < size; i++)
+        {
+            final Token groupToken = groupTokens.get(i);
+            if (groupToken.signal() != Signal.BEGIN_GROUP)
+            {
+                throw new IllegalStateException("tokens must begin with BEGIN_GROUP: token=" + groupToken);
+            }
+
+            i++;
+            i += groupTokens.get(i).componentTokenCount();
+
+            final List<Token> fields = new ArrayList<>();
+            i = collectFields(groupTokens, i, fields);
+            final List<Token> subGroups = new ArrayList<>();
+            i = collectGroups(groupTokens, i, subGroups);
+            final List<Token> subVarData = new ArrayList<>();
+            i = collectVarData(groupTokens, i, subVarData);
+
+            final String groupName = groupToken.name();
+            final String fieldName = "m_" + toLowerFirstChar(groupName);
+
+            final boolean isConstLength = subGroups.isEmpty() && subVarData.isEmpty();
+            final String argumentName = isConstLength ?
+                toLowerFirstChar(groupName) + "Count" :
+                toLowerFirstChar(groupName) + "Lengths";
+
+            if (isConstLength)
+            {
+                lengthBuilder
+                    .append(indent).append(INDENT).append("std::size_t ").append(argumentName)
+                    .append(" = ").append(fieldName).append(".size();\n");
+            }
+            else
+            {
+                final String countName = argumentName + "Count";
+
+                lengthBuilder
+                    .append(indent).append(INDENT).append("std::size_t ").append(countName).append(" = ")
+                    .append(fieldName).append(".size();\n")
+                    .append(indent).append(INDENT).append("std::vector<std::tuple<std::size_t>> ")
+                    .append(argumentName).append("(").append(countName).append(");\n")
+                    .append(indent).append(INDENT).append("for (std::size_t i = 0; i < ").append(countName)
+                    .append("; i++)\n")
+                    .append(indent).append(INDENT).append("{\n")
+                    .append(indent).append(INDENT).append(INDENT)
+                    .append("auto& group = ").append(fieldName).append("[i];\n")
+                    .append(indent).append(INDENT).append(INDENT)
+                    .append(argumentName).append("[i] = group.computeEncodedLength();\n")
+                    .append(indent).append(INDENT).append("}\n")
+                    .append("\n");
+            }
+
+            arguments.append(argumentName).append(", ");
+        }
+
+        for (int i = 0, size = varDataTokens.size(); i < size; i++)
+        {
+            final Token token = varDataTokens.get(i);
+            if (token.signal() == Signal.BEGIN_VAR_DATA)
+            {
+                final String propertyName = token.name();
+                final Token varDataToken = Generators.findFirst("varData", varDataTokens, i);
+                final String fieldName = "m_" + toLowerFirstChar(propertyName);
+                final String argumentName = toLowerFirstChar(propertyName) + "Length";
+
+                lengthBuilder.append(indent).append(INDENT).append("std::size_t ").append(argumentName)
+                    .append(" = ").append(fieldName).append(".size() * sizeof(")
+                    .append(cppTypeName(varDataToken.encoding().primitiveType())).append(");\n");
+
+                arguments.append(argumentName).append(", ");
+            }
+        }
+
+        if (arguments.length() >= 2)
+        {
+            arguments.setLength(arguments.length() - 2);
+        }
+
+        lengthBuilder.append(indent).append(INDENT).append("return ").append(qualifiedCodecClassName)
+            .append("::computeLength(").append(arguments).append(");\n")
+            .append(indent).append("}\n");
     }
 
     private void generateCompositeDecodeFrom(
@@ -944,8 +1045,8 @@ public class CppDtoGenerator implements CodeGenerator
                 .append("Count(").append(formattedPropertyName).append(".size());\n\n")
                 .append(indent).append("for (const auto& group: ").append(formattedPropertyName).append(")\n")
                 .append(indent).append("{\n")
-                .append(indent).append(INDENT).append(groupDtoTypeName).append("::encodeWith(").append(groupCodecVarName)
-                .append(".next(), group);\n")
+                .append(indent).append(INDENT).append(groupDtoTypeName)
+                .append("::encodeWith(").append(groupCodecVarName).append(".next(), group);\n")
                 .append(indent).append("}\n\n");
 
             i++;
@@ -1002,32 +1103,44 @@ public class CppDtoGenerator implements CodeGenerator
 
     private void generateDisplay(
         final ClassBuilder classBuilder,
+        final String dtoClassName,
         final String codecClassName,
+        final String lengthExpression,
         final String wrapMethod,
         final String actingVersion,
         final String indent)
     {
-        final StringBuilder toStringBuilder = classBuilder.appendPublic()
+        final StringBuilder streamBuilder = classBuilder.appendPublic()
             .append("\n")
-            .append(indent).append(
-            "std::string string(char* tempBuffer, std::uint64_t offset, std::uint64_t length) const\n")
+            .append(indent).append("friend std::ostream& operator << (std::ostream& stream, const ")
+            .append(dtoClassName).append("& dto)\n")
             .append(indent).append("{\n")
             .append(indent).append(INDENT).append(codecClassName).append(" codec;\n")
-            .append(indent).append(INDENT).append("codec.");
-
-        toStringBuilder.append(wrapMethod).append("(tempBuffer, offset");
+            .append(indent).append(INDENT).append("const std::size_t length = ")
+            .append(lengthExpression).append(";\n")
+            .append(indent).append(INDENT).append("std::vector<char> buffer(length);\n")
+            .append(indent).append(INDENT).append("codec.").append(wrapMethod)
+            .append("(buffer.data(), 0");
 
         if (null != actingVersion)
         {
-            toStringBuilder.append(", ").append(actingVersion);
+            streamBuilder.append(", ").append(actingVersion);
         }
 
-        toStringBuilder.append(", ").append("length);\n");
+        streamBuilder.append(", ").append("length);\n");
 
-        toStringBuilder.append(indent).append(INDENT).append("encodeWith(codec, *this);\n")
-            .append(indent).append(INDENT).append("std::ostringstream oss;\n")
-            .append(indent).append(INDENT).append("oss << codec;\n")
-            .append(indent).append(INDENT).append("return oss.str();\n")
+        streamBuilder.append(indent).append(INDENT).append("encodeWith(codec, dto);\n")
+            .append(indent).append(INDENT).append("stream << codec;\n")
+            .append(indent).append(INDENT).append("return stream;\n")
+            .append(indent).append("}\n");
+
+        classBuilder.appendPublic()
+            .append("\n")
+            .append(indent).append("[[nodiscard]] std::string string() const\n")
+            .append(indent).append("{\n")
+            .append(indent).append(INDENT).append("std::ostringstream stream;\n")
+            .append(indent).append(INDENT).append("stream << *this;\n")
+            .append(indent).append(INDENT).append("return stream.str();\n")
             .append(indent).append("}\n");
     }
 
@@ -1547,7 +1660,7 @@ public class CppDtoGenerator implements CodeGenerator
             generateCompositeDecodeFrom(classBuilder, className, codecClassName, compositeTokens,
                 BASE_INDENT + INDENT);
             generateCompositeEncodeInto(classBuilder, className, codecClassName, compositeTokens, BASE_INDENT + INDENT);
-            generateDisplay(classBuilder, codecClassName, "wrap",
+            generateDisplay(classBuilder, className, codecClassName, codecClassName + "::encodedLength()", "wrap",
                 codecClassName + "::sbeSchemaVersion()", BASE_INDENT + INDENT);
 
             classBuilder.appendTo(out);
