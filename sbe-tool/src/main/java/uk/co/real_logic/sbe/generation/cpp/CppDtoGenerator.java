@@ -274,7 +274,7 @@ public class CppDtoGenerator implements CodeGenerator
         final String indent)
     {
         final StringBuilder decodeBuilder = classBuilder.appendPublic().append("\n")
-            .append(indent).append("static void decode(").append(codecClassName).append("& codec, ")
+            .append(indent).append("static void decodeWith(").append(codecClassName).append("& codec, ")
             .append(dtoClassName).append("& dto)\n")
             .append(indent).append("{\n");
 
@@ -299,7 +299,7 @@ public class CppDtoGenerator implements CodeGenerator
         final String indent)
     {
         final StringBuilder encodeBuilder = classBuilder.appendPublic().append("\n")
-            .append(indent).append("static void encode(").append(codecClassName).append("& codec,")
+            .append(indent).append("static void encodeWith(").append(codecClassName).append("& codec,")
             .append("const ").append(dtoClassName).append("& dto)\n")
             .append(indent).append("{\n");
 
@@ -322,7 +322,7 @@ public class CppDtoGenerator implements CodeGenerator
         final String indent)
     {
         classBuilder.appendPublic().append("\n")
-            .append(indent).append("static std::vector<").append(dtoClassName).append("> decodeMany(")
+            .append(indent).append("static std::vector<").append(dtoClassName).append("> decodeManyWith(")
             .append(codecClassName).append("& codec)\n")
             .append(indent).append("{\n")
             .append(indent).append(INDENT).append("std::vector<").append(dtoClassName)
@@ -334,7 +334,7 @@ public class CppDtoGenerator implements CodeGenerator
             .append(indent).append(INDENT).append(INDENT)
             .append(dtoClassName).append(" dto;\n")
             .append(indent).append(INDENT).append(INDENT)
-            .append(dtoClassName).append("::decode(codec.next(), dto);\n")
+            .append(dtoClassName).append("::decodeWith(codec.next(), dto);\n")
             .append(indent).append(INDENT).append(INDENT)
             .append("dtos[i] = dto;\n")
             .append(indent).append(INDENT)
@@ -354,7 +354,7 @@ public class CppDtoGenerator implements CodeGenerator
         final String indent)
     {
         final StringBuilder decodeBuilder = classBuilder.appendPublic().append("\n")
-            .append(indent).append("static void decode(").append(codecClassName).append("& codec, ")
+            .append(indent).append("static void decodeWith(").append(codecClassName).append("& codec, ")
             .append(dtoClassName).append("& dto)\n")
             .append(indent).append("{\n");
 
@@ -526,7 +526,7 @@ public class CppDtoGenerator implements CodeGenerator
             sb.append(")\n")
                 .append(indent).append("{\n");
 
-            sb.append(indent).append(INDENT).append(dtoTypeName).append("::decode(codec.")
+            sb.append(indent).append(INDENT).append(dtoTypeName).append("::decodeWith(codec.")
                 .append(formattedPropertyName).append("(), ")
                 .append("dto.").append(formattedPropertyName).append("());\n");
 
@@ -538,7 +538,7 @@ public class CppDtoGenerator implements CodeGenerator
         }
         else
         {
-            sb.append(indent).append(dtoTypeName).append("::decode(codec.")
+            sb.append(indent).append(dtoTypeName).append("::decodeWith(codec.")
                 .append(formattedPropertyName).append("(), ")
                 .append("dto.").append(formattedPropertyName).append("());\n");
         }
@@ -571,7 +571,7 @@ public class CppDtoGenerator implements CodeGenerator
         final String formattedPropertyName = formatPropertyName(propertyName);
         final String dtoClassName = formatDtoClassName(typeToken.applicableTypeName());
 
-        sb.append(indent).append(dtoClassName).append("::decode(codec.")
+        sb.append(indent).append(dtoClassName).append("::decodeWith(codec.")
             .append(formattedPropertyName).append("(), ")
             .append("dto.").append(formattedPropertyName).append("());\n");
     }
@@ -593,7 +593,7 @@ public class CppDtoGenerator implements CodeGenerator
             final String groupDtoClassName = formatDtoClassName(groupName);
 
             sb.append(indent).append("dto.").append(formattedPropertyName).append("(")
-                .append(groupDtoClassName).append("::decodeMany(codec.")
+                .append(groupDtoClassName).append("::decodeManyWith(codec.")
                 .append(formattedPropertyName).append("()));\n");
 
             i++;
@@ -729,7 +729,7 @@ public class CppDtoGenerator implements CodeGenerator
         final String indent)
     {
         final StringBuilder encodeBuilder = classBuilder.appendPublic().append("\n")
-            .append(indent).append("static void encode(").append(codecClassName).append("& codec, const ")
+            .append(indent).append("static void encodeWith(").append(codecClassName).append("& codec, const ")
             .append(dtoClassName).append("& dto)\n")
             .append(indent).append("{\n");
 
@@ -914,7 +914,7 @@ public class CppDtoGenerator implements CodeGenerator
         final String formattedPropertyName = formatPropertyName(propertyName);
         final String typeName = formatDtoClassName(typeToken.applicableTypeName());
 
-        sb.append(indent).append(typeName).append("::encode(codec.")
+        sb.append(indent).append(typeName).append("::encodeWith(codec.")
             .append(formattedPropertyName).append("(), dto.")
             .append(formattedPropertyName).append("());\n");
     }
@@ -944,7 +944,7 @@ public class CppDtoGenerator implements CodeGenerator
                 .append("Count(").append(formattedPropertyName).append(".size());\n\n")
                 .append(indent).append("for (const auto& group: ").append(formattedPropertyName).append(")\n")
                 .append(indent).append("{\n")
-                .append(indent).append(INDENT).append(groupDtoTypeName).append("::encode(").append(groupCodecVarName)
+                .append(indent).append(INDENT).append(groupDtoTypeName).append("::encodeWith(").append(groupCodecVarName)
                 .append(".next(), group);\n")
                 .append(indent).append("}\n\n");
 
@@ -1024,7 +1024,7 @@ public class CppDtoGenerator implements CodeGenerator
 
         toStringBuilder.append(", ").append("length);\n");
 
-        toStringBuilder.append(indent).append(INDENT).append("encode(codec, *this);\n")
+        toStringBuilder.append(indent).append(INDENT).append("encodeWith(codec, *this);\n")
             .append(indent).append(INDENT).append("std::ostringstream oss;\n")
             .append(indent).append(INDENT).append("oss << codec;\n")
             .append(indent).append(INDENT).append("return oss.str();\n")
@@ -1591,7 +1591,7 @@ public class CppDtoGenerator implements CodeGenerator
     {
         final StringBuilder encodeBuilder = classBuilder.appendPublic()
             .append("\n")
-            .append(indent).append("static void encode(\n")
+            .append(indent).append("static void encodeWith(\n")
             .append(indent).append(INDENT).append(codecClassName).append("& codec, ")
             .append("const ").append(dtoClassName).append("& dto)\n")
             .append(indent).append("{\n");
@@ -1620,7 +1620,7 @@ public class CppDtoGenerator implements CodeGenerator
     {
         final StringBuilder decodeBuilder = classBuilder.appendPublic()
             .append("\n")
-            .append(indent).append("static void decode(\n")
+            .append(indent).append("static void decodeWith(\n")
             .append(indent).append(INDENT).append("const ").append(codecClassName).append("& codec, ")
             .append(dtoClassName).append("& dto)\n")
             .append(indent).append("{\n");
