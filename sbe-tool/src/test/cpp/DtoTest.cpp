@@ -174,6 +174,7 @@ TEST_F(DtoTest, shouldRoundTripCar)
     ExtendedCar encoder1;
     encoder1.wrapForEncode(input, 0, BUFFER_LEN);
     const std::uint64_t encodedCarLength = encodeCar(encoder1);
+
     ExtendedCar decoder;
     decoder.wrapForDecode(
         input,
@@ -182,14 +183,25 @@ TEST_F(DtoTest, shouldRoundTripCar)
         ExtendedCar::sbeSchemaVersion(),
         encodedCarLength);
     ExtendedCarDto dto;
-    ExtendedCarDto::decode(decoder, dto);
+    ExtendedCarDto::decodeWith(decoder, dto);
+
     char output[BUFFER_LEN];
     std::memset(output, 0, BUFFER_LEN);
     ExtendedCar encoder2;
     encoder2.wrapForEncode(output, 0, BUFFER_LEN);
-    ExtendedCarDto::encode(encoder2, dto);
+    ExtendedCarDto::encodeWith(encoder2, dto);
     const std::uint64_t encodedCarLength2 = encoder2.encodedLength();
+
+    decoder.sbeRewind();
+    std::ostringstream originalStringStream;
+    originalStringStream << decoder;
+    std::string originalString = originalStringStream.str();
+
+    std::ostringstream dtoStringStream;
+    dtoStringStream << dto;
+    std::string dtoString = dtoStringStream.str();
 
     EXPECT_EQ(encodedCarLength, encodedCarLength2);
     EXPECT_EQ(0, std::memcmp(input, output, encodedCarLength2));
+    EXPECT_EQ(originalString, dtoString);
 }
