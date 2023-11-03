@@ -1,10 +1,11 @@
 package otf
 
 import (
-	ir "github.com/real-logic/simple-binary-encoding/uk_co_real_logic_sbe_ir_generated"
 	"os"
 	"sort"
 	"strings"
+
+	ir "github.com/real-logic/simple-binary-encoding/uk_co_real_logic_sbe_ir_generated"
 )
 
 type IrDecoder struct {
