@@ -167,7 +167,7 @@ public:
     }
 };
 
-TEST_F(DtoTest, shouldRoundTripCar)
+TEST_F(DtoTest, shouldRoundTripCar1)
 {
     char input[BUFFER_LEN];
     std::memset(input, 0, BUFFER_LEN);
@@ -204,4 +204,36 @@ TEST_F(DtoTest, shouldRoundTripCar)
     EXPECT_EQ(encodedCarLength, encodedCarLength2);
     EXPECT_EQ(0, std::memcmp(input, output, encodedCarLength2));
     EXPECT_EQ(originalString, dtoString);
+}
+
+TEST_F(DtoTest, shouldRoundTripCar2)
+{
+    char input[BUFFER_LEN];
+    std::memset(input, 0, BUFFER_LEN);
+    ExtendedCar encoder;
+    encoder.wrapForEncode(input, 0, BUFFER_LEN);
+    const std::uint64_t encodedCarLength = encodeCar(encoder);
+
+    ExtendedCarDto dto = ExtendedCarDto::decodeFrom(
+        input,
+        0,
+        ExtendedCar::sbeBlockLength(),
+        ExtendedCar::sbeSchemaVersion(),
+        encodedCarLength);
+
+    EXPECT_EQ(encodedCarLength, dto.computeEncodedLength());
+
+    std::vector<std::uint8_t> output = ExtendedCarDto::bytes(dto);
+
+    std::ostringstream originalStringStream;
+    originalStringStream << encoder;
+    std::string originalString = originalStringStream.str();
+
+    std::ostringstream dtoStringStream;
+    dtoStringStream << dto;
+    std::string dtoString = dtoStringStream.str();
+
+    EXPECT_EQ(originalString, dtoString);
+    EXPECT_EQ(encodedCarLength, output.size());
+    EXPECT_EQ(0, std::memcmp(input, output.data(), encodedCarLength));
 }

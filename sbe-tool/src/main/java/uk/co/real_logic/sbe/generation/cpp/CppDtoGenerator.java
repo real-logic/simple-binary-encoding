@@ -96,10 +96,12 @@ public class CppDtoGenerator implements CodeGenerator
             collectVarData(messageBody, offset, varData);
             generateVarData(classBuilder, varData, BASE_INDENT + INDENT);
 
-            generateMessageDecodeFrom(classBuilder, className, codecClassName, fields,
+            generateDecodeWith(classBuilder, className, codecClassName, fields,
                 groups, varData, BASE_INDENT + INDENT);
-            generateMessageEncodeInto(classBuilder, className, codecClassName, fields, groups, varData,
+            generateDecodeFrom(classBuilder, className, codecClassName, BASE_INDENT + INDENT);
+            generateEncodeWith(classBuilder, className, codecClassName, fields, groups, varData,
                 BASE_INDENT + INDENT);
+            generateEncodeInto(classBuilder, className, codecClassName, BASE_INDENT + INDENT);
             generateComputeEncodedLength(classBuilder, codecClassName, groups, varData, BASE_INDENT + INDENT);
             generateDisplay(classBuilder, className, codecClassName, "dto.computeEncodedLength()",
                 "wrapForEncode", null, BASE_INDENT + INDENT);
@@ -225,9 +227,9 @@ public class CppDtoGenerator implements CodeGenerator
 
             generateDecodeListFrom(
                 groupClassBuilder, groupClassName, qualifiedCodecClassName, indent + INDENT);
-            generateMessageDecodeFrom(groupClassBuilder, groupClassName, qualifiedCodecClassName,
+            generateDecodeWith(groupClassBuilder, groupClassName, qualifiedCodecClassName,
                 fields, groups, varData, indent + INDENT);
-            generateMessageEncodeInto(
+            generateEncodeWith(
                 groupClassBuilder, groupClassName, qualifiedCodecClassName, fields, groups, varData, indent + INDENT);
             generateComputeEncodedLength(groupClassBuilder, qualifiedCodecClassName, groups, varData,
                 indent + INDENT);
@@ -282,7 +284,11 @@ public class CppDtoGenerator implements CodeGenerator
             .append(indent).append("[[nodiscard]] std::size_t computeEncodedLength() const\n")
             .append(indent).append("{\n");
 
-        final StringBuilder arguments = new StringBuilder();
+        lengthBuilder
+            .append(indent).append(INDENT).append("std::size_t encodedLength = 0;\n");
+
+        lengthBuilder.append(indent).append(INDENT).append("encodedLength += ").append(qualifiedCodecClassName)
+            .append("::sbeBlockLength();\n\n");
 
         for (int i = 0, size = groupTokens.size(); i < size; i++)
         {
@@ -304,39 +310,17 @@ public class CppDtoGenerator implements CodeGenerator
 
             final String groupName = groupToken.name();
             final String fieldName = "m_" + toLowerFirstChar(groupName);
+            final String groupCodecClassName = qualifiedCodecClassName + "::" + formatClassName(groupName);
 
-            final boolean isConstLength = subGroups.isEmpty() && subVarData.isEmpty();
-            final String argumentName = isConstLength ?
-                toLowerFirstChar(groupName) + "Count" :
-                toLowerFirstChar(groupName) + "Lengths";
-
-            if (isConstLength)
-            {
-                lengthBuilder
-                    .append(indent).append(INDENT).append("std::size_t ").append(argumentName)
-                    .append(" = ").append(fieldName).append(".size();\n");
-            }
-            else
-            {
-                final String countName = argumentName + "Count";
-
-                lengthBuilder
-                    .append(indent).append(INDENT).append("std::size_t ").append(countName).append(" = ")
-                    .append(fieldName).append(".size();\n")
-                    .append(indent).append(INDENT).append("std::vector<std::tuple<std::size_t>> ")
-                    .append(argumentName).append("(").append(countName).append(");\n")
-                    .append(indent).append(INDENT).append("for (std::size_t i = 0; i < ").append(countName)
-                    .append("; i++)\n")
-                    .append(indent).append(INDENT).append("{\n")
-                    .append(indent).append(INDENT).append(INDENT)
-                    .append("auto& group = ").append(fieldName).append("[i];\n")
-                    .append(indent).append(INDENT).append(INDENT)
-                    .append(argumentName).append("[i] = group.computeEncodedLength();\n")
-                    .append(indent).append(INDENT).append("}\n")
-                    .append("\n");
-            }
-
-            arguments.append(argumentName).append(", ");
+            lengthBuilder
+                .append(indent).append(INDENT).append("encodedLength += ")
+                .append(groupCodecClassName).append("::sbeHeaderSize();\n\n")
+                .append(indent).append(INDENT).append("for (auto& group : ")
+                .append(fieldName).append(")\n")
+                .append(indent).append(INDENT).append("{\n")
+                .append(indent).append(INDENT).append(INDENT)
+                .append("encodedLength += group.computeEncodedLength();\n")
+                .append(indent).append(INDENT).append("}\n\n");
         }
 
         for (int i = 0, size = varDataTokens.size(); i < size; i++)
@@ -347,27 +331,23 @@ public class CppDtoGenerator implements CodeGenerator
                 final String propertyName = token.name();
                 final Token varDataToken = Generators.findFirst("varData", varDataTokens, i);
                 final String fieldName = "m_" + toLowerFirstChar(propertyName);
-                final String argumentName = toLowerFirstChar(propertyName) + "Length";
 
-                lengthBuilder.append(indent).append(INDENT).append("std::size_t ").append(argumentName)
-                    .append(" = ").append(fieldName).append(".size() * sizeof(")
-                    .append(cppTypeName(varDataToken.encoding().primitiveType())).append(");\n");
+                lengthBuilder.append(indent).append(INDENT).append("encodedLength += ")
+                    .append(qualifiedCodecClassName).append("::")
+                    .append(formatPropertyName(propertyName)).append("HeaderLength();\n");
 
-                arguments.append(argumentName).append(", ");
+                lengthBuilder.append(indent).append(INDENT).append("encodedLength += ")
+                    .append(fieldName).append(".size() * sizeof(")
+                    .append(cppTypeName(varDataToken.encoding().primitiveType())).append(");\n\n");
+
             }
         }
 
-        if (arguments.length() >= 2)
-        {
-            arguments.setLength(arguments.length() - 2);
-        }
-
-        lengthBuilder.append(indent).append(INDENT).append("return ").append(qualifiedCodecClassName)
-            .append("::computeLength(").append(arguments).append(");\n")
+        lengthBuilder.append(indent).append(INDENT).append("return encodedLength;\n")
             .append(indent).append("}\n");
     }
 
-    private void generateCompositeDecodeFrom(
+    private void generateCompositeDecodeWith(
         final ClassBuilder classBuilder,
         final String dtoClassName,
         final String codecClassName,
@@ -383,7 +363,7 @@ public class CppDtoGenerator implements CodeGenerator
         {
             final Token token = tokens.get(i);
 
-            generateFieldDecodeFrom(
+            generateFieldDecodeWith(
                 decodeBuilder, token, token, codecClassName, indent + INDENT);
 
             i += tokens.get(i).componentTokenCount();
@@ -392,7 +372,7 @@ public class CppDtoGenerator implements CodeGenerator
         decodeBuilder.append(indent).append("}\n");
     }
 
-    private void generateCompositeEncodeInto(
+    private void generateCompositeEncodeWith(
         final ClassBuilder classBuilder,
         final String dtoClassName,
         final String codecClassName,
@@ -408,7 +388,7 @@ public class CppDtoGenerator implements CodeGenerator
         {
             final Token token = tokens.get(i);
 
-            generateFieldEncodeInto(encodeBuilder, codecClassName, token, token, indent + INDENT);
+            generateFieldEncodeWith(encodeBuilder, codecClassName, token, token, indent + INDENT);
 
             i += tokens.get(i).componentTokenCount();
         }
@@ -445,7 +425,7 @@ public class CppDtoGenerator implements CodeGenerator
             .append(indent).append("}\n");
     }
 
-    private void generateMessageDecodeFrom(
+    private void generateDecodeWith(
         final ClassBuilder classBuilder,
         final String dtoClassName,
         final String codecClassName,
@@ -459,13 +439,35 @@ public class CppDtoGenerator implements CodeGenerator
             .append(dtoClassName).append("& dto)\n")
             .append(indent).append("{\n");
 
-        generateMessageFieldsDecodeFrom(decodeBuilder, fields, codecClassName, indent + INDENT);
-        generateGroupsDecodeFrom(decodeBuilder, groups, indent + INDENT);
-        generateVarDataDecodeFrom(decodeBuilder, varData, indent + INDENT);
+        generateMessageFieldsDecodeWith(decodeBuilder, fields, codecClassName, indent + INDENT);
+        generateGroupsDecodeWith(decodeBuilder, groups, indent + INDENT);
+        generateVarDataDecodeWith(decodeBuilder, varData, indent + INDENT);
         decodeBuilder.append(indent).append("}\n");
     }
 
-    private void generateMessageFieldsDecodeFrom(
+    private static void generateDecodeFrom(
+        final ClassBuilder classBuilder,
+        final String dtoClassName,
+        final String codecClassName,
+        final String indent)
+    {
+        classBuilder.appendPublic()
+            .append("\n")
+            .append(indent).append("static ").append(dtoClassName).append(" decodeFrom(")
+            .append("char* buffer, std::uint64_t offset, ")
+            .append("std::uint64_t actingBlockLength, std::uint64_t actingVersion, ")
+            .append("std::uint64_t bufferLength)\n")
+            .append(indent).append("{\n")
+            .append(indent).append(INDENT).append(codecClassName).append(" codec;\n")
+            .append(indent).append(INDENT)
+            .append("codec.wrapForDecode(buffer, offset, actingBlockLength, actingVersion, bufferLength);\n")
+            .append(indent).append(INDENT).append(dtoClassName).append(" dto;\n")
+            .append(indent).append(INDENT).append(dtoClassName).append("::decodeWith(codec, dto);\n")
+            .append(indent).append(INDENT).append("return dto;\n")
+            .append(indent).append("}\n");
+    }
+
+    private void generateMessageFieldsDecodeWith(
         final StringBuilder sb,
         final List<Token> tokens,
         final String codecClassName,
@@ -478,12 +480,12 @@ public class CppDtoGenerator implements CodeGenerator
             {
                 final Token encodingToken = tokens.get(i + 1);
 
-                generateFieldDecodeFrom(sb, signalToken, encodingToken, codecClassName, indent);
+                generateFieldDecodeWith(sb, signalToken, encodingToken, codecClassName, indent);
             }
         }
     }
 
-    private void generateFieldDecodeFrom(
+    private void generateFieldDecodeWith(
         final StringBuilder sb,
         final Token fieldToken,
         final Token typeToken,
@@ -493,20 +495,20 @@ public class CppDtoGenerator implements CodeGenerator
         switch (typeToken.signal())
         {
             case ENCODING:
-                generatePrimitiveDecodeFrom(sb, fieldToken, typeToken, codecClassName, indent);
+                generatePrimitiveDecodeWith(sb, fieldToken, typeToken, codecClassName, indent);
                 break;
 
             case BEGIN_SET:
                 final String bitSetName = formatDtoClassName(typeToken.applicableTypeName());
-                generateBitSetDecodeFrom(sb, fieldToken, bitSetName, indent);
+                generateBitSetDecodeWith(sb, fieldToken, bitSetName, indent);
                 break;
 
             case BEGIN_ENUM:
-                generateEnumDecodeFrom(sb, fieldToken, indent);
+                generateEnumDecodeWith(sb, fieldToken, indent);
                 break;
 
             case BEGIN_COMPOSITE:
-                generateCompositePropertyDecodeFrom(sb, fieldToken, typeToken, indent);
+                generateCompositePropertyDecodeWith(sb, fieldToken, typeToken, indent);
                 break;
 
             default:
@@ -514,7 +516,7 @@ public class CppDtoGenerator implements CodeGenerator
         }
     }
 
-    private void generatePrimitiveDecodeFrom(
+    private void generatePrimitiveDecodeWith(
         final StringBuilder sb,
         final Token fieldToken,
         final Token typeToken,
@@ -551,11 +553,11 @@ public class CppDtoGenerator implements CodeGenerator
         }
         else if (arrayLength > 1)
         {
-            generateArrayDecodeFrom(sb, fieldToken, typeToken, codecClassName, indent);
+            generateArrayDecodeWith(sb, fieldToken, typeToken, codecClassName, indent);
         }
     }
 
-    private void generateArrayDecodeFrom(
+    private void generateArrayDecodeWith(
         final StringBuilder sb,
         final Token fieldToken,
         final Token typeToken,
@@ -606,7 +608,7 @@ public class CppDtoGenerator implements CodeGenerator
         }
     }
 
-    private void generateBitSetDecodeFrom(
+    private void generateBitSetDecodeWith(
         final StringBuilder sb,
         final Token fieldToken,
         final String dtoTypeName,
@@ -645,7 +647,7 @@ public class CppDtoGenerator implements CodeGenerator
         }
     }
 
-    private void generateEnumDecodeFrom(
+    private void generateEnumDecodeWith(
         final StringBuilder sb,
         final Token fieldToken,
         final String indent)
@@ -662,7 +664,7 @@ public class CppDtoGenerator implements CodeGenerator
             .append("codec.").append(formattedPropertyName).append("());\n");
     }
 
-    private void generateCompositePropertyDecodeFrom(
+    private void generateCompositePropertyDecodeWith(
         final StringBuilder sb,
         final Token fieldToken,
         final Token typeToken,
@@ -677,7 +679,7 @@ public class CppDtoGenerator implements CodeGenerator
             .append("dto.").append(formattedPropertyName).append("());\n");
     }
 
-    private void generateGroupsDecodeFrom(
+    private void generateGroupsDecodeWith(
         final StringBuilder sb,
         final List<Token> tokens,
         final String indent)
@@ -711,7 +713,7 @@ public class CppDtoGenerator implements CodeGenerator
         }
     }
 
-    private void generateVarDataDecodeFrom(
+    private void generateVarDataDecodeWith(
         final StringBuilder sb,
         final List<Token> tokens,
         final String indent)
@@ -820,7 +822,7 @@ public class CppDtoGenerator implements CodeGenerator
         }
     }
 
-    private void generateMessageEncodeInto(
+    private void generateEncodeWith(
         final ClassBuilder classBuilder,
         final String dtoClassName,
         final String codecClassName,
@@ -834,14 +836,67 @@ public class CppDtoGenerator implements CodeGenerator
             .append(dtoClassName).append("& dto)\n")
             .append(indent).append("{\n");
 
-        generateFieldsEncodeInto(encodeBuilder, codecClassName, fields, indent + INDENT);
-        generateGroupsEncodeInto(encodeBuilder, groups, indent + INDENT);
-        generateVarDataEncodeInto(encodeBuilder, varData, indent + INDENT);
+        generateFieldsEncodeWith(encodeBuilder, codecClassName, fields, indent + INDENT);
+        generateGroupsEncodeWith(encodeBuilder, groups, indent + INDENT);
+        generateVarDataEncodeWith(encodeBuilder, varData, indent + INDENT);
 
         encodeBuilder.append(indent).append("}\n");
     }
 
-    private void generateFieldsEncodeInto(
+    private static void generateEncodeInto(
+        final ClassBuilder classBuilder,
+        final String dtoClassName,
+        final String codecClassName,
+        final String indent)
+    {
+        classBuilder.appendPublic()
+            .append("\n")
+            .append(indent).append("static std::size_t encodeInto(const ").append(dtoClassName).append("& dto, ")
+            .append("char *buffer, std::uint64_t offset, std::uint64_t bufferLength)\n")
+            .append(indent).append("{\n")
+            .append(indent).append(INDENT).append(codecClassName).append(" codec;\n")
+            .append(indent).append(INDENT).append("codec.wrapForEncode(buffer, offset, bufferLength);\n")
+            .append(indent).append(INDENT).append(dtoClassName).append("::encodeWith(codec, dto);\n")
+            .append(indent).append(INDENT).append("return codec.encodedLength();\n")
+            .append(indent).append("}\n");
+
+        classBuilder.appendPublic()
+            .append("\n")
+            .append(indent).append("static std::size_t encodeWithHeaderInto(const ")
+            .append(dtoClassName).append("& dto, ")
+            .append("char *buffer, std::uint64_t offset, std::uint64_t bufferLength)\n")
+            .append(indent).append("{\n")
+            .append(indent).append(INDENT).append(codecClassName).append(" codec;\n")
+            .append(indent).append(INDENT).append("codec.wrapAndApplyHeader(buffer, offset, bufferLength);\n")
+            .append(indent).append(INDENT).append(dtoClassName).append("::encodeWith(codec, dto);\n")
+            .append(indent).append(INDENT).append("return codec.sbePosition() - offset;\n")
+            .append(indent).append("}\n");
+
+        classBuilder.appendPublic()
+            .append("\n")
+            .append(indent).append("[[nodiscard]] static std::vector<std::uint8_t> bytes(const ")
+            .append(dtoClassName).append("& dto)\n")
+            .append(indent).append("{\n")
+            .append(indent).append(INDENT).append("std::vector<std::uint8_t> bytes(dto.computeEncodedLength());\n")
+            .append(indent).append(INDENT).append(dtoClassName)
+            .append("::encodeInto(dto, reinterpret_cast<char *>(bytes.data()), 0, bytes.size());\n")
+            .append(indent).append(INDENT).append("return bytes;\n")
+            .append(indent).append("}\n");
+
+        classBuilder.appendPublic()
+            .append("\n")
+            .append(indent).append("[[nodiscard]] static std::vector<std::uint8_t> bytesWithHeader(const ")
+            .append(dtoClassName).append("& dto)\n")
+            .append(indent).append("{\n")
+            .append(indent).append(INDENT).append("std::vector<std::uint8_t> bytes(dto.computeEncodedLength() + ")
+            .append("MessageHeader::encodedLength());\n")
+            .append(indent).append(INDENT).append(dtoClassName)
+            .append("::encodeWithHeaderInto(dto, reinterpret_cast<char *>(bytes.data()), 0, bytes.size());\n")
+            .append(indent).append(INDENT).append("return bytes;\n")
+            .append(indent).append("}\n");
+    }
+
+    private void generateFieldsEncodeWith(
         final StringBuilder sb,
         final String codecClassName,
         final List<Token> tokens,
@@ -853,12 +908,12 @@ public class CppDtoGenerator implements CodeGenerator
             if (signalToken.signal() == Signal.BEGIN_FIELD)
             {
                 final Token encodingToken = tokens.get(i + 1);
-                generateFieldEncodeInto(sb, codecClassName, signalToken, encodingToken, indent);
+                generateFieldEncodeWith(sb, codecClassName, signalToken, encodingToken, indent);
             }
         }
     }
 
-    private void generateFieldEncodeInto(
+    private void generateFieldEncodeWith(
         final StringBuilder sb,
         final String codecClassName,
         final Token fieldToken,
@@ -868,16 +923,16 @@ public class CppDtoGenerator implements CodeGenerator
         switch (typeToken.signal())
         {
             case ENCODING:
-                generatePrimitiveEncodeInto(sb, codecClassName, fieldToken, typeToken, indent);
+                generatePrimitiveEncodeWith(sb, codecClassName, fieldToken, typeToken, indent);
                 break;
 
             case BEGIN_ENUM:
-                generateEnumEncodeInto(sb, fieldToken, indent);
+                generateEnumEncodeWith(sb, fieldToken, indent);
                 break;
 
             case BEGIN_SET:
             case BEGIN_COMPOSITE:
-                generateComplexPropertyEncodeInto(sb, fieldToken, typeToken, indent);
+                generateComplexPropertyEncodeWith(sb, fieldToken, typeToken, indent);
                 break;
 
             default:
@@ -885,7 +940,7 @@ public class CppDtoGenerator implements CodeGenerator
         }
     }
 
-    private void generatePrimitiveEncodeInto(
+    private void generatePrimitiveEncodeWith(
         final StringBuilder sb,
         final String codecClassName,
         final Token fieldToken,
@@ -901,15 +956,15 @@ public class CppDtoGenerator implements CodeGenerator
 
         if (arrayLength == 1)
         {
-            generatePrimitiveValueEncodeInto(sb, codecClassName, fieldToken, indent);
+            generatePrimitiveValueEncodeWith(sb, codecClassName, fieldToken, indent);
         }
         else if (arrayLength > 1)
         {
-            generateArrayEncodeInto(sb, fieldToken, typeToken, indent);
+            generateArrayEncodeWith(sb, fieldToken, typeToken, indent);
         }
     }
 
-    private void generateArrayEncodeInto(
+    private void generateArrayEncodeWith(
         final StringBuilder sb,
         final Token fieldToken,
         final Token typeToken,
@@ -964,7 +1019,7 @@ public class CppDtoGenerator implements CodeGenerator
         }
     }
 
-    private void generatePrimitiveValueEncodeInto(
+    private void generatePrimitiveValueEncodeWith(
         final StringBuilder sb,
         final String codecClassName,
         final Token fieldToken,
@@ -988,7 +1043,7 @@ public class CppDtoGenerator implements CodeGenerator
             .append(value).append(");\n");
     }
 
-    private void generateEnumEncodeInto(
+    private void generateEnumEncodeWith(
         final StringBuilder sb,
         final Token fieldToken,
         final String indent)
@@ -1005,7 +1060,7 @@ public class CppDtoGenerator implements CodeGenerator
             .append(formattedPropertyName).append("());\n");
     }
 
-    private void generateComplexPropertyEncodeInto(
+    private void generateComplexPropertyEncodeWith(
         final StringBuilder sb,
         final Token fieldToken,
         final Token typeToken,
@@ -1020,7 +1075,7 @@ public class CppDtoGenerator implements CodeGenerator
             .append(formattedPropertyName).append("());\n");
     }
 
-    private void generateGroupsEncodeInto(
+    private void generateGroupsEncodeWith(
         final StringBuilder sb,
         final List<Token> tokens,
         final String indent)
@@ -1063,7 +1118,7 @@ public class CppDtoGenerator implements CodeGenerator
         }
     }
 
-    private void generateVarDataEncodeInto(
+    private void generateVarDataEncodeWith(
         final StringBuilder sb,
         final List<Token> tokens,
         final String indent)
@@ -1657,9 +1712,9 @@ public class CppDtoGenerator implements CodeGenerator
             final ClassBuilder classBuilder = new ClassBuilder(className, BASE_INDENT);
 
             generateCompositePropertyElements(classBuilder, codecClassName, compositeTokens, BASE_INDENT + INDENT);
-            generateCompositeDecodeFrom(classBuilder, className, codecClassName, compositeTokens,
+            generateCompositeDecodeWith(classBuilder, className, codecClassName, compositeTokens,
                 BASE_INDENT + INDENT);
-            generateCompositeEncodeInto(classBuilder, className, codecClassName, compositeTokens, BASE_INDENT + INDENT);
+            generateCompositeEncodeWith(classBuilder, className, codecClassName, compositeTokens, BASE_INDENT + INDENT);
             generateDisplay(classBuilder, className, codecClassName, codecClassName + "::encodedLength()", "wrap",
                 codecClassName + "::sbeSchemaVersion()", BASE_INDENT + INDENT);
 
@@ -1686,8 +1741,8 @@ public class CppDtoGenerator implements CodeGenerator
             final ClassBuilder classBuilder = new ClassBuilder(className, BASE_INDENT);
 
             generateChoices(classBuilder, className, setTokens, BASE_INDENT + INDENT);
-            generateChoiceSetDecodeFrom(classBuilder, className, codecClassName, setTokens, BASE_INDENT + INDENT);
-            generateChoiceSetEncodeInto(classBuilder, className, codecClassName, setTokens, BASE_INDENT + INDENT);
+            generateChoiceSetDecodeWith(classBuilder, className, codecClassName, setTokens, BASE_INDENT + INDENT);
+            generateChoiceSetEncodeWith(classBuilder, className, codecClassName, setTokens, BASE_INDENT + INDENT);
 
             classBuilder.appendTo(out);
             out.append("} // namespace\n");
@@ -1695,7 +1750,7 @@ public class CppDtoGenerator implements CodeGenerator
         }
     }
 
-    private void generateChoiceSetEncodeInto(
+    private void generateChoiceSetEncodeWith(
         final ClassBuilder classBuilder,
         final String dtoClassName,
         final String codecClassName,
@@ -1724,7 +1779,7 @@ public class CppDtoGenerator implements CodeGenerator
         encodeBuilder.append(indent).append("}\n");
     }
 
-    private void generateChoiceSetDecodeFrom(
+    private void generateChoiceSetDecodeWith(
         final ClassBuilder classBuilder,
         final String dtoClassName,
         final String codecClassName,
