@@ -21,6 +21,7 @@ import net.jqwik.api.Arbitrary;
 import net.jqwik.api.Combinators;
 import net.jqwik.api.arbitraries.CharacterArbitrary;
 import net.jqwik.api.arbitraries.ListArbitrary;
+import net.jqwik.api.arbitraries.ShortArbitrary;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.PrimitiveValue;
 import uk.co.real_logic.sbe.ir.Encoding;
@@ -235,7 +236,7 @@ public final class SbeArbitraries
                 skewedFieldDistribution().list().ofMaxSize(5)
             ),
             subGroups,
-            varDataSchema().list().ofMaxSize(3)
+            varDataSchema(Arbitraries.of((short)0)).list().ofMaxSize(3)
         ).as(GroupSchema::new);
     }
 
@@ -247,7 +248,7 @@ public final class SbeArbitraries
         );
     }
 
-    private static Arbitrary<VarDataSchema> varDataSchema()
+    private static Arbitrary<VarDataSchema> varDataSchema(final Arbitrary<Short> sinceVersion)
     {
         return Combinators.combine(
             Arbitraries.of(VarDataSchema.Encoding.values()),
@@ -256,6 +257,13 @@ public final class SbeArbitraries
                 PrimitiveType.UINT16,
                 PrimitiveType.UINT32
             ),
+            sinceVersion
+        ).as(VarDataSchema::new);
+    }
+
+    private static Arbitrary<VarDataSchema> varDataSchema()
+    {
+        return varDataSchema(
             Arbitraries.of(
                 (short)0,
                 (short)0,
@@ -263,7 +271,7 @@ public final class SbeArbitraries
                 (short)1,
                 (short)2
             )
-        ).as(VarDataSchema::new);
+        );
     }
 
     public static Arbitrary<MessageSchema> messageSchema()
