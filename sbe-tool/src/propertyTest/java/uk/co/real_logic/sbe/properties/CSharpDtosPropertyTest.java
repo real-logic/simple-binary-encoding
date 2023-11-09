@@ -50,10 +50,21 @@ public class CSharpDtosPropertyTest
                 tempDir.toString(),
                 "SbePropertyTest"
             );
-            new CSharpGenerator(encodedMessage.ir(), outputManager)
-                .generate();
-            new CSharpDtoGenerator(encodedMessage.ir(), outputManager)
-                .generate();
+
+            try
+            {
+                new CSharpGenerator(encodedMessage.ir(), outputManager)
+                    .generate();
+                new CSharpDtoGenerator(encodedMessage.ir(), outputManager)
+                    .generate();
+            }
+            catch (final Exception generationException)
+            {
+                throw new AssertionError(
+                    "Code generation failed.\n\nSCHEMA:\n" + encodedMessage.schema(),
+                    generationException);
+            }
+
             copyResourceToFile("/CSharpDtosPropertyTest/SbePropertyTest.csproj", tempDir);
             copyResourceToFile("/CSharpDtosPropertyTest/Program.cs", tempDir);
             try (
