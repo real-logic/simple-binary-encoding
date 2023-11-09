@@ -724,8 +724,6 @@ public class CppDtoGenerator implements CodeGenerator
             if (token.signal() == Signal.BEGIN_VAR_DATA)
             {
                 final String propertyName = token.name();
-                final Token varDataToken = Generators.findFirst("varData", tokens, i);
-                final String characterEncoding = varDataToken.encoding().characterEncoding();
                 final String formattedPropertyName = formatPropertyName(propertyName);
 
                 final boolean isOptional = token.version() > 0;
@@ -739,19 +737,8 @@ public class CppDtoGenerator implements CodeGenerator
                     .append(blockIndent).append("const char* ").append(dataVar)
                     .append(" = codec.").append(formattedPropertyName).append("();\n");
 
-                final String dtoValue;
-                final String nullDtoValue;
-
-                if (characterEncoding == null)
-                {
-                    dtoValue = "std::vector<std::uint8_t>(" + dataVar + ", " + dataVar + " + " + lengthVar + ")";
-                    nullDtoValue = "std::vector<std::uint8_t>()";
-                }
-                else
-                {
-                    dtoValue = "std::string(" + dataVar + ", " + lengthVar + ")";
-                    nullDtoValue = "\"\"";
-                }
+                final String dtoValue = "std::string(" + dataVar + ", " + lengthVar + ")";
+                final String nullDtoValue = "\"\"";
 
                 if (isOptional)
                 {
@@ -1129,29 +1116,13 @@ public class CppDtoGenerator implements CodeGenerator
             if (token.signal() == Signal.BEGIN_VAR_DATA)
             {
                 final String propertyName = token.name();
-                final Token lengthToken = Generators.findFirst("length", tokens, i);
-                final String lengthTypeName = cppTypeName(lengthToken.encoding().primitiveType());
-                final Token varDataToken = Generators.findFirst("varData", tokens, i);
-                final String characterEncoding = varDataToken.encoding().characterEncoding();
                 final String formattedPropertyName = formatPropertyName(propertyName);
                 final String varName = toLowerFirstChar(propertyName) + "Vector";
 
                 sb.append(indent).append("auto& ").append(varName).append(" = dto.")
                     .append(formattedPropertyName).append("();\n")
                     .append(indent).append("codec.put").append(toUpperFirstChar(propertyName))
-                    .append("(");
-
-                if (null == characterEncoding)
-                {
-                    sb.append("reinterpret_cast<const char*>(").append(varName).append(".data()), ")
-                        .append("static_cast<").append(lengthTypeName).append(">(").append(varName).append(".size())");
-                }
-                else
-                {
-                    sb.append(varName);
-                }
-
-                sb.append(");\n");
+                    .append("(").append(varName).append(");\n");
             }
         }
     }
@@ -1629,9 +1600,7 @@ public class CppDtoGenerator implements CodeGenerator
             if (token.signal() == Signal.BEGIN_VAR_DATA)
             {
                 final String propertyName = token.name();
-                final Token varDataToken = Generators.findFirst("varData", tokens, i);
-                final String characterEncoding = varDataToken.encoding().characterEncoding();
-                final String dtoType = characterEncoding == null ? "std::vector<std::uint8_t>" : "std::string";
+                final String dtoType = "std::string";
 
                 final String fieldName = "m_" + toLowerFirstChar(propertyName);
                 final String formattedPropertyName = formatPropertyName(propertyName);
