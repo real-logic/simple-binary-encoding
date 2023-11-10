@@ -8,29 +8,42 @@ namespace Org.SbeTool.Sbe.Tests
     public class DtoTests
     {
         [TestMethod]
-        public void ShouldRoundTripCar()
+        public void ShouldRoundTripCar1()
         {
             var inputByteArray = new byte[1024];
             var inputBuffer = new DirectBuffer(inputByteArray);
-            EncodeCar(inputBuffer);
+            EncodeCar(inputBuffer, 0);
             var decoder = new Car();
             decoder.WrapForDecode(inputBuffer, 0, Car.BlockLength, Car.SchemaVersion);
             var decoderString = decoder.ToString();
-            var dto = CarDto.DecodeFrom(decoder);
+            var dto = CarDto.DecodeWith(decoder);
             var outputByteArray = new byte[1024];
             var outputBuffer = new DirectBuffer(outputByteArray);
             var encoder = new Car();
             encoder.WrapForEncode(outputBuffer, 0);
-            dto.EncodeInto(encoder);
+            CarDto.EncodeWith(encoder, dto);
             var dtoString = dto.ToSbeString();
             CollectionAssert.AreEqual(inputByteArray, outputByteArray);
             Assert.AreEqual(decoderString, dtoString);
         }
+        
+        [TestMethod]
+        public void ShouldRoundTripCar2()
+        {
+            var inputByteArray = new byte[1024];
+            var inputBuffer = new DirectBuffer(inputByteArray);
+            var length = EncodeCar(inputBuffer, 0);
+            var dto = CarDto.DecodeFrom(inputBuffer, 0, length, Car.BlockLength, Car.SchemaVersion);
+            var outputByteArray = new byte[1024];
+            var outputBuffer = new DirectBuffer(outputByteArray);
+            CarDto.EncodeInto(outputBuffer, 0, dto);
+            CollectionAssert.AreEqual(inputByteArray, outputByteArray);
+        }
 
-        private static void EncodeCar(DirectBuffer buffer)
+        private static int EncodeCar(DirectBuffer buffer, int offset)
         {
             var car = new Car();
-            car.WrapForEncode(buffer, 0);
+            car.WrapForEncode(buffer, offset);
             car.SerialNumber = 1234;
             car.ModelYear = 2013;
             car.Available = BooleanType.T;
@@ -104,6 +117,8 @@ namespace Org.SbeTool.Sbe.Tests
             car.SetManufacturer("Ford");
             car.SetModel("Fiesta");
             car.SetActivationCode("1234");
+
+            return car.Limit - offset;
         }
     }
 }
