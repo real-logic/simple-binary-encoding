@@ -75,7 +75,7 @@ public class CSharpDtoGenerator implements CodeGenerator
         {
             final Token msgToken = tokens.get(0);
             final String codecClassName = formatClassName(msgToken.name());
-            final String className = formatDtoClassName(msgToken.name());
+            final String dtoClassName = formatDtoClassName(msgToken.name());
 
             final List<Token> messageBody = tokens.subList(1, tokens.size() - 1);
             int offset = 0;
@@ -89,21 +89,24 @@ public class CSharpDtoGenerator implements CodeGenerator
 
             final List<Token> groups = new ArrayList<>();
             offset = collectGroups(messageBody, offset, groups);
-            generateGroups(sb, ctorArgs, className, codecClassName, groups, BASE_INDENT + INDENT);
+            generateGroups(sb, ctorArgs, dtoClassName, codecClassName, groups, BASE_INDENT + INDENT);
 
             final List<Token> varData = new ArrayList<>();
             collectVarData(messageBody, offset, varData);
             generateVarData(sb, ctorArgs, varData, BASE_INDENT + INDENT);
 
-            generateDecodeFrom(sb, className, codecClassName, fields, groups, varData,
+            generateDecodeWith(sb, dtoClassName, codecClassName, fields, groups, varData,
                 token -> token.version() > msgToken.version(),
                 BASE_INDENT + INDENT);
-            generateEncodeInto(sb, codecClassName, fields, groups, varData, BASE_INDENT + INDENT);
+            generateDecodeFrom(sb, dtoClassName, codecClassName, BASE_INDENT + INDENT);
+            generateEncodeWith(sb, dtoClassName, codecClassName, fields, groups, varData,
+                BASE_INDENT + INDENT);
+            generateEncodeInto(sb, dtoClassName, codecClassName, BASE_INDENT + INDENT);
             generateDisplay(sb, codecClassName, "WrapForEncode", null, BASE_INDENT + INDENT);
 
             removeTrailingComma(ctorArgs);
 
-            try (Writer out = outputManager.createOutput(className))
+            try (Writer out = outputManager.createOutput(dtoClassName))
             {
                 out.append(generateFileHeader(
                     ir.applicableNamespace(),
@@ -112,7 +115,7 @@ public class CSharpDtoGenerator implements CodeGenerator
                     "using System.Linq;\n"));
                 out.append(generateDocumentation(BASE_INDENT, msgToken));
 
-                out.append(BASE_INDENT).append("public sealed partial record ").append(className).append("(\n")
+                out.append(BASE_INDENT).append("public sealed partial record ").append(dtoClassName).append("(\n")
                     .append(ctorArgs)
                     .append(BASE_INDENT).append(")\n")
                     .append(BASE_INDENT).append("{")
@@ -185,7 +188,7 @@ public class CSharpDtoGenerator implements CodeGenerator
 
             generateVarData(groupRecordBody, groupCtorArgs, varData, indent + INDENT);
 
-            generateDecodeListFrom(
+            generateDecodeListWith(
                 groupRecordBody, groupClassName, qualifiedCodecClassName, indent + INDENT);
 
             final Predicate<Token> wasAddedAfterGroup = token ->
@@ -200,12 +203,13 @@ public class CSharpDtoGenerator implements CodeGenerator
                 return addedAfterParent;
             };
 
-            generateDecodeFrom(
+            generateDecodeWith(
                 groupRecordBody, groupClassName, qualifiedCodecClassName, fields, groups, varData,
                 wasAddedAfterGroup, indent + INDENT);
 
-            generateEncodeInto(
-                groupRecordBody, qualifiedCodecClassName, fields, groups, varData, indent + INDENT);
+            generateEncodeWith(
+                groupRecordBody, groupClassName, qualifiedCodecClassName, fields, groups, varData,
+                indent + INDENT);
 
             removeTrailingComma(groupCtorArgs);
 
@@ -220,7 +224,7 @@ public class CSharpDtoGenerator implements CodeGenerator
         }
     }
 
-    private void generateCompositeDecodeFrom(
+    private void generateCompositeDecodeWith(
         final StringBuilder sb,
         final String dtoClassName,
         final String codecClassName,
@@ -228,7 +232,7 @@ public class CSharpDtoGenerator implements CodeGenerator
         final String indent)
     {
         sb.append("\n")
-            .append(indent).append("public static ").append(dtoClassName).append(" DecodeFrom(")
+            .append(indent).append("public static ").append(dtoClassName).append(" DecodeWith(")
             .append(codecClassName).append(" codec)\n")
             .append(indent).append("{\n");
 
@@ -238,7 +242,7 @@ public class CSharpDtoGenerator implements CodeGenerator
         {
             final Token token = tokens.get(i);
 
-            generateFieldDecodeFrom(
+            generateFieldDecodeWith(
                 sb, CANNOT_EXTEND, token, token, codecClassName, indent + INDENT + INDENT);
 
             i += tokens.get(i).componentTokenCount();
@@ -250,21 +254,24 @@ public class CSharpDtoGenerator implements CodeGenerator
         sb.append(indent).append("}\n");
     }
 
-    private void generateCompositeEncodeInto(
+    private void generateCompositeEncodeWith(
         final StringBuilder sb,
+        final String dtoClassName,
         final String codecClassName,
         final List<Token> tokens,
         final String indent)
     {
         sb.append("\n")
-            .append(indent).append("public void EncodeInto(").append(codecClassName).append(" codec)\n")
+            .append(indent).append("public static void EncodeWith(")
+            .append(codecClassName).append(" codec, ")
+            .append(dtoClassName).append(" dto)\n")
             .append(indent).append("{\n");
 
         for (int i = 0; i < tokens.size(); )
         {
             final Token token = tokens.get(i);
 
-            generateFieldEncodeInto(sb, codecClassName, token, token, indent + INDENT);
+            generateFieldEncodeWith(sb, codecClassName, token, token, indent + INDENT);
 
             i += tokens.get(i).componentTokenCount();
         }
@@ -272,14 +279,14 @@ public class CSharpDtoGenerator implements CodeGenerator
         sb.append(indent).append("}\n");
     }
 
-    private void generateDecodeListFrom(
+    private void generateDecodeListWith(
         final StringBuilder sb,
         final String dtoClassName,
         final String codecClassName,
         final String indent)
     {
         sb.append("\n")
-            .append(indent).append("public static IReadOnlyList<").append(dtoClassName).append("> DecodeListFrom(")
+            .append(indent).append("public static IReadOnlyList<").append(dtoClassName).append("> DecodeListWith(")
             .append(codecClassName).append(" codec)\n")
             .append(indent).append("{\n")
             .append(indent).append(INDENT).append("var ").append("list = new List<").append(dtoClassName)
@@ -289,7 +296,7 @@ public class CSharpDtoGenerator implements CodeGenerator
             .append(indent).append(INDENT)
             .append("{\n")
             .append(indent).append(INDENT).append(INDENT)
-            .append("var element = ").append(dtoClassName).append(".DecodeFrom(codec.Next());\n")
+            .append("var element = ").append(dtoClassName).append(".DecodeWith(codec.Next());\n")
             .append(indent).append(INDENT).append(INDENT)
             .append("list.Add(element);\n")
             .append(indent).append(INDENT)
@@ -299,7 +306,7 @@ public class CSharpDtoGenerator implements CodeGenerator
             .append(indent).append("}\n");
     }
 
-    private void generateDecodeFrom(
+    private void generateDecodeWith(
         final StringBuilder sb,
         final String dtoClassName,
         final String codecClassName,
@@ -311,20 +318,40 @@ public class CSharpDtoGenerator implements CodeGenerator
     {
         sb.append("\n")
             .append(indent).append("public static ").append(dtoClassName)
-            .append(" DecodeFrom(").append(codecClassName).append(" codec)\n")
+            .append(" DecodeWith(").append(codecClassName).append(" codec)\n")
             .append(indent).append("{\n");
 
         sb.append(indent).append(INDENT).append("return new ").append(dtoClassName).append("(\n");
-        generateMessageFieldsDecodeFrom(sb, wasAddedAfterParent, fields, codecClassName, indent + INDENT + INDENT);
-        generateGroupsDecodeFrom(sb, groups, indent + INDENT + INDENT);
-        generateVarDataDecodeFrom(sb, varData, wasAddedAfterParent, indent + INDENT + INDENT);
+        generateMessageFieldsDecodeWith(sb, wasAddedAfterParent, fields, codecClassName, indent + INDENT + INDENT);
+        generateGroupsDecodeWith(sb, groups, indent + INDENT + INDENT);
+        generateVarDataDecodeWith(sb, varData, wasAddedAfterParent, indent + INDENT + INDENT);
         removeTrailingComma(sb);
         sb.append(indent).append(INDENT).append(");\n");
 
         sb.append(indent).append("}\n");
     }
 
-    private void generateMessageFieldsDecodeFrom(
+    private void generateDecodeFrom(
+        final StringBuilder sb,
+        final String dtoClassName,
+        final String codecClassName,
+        final String indent)
+    {
+        sb.append("\n")
+            .append(indent).append("public static ").append(dtoClassName)
+            .append(" DecodeFrom(DirectBuffer buffer, int offset, int length, ")
+            .append("int actingBlockLength, int actingVersion)\n")
+            .append(indent).append("{\n")
+            .append(indent).append(INDENT)
+            .append("var decoder = new ").append(codecClassName).append("();\n")
+            .append(indent).append(INDENT)
+            .append("decoder.WrapForDecode(buffer, offset, actingBlockLength, actingVersion);\n")
+            .append(indent).append(INDENT)
+            .append("return DecodeWith(decoder);\n")
+            .append(indent).append("}\n");
+    }
+
+    private void generateMessageFieldsDecodeWith(
         final StringBuilder sb,
         final Predicate<Token> wasAddedAfterParent,
         final List<Token> tokens,
@@ -338,13 +365,13 @@ public class CSharpDtoGenerator implements CodeGenerator
             {
                 final Token encodingToken = tokens.get(i + 1);
 
-                generateFieldDecodeFrom(
+                generateFieldDecodeWith(
                     sb, wasAddedAfterParent, signalToken, encodingToken, codecClassName, indent);
             }
         }
     }
 
-    private void generateFieldDecodeFrom(
+    private void generateFieldDecodeWith(
         final StringBuilder sb,
         final Predicate<Token> wasAddedAfterParent,
         final Token fieldToken,
@@ -355,21 +382,21 @@ public class CSharpDtoGenerator implements CodeGenerator
         switch (typeToken.signal())
         {
             case ENCODING:
-                generatePrimitiveDecodeFrom(sb, fieldToken, typeToken, wasAddedAfterParent, codecClassName, indent);
+                generatePrimitiveDecodeWith(sb, fieldToken, typeToken, wasAddedAfterParent, codecClassName, indent);
                 break;
 
             case BEGIN_SET:
-                generatePropertyDecodeFrom(sb, fieldToken, wasAddedAfterParent, "0", null, indent);
+                generatePropertyDecodeWith(sb, fieldToken, wasAddedAfterParent, "0", null, indent);
                 break;
 
             case BEGIN_ENUM:
                 final String enumName = formatClassName(typeToken.applicableTypeName());
                 final String nullValue = formatNamespace(ir.packageName()) + "." + enumName + ".NULL_VALUE";
-                generatePropertyDecodeFrom(sb, fieldToken, wasAddedAfterParent, nullValue, null, indent);
+                generatePropertyDecodeWith(sb, fieldToken, wasAddedAfterParent, nullValue, null, indent);
                 break;
 
             case BEGIN_COMPOSITE:
-                generateComplexDecodeFrom(sb, fieldToken, typeToken, indent);
+                generateComplexDecodeWith(sb, fieldToken, typeToken, indent);
                 break;
 
             default:
@@ -377,7 +404,7 @@ public class CSharpDtoGenerator implements CodeGenerator
         }
     }
 
-    private void generatePrimitiveDecodeFrom(
+    private void generatePrimitiveDecodeWith(
         final StringBuilder sb,
         final Token fieldToken,
         final Token typeToken,
@@ -395,15 +422,15 @@ public class CSharpDtoGenerator implements CodeGenerator
         if (arrayLength == 1)
         {
             final String codecNullValue = codecClassName + "." + formatPropertyName(fieldToken.name()) + "NullValue";
-            generatePropertyDecodeFrom(sb, fieldToken, wasAddedAfterParent, "null", codecNullValue, indent);
+            generatePropertyDecodeWith(sb, fieldToken, wasAddedAfterParent, "null", codecNullValue, indent);
         }
         else if (arrayLength > 1)
         {
-            generateArrayDecodeFrom(sb, fieldToken, typeToken, wasAddedAfterParent, indent);
+            generateArrayDecodeWith(sb, fieldToken, typeToken, wasAddedAfterParent, indent);
         }
     }
 
-    private void generateArrayDecodeFrom(
+    private void generateArrayDecodeWith(
         final StringBuilder sb,
         final Token fieldToken,
         final Token typeToken,
@@ -444,7 +471,7 @@ public class CSharpDtoGenerator implements CodeGenerator
         }
     }
 
-    private void generatePropertyDecodeFrom(
+    private void generatePropertyDecodeWith(
         final StringBuilder sb,
         final Token fieldToken,
         final Predicate<Token> wasAddedAfterParent,
@@ -471,7 +498,7 @@ public class CSharpDtoGenerator implements CodeGenerator
         );
     }
 
-    private void generateComplexDecodeFrom(
+    private void generateComplexDecodeWith(
         final StringBuilder sb,
         final Token fieldToken,
         final Token typeToken,
@@ -482,11 +509,11 @@ public class CSharpDtoGenerator implements CodeGenerator
         final String dtoClassName = formatDtoClassName(typeToken.applicableTypeName());
 
         sb.append(indent).append(formattedPropertyName).append(": ")
-            .append(dtoClassName).append(".DecodeFrom(codec.")
+            .append(dtoClassName).append(".DecodeWith(codec.")
             .append(formattedPropertyName).append(")").append(",\n");
     }
 
-    private void generateGroupsDecodeFrom(
+    private void generateGroupsDecodeWith(
         final StringBuilder sb,
         final List<Token> tokens,
         final String indent)
@@ -514,7 +541,7 @@ public class CSharpDtoGenerator implements CodeGenerator
                 groupToken,
                 token -> token.version() > sinceVersion,
                 indent,
-                groupDtoClassName + ".DecodeListFrom(codec." + formattedPropertyName + ")",
+                groupDtoClassName + ".DecodeListWith(codec." + formattedPropertyName + ")",
                 "new List<" + groupDtoClassName + ">(0).AsReadOnly()",
                 null
             );
@@ -533,7 +560,7 @@ public class CSharpDtoGenerator implements CodeGenerator
         }
     }
 
-    private void generateVarDataDecodeFrom(
+    private void generateVarDataDecodeWith(
         final StringBuilder sb,
         final List<Token> tokens,
         final Predicate<Token> wasAddedAfterParent,
@@ -621,8 +648,9 @@ public class CSharpDtoGenerator implements CodeGenerator
         }
     }
 
-    private void generateEncodeInto(
+    private void generateEncodeWith(
         final StringBuilder sb,
+        final String dtoClassName,
         final String codecClassName,
         final List<Token> fields,
         final List<Token> groups,
@@ -630,17 +658,49 @@ public class CSharpDtoGenerator implements CodeGenerator
         final String indent)
     {
         sb.append("\n")
-            .append(indent).append("public void EncodeInto(").append(codecClassName).append(" codec)\n")
+            .append(indent).append("public static void EncodeWith(")
+            .append(codecClassName).append(" codec, ")
+            .append(dtoClassName).append(" dto)\n")
             .append(indent).append("{\n");
 
-        generateFieldsEncodeInto(sb, codecClassName, fields, indent + INDENT);
-        generateGroupsEncodeInto(sb, groups, indent + INDENT);
-        generateVarDataEncodeInto(sb, varData, indent + INDENT);
+        generateFieldsEncodeWith(sb, codecClassName, fields, indent + INDENT);
+        generateGroupsEncodeWith(sb, groups, indent + INDENT);
+        generateVarDataEncodeWith(sb, varData, indent + INDENT);
 
         sb.append(indent).append("}\n");
     }
 
-    private void generateFieldsEncodeInto(
+    private void generateEncodeInto(
+        final StringBuilder sb,
+        final String dtoClassName,
+        final String codecClassName,
+        final String indent)
+    {
+        sb.append("\n")
+            .append(indent).append("public static int EncodeInto(")
+            .append("DirectBuffer buffer, int offset, ")
+            .append(dtoClassName).append(" dto)\n")
+            .append(indent).append("{\n")
+            .append(indent).append(INDENT).append("var encoder = new ").append(codecClassName).append("();\n")
+            .append(indent).append(INDENT).append("encoder.WrapForEncode(buffer, offset);\n")
+            .append(indent).append(INDENT).append("EncodeWith(encoder, dto);\n")
+            .append(indent).append(INDENT).append("return encoder.Limit - offset;\n")
+            .append(indent).append("}\n");
+
+        sb.append("\n")
+            .append(indent).append("public static int EncodeWithHeaderInto(")
+            .append("DirectBuffer buffer, int offset, ")
+            .append(dtoClassName).append(" dto)\n")
+            .append(indent).append("{\n")
+            .append(indent).append(INDENT).append("var encoder = new ").append(codecClassName).append("();\n")
+            .append(indent).append(INDENT)
+            .append("encoder.WrapForEncodeAndApplyHeader(buffer, offset, new MessageHeader());\n")
+            .append(indent).append(INDENT).append("EncodeWith(encoder, dto);\n")
+            .append(indent).append(INDENT).append("return encoder.Limit - offset;\n")
+            .append(indent).append("}\n");
+    }
+
+    private void generateFieldsEncodeWith(
         final StringBuilder sb,
         final String codecClassName,
         final List<Token> tokens,
@@ -652,12 +712,12 @@ public class CSharpDtoGenerator implements CodeGenerator
             if (signalToken.signal() == Signal.BEGIN_FIELD)
             {
                 final Token encodingToken = tokens.get(i + 1);
-                generateFieldEncodeInto(sb, codecClassName, signalToken, encodingToken, indent);
+                generateFieldEncodeWith(sb, codecClassName, signalToken, encodingToken, indent);
             }
         }
     }
 
-    private void generateFieldEncodeInto(
+    private void generateFieldEncodeWith(
         final StringBuilder sb,
         final String codecClassName,
         final Token fieldToken,
@@ -667,16 +727,16 @@ public class CSharpDtoGenerator implements CodeGenerator
         switch (typeToken.signal())
         {
             case ENCODING:
-                generatePrimitiveEncodeInto(sb, codecClassName, fieldToken, typeToken, indent);
+                generatePrimitiveEncodeWith(sb, codecClassName, fieldToken, typeToken, indent);
                 break;
 
             case BEGIN_SET:
             case BEGIN_ENUM:
-                generateEnumEncodeInto(sb, fieldToken, indent);
+                generateEnumEncodeWith(sb, fieldToken, indent);
                 break;
 
             case BEGIN_COMPOSITE:
-                generateComplexEncodeInto(sb, fieldToken, indent);
+                generateComplexEncodeWith(sb, fieldToken, typeToken, indent);
                 break;
 
             default:
@@ -684,7 +744,7 @@ public class CSharpDtoGenerator implements CodeGenerator
         }
     }
 
-    private void generatePrimitiveEncodeInto(
+    private void generatePrimitiveEncodeWith(
         final StringBuilder sb,
         final String codecClassName,
         final Token fieldToken,
@@ -700,15 +760,15 @@ public class CSharpDtoGenerator implements CodeGenerator
 
         if (arrayLength == 1)
         {
-            generatePropertyEncodeInto(sb, codecClassName, fieldToken, indent);
+            generatePropertyEncodeWith(sb, codecClassName, fieldToken, indent);
         }
         else if (arrayLength > 1)
         {
-            generateArrayEncodeInto(sb, fieldToken, typeToken, indent);
+            generateArrayEncodeWith(sb, fieldToken, typeToken, indent);
         }
     }
 
-    private void generateArrayEncodeInto(
+    private void generateArrayEncodeWith(
         final StringBuilder sb,
         final Token fieldToken,
         final Token typeToken,
@@ -724,7 +784,7 @@ public class CSharpDtoGenerator implements CodeGenerator
 
         if (typeToken.encoding().primitiveType() == PrimitiveType.CHAR)
         {
-            final String value = nullableConvertedExpression(fieldToken, formattedPropertyName, "\"\"");
+            final String value = nullableConvertedExpression(fieldToken, "dto." + formattedPropertyName, "\"\"");
             sb.append(indent).append("codec.Set").append(formattedPropertyName).append("(")
                 .append(value).append(");\n");
         }
@@ -732,7 +792,7 @@ public class CSharpDtoGenerator implements CodeGenerator
         {
             final String typeName = cSharpTypeName(typeToken.encoding().primitiveType());
 
-            sb.append(indent).append("new Span<").append(typeName).append(">(").append(formattedPropertyName)
+            sb.append(indent).append("new Span<").append(typeName).append(">(dto.").append(formattedPropertyName)
                 .append("?.ToArray()).CopyTo(codec.").append(formattedPropertyName).append("AsSpan());\n");
         }
     }
@@ -747,7 +807,7 @@ public class CSharpDtoGenerator implements CodeGenerator
             expression;
     }
 
-    private void generatePropertyEncodeInto(
+    private void generatePropertyEncodeWith(
         final StringBuilder sb,
         final String codecClassName,
         final Token fieldToken,
@@ -763,14 +823,14 @@ public class CSharpDtoGenerator implements CodeGenerator
 
         final String value = nullableConvertedExpression(
             fieldToken,
-            formattedPropertyName,
+            "dto." + formattedPropertyName,
             codecClassName + "." + formattedPropertyName + "NullValue");
 
         sb.append(indent).append("codec.").append(formattedPropertyName).append(" = ")
             .append(value).append(";\n");
     }
 
-    private void generateEnumEncodeInto(
+    private void generateEnumEncodeWith(
         final StringBuilder sb,
         final Token fieldToken,
         final String indent)
@@ -783,22 +843,25 @@ public class CSharpDtoGenerator implements CodeGenerator
         final String propertyName = fieldToken.name();
         final String formattedPropertyName = formatPropertyName(propertyName);
 
-        sb.append(indent).append("codec.").append(formattedPropertyName).append(" = ")
+        sb.append(indent).append("codec.").append(formattedPropertyName).append(" = dto.")
             .append(formattedPropertyName).append(";\n");
     }
 
-    private void generateComplexEncodeInto(
+    private void generateComplexEncodeWith(
         final StringBuilder sb,
         final Token fieldToken,
+        final Token typeToken,
         final String indent)
     {
         final String propertyName = fieldToken.name();
         final String formattedPropertyName = formatPropertyName(propertyName);
-        sb.append(indent).append(formattedPropertyName).append(".EncodeInto(codec.")
-            .append(formattedPropertyName).append(");\n");
+        final String dtoClassName = formatDtoClassName(typeToken.applicableTypeName());
+        sb.append(indent)
+            .append(dtoClassName).append(".EncodeWith(codec.").append(formattedPropertyName)
+            .append(", dto.").append(formattedPropertyName).append(");\n");
     }
 
-    private void generateGroupsEncodeInto(
+    private void generateGroupsEncodeWith(
         final StringBuilder sb,
         final List<Token> tokens,
         final String indent)
@@ -813,15 +876,17 @@ public class CSharpDtoGenerator implements CodeGenerator
             final String groupName = groupToken.name();
             final String formattedPropertyName = formatPropertyName(groupName);
             final String groupCodecVarName = groupName + "Codec";
+            final String groupDtoClassName = formatDtoClassName(groupName);
 
             sb.append("\n")
                 .append(indent).append("var ").append(groupCodecVarName)
                 .append(" = codec.").append(formattedPropertyName)
-                .append("Count(").append(formattedPropertyName).append(".Count);\n\n")
-                .append(indent).append("foreach (var group in ").append(formattedPropertyName).append(")\n")
+                .append("Count(dto.").append(formattedPropertyName).append(".Count);\n\n")
+                .append(indent).append("foreach (var group in dto.").append(formattedPropertyName).append(")\n")
                 .append(indent).append("{\n")
-                .append(indent).append(INDENT).append("group.EncodeInto(").append(groupCodecVarName)
-                .append(".Next()").append(");\n")
+                .append(indent).append(INDENT).append(groupDtoClassName).append(".EncodeWith(")
+                .append(groupCodecVarName)
+                .append(".Next()").append(", group);\n")
                 .append(indent).append("}\n\n");
 
             i++;
@@ -838,7 +903,7 @@ public class CSharpDtoGenerator implements CodeGenerator
         }
     }
 
-    private void generateVarDataEncodeInto(
+    private void generateVarDataEncodeWith(
         final StringBuilder sb,
         final List<Token> tokens,
         final String indent)
@@ -851,7 +916,7 @@ public class CSharpDtoGenerator implements CodeGenerator
                 final String formattedPropertyName = formatPropertyName(propertyName);
 
                 sb.append(indent).append("codec.Set").append(formattedPropertyName)
-                    .append("(").append(formattedPropertyName).append(");\n");
+                    .append("(dto.").append(formattedPropertyName).append(");\n");
             }
         }
     }
@@ -876,7 +941,7 @@ public class CSharpDtoGenerator implements CodeGenerator
             sb.append(", ").append(actingVersion);
         }
         sb.append(");\n");
-        sb.append(indent).append(INDENT).append("EncodeInto(codec);\n")
+        sb.append(indent).append(INDENT).append("EncodeWith(codec, this);\n")
             .append(indent).append(INDENT).append("StringBuilder sb = new StringBuilder();\n")
             .append(indent).append(INDENT).append("codec.BuildString(sb);\n")
             .append(indent).append(INDENT).append("return sb.ToString();\n")
@@ -1292,8 +1357,8 @@ public class CSharpDtoGenerator implements CodeGenerator
 
             final List<Token> compositeTokens = tokens.subList(1, tokens.size() - 1);
             generateCompositePropertyElements(sb, ctorArgs, codecClassName, compositeTokens, BASE_INDENT + INDENT);
-            generateCompositeDecodeFrom(sb, className, codecClassName, compositeTokens, BASE_INDENT + INDENT);
-            generateCompositeEncodeInto(sb, codecClassName, compositeTokens, BASE_INDENT + INDENT);
+            generateCompositeDecodeWith(sb, className, codecClassName, compositeTokens, BASE_INDENT + INDENT);
+            generateCompositeEncodeWith(sb, className, codecClassName, compositeTokens, BASE_INDENT + INDENT);
             generateDisplay(sb, codecClassName, "Wrap", codecClassName + ".SbeSchemaVersion", BASE_INDENT + INDENT);
 
             removeTrailingComma(ctorArgs);
