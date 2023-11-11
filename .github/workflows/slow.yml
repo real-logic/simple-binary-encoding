@@ -50,8 +50,6 @@ jobs:
         uses: actions/setup-dotnet@v2
         with:
           dotnet-version: ${{ matrix.dotnet }}
-      - name: Build SbeTool
-        run: ./gradlew
       - name: Build .NET library
         run: ./csharp/build.sh
       - name: Run property tests
