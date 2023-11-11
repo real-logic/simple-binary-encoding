@@ -58,7 +58,7 @@ def checkstyleVersion = '9.3'
 def hamcrestVersion = '2.2'
 def mockitoVersion = '4.11.0'
 def junitVersion = '5.10.2'
-def jqwikVersion = '1.8.0'
+def jqwikVersion = '1.8.1'
 def jsonVersion = '20230618'
 def jmhVersion = '1.37'
 def agronaVersion = '1.21.2'
@@ -297,11 +297,17 @@ project(':sbe-tool') {
             }
 
             propertyTest(JvmTestSuite) {
+                // We should be able to use _only_ the JQwik engine, but this issue is outstanding:
+                // https://github.com/gradle/gradle/issues/21299
                 useJUnitJupiter junitVersion
 
                 dependencies {
                     implementation project()
-                    implementation "net.jqwik:jqwik:${jqwikVersion}"
+                    implementation("net.jqwik:jqwik:${jqwikVersion}") {
+                        // Exclude JUnit 5 dependencies that are already provided due to useJUnitJupiter
+                        exclude group: 'org.junit.platform', module: 'junit-platform-commons'
+                        exclude group: 'org.junit.platform', module: 'junit-platform-engine'
+                    }
                     implementation "org.json:json:${jsonVersion}"
                 }
 
