@@ -121,7 +121,7 @@ public class CppDtoGenerator implements CodeGenerator
                     referencedTypes));
                 out.append(generateDocumentation(BASE_INDENT, msgToken));
                 classBuilder.appendTo(out);
-                out.append("} // namespace\n");
+                out.append(CppUtil.closingBraces(ir.namespaces().length));
                 out.append("#endif\n");
             }
         }
@@ -1336,15 +1336,21 @@ public class CppDtoGenerator implements CodeGenerator
     {
         final String fieldName = "m_" + toLowerFirstChar(propertyName);
         final String formattedPropertyName = formatPropertyName(propertyName);
+        final String validateMethod = "validate" + toUpperFirstChar(propertyName);
 
         if (typeToken.encoding().primitiveType() == PrimitiveType.CHAR)
         {
+            final CharSequence typeName = typeWithFieldOptionality(
+                fieldToken,
+                "std::string"
+            );
+
             classBuilder.appendField()
-                .append(indent).append("std::string ").append(fieldName).append(";\n");
+                .append(indent).append(typeName).append(" ").append(fieldName).append(";\n");
 
             classBuilder.appendPublic().append("\n")
                 .append(generateDocumentation(indent, fieldToken))
-                .append(indent).append("[[nodiscard]] const std::string& ")
+                .append(indent).append("[[nodiscard]] const ").append(typeName).append("& ")
                 .append(formattedPropertyName).append("() const\n")
                 .append(indent).append("{\n")
                 .append(indent).append(INDENT).append("return ").append(fieldName).append(";\n")
@@ -1353,22 +1359,31 @@ public class CppDtoGenerator implements CodeGenerator
             classBuilder.appendPublic().append("\n")
                 .append(generateDocumentation(indent, fieldToken))
                 .append(indent).append("void ").append(formattedPropertyName)
-                .append("(const std::string& borrowedValue)\n")
+                .append("(const ").append(typeName).append("& borrowedValue)\n")
                 .append(indent).append("{\n")
                 .append(indent).append(INDENT).append(fieldName).append(" = borrowedValue;\n")
                 .append(indent).append("}\n");
 
             classBuilder.appendPublic().append("\n")
                 .append(generateDocumentation(indent, fieldToken))
-                .append(indent).append("void ").append(formattedPropertyName)
-                .append("(std::string&& ownedValue)\n")
+                .append(indent).append("void ").append(formattedPropertyName).append("(")
+                .append(typeName).append("&& ownedValue)\n")
                 .append(indent).append("{\n")
                 .append(indent).append(INDENT).append(fieldName).append(" = std::move(ownedValue);\n")
                 .append(indent).append("}\n");
+
+            generateArrayValidateMethod(
+                classBuilder,
+                codecClassName,
+                fieldToken,
+                indent,
+                validateMethod,
+                typeName,
+                "std::string",
+                formattedPropertyName);
         }
         else
         {
-            final String validateMethod = "validate" + toUpperFirstChar(propertyName);
             final String elementTypeName = cppTypeName(typeToken.encoding().primitiveType());
             final String vectorTypeName = "std::vector<" + elementTypeName + ">";
             final CharSequence typeName = typeWithFieldOptionality(
@@ -1688,7 +1703,7 @@ public class CppDtoGenerator implements CodeGenerator
                 codecClassName + "::sbeSchemaVersion()", BASE_INDENT + INDENT);
 
             classBuilder.appendTo(out);
-            out.append("} // namespace\n");
+            out.append(CppUtil.closingBraces(ir.namespaces().length));
             out.append("#endif\n");
         }
     }
@@ -1714,7 +1729,7 @@ public class CppDtoGenerator implements CodeGenerator
             generateChoiceSetEncodeWith(classBuilder, className, codecClassName, setTokens, BASE_INDENT + INDENT);
 
             classBuilder.appendTo(out);
-            out.append("} // namespace\n");
+            out.append(CppUtil.closingBraces(ir.namespaces().length));
             out.append("#endif\n");
         }
     }
