@@ -801,6 +801,7 @@ public final class SbeArbitraries
                 {
                     final int offset = limit.get();
                     fieldsEncoder.encode(builder, buffer, offset, null);
+                    buffer.checkLimit(offset + blockLength);
                     limit.set(offset + blockLength);
                     builder.appendLine().append("limit: ").append(offset).append(" -> ").append(limit.get());
                     groupsEncoder.encode(builder, buffer, NULL_VALUE, limit);
@@ -929,6 +930,7 @@ public final class SbeArbitraries
                 final int headerLength = 8;
                 fields.encode(builder, buffer, offset + headerLength, null);
                 final int oldLimit = limit.get();
+                buffer.checkLimit(offset + headerLength + blockLength);
                 limit.set(offset + headerLength + blockLength);
                 builder.appendLine().append("limit: ").append(oldLimit).append(" -> ").append(limit.get());
                 groups.encode(builder, buffer, NULL_VALUE, limit);
