@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <Reference Include="SBE">
-      <HintPath>/home/zach/src/real-logic/simple-binary-encoding/csharp/sbe-dll/bin/Release/netstandard2.0/SBE.dll</HintPath>
+      <HintPath>$(SBE_DLL)</HintPath>
     </Reference>
   </ItemGroup>
 

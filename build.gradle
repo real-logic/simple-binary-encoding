@@ -311,6 +311,7 @@ project(':sbe-tool') {
                     implementation "org.json:json:${jsonVersion}"
                 }
 
+
                 targets {
                     all {
                         testTask.configure {
@@ -318,6 +319,8 @@ project(':sbe-tool') {
                             maxHeapSize = '2g'
 
                             javaLauncher.set(toolchainLauncher)
+
+                            systemProperty 'sbe.dll', "${rootProject.projectDir}/csharp/sbe-dll/bin/Release/netstandard2.0/SBE.dll"
                         }
                     }
                 }
