@@ -40,8 +40,26 @@ import static uk.co.real_logic.sbe.ir.GenerationUtil.collectVarData;
 // Therefore, we allow lambdas with code blocks even when a lambda expression is possible.
 public final class AccessOrderModel
 {
+    /**
+     * Whether to generate access order checks.
+     */
     private static final boolean GENERATE_ACCESS_ORDER_CHECKS = Boolean.parseBoolean(
-        System.getProperty("sbe.generate.sequencing.checks", "false"));
+        System.getProperty("sbe.generate.precedence.checks", "false"));
+
+    /**
+     * The name of the symbol or macro that enables access order checks when building
+     * generated C# or C++ code.
+     */
+    public static final String PRECEDENCE_CHECKS_FLAG_NAME =
+        System.getProperty("sbe.precedence.checks.flagName", "SBE_ENABLE_PRECEDENCE_CHECKS");
+
+    /**
+     * The name of the system property that enables access order checks at runtime
+     * in generated Java code.
+     */
+    public static final String PRECEDENCE_CHECKS_PROP_NAME =
+        System.getProperty("sbe.precedence.checks.propName", "sbe.enable.precedence.checks");
+
     private final Map<Token, String> groupPathsByField = new HashMap<>();
     private final Set<Token> topLevelBlockFields = new HashSet<>();
     private final CodecInteraction.HashConsingFactory interactionFactory =

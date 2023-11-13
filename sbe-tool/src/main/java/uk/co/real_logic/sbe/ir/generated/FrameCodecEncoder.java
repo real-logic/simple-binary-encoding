@@ -13,8 +13,8 @@ public final class FrameCodecEncoder
 {
     private static final boolean ENABLE_BOUNDS_CHECKS = !Boolean.getBoolean("agrona.disable.bounds.checks");
 
-    private static final boolean SBE_ENABLE_SEQUENCING_CHECKS = Boolean.parseBoolean(System.getProperty(
-        "sbe.enable.sequencing.checks",
+    private static final boolean SBE_ENABLE_IR_PRECEDENCE_CHECKS = Boolean.parseBoolean(System.getProperty(
+        "sbe.enable.ir.precedence.checks",
         Boolean.toString(ENABLE_BOUNDS_CHECKS)));
 
     /**
@@ -151,7 +151,7 @@ public final class FrameCodecEncoder
         this.offset = offset;
         limit(offset + BLOCK_LENGTH);
 
-        if (SBE_ENABLE_SEQUENCING_CHECKS)
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
         {
             codecState(CodecStates.V0_BLOCK);
         }
@@ -245,7 +245,7 @@ public final class FrameCodecEncoder
 
     public FrameCodecEncoder irId(final int value)
     {
-        if (SBE_ENABLE_SEQUENCING_CHECKS)
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
         {
             onIrIdAccessed();
         }
@@ -313,7 +313,7 @@ public final class FrameCodecEncoder
 
     public FrameCodecEncoder irVersion(final int value)
     {
-        if (SBE_ENABLE_SEQUENCING_CHECKS)
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
         {
             onIrVersionAccessed();
         }
@@ -381,7 +381,7 @@ public final class FrameCodecEncoder
 
     public FrameCodecEncoder schemaVersion(final int value)
     {
-        if (SBE_ENABLE_SEQUENCING_CHECKS)
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
         {
             onSchemaVersionAccessed();
         }
@@ -438,7 +438,7 @@ public final class FrameCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (SBE_ENABLE_SEQUENCING_CHECKS)
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
         {
             onPackageNameAccessed();
         }
@@ -459,7 +459,7 @@ public final class FrameCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (SBE_ENABLE_SEQUENCING_CHECKS)
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
         {
             onPackageNameAccessed();
         }
@@ -483,7 +483,7 @@ public final class FrameCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (SBE_ENABLE_SEQUENCING_CHECKS)
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
         {
             onPackageNameAccessed();
         }
@@ -544,7 +544,7 @@ public final class FrameCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (SBE_ENABLE_SEQUENCING_CHECKS)
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
         {
             onNamespaceNameAccessed();
         }
@@ -565,7 +565,7 @@ public final class FrameCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (SBE_ENABLE_SEQUENCING_CHECKS)
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
         {
             onNamespaceNameAccessed();
         }
@@ -589,7 +589,7 @@ public final class FrameCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (SBE_ENABLE_SEQUENCING_CHECKS)
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
         {
             onNamespaceNameAccessed();
         }
@@ -650,7 +650,7 @@ public final class FrameCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (SBE_ENABLE_SEQUENCING_CHECKS)
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
         {
             onSemanticVersionAccessed();
         }
@@ -671,7 +671,7 @@ public final class FrameCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (SBE_ENABLE_SEQUENCING_CHECKS)
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
         {
             onSemanticVersionAccessed();
         }
@@ -695,7 +695,7 @@ public final class FrameCodecEncoder
             throw new IllegalStateException("length > maxValue for type: " + length);
         }
 
-        if (SBE_ENABLE_SEQUENCING_CHECKS)
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
         {
             onSemanticVersionAccessed();
         }
@@ -734,7 +734,7 @@ public final class FrameCodecEncoder
 
     public void checkEncodingIsComplete()
     {
-        if (SBE_ENABLE_SEQUENCING_CHECKS)
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
         {
             switch (codecState)
             {

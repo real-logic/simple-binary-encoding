@@ -63,7 +63,8 @@ add_custom_command(
             -Dsbe.output.dir=${CXX_CODEC_TARGET_DIR}
             -Dsbe.generate.ir="true"
             -Dsbe.target.language="cpp"
-            -Dsbe.generate.sequencing.checks="true"
+            -Dsbe.generate.precedence.checks="true"
+            -Dsbe.precedence.checks.flagName="SBE_ENABLE_PRECEDENCE_CHECKS_IN_TESTS"
             -Dsbe.cpp.disable.implicit.copying="true"
             -jar ${SBE_JAR}
             ${CODE_GENERATION_SCHEMA}
@@ -90,4 +91,4 @@ sbe_test(CompositeElementsTest codecs)
 sbe_test(Issue835Test codecs)
 sbe_test(Issue889Test codecs)
 sbe_test(FieldAccessOrderCheckTest codecs)
-target_compile_definitions(FieldAccessOrderCheckTest PRIVATE SBE_ENABLE_SEQUENCING_CHECKS)
+target_compile_definitions(FieldAccessOrderCheckTest PRIVATE SBE_ENABLE_PRECEDENCE_CHECKS_IN_TESTS)

@@ -307,9 +307,10 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append("    private static final boolean ENABLE_BOUNDS_CHECKS = ")
             .append("!Boolean.getBoolean(\"agrona.disable.bounds.checks\");\n\n");
-        sb.append("    private static final boolean SBE_ENABLE_SEQUENCING_CHECKS = ")
+        sb.append("    private static final boolean ")
+            .append(AccessOrderModel.PRECEDENCE_CHECKS_FLAG_NAME).append(" = ")
             .append("Boolean.parseBoolean(System.getProperty(\n")
-            .append("        \"sbe.enable.sequencing.checks\",\n")
+            .append("        \"").append(AccessOrderModel.PRECEDENCE_CHECKS_PROP_NAME).append("\",\n")
             .append("        Boolean.toString(ENABLE_BOUNDS_CHECKS)));\n\n");
 
         sb.append("    /**\n");
@@ -410,7 +411,7 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append("    public void checkEncodingIsComplete()\n")
             .append("    {\n")
-            .append("        if (SBE_ENABLE_SEQUENCING_CHECKS)\n")
+            .append("        if (").append(AccessOrderModel.PRECEDENCE_CHECKS_FLAG_NAME).append(")\n")
             .append("        {\n")
             .append("            switch (codecState)\n")
             .append("            {\n");
@@ -493,7 +494,7 @@ public class JavaGenerator implements CodeGenerator
         }
 
         final StringBuilder sb = new StringBuilder();
-        sb.append(indent).append("if (SBE_ENABLE_SEQUENCING_CHECKS)\n")
+        sb.append(indent).append("if (").append(AccessOrderModel.PRECEDENCE_CHECKS_FLAG_NAME).append(")\n")
             .append(indent).append("{\n")
             .append(indent).append("    ").append(methodName).append("(");
 
@@ -755,7 +756,7 @@ public class JavaGenerator implements CodeGenerator
         }
 
         final StringBuilder sb = new StringBuilder();
-        sb.append(indent).append("if (SBE_ENABLE_SEQUENCING_CHECKS)")
+        sb.append(indent).append("if (").append(AccessOrderModel.PRECEDENCE_CHECKS_FLAG_NAME).append(")")
             .append("\n").append(indent).append("{\n")
             .append(indent).append("    codecState(")
             .append(qualifiedStateCase(accessOrderModel.latestVersionWrappedState()))
@@ -3424,7 +3425,7 @@ public class JavaGenerator implements CodeGenerator
 
         if (null != accessOrderModel)
         {
-            methods.append("        if (SBE_ENABLE_SEQUENCING_CHECKS)\n")
+            methods.append("        if (").append(AccessOrderModel.PRECEDENCE_CHECKS_FLAG_NAME).append(")\n")
                 .append("        {\n")
                 .append("            codecState(currentCodecState);\n")
                 .append("        }\n\n");

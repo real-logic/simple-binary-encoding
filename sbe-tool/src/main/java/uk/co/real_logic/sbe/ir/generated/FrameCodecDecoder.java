@@ -13,8 +13,8 @@ public final class FrameCodecDecoder
 {
     private static final boolean ENABLE_BOUNDS_CHECKS = !Boolean.getBoolean("agrona.disable.bounds.checks");
 
-    private static final boolean SBE_ENABLE_SEQUENCING_CHECKS = Boolean.parseBoolean(System.getProperty(
-        "sbe.enable.sequencing.checks",
+    private static final boolean SBE_ENABLE_IR_PRECEDENCE_CHECKS = Boolean.parseBoolean(System.getProperty(
+        "sbe.enable.ir.precedence.checks",
         Boolean.toString(ENABLE_BOUNDS_CHECKS)));
 
     /**
@@ -172,7 +172,7 @@ public final class FrameCodecDecoder
         this.actingVersion = actingVersion;
         limit(offset + actingBlockLength);
 
-        if (SBE_ENABLE_SEQUENCING_CHECKS)
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
         {
             onWrap(actingVersion);
         }
@@ -213,7 +213,7 @@ public final class FrameCodecDecoder
         final int decodedLength = encodedLength();
         limit(currentLimit);
 
-        if (SBE_ENABLE_SEQUENCING_CHECKS)
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
         {
             codecState(currentCodecState);
         }
@@ -299,7 +299,7 @@ public final class FrameCodecDecoder
 
     public int irId()
     {
-        if (SBE_ENABLE_SEQUENCING_CHECKS)
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
         {
             onIrIdAccessed();
         }
@@ -366,7 +366,7 @@ public final class FrameCodecDecoder
 
     public int irVersion()
     {
-        if (SBE_ENABLE_SEQUENCING_CHECKS)
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
         {
             onIrVersionAccessed();
         }
@@ -433,7 +433,7 @@ public final class FrameCodecDecoder
 
     public int schemaVersion()
     {
-        if (SBE_ENABLE_SEQUENCING_CHECKS)
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
         {
             onSchemaVersionAccessed();
         }
@@ -504,7 +504,7 @@ public final class FrameCodecDecoder
 
     public int packageNameLength()
     {
-        if (SBE_ENABLE_SEQUENCING_CHECKS)
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
         {
             onPackageNameLengthAccessed();
         }
@@ -515,7 +515,7 @@ public final class FrameCodecDecoder
 
     public int skipPackageName()
     {
-        if (SBE_ENABLE_SEQUENCING_CHECKS)
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
         {
             onPackageNameAccessed();
         }
@@ -531,7 +531,7 @@ public final class FrameCodecDecoder
 
     public int getPackageName(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
-        if (SBE_ENABLE_SEQUENCING_CHECKS)
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
         {
             onPackageNameAccessed();
         }
@@ -548,7 +548,7 @@ public final class FrameCodecDecoder
 
     public int getPackageName(final byte[] dst, final int dstOffset, final int length)
     {
-        if (SBE_ENABLE_SEQUENCING_CHECKS)
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
         {
             onPackageNameAccessed();
         }
@@ -565,7 +565,7 @@ public final class FrameCodecDecoder
 
     public void wrapPackageName(final DirectBuffer wrapBuffer)
     {
-        if (SBE_ENABLE_SEQUENCING_CHECKS)
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
         {
             onPackageNameAccessed();
         }
@@ -579,7 +579,7 @@ public final class FrameCodecDecoder
 
     public String packageName()
     {
-        if (SBE_ENABLE_SEQUENCING_CHECKS)
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
         {
             onPackageNameAccessed();
         }
@@ -662,7 +662,7 @@ public final class FrameCodecDecoder
 
     public int namespaceNameLength()
     {
-        if (SBE_ENABLE_SEQUENCING_CHECKS)
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
         {
             onNamespaceNameLengthAccessed();
         }
@@ -673,7 +673,7 @@ public final class FrameCodecDecoder
 
     public int skipNamespaceName()
     {
-        if (SBE_ENABLE_SEQUENCING_CHECKS)
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
         {
             onNamespaceNameAccessed();
         }
@@ -689,7 +689,7 @@ public final class FrameCodecDecoder
 
     public int getNamespaceName(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
-        if (SBE_ENABLE_SEQUENCING_CHECKS)
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
         {
             onNamespaceNameAccessed();
         }
@@ -706,7 +706,7 @@ public final class FrameCodecDecoder
 
     public int getNamespaceName(final byte[] dst, final int dstOffset, final int length)
     {
-        if (SBE_ENABLE_SEQUENCING_CHECKS)
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
         {
             onNamespaceNameAccessed();
         }
@@ -723,7 +723,7 @@ public final class FrameCodecDecoder
 
     public void wrapNamespaceName(final DirectBuffer wrapBuffer)
     {
-        if (SBE_ENABLE_SEQUENCING_CHECKS)
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
         {
             onNamespaceNameAccessed();
         }
@@ -737,7 +737,7 @@ public final class FrameCodecDecoder
 
     public String namespaceName()
     {
-        if (SBE_ENABLE_SEQUENCING_CHECKS)
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
         {
             onNamespaceNameAccessed();
         }
@@ -820,7 +820,7 @@ public final class FrameCodecDecoder
 
     public int semanticVersionLength()
     {
-        if (SBE_ENABLE_SEQUENCING_CHECKS)
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
         {
             onSemanticVersionLengthAccessed();
         }
@@ -831,7 +831,7 @@ public final class FrameCodecDecoder
 
     public int skipSemanticVersion()
     {
-        if (SBE_ENABLE_SEQUENCING_CHECKS)
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
         {
             onSemanticVersionAccessed();
         }
@@ -847,7 +847,7 @@ public final class FrameCodecDecoder
 
     public int getSemanticVersion(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
-        if (SBE_ENABLE_SEQUENCING_CHECKS)
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
         {
             onSemanticVersionAccessed();
         }
@@ -864,7 +864,7 @@ public final class FrameCodecDecoder
 
     public int getSemanticVersion(final byte[] dst, final int dstOffset, final int length)
     {
-        if (SBE_ENABLE_SEQUENCING_CHECKS)
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
         {
             onSemanticVersionAccessed();
         }
@@ -881,7 +881,7 @@ public final class FrameCodecDecoder
 
     public void wrapSemanticVersion(final DirectBuffer wrapBuffer)
     {
-        if (SBE_ENABLE_SEQUENCING_CHECKS)
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
         {
             onSemanticVersionAccessed();
         }
@@ -895,7 +895,7 @@ public final class FrameCodecDecoder
 
     public String semanticVersion()
     {
-        if (SBE_ENABLE_SEQUENCING_CHECKS)
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
         {
             onSemanticVersionAccessed();
         }
