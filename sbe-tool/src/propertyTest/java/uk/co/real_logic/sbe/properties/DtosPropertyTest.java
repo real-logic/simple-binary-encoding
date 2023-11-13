@@ -39,6 +39,8 @@ import java.util.Arrays;
 public class DtosPropertyTest
 {
     private static final String DOTNET_EXECUTABLE = System.getProperty("sbe.tests.dotnet.executable", "dotnet");
+    private static final String SBE_DLL =
+        System.getProperty("sbe.dll", "csharp/sbe-dll/bin/Release/netstandard2.0/SBE.dll");
     private static final String CPP_EXECUTABLE = System.getProperty("sbe.tests.cpp.executable", "g++");
     private static final boolean KEEP_DIR_ON_FAILURE = Boolean.parseBoolean(
         System.getProperty("sbe.tests.keep.dir.on.failure", "true"));
@@ -80,7 +82,9 @@ public class DtosPropertyTest
             writeInputFile(encodedMessage, tempDir);
 
             execute(encodedMessage.schema(), tempDir, "test",
-                DOTNET_EXECUTABLE, "run", "--", "input.dat");
+                DOTNET_EXECUTABLE, "run",
+                "--property:SBE_DLL=" + SBE_DLL,
+                "--", "input.dat");
 
             final byte[] inputBytes = new byte[encodedMessage.length()];
             encodedMessage.buffer().getBytes(0, inputBytes);
@@ -211,12 +215,12 @@ public class DtosPropertyTest
     {
         final Path stdout = tempDir.resolve(name + "_stdout.txt");
         final Path stderr = tempDir.resolve(name + "_stderr.txt");
-        final ProcessBuilder compileProcessBuilder = new ProcessBuilder(args)
+        final ProcessBuilder processBuilder = new ProcessBuilder(args)
             .directory(tempDir.toFile())
             .redirectOutput(stdout.toFile())
             .redirectError(stderr.toFile());
 
-        final Process process = compileProcessBuilder.start();
+        final Process process = processBuilder.start();
 
         if (0 != process.waitFor())
         {
