@@ -54,3 +54,9 @@ jobs:
         run: ./csharp/build.sh
       - name: Run property tests
         run: ./gradlew propertyTest
+      - name: Upload test results
+        uses: actions/upload-artifact@v3
+        if: success() || failure()
+        with:
+          name: property-tests
+          path: sbe-tool/build/reports/tests/propertyTest
