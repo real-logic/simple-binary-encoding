@@ -3074,7 +3074,8 @@ public class JavaGenerator implements CodeGenerator
 
         if (fieldToken.isConstantEncoding())
         {
-            final String enumValueStr = fieldToken.encoding().constValue().toString();
+            final String enumValueStr = formatClassName(
+                fieldToken.encoding().constValue().toString());
 
             new Formatter(sb).format(
                 "\n" +
