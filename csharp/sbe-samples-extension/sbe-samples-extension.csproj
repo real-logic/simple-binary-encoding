@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net45;netstandard2.0</TargetFrameworks>
+    <TargetFramework>net6.0</TargetFramework>
     <OutputTypeEx>exe</OutputTypeEx>
     <RootNamespace>Org.SbeTool.Sbe.Example.Extension</RootNamespace>
     <AssemblyName>Org.SbeTool.Sbe.Example.Extension</AssemblyName>

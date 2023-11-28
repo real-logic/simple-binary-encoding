@@ -21,32 +21,15 @@ import uk.co.real_logic.sbe.generation.TargetCodeGenerator;
 import uk.co.real_logic.sbe.ir.Ir;
 
 /**
- * {@link CodeGenerator} factory for the CSharp target programming language.
+ * {@link CodeGenerator} factory for CSharp DTOs.
  */
-public class CSharp implements TargetCodeGenerator
+public class CSharpDtos implements TargetCodeGenerator
 {
-    private static final boolean GENERATE_DTOS = Boolean.getBoolean("sbe.csharp.generate.dtos");
-
     /**
      * {@inheritDoc}
      */
     public CodeGenerator newInstance(final Ir ir, final String outputDir)
     {
-        final CSharpGenerator flyweightGenerator =
-            new CSharpGenerator(ir, new CSharpNamespaceOutputManager(outputDir, ir.applicableNamespace()));
-
-        if (GENERATE_DTOS)
-        {
-            final CSharpDtoGenerator dtoGenerator =
-                new CSharpDtoGenerator(ir, new CSharpNamespaceOutputManager(outputDir, ir.applicableNamespace()));
-
-            return () ->
-            {
-                flyweightGenerator.generate();
-                dtoGenerator.generate();
-            };
-        }
-
-        return flyweightGenerator;
+        return new CSharpDtoGenerator(ir, new CSharpNamespaceOutputManager(outputDir, ir.applicableNamespace()));
     }
 }

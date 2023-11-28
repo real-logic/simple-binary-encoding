@@ -14,39 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.co.real_logic.sbe.generation.csharp;
+
+package uk.co.real_logic.sbe.generation.cpp;
 
 import uk.co.real_logic.sbe.generation.CodeGenerator;
 import uk.co.real_logic.sbe.generation.TargetCodeGenerator;
 import uk.co.real_logic.sbe.ir.Ir;
 
 /**
- * {@link CodeGenerator} factory for the CSharp target programming language.
+ * {@link CodeGenerator} factory for CSharp DTOs.
  */
-public class CSharp implements TargetCodeGenerator
+public class CppDtos implements TargetCodeGenerator
 {
-    private static final boolean GENERATE_DTOS = Boolean.getBoolean("sbe.csharp.generate.dtos");
-
     /**
      * {@inheritDoc}
      */
     public CodeGenerator newInstance(final Ir ir, final String outputDir)
     {
-        final CSharpGenerator flyweightGenerator =
-            new CSharpGenerator(ir, new CSharpNamespaceOutputManager(outputDir, ir.applicableNamespace()));
-
-        if (GENERATE_DTOS)
-        {
-            final CSharpDtoGenerator dtoGenerator =
-                new CSharpDtoGenerator(ir, new CSharpNamespaceOutputManager(outputDir, ir.applicableNamespace()));
-
-            return () ->
-            {
-                flyweightGenerator.generate();
-                dtoGenerator.generate();
-            };
-        }
-
-        return flyweightGenerator;
+        return new CppDtoGenerator(ir, new NamespaceOutputManager(outputDir, ir.applicableNamespace()));
     }
 }
