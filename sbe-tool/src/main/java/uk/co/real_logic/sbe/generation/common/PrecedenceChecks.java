@@ -53,13 +53,16 @@ public final class PrecedenceChecks
      * Only the latest version of the message is considered when creating the model.
      * </p>
      *
+     * @param stateClassName the name of the generated class that models the state of the encoder.
      * @param msgTokens the tokens of the message.
      * @return a {@link FieldPrecedenceModel} for the given message tokens or {@code null} if precedence checks
      * are disabled.
      */
-    public FieldPrecedenceModel createEncoderModel(final List<Token> msgTokens)
+    public FieldPrecedenceModel createEncoderModel(
+        final String stateClassName,
+        final List<Token> msgTokens)
     {
-        return createModel(msgTokens, SELECT_LATEST_VERSION_ONLY);
+        return createModel(stateClassName, msgTokens, SELECT_LATEST_VERSION_ONLY);
     }
 
     /**
@@ -69,13 +72,16 @@ public final class PrecedenceChecks
      * All versions of the message are considered when creating the model.
      * </p>
      *
-     * @param msgTokens the tokens of the message.
+     * @param stateClassName the name of the generated class that models the state of the decoder.
+     * @param msgTokens      the tokens of the message.
      * @return a {@link FieldPrecedenceModel} for the given message tokens or {@code null} if precedence checks
      * are disabled.
      */
-    public FieldPrecedenceModel createDecoderModel(final List<Token> msgTokens)
+    public FieldPrecedenceModel createDecoderModel(
+        final String stateClassName,
+        final List<Token> msgTokens)
     {
-        return createModel(msgTokens, Function.identity());
+        return createModel(stateClassName, msgTokens, Function.identity());
     }
 
     /**
@@ -85,13 +91,17 @@ public final class PrecedenceChecks
      * All versions of the message are considered when creating the model.
      * </p>
      *
+     * @param stateClassName the name of the generated class that models the state of the codec.
      * @param msgTokens the tokens of the message.
      * @return a {@link FieldPrecedenceModel} for the given message tokens or {@code null} if precedence checks
      * are disabled.
      */
-    public FieldPrecedenceModel createCodecModel(final List<Token> msgTokens)
+    public FieldPrecedenceModel createCodecModel(
+        final String stateClassName,
+        final List<Token> msgTokens
+    )
     {
-        return createModel(msgTokens, Function.identity());
+        return createModel(stateClassName, msgTokens, Function.identity());
     }
 
     /**
@@ -116,6 +126,7 @@ public final class PrecedenceChecks
     }
 
     private FieldPrecedenceModel createModel(
+        final String stateClassName,
         final List<Token> tokens,
         final Function<IntStream, IntStream> versionsSelector
     )
@@ -136,7 +147,13 @@ public final class PrecedenceChecks
             final List<Token> varData = new ArrayList<>();
             collectVarData(messageBody, i, varData);
 
-            return FieldPrecedenceModel.newInstance(msgToken, fields, groups, varData, versionsSelector);
+            return FieldPrecedenceModel.newInstance(
+                stateClassName,
+                msgToken,
+                fields,
+                groups,
+                varData,
+                versionsSelector);
         }
 
         return null;

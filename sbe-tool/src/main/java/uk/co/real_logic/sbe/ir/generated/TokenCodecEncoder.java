@@ -271,7 +271,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("Illegal field access order. " +
                 "Cannot access field \"tokenOffset\" in state: " + CodecStates.name(codecState()) +
                 ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
-                "]. Please see the diagram in the Javadoc of the inner class #CodecStates.");
+                "]. Please see the diagram in the Javadoc of the class TokenCodecEncoder#CodecStates.");
         }
     }
 
@@ -339,7 +339,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("Illegal field access order. " +
                 "Cannot access field \"tokenSize\" in state: " + CodecStates.name(codecState()) +
                 ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
-                "]. Please see the diagram in the Javadoc of the inner class #CodecStates.");
+                "]. Please see the diagram in the Javadoc of the class TokenCodecEncoder#CodecStates.");
         }
     }
 
@@ -407,7 +407,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("Illegal field access order. " +
                 "Cannot access field \"fieldId\" in state: " + CodecStates.name(codecState()) +
                 ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
-                "]. Please see the diagram in the Javadoc of the inner class #CodecStates.");
+                "]. Please see the diagram in the Javadoc of the class TokenCodecEncoder#CodecStates.");
         }
     }
 
@@ -475,7 +475,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("Illegal field access order. " +
                 "Cannot access field \"tokenVersion\" in state: " + CodecStates.name(codecState()) +
                 ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
-                "]. Please see the diagram in the Javadoc of the inner class #CodecStates.");
+                "]. Please see the diagram in the Javadoc of the class TokenCodecEncoder#CodecStates.");
         }
     }
 
@@ -543,7 +543,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("Illegal field access order. " +
                 "Cannot access field \"componentTokenCount\" in state: " + CodecStates.name(codecState()) +
                 ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
-                "]. Please see the diagram in the Javadoc of the inner class #CodecStates.");
+                "]. Please see the diagram in the Javadoc of the class TokenCodecEncoder#CodecStates.");
         }
     }
 
@@ -611,7 +611,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("Illegal field access order. " +
                 "Cannot access field \"signal\" in state: " + CodecStates.name(codecState()) +
                 ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
-                "]. Please see the diagram in the Javadoc of the inner class #CodecStates.");
+                "]. Please see the diagram in the Javadoc of the class TokenCodecEncoder#CodecStates.");
         }
     }
 
@@ -663,7 +663,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("Illegal field access order. " +
                 "Cannot access field \"primitiveType\" in state: " + CodecStates.name(codecState()) +
                 ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
-                "]. Please see the diagram in the Javadoc of the inner class #CodecStates.");
+                "]. Please see the diagram in the Javadoc of the class TokenCodecEncoder#CodecStates.");
         }
     }
 
@@ -715,7 +715,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("Illegal field access order. " +
                 "Cannot access field \"byteOrder\" in state: " + CodecStates.name(codecState()) +
                 ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
-                "]. Please see the diagram in the Javadoc of the inner class #CodecStates.");
+                "]. Please see the diagram in the Javadoc of the class TokenCodecEncoder#CodecStates.");
         }
     }
 
@@ -767,7 +767,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("Illegal field access order. " +
                 "Cannot access field \"presence\" in state: " + CodecStates.name(codecState()) +
                 ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
-                "]. Please see the diagram in the Javadoc of the inner class #CodecStates.");
+                "]. Please see the diagram in the Javadoc of the class TokenCodecEncoder#CodecStates.");
         }
     }
 
@@ -819,7 +819,7 @@ public final class TokenCodecEncoder
             throw new IllegalStateException("Illegal field access order. " +
                 "Cannot access field \"deprecated\" in state: " + CodecStates.name(codecState()) +
                 ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
-                "]. Please see the diagram in the Javadoc of the inner class #CodecStates.");
+                "]. Please see the diagram in the Javadoc of the class TokenCodecEncoder#CodecStates.");
         }
     }
 
@@ -886,7 +886,7 @@ public final class TokenCodecEncoder
                 throw new IllegalStateException("Illegal field access order. " +
                     "Cannot access field \"name\" in state: " + CodecStates.name(codecState()) +
                     ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
-                    "]. Please see the diagram in the Javadoc of the inner class #CodecStates.");
+                    "]. Please see the diagram in the Javadoc of the class TokenCodecEncoder#CodecStates.");
         }
     }
 
@@ -992,7 +992,7 @@ public final class TokenCodecEncoder
                 throw new IllegalStateException("Illegal field access order. " +
                     "Cannot access field \"constValue\" in state: " + CodecStates.name(codecState()) +
                     ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
-                    "]. Please see the diagram in the Javadoc of the inner class #CodecStates.");
+                    "]. Please see the diagram in the Javadoc of the class TokenCodecEncoder#CodecStates.");
         }
     }
 
@@ -1098,7 +1098,7 @@ public final class TokenCodecEncoder
                 throw new IllegalStateException("Illegal field access order. " +
                     "Cannot access field \"minValue\" in state: " + CodecStates.name(codecState()) +
                     ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
-                    "]. Please see the diagram in the Javadoc of the inner class #CodecStates.");
+                    "]. Please see the diagram in the Javadoc of the class TokenCodecEncoder#CodecStates.");
         }
     }
 
@@ -1204,7 +1204,7 @@ public final class TokenCodecEncoder
                 throw new IllegalStateException("Illegal field access order. " +
                     "Cannot access field \"maxValue\" in state: " + CodecStates.name(codecState()) +
                     ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
-                    "]. Please see the diagram in the Javadoc of the inner class #CodecStates.");
+                    "]. Please see the diagram in the Javadoc of the class TokenCodecEncoder#CodecStates.");
         }
     }
 
@@ -1310,7 +1310,7 @@ public final class TokenCodecEncoder
                 throw new IllegalStateException("Illegal field access order. " +
                     "Cannot access field \"nullValue\" in state: " + CodecStates.name(codecState()) +
                     ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
-                    "]. Please see the diagram in the Javadoc of the inner class #CodecStates.");
+                    "]. Please see the diagram in the Javadoc of the class TokenCodecEncoder#CodecStates.");
         }
     }
 
@@ -1416,7 +1416,7 @@ public final class TokenCodecEncoder
                 throw new IllegalStateException("Illegal field access order. " +
                     "Cannot access field \"characterEncoding\" in state: " + CodecStates.name(codecState()) +
                     ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
-                    "]. Please see the diagram in the Javadoc of the inner class #CodecStates.");
+                    "]. Please see the diagram in the Javadoc of the class TokenCodecEncoder#CodecStates.");
         }
     }
 
@@ -1522,7 +1522,7 @@ public final class TokenCodecEncoder
                 throw new IllegalStateException("Illegal field access order. " +
                     "Cannot access field \"epoch\" in state: " + CodecStates.name(codecState()) +
                     ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
-                    "]. Please see the diagram in the Javadoc of the inner class #CodecStates.");
+                    "]. Please see the diagram in the Javadoc of the class TokenCodecEncoder#CodecStates.");
         }
     }
 
@@ -1628,7 +1628,7 @@ public final class TokenCodecEncoder
                 throw new IllegalStateException("Illegal field access order. " +
                     "Cannot access field \"timeUnit\" in state: " + CodecStates.name(codecState()) +
                     ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
-                    "]. Please see the diagram in the Javadoc of the inner class #CodecStates.");
+                    "]. Please see the diagram in the Javadoc of the class TokenCodecEncoder#CodecStates.");
         }
     }
 
@@ -1734,7 +1734,7 @@ public final class TokenCodecEncoder
                 throw new IllegalStateException("Illegal field access order. " +
                     "Cannot access field \"semanticType\" in state: " + CodecStates.name(codecState()) +
                     ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
-                    "]. Please see the diagram in the Javadoc of the inner class #CodecStates.");
+                    "]. Please see the diagram in the Javadoc of the class TokenCodecEncoder#CodecStates.");
         }
     }
 
@@ -1840,7 +1840,7 @@ public final class TokenCodecEncoder
                 throw new IllegalStateException("Illegal field access order. " +
                     "Cannot access field \"description\" in state: " + CodecStates.name(codecState()) +
                     ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
-                    "]. Please see the diagram in the Javadoc of the inner class #CodecStates.");
+                    "]. Please see the diagram in the Javadoc of the class TokenCodecEncoder#CodecStates.");
         }
     }
 
@@ -1946,7 +1946,7 @@ public final class TokenCodecEncoder
                 throw new IllegalStateException("Illegal field access order. " +
                     "Cannot access field \"referencedName\" in state: " + CodecStates.name(codecState()) +
                     ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
-                    "]. Please see the diagram in the Javadoc of the inner class #CodecStates.");
+                    "]. Please see the diagram in the Javadoc of the class TokenCodecEncoder#CodecStates.");
         }
     }
 

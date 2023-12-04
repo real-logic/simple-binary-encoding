@@ -278,7 +278,7 @@ public final class FrameCodecDecoder
             throw new IllegalStateException("Illegal field access order. " +
                 "Cannot access field \"irId\" in state: " + CodecStates.name(codecState()) +
                 ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
-                "]. Please see the diagram in the Javadoc of the inner class #CodecStates.");
+                "]. Please see the diagram in the Javadoc of the class FrameCodecDecoder#CodecStates.");
         }
     }
 
@@ -345,7 +345,7 @@ public final class FrameCodecDecoder
             throw new IllegalStateException("Illegal field access order. " +
                 "Cannot access field \"irVersion\" in state: " + CodecStates.name(codecState()) +
                 ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
-                "]. Please see the diagram in the Javadoc of the inner class #CodecStates.");
+                "]. Please see the diagram in the Javadoc of the class FrameCodecDecoder#CodecStates.");
         }
     }
 
@@ -412,7 +412,7 @@ public final class FrameCodecDecoder
             throw new IllegalStateException("Illegal field access order. " +
                 "Cannot access field \"schemaVersion\" in state: " + CodecStates.name(codecState()) +
                 ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
-                "]. Please see the diagram in the Javadoc of the inner class #CodecStates.");
+                "]. Please see the diagram in the Javadoc of the class FrameCodecDecoder#CodecStates.");
         }
     }
 
@@ -483,7 +483,7 @@ public final class FrameCodecDecoder
                 throw new IllegalStateException("Illegal field access order. " +
                     "Cannot decode length of var data \"packageName\" in state: " + CodecStates.name(codecState()) +
                     ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
-                    "]. Please see the diagram in the Javadoc of the inner class #CodecStates.");
+                    "]. Please see the diagram in the Javadoc of the class FrameCodecDecoder#CodecStates.");
         }
     }
 
@@ -498,7 +498,7 @@ public final class FrameCodecDecoder
                 throw new IllegalStateException("Illegal field access order. " +
                     "Cannot access field \"packageName\" in state: " + CodecStates.name(codecState()) +
                     ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
-                    "]. Please see the diagram in the Javadoc of the inner class #CodecStates.");
+                    "]. Please see the diagram in the Javadoc of the class FrameCodecDecoder#CodecStates.");
         }
     }
 
@@ -641,7 +641,7 @@ public final class FrameCodecDecoder
                 throw new IllegalStateException("Illegal field access order. " +
                     "Cannot decode length of var data \"namespaceName\" in state: " + CodecStates.name(codecState()) +
                     ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
-                    "]. Please see the diagram in the Javadoc of the inner class #CodecStates.");
+                    "]. Please see the diagram in the Javadoc of the class FrameCodecDecoder#CodecStates.");
         }
     }
 
@@ -656,7 +656,7 @@ public final class FrameCodecDecoder
                 throw new IllegalStateException("Illegal field access order. " +
                     "Cannot access field \"namespaceName\" in state: " + CodecStates.name(codecState()) +
                     ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
-                    "]. Please see the diagram in the Javadoc of the inner class #CodecStates.");
+                    "]. Please see the diagram in the Javadoc of the class FrameCodecDecoder#CodecStates.");
         }
     }
 
@@ -799,7 +799,7 @@ public final class FrameCodecDecoder
                 throw new IllegalStateException("Illegal field access order. " +
                     "Cannot decode length of var data \"semanticVersion\" in state: " + CodecStates.name(codecState()) +
                     ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
-                    "]. Please see the diagram in the Javadoc of the inner class #CodecStates.");
+                    "]. Please see the diagram in the Javadoc of the class FrameCodecDecoder#CodecStates.");
         }
     }
 
@@ -814,7 +814,7 @@ public final class FrameCodecDecoder
                 throw new IllegalStateException("Illegal field access order. " +
                     "Cannot access field \"semanticVersion\" in state: " + CodecStates.name(codecState()) +
                     ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
-                    "]. Please see the diagram in the Javadoc of the inner class #CodecStates.");
+                    "]. Please see the diagram in the Javadoc of the class FrameCodecDecoder#CodecStates.");
         }
     }
 

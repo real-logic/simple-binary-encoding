@@ -48,12 +48,19 @@ public final class FieldPrecedenceModel
     private final Map<State, List<TransitionGroup>> transitionsByState = new HashMap<>();
     private final Int2ObjectHashMap<State> versionWrappedStates = new Int2ObjectHashMap<>();
     private final State notWrappedState = allocateState("NOT_WRAPPED");
+    private final String generatedRepresentationClassName;
     private State encoderWrappedState;
     private Set<State> terminalEncoderStates;
+
+    private FieldPrecedenceModel(final String generatedRepresentationClassName)
+    {
+        this.generatedRepresentationClassName = generatedRepresentationClassName;
+    }
 
     /**
      * Builds a state machine that models whether codec interactions are safe.
      *
+     * @param stateClassName the qualified name of the class that models the state machine in generated code
      * @param msgToken the message token
      * @param fields the fields in the message
      * @param groups the groups in the message
@@ -62,13 +69,14 @@ public final class FieldPrecedenceModel
      * @return the access order model
      */
     public static FieldPrecedenceModel newInstance(
+        final String stateClassName,
         final Token msgToken,
         final List<Token> fields,
         final List<Token> groups,
         final List<Token> varData,
         final Function<IntStream, IntStream> versionsSelector)
     {
-        final FieldPrecedenceModel model = new FieldPrecedenceModel();
+        final FieldPrecedenceModel model = new FieldPrecedenceModel(stateClassName);
         model.findTransitions(msgToken, fields, groups, varData, versionsSelector);
         return model;
     }
@@ -152,6 +160,15 @@ public final class FieldPrecedenceModel
     public CodecInteraction.CodecInteractionFactory interactionFactory()
     {
         return interactionFactory;
+    }
+
+    /**
+     * Returns the name of the class that models the state machine in generated code.
+     * @return the name of the class that models the state machine in generated code.
+     */
+    public String generatedRepresentationClassName()
+    {
+        return generatedRepresentationClassName;
     }
 
     /**

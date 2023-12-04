@@ -174,7 +174,8 @@ public class CppGenerator implements CodeGenerator
         {
             final Token msgToken = tokens.get(0);
             final String className = formatClassName(msgToken.name());
-            final FieldPrecedenceModel fieldPrecedenceModel = precedenceChecks.createCodecModel(tokens);
+            final String stateClassName = className + "::CodecState";
+            final FieldPrecedenceModel fieldPrecedenceModel = precedenceChecks.createCodecModel(stateClassName, tokens);
 
             try (Writer out = outputManager.createOutput(className))
             {
@@ -447,7 +448,7 @@ public class CppGenerator implements CodeGenerator
                 .append(qualifiedStateCase(fieldPrecedenceModel.notWrappedState()))
                 .append(")\n")
                 .append(indent).append("{\n");
-            generateAccessOrderException(sb, indent + INDENT, action, interaction);
+            generateAccessOrderException(sb, indent + INDENT, action, fieldPrecedenceModel, interaction);
             sb.append(indent).append("}\n");
         }
         else
@@ -474,7 +475,7 @@ public class CppGenerator implements CodeGenerator
             });
 
             sb.append(indent).append(INDENT).append("default:\n");
-            generateAccessOrderException(sb, indent + TWO_INDENT, action, interaction);
+            generateAccessOrderException(sb, indent + TWO_INDENT, action, fieldPrecedenceModel, interaction);
             sb.append(indent).append("}\n");
         }
     }
@@ -483,6 +484,7 @@ public class CppGenerator implements CodeGenerator
         final StringBuilder sb,
         final String indent,
         final String action,
+        final FieldPrecedenceModel fieldPrecedenceModel,
         final FieldPrecedenceModel.CodecInteraction interaction)
     {
         sb.append(indent).append("throw AccessOrderError(")
@@ -493,7 +495,8 @@ public class CppGenerator implements CodeGenerator
             .append(indent).append(INDENT)
             .append("\". Expected one of these transitions: [\" + codecStateTransitions(codecState()) +\n")
             .append(indent).append(INDENT)
-            .append("\"]. Please see the diagram in the docs of the inner enum #CodecState.\");\n");
+            .append("\"]. Please see the diagram in the docs of the enum ")
+            .append(fieldPrecedenceModel.generatedRepresentationClassName()).append(".\");\n");
     }
 
     private static void generateAccessOrderListenerMethodForNextGroupElement(

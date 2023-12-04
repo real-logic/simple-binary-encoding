@@ -272,15 +272,22 @@ public class JavaGenerator implements CodeGenerator
             final List<Token> varData = new ArrayList<>();
             collectVarData(messageBody, i, varData);
 
-            final FieldPrecedenceModel decoderPrecedenceModel = precedenceChecks.createDecoderModel(tokens);
-            generateDecoder(msgToken, fields, groups, varData, hasVarData, decoderPrecedenceModel);
+            final String decoderClassName = formatClassName(decoderName(msgToken.name()));
+            final String decoderStateClassName = decoderClassName + "#CodecStates";
+            final FieldPrecedenceModel decoderPrecedenceModel =
+                precedenceChecks.createDecoderModel(decoderStateClassName, tokens);
+            generateDecoder(decoderClassName, msgToken, fields, groups, varData, hasVarData, decoderPrecedenceModel);
 
-            final FieldPrecedenceModel encoderPrecedenceModel = precedenceChecks.createEncoderModel(tokens);
-            generateEncoder(msgToken, fields, groups, varData, hasVarData, encoderPrecedenceModel);
+            final String encoderClassName = formatClassName(encoderName(msgToken.name()));
+            final String encoderStateClassName = encoderClassName + "#CodecStates";
+            final FieldPrecedenceModel encoderPrecedenceModel =
+                precedenceChecks.createEncoderModel(encoderStateClassName, tokens);
+            generateEncoder(encoderClassName, msgToken, fields, groups, varData, hasVarData, encoderPrecedenceModel);
         }
     }
 
     private void generateEncoder(
+        final String className,
         final Token msgToken,
         final List<Token> fields,
         final List<Token> groups,
@@ -289,7 +296,6 @@ public class JavaGenerator implements CodeGenerator
         final FieldPrecedenceModel fieldPrecedenceModel)
         throws IOException
     {
-        final String className = formatClassName(encoderName(msgToken.name()));
         final String implementsString = implementsInterface(MessageEncoderFlyweight.class.getSimpleName());
 
         try (Writer out = outputManager.createOutput(className))
@@ -610,7 +616,7 @@ public class JavaGenerator implements CodeGenerator
                 .append(qualifiedStateCase(fieldPrecedenceModel.notWrappedState()))
                 .append(")\n")
                 .append(indent).append("{\n");
-            generateAccessOrderException(sb, indent + "    ", action, interaction);
+            generateAccessOrderException(sb, indent + "    ", action, fieldPrecedenceModel, interaction);
             sb.append(indent).append("}\n");
         }
         else
@@ -628,7 +634,7 @@ public class JavaGenerator implements CodeGenerator
             });
 
             sb.append(indent).append("    default:\n");
-            generateAccessOrderException(sb, indent + "        ", action, interaction);
+            generateAccessOrderException(sb, indent + "        ", action, fieldPrecedenceModel, interaction);
             sb.append(indent).append("}\n");
         }
     }
@@ -637,6 +643,7 @@ public class JavaGenerator implements CodeGenerator
         final StringBuilder sb,
         final String indent,
         final String action,
+        final FieldPrecedenceModel fieldPrecedenceModel,
         final FieldPrecedenceModel.CodecInteraction interaction)
     {
         sb.append(indent).append("throw new IllegalStateException(")
@@ -647,7 +654,8 @@ public class JavaGenerator implements CodeGenerator
             .append(indent)
             .append("    \". Expected one of these transitions: [\" + CodecStates.transitions(codecState()) +\n")
             .append(indent)
-            .append("    \"]. Please see the diagram in the Javadoc of the inner class #CodecStates.\");\n");
+            .append("    \"]. Please see the diagram in the Javadoc of the class ")
+            .append(fieldPrecedenceModel.generatedRepresentationClassName()).append(".\");\n");
     }
 
     private static void generateAccessOrderListenerMethodForNextGroupElement(
@@ -803,6 +811,7 @@ public class JavaGenerator implements CodeGenerator
     }
 
     private void generateDecoder(
+        final String className,
         final Token msgToken,
         final List<Token> fields,
         final List<Token> groups,
@@ -811,7 +820,6 @@ public class JavaGenerator implements CodeGenerator
         final FieldPrecedenceModel fieldPrecedenceModel)
         throws IOException
     {
-        final String className = formatClassName(decoderName(msgToken.name()));
         final String implementsString = implementsInterface(MessageDecoderFlyweight.class.getSimpleName());
 
         try (Writer out = outputManager.createOutput(className))
