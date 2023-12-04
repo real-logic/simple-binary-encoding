@@ -18,7 +18,8 @@ package uk.co.real_logic.sbe.generation.java;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.generation.CodeGenerator;
 import uk.co.real_logic.sbe.generation.Generators;
-import uk.co.real_logic.sbe.generation.common.AccessOrderModel;
+import uk.co.real_logic.sbe.generation.common.FieldPrecedenceModel;
+import uk.co.real_logic.sbe.generation.common.PrecedenceChecks;
 import uk.co.real_logic.sbe.ir.*;
 import org.agrona.DirectBuffer;
 import org.agrona.MutableDirectBuffer;
@@ -32,7 +33,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.IntStream;
 
 import static uk.co.real_logic.sbe.SbeTool.JAVA_INTERFACE_PACKAGE;
 import static uk.co.real_logic.sbe.generation.java.JavaGenerator.CodecType.DECODER;
@@ -71,6 +71,9 @@ public class JavaGenerator implements CodeGenerator
     private final boolean shouldGenerateInterfaces;
     private final boolean shouldDecodeUnknownEnumValues;
     private final boolean shouldSupportTypesPackageNames;
+    private final PrecedenceChecks precedenceChecks;
+    private final String precedenceChecksFlagName;
+    private final String precedenceChecksPropName;
     private final Set<String> packageNameByTypes = new HashSet<>();
 
     /**
@@ -119,6 +122,43 @@ public class JavaGenerator implements CodeGenerator
         final boolean shouldSupportTypesPackageNames,
         final DynamicPackageOutputManager outputManager)
     {
+        this(
+            ir,
+            mutableBuffer,
+            readOnlyBuffer,
+            shouldGenerateGroupOrderAnnotation,
+            shouldGenerateInterfaces,
+            shouldDecodeUnknownEnumValues,
+            shouldSupportTypesPackageNames,
+            PrecedenceChecks.newInstance(new PrecedenceChecks.Context()),
+            outputManager
+        );
+    }
+
+    /**
+     * Create a new Java language {@link CodeGenerator}.
+     *
+     * @param ir                                 for the messages and types.
+     * @param mutableBuffer                      implementation used for mutating underlying buffers.
+     * @param readOnlyBuffer                     implementation used for reading underlying buffers.
+     * @param shouldGenerateGroupOrderAnnotation in the codecs.
+     * @param shouldGenerateInterfaces           for common methods.
+     * @param shouldDecodeUnknownEnumValues      generate support for unknown enum values when decoding.
+     * @param shouldSupportTypesPackageNames     generator support for types in their own package.
+     * @param precedenceChecks                   whether and how to generate field precedence checks.
+     * @param outputManager                      for generating the codecs to.
+     */
+    public JavaGenerator(
+        final Ir ir,
+        final String mutableBuffer,
+        final String readOnlyBuffer,
+        final boolean shouldGenerateGroupOrderAnnotation,
+        final boolean shouldGenerateInterfaces,
+        final boolean shouldDecodeUnknownEnumValues,
+        final boolean shouldSupportTypesPackageNames,
+        final PrecedenceChecks precedenceChecks,
+        final DynamicPackageOutputManager outputManager)
+    {
         Verify.notNull(ir, "ir");
         Verify.notNull(outputManager, "outputManager");
 
@@ -135,6 +175,10 @@ public class JavaGenerator implements CodeGenerator
         this.shouldGenerateGroupOrderAnnotation = shouldGenerateGroupOrderAnnotation;
         this.shouldGenerateInterfaces = shouldGenerateInterfaces;
         this.shouldDecodeUnknownEnumValues = shouldDecodeUnknownEnumValues;
+
+        this.precedenceChecks = precedenceChecks;
+        this.precedenceChecksFlagName = precedenceChecks.context().precedenceChecksFlagName();
+        this.precedenceChecksPropName = precedenceChecks.context().precedenceChecksPropName();
     }
 
     /**
@@ -228,8 +272,11 @@ public class JavaGenerator implements CodeGenerator
             final List<Token> varData = new ArrayList<>();
             collectVarData(messageBody, i, varData);
 
-            generateDecoder(msgToken, fields, groups, varData, hasVarData);
-            generateEncoder(msgToken, fields, groups, varData, hasVarData);
+            final FieldPrecedenceModel decoderPrecedenceModel = precedenceChecks.createDecoderModel(tokens);
+            generateDecoder(msgToken, fields, groups, varData, hasVarData, decoderPrecedenceModel);
+
+            final FieldPrecedenceModel encoderPrecedenceModel = precedenceChecks.createEncoderModel(tokens);
+            generateEncoder(msgToken, fields, groups, varData, hasVarData, encoderPrecedenceModel);
         }
     }
 
@@ -238,7 +285,8 @@ public class JavaGenerator implements CodeGenerator
         final List<Token> fields,
         final List<Token> groups,
         final List<Token> varData,
-        final boolean hasVarData)
+        final boolean hasVarData,
+        final FieldPrecedenceModel fieldPrecedenceModel)
         throws IOException
     {
         final String className = formatClassName(encoderName(msgToken.name()));
@@ -254,51 +302,40 @@ public class JavaGenerator implements CodeGenerator
             }
             out.append(generateDeclaration(className, implementsString, msgToken));
 
-            AccessOrderModel accessOrderModel = null;
-            if (AccessOrderModel.generateAccessOrderChecks())
-            {
-                final Function<IntStream, IntStream> selectLatestVersion = versions ->
-                {
-                    final OptionalInt max = versions.max();
-                    return max.isPresent() ? IntStream.of(max.getAsInt()) : IntStream.empty();
-                };
-                accessOrderModel = AccessOrderModel.newInstance(msgToken, fields, groups, varData, selectLatestVersion);
-            }
-
-            out.append(generateFieldOrderStates(accessOrderModel));
-            out.append(generateEncoderFlyweightCode(className, accessOrderModel, msgToken));
+            out.append(generateFieldOrderStates(fieldPrecedenceModel));
+            out.append(generateEncoderFlyweightCode(className, fieldPrecedenceModel, msgToken));
 
             final StringBuilder sb = new StringBuilder();
-            generateEncoderFields(sb, className, accessOrderModel, fields, BASE_INDENT);
-            generateEncoderGroups(sb, className, accessOrderModel, groups, BASE_INDENT, false);
-            generateEncoderVarData(sb, className, accessOrderModel, varData, BASE_INDENT);
+            generateEncoderFields(sb, className, fieldPrecedenceModel, fields, BASE_INDENT);
+            generateEncoderGroups(sb, className, fieldPrecedenceModel, groups, BASE_INDENT, false);
+            generateEncoderVarData(sb, className, fieldPrecedenceModel, varData, BASE_INDENT);
 
             generateEncoderDisplay(sb, decoderName(msgToken.name()));
-            generateFullyEncodedCheck(sb, accessOrderModel);
+            generateFullyEncodedCheck(sb, fieldPrecedenceModel);
 
             out.append(sb);
             out.append("}\n");
         }
     }
 
-    private static CharSequence qualifiedStateCase(final AccessOrderModel.State state)
+    private static CharSequence qualifiedStateCase(final FieldPrecedenceModel.State state)
     {
         return "CodecStates." + state.name();
     }
 
-    private static CharSequence stateCaseForSwitchCase(final AccessOrderModel.State state)
+    private static CharSequence stateCaseForSwitchCase(final FieldPrecedenceModel.State state)
     {
         return qualifiedStateCase(state);
     }
 
-    private static CharSequence unqualifiedStateCase(final AccessOrderModel.State state)
+    private static CharSequence unqualifiedStateCase(final FieldPrecedenceModel.State state)
     {
         return state.name();
     }
 
-    private static CharSequence generateFieldOrderStates(final AccessOrderModel accessOrderModel)
+    private CharSequence generateFieldOrderStates(final FieldPrecedenceModel fieldPrecedenceModel)
     {
-        if (null == accessOrderModel)
+        if (null == fieldPrecedenceModel)
         {
             return "";
         }
@@ -308,9 +345,9 @@ public class JavaGenerator implements CodeGenerator
         sb.append("    private static final boolean ENABLE_BOUNDS_CHECKS = ")
             .append("!Boolean.getBoolean(\"agrona.disable.bounds.checks\");\n\n");
         sb.append("    private static final boolean ")
-            .append(AccessOrderModel.PRECEDENCE_CHECKS_FLAG_NAME).append(" = ")
+            .append(precedenceChecksFlagName).append(" = ")
             .append("Boolean.parseBoolean(System.getProperty(\n")
-            .append("        \"").append(AccessOrderModel.PRECEDENCE_CHECKS_PROP_NAME).append("\",\n")
+            .append("        \"").append(precedenceChecksPropName).append("\",\n")
             .append("        Boolean.toString(ENABLE_BOUNDS_CHECKS)));\n\n");
 
         sb.append("    /**\n");
@@ -321,12 +358,12 @@ public class JavaGenerator implements CodeGenerator
         sb.append("     * accessed safely. Tools such as PlantUML and Graphviz can render it.\n");
         sb.append("     *\n");
         sb.append("     * <pre>{@code\n");
-        accessOrderModel.generateGraph(sb, "     *   ");
+        fieldPrecedenceModel.generateGraph(sb, "     *   ");
         sb.append("     * }</pre>\n");
         sb.append("     */\n");
         sb.append("    private static class CodecStates\n")
             .append("    {\n");
-        accessOrderModel.forEachStateOrderedByStateNumber(state ->
+        fieldPrecedenceModel.forEachStateOrderedByStateNumber(state ->
         {
             sb.append("        private static final int ")
                 .append(unqualifiedStateCase(state))
@@ -336,7 +373,7 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append("\n").append("        private static final String[] STATE_NAME_LOOKUP =\n")
                 .append("        {\n");
-        accessOrderModel.forEachStateOrderedByStateNumber(state ->
+        fieldPrecedenceModel.forEachStateOrderedByStateNumber(state ->
         {
             sb.append("            \"").append(state.name()).append("\",\n");
         });
@@ -344,12 +381,12 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append("        private static final String[] STATE_TRANSITIONS_LOOKUP =\n")
                 .append("        {\n");
-        accessOrderModel.forEachStateOrderedByStateNumber(state ->
+        fieldPrecedenceModel.forEachStateOrderedByStateNumber(state ->
         {
             sb.append("            \"");
             final MutableBoolean isFirst = new MutableBoolean(true);
             final Set<String> transitionDescriptions = new HashSet<>();
-            accessOrderModel.forEachTransitionFrom(state, transitionGroup ->
+            fieldPrecedenceModel.forEachTransitionFrom(state, transitionGroup ->
             {
                 if (transitionDescriptions.add(transitionGroup.exampleCode()))
                 {
@@ -382,7 +419,7 @@ public class JavaGenerator implements CodeGenerator
         sb.append("    }\n\n");
 
         sb.append("    private int codecState = ")
-            .append(qualifiedStateCase(accessOrderModel.notWrappedState()))
+            .append(qualifiedStateCase(fieldPrecedenceModel.notWrappedState()))
             .append(";\n\n");
 
         sb.append("    private int codecState()\n")
@@ -398,11 +435,11 @@ public class JavaGenerator implements CodeGenerator
         return sb;
     }
 
-    private static void generateFullyEncodedCheck(
+    private void generateFullyEncodedCheck(
         final StringBuilder sb,
-        final AccessOrderModel accessOrderModel)
+        final FieldPrecedenceModel fieldPrecedenceModel)
     {
-        if (null == accessOrderModel)
+        if (null == fieldPrecedenceModel)
         {
             return;
         }
@@ -411,12 +448,12 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append("    public void checkEncodingIsComplete()\n")
             .append("    {\n")
-            .append("        if (").append(AccessOrderModel.PRECEDENCE_CHECKS_FLAG_NAME).append(")\n")
+            .append("        if (").append(precedenceChecksFlagName).append(")\n")
             .append("        {\n")
             .append("            switch (codecState)\n")
             .append("            {\n");
 
-        accessOrderModel.forEachTerminalEncoderState(state ->
+        fieldPrecedenceModel.forEachTerminalEncoderState(state ->
         {
             sb.append("                case ").append(stateCaseForSwitchCase(state)).append(":\n")
                 .append("                    return;\n");
@@ -443,11 +480,11 @@ public class JavaGenerator implements CodeGenerator
 
     private static void generateAccessOrderListenerMethod(
         final StringBuilder sb,
-        final AccessOrderModel accessOrderModel,
+        final FieldPrecedenceModel fieldPrecedenceModel,
         final String indent,
         final Token token)
     {
-        if (null == accessOrderModel)
+        if (null == fieldPrecedenceModel)
         {
             return;
         }
@@ -456,45 +493,45 @@ public class JavaGenerator implements CodeGenerator
             .append(indent).append("private void ").append(accessOrderListenerMethodName(token)).append("()\n")
             .append(indent).append("{\n");
 
-        final AccessOrderModel.CodecInteraction fieldAccess =
-            accessOrderModel.interactionFactory().accessField(token);
+        final FieldPrecedenceModel.CodecInteraction fieldAccess =
+            fieldPrecedenceModel.interactionFactory().accessField(token);
 
         generateAccessOrderListener(
             sb,
             indent + "    ",
             "access field",
-            accessOrderModel,
+            fieldPrecedenceModel,
             fieldAccess);
 
         sb.append(indent).append("}\n");
     }
 
-    private static CharSequence generateAccessOrderListenerCall(
-        final AccessOrderModel accessOrderModel,
+    private CharSequence generateAccessOrderListenerCall(
+        final FieldPrecedenceModel fieldPrecedenceModel,
         final String indent,
         final Token token,
         final String... arguments)
     {
         return generateAccessOrderListenerCall(
-            accessOrderModel,
+            fieldPrecedenceModel,
             indent,
             accessOrderListenerMethodName(token),
             arguments);
     }
 
-    private static CharSequence generateAccessOrderListenerCall(
-        final AccessOrderModel accessOrderModel,
+    private CharSequence generateAccessOrderListenerCall(
+        final FieldPrecedenceModel fieldPrecedenceModel,
         final String indent,
         final String methodName,
         final String... arguments)
     {
-        if (null == accessOrderModel)
+        if (null == fieldPrecedenceModel)
         {
             return "";
         }
 
         final StringBuilder sb = new StringBuilder();
-        sb.append(indent).append("if (").append(AccessOrderModel.PRECEDENCE_CHECKS_FLAG_NAME).append(")\n")
+        sb.append(indent).append("if (").append(precedenceChecksFlagName).append(")\n")
             .append(indent).append("{\n")
             .append(indent).append("    ").append(methodName).append("(");
 
@@ -516,44 +553,44 @@ public class JavaGenerator implements CodeGenerator
     private static void generateAccessOrderListenerMethodForGroupWrap(
         final StringBuilder sb,
         final String action,
-        final AccessOrderModel accessOrderModel,
+        final FieldPrecedenceModel fieldPrecedenceModel,
         final String indent,
         final Token token)
     {
-        if (null == accessOrderModel)
+        if (null == fieldPrecedenceModel)
         {
             return;
         }
 
         sb.append("\n")
             .append(indent).append("private void ").append(accessOrderListenerMethodName(token))
-            .append("(final int remaining)\n")
+            .append("(final int count)\n")
             .append(indent).append("{\n")
-            .append(indent).append("    if (remaining == 0)\n")
+            .append(indent).append("    if (count == 0)\n")
             .append(indent).append("    {\n");
 
-        final AccessOrderModel.CodecInteraction selectEmptyGroup =
-            accessOrderModel.interactionFactory().determineGroupIsEmpty(token);
+        final FieldPrecedenceModel.CodecInteraction selectEmptyGroup =
+            fieldPrecedenceModel.interactionFactory().determineGroupIsEmpty(token);
 
         generateAccessOrderListener(
             sb,
             indent + "        ",
             action + " count of repeating group",
-            accessOrderModel,
+            fieldPrecedenceModel,
             selectEmptyGroup);
 
         sb.append(indent).append("    }\n")
             .append(indent).append("    else\n")
             .append(indent).append("    {\n");
 
-        final AccessOrderModel.CodecInteraction selectNonEmptyGroup =
-            accessOrderModel.interactionFactory().determineGroupHasElements(token);
+        final FieldPrecedenceModel.CodecInteraction selectNonEmptyGroup =
+            fieldPrecedenceModel.interactionFactory().determineGroupHasElements(token);
 
         generateAccessOrderListener(
             sb,
             indent + "        ",
             action + " count of repeating group",
-            accessOrderModel,
+            fieldPrecedenceModel,
             selectNonEmptyGroup);
 
         sb.append(indent).append("    }\n")
@@ -564,13 +601,13 @@ public class JavaGenerator implements CodeGenerator
         final StringBuilder sb,
         final String indent,
         final String action,
-        final AccessOrderModel accessOrderModel,
-        final AccessOrderModel.CodecInteraction interaction)
+        final FieldPrecedenceModel fieldPrecedenceModel,
+        final FieldPrecedenceModel.CodecInteraction interaction)
     {
         if (interaction.isTopLevelBlockFieldAccess())
         {
             sb.append(indent).append("if (codecState() == ")
-                .append(qualifiedStateCase(accessOrderModel.notWrappedState()))
+                .append(qualifiedStateCase(fieldPrecedenceModel.notWrappedState()))
                 .append(")\n")
                 .append(indent).append("{\n");
             generateAccessOrderException(sb, indent + "    ", action, interaction);
@@ -581,7 +618,7 @@ public class JavaGenerator implements CodeGenerator
             sb.append(indent).append("switch (codecState())\n")
                 .append(indent).append("{\n");
 
-            accessOrderModel.forEachTransition(interaction, transitionGroup ->
+            fieldPrecedenceModel.forEachTransition(interaction, transitionGroup ->
             {
                 transitionGroup.forEachStartState(startState ->
                     sb.append(indent).append("    case ").append(stateCaseForSwitchCase(startState)).append(":\n"));
@@ -600,7 +637,7 @@ public class JavaGenerator implements CodeGenerator
         final StringBuilder sb,
         final String indent,
         final String action,
-        final AccessOrderModel.CodecInteraction interaction)
+        final FieldPrecedenceModel.CodecInteraction interaction)
     {
         sb.append(indent).append("throw new IllegalStateException(")
             .append("\"Illegal field access order. \" +\n")
@@ -615,11 +652,11 @@ public class JavaGenerator implements CodeGenerator
 
     private static void generateAccessOrderListenerMethodForNextGroupElement(
         final StringBuilder sb,
-        final AccessOrderModel accessOrderModel,
+        final FieldPrecedenceModel fieldPrecedenceModel,
         final String indent,
         final Token token)
     {
-        if (null == accessOrderModel)
+        if (null == fieldPrecedenceModel)
         {
             return;
         }
@@ -630,28 +667,28 @@ public class JavaGenerator implements CodeGenerator
             .append(indent).append("    if (remaining > 1)\n")
             .append(indent).append("    {\n");
 
-        final AccessOrderModel.CodecInteraction selectNextElementInGroup =
-            accessOrderModel.interactionFactory().moveToNextElement(token);
+        final FieldPrecedenceModel.CodecInteraction selectNextElementInGroup =
+            fieldPrecedenceModel.interactionFactory().moveToNextElement(token);
 
         generateAccessOrderListener(
             sb,
             indent + "       ",
             "access next element in repeating group",
-            accessOrderModel,
+            fieldPrecedenceModel,
             selectNextElementInGroup);
 
         sb.append(indent).append("    }\n")
             .append(indent).append("    else if (remaining == 1)\n")
             .append(indent).append("    {\n");
 
-        final AccessOrderModel.CodecInteraction selectLastElementInGroup =
-            accessOrderModel.interactionFactory().moveToLastElement(token);
+        final FieldPrecedenceModel.CodecInteraction selectLastElementInGroup =
+            fieldPrecedenceModel.interactionFactory().moveToLastElement(token);
 
         generateAccessOrderListener(
             sb,
             indent + "        ",
             "access next element in repeating group",
-            accessOrderModel,
+            fieldPrecedenceModel,
             selectLastElementInGroup);
 
         sb.append(indent).append("    }\n")
@@ -660,11 +697,11 @@ public class JavaGenerator implements CodeGenerator
 
     private static void generateAccessOrderListenerMethodForResetGroupCount(
         final StringBuilder sb,
-        final AccessOrderModel accessOrderModel,
+        final FieldPrecedenceModel fieldPrecedenceModel,
         final String indent,
         final Token token)
     {
-        if (null == accessOrderModel)
+        if (null == fieldPrecedenceModel)
         {
             return;
         }
@@ -672,14 +709,14 @@ public class JavaGenerator implements CodeGenerator
         sb.append(indent).append("private void onResetCountToIndex()\n")
             .append(indent).append("{\n");
 
-        final AccessOrderModel.CodecInteraction resetCountToIndex =
-            accessOrderModel.interactionFactory().resetCountToIndex(token);
+        final FieldPrecedenceModel.CodecInteraction resetCountToIndex =
+            fieldPrecedenceModel.interactionFactory().resetCountToIndex(token);
 
         generateAccessOrderListener(
             sb,
             indent + "   ",
             "reset count of repeating group",
-            accessOrderModel,
+            fieldPrecedenceModel,
             resetCountToIndex);
 
         sb.append(indent).append("}\n\n");
@@ -687,11 +724,11 @@ public class JavaGenerator implements CodeGenerator
 
     private static void generateAccessOrderListenerMethodForVarDataLength(
         final StringBuilder sb,
-        final AccessOrderModel accessOrderModel,
+        final FieldPrecedenceModel fieldPrecedenceModel,
         final String indent,
         final Token token)
     {
-        if (null == accessOrderModel)
+        if (null == fieldPrecedenceModel)
         {
             return;
         }
@@ -700,24 +737,24 @@ public class JavaGenerator implements CodeGenerator
             .append(indent).append("void ").append(accessOrderListenerMethodName(token, "Length")).append("()\n")
             .append(indent).append("{\n");
 
-        final AccessOrderModel.CodecInteraction accessLength =
-            accessOrderModel.interactionFactory().accessVarDataLength(token);
+        final FieldPrecedenceModel.CodecInteraction accessLength =
+            fieldPrecedenceModel.interactionFactory().accessVarDataLength(token);
 
         generateAccessOrderListener(
             sb,
             indent + INDENT,
             "decode length of var data",
-            accessOrderModel,
+            fieldPrecedenceModel,
             accessLength);
 
         sb.append(indent).append("}\n");
     }
 
     private static CharSequence generateDecoderWrapListener(
-        final AccessOrderModel accessOrderModel,
+        final FieldPrecedenceModel fieldPrecedenceModel,
         final String indent)
     {
-        if (null == accessOrderModel)
+        if (null == fieldPrecedenceModel)
         {
             return "";
         }
@@ -728,7 +765,7 @@ public class JavaGenerator implements CodeGenerator
             .append(indent).append("    switch(actingVersion)\n")
             .append(indent).append("    {\n");
 
-        accessOrderModel.forEachWrappedStateByVersion((version, state) ->
+        fieldPrecedenceModel.forEachWrappedStateByVersion((version, state) ->
         {
             sb.append(indent).append("        case ").append(version).append(":\n")
                 .append(indent).append("            codecState(")
@@ -738,7 +775,7 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append(indent).append("        default:\n")
             .append(indent).append("            codecState(")
-            .append(qualifiedStateCase(accessOrderModel.latestVersionWrappedState())).append(");\n")
+            .append(qualifiedStateCase(fieldPrecedenceModel.latestVersionWrappedState())).append(");\n")
             .append(indent).append("            break;\n")
             .append(indent).append("    }\n")
             .append(indent).append("}\n\n");
@@ -747,19 +784,19 @@ public class JavaGenerator implements CodeGenerator
     }
 
     private CharSequence generateEncoderWrapListener(
-        final AccessOrderModel accessOrderModel,
+        final FieldPrecedenceModel fieldPrecedenceModel,
         final String indent)
     {
-        if (null == accessOrderModel)
+        if (null == fieldPrecedenceModel)
         {
             return "";
         }
 
         final StringBuilder sb = new StringBuilder();
-        sb.append(indent).append("if (").append(AccessOrderModel.PRECEDENCE_CHECKS_FLAG_NAME).append(")")
+        sb.append(indent).append("if (").append(precedenceChecksFlagName).append(")")
             .append("\n").append(indent).append("{\n")
             .append(indent).append("    codecState(")
-            .append(qualifiedStateCase(accessOrderModel.latestVersionWrappedState()))
+            .append(qualifiedStateCase(fieldPrecedenceModel.latestVersionWrappedState()))
             .append(");\n")
             .append(indent).append("}\n\n");
         return sb;
@@ -770,7 +807,8 @@ public class JavaGenerator implements CodeGenerator
         final List<Token> fields,
         final List<Token> groups,
         final List<Token> varData,
-        final boolean hasVarData)
+        final boolean hasVarData,
+        final FieldPrecedenceModel fieldPrecedenceModel)
         throws IOException
     {
         final String className = formatClassName(decoderName(msgToken.name()));
@@ -784,20 +822,15 @@ public class JavaGenerator implements CodeGenerator
             {
                 generateAnnotations(BASE_INDENT, className, groups, out, this::decoderName);
             }
-            out.append(generateDeclaration(className, implementsString, msgToken));
 
-            AccessOrderModel accessOrderModel = null;
-            if (AccessOrderModel.generateAccessOrderChecks())
-            {
-                accessOrderModel = AccessOrderModel.newInstance(msgToken, fields, groups, varData, Function.identity());
-            }
-            out.append(generateFieldOrderStates(accessOrderModel));
-            out.append(generateDecoderFlyweightCode(accessOrderModel, className, msgToken));
+            out.append(generateDeclaration(className, implementsString, msgToken));
+            out.append(generateFieldOrderStates(fieldPrecedenceModel));
+            out.append(generateDecoderFlyweightCode(fieldPrecedenceModel, className, msgToken));
 
             final StringBuilder sb = new StringBuilder();
-            generateDecoderFields(sb, accessOrderModel, fields, BASE_INDENT);
-            generateDecoderGroups(sb, accessOrderModel, className, groups, BASE_INDENT, false);
-            generateDecoderVarData(sb, accessOrderModel, varData, BASE_INDENT);
+            generateDecoderFields(sb, fieldPrecedenceModel, fields, BASE_INDENT);
+            generateDecoderGroups(sb, fieldPrecedenceModel, className, groups, BASE_INDENT, false);
+            generateDecoderVarData(sb, fieldPrecedenceModel, varData, BASE_INDENT);
 
             generateDecoderDisplay(sb, msgToken.name(), fields, groups, varData);
             generateMessageLength(sb, className, true, groups, varData, BASE_INDENT);
@@ -809,7 +842,7 @@ public class JavaGenerator implements CodeGenerator
 
     private void generateDecoderGroups(
         final StringBuilder sb,
-        final AccessOrderModel accessOrderModel, final String outerClassName,
+        final FieldPrecedenceModel fieldPrecedenceModel, final String outerClassName,
         final List<Token> tokens,
         final String indent,
         final boolean isSubGroup) throws IOException
@@ -838,19 +871,19 @@ public class JavaGenerator implements CodeGenerator
             final List<Token> varData = new ArrayList<>();
             i = collectVarData(tokens, i, varData);
 
-            generateGroupDecoderProperty(sb, groupName, accessOrderModel, groupToken, indent, isSubGroup);
+            generateGroupDecoderProperty(sb, groupName, fieldPrecedenceModel, groupToken, indent, isSubGroup);
             generateTypeJavadoc(sb, indent + INDENT, groupToken);
 
             if (shouldGenerateGroupOrderAnnotation)
             {
                 generateAnnotations(indent + INDENT, groupName, groups, sb, this::decoderName);
             }
-            generateGroupDecoderClassHeader(sb, groupName, outerClassName, accessOrderModel, groupToken,
+            generateGroupDecoderClassHeader(sb, groupName, outerClassName, fieldPrecedenceModel, groupToken,
                 tokens, groups, index, indent + INDENT);
 
-            generateDecoderFields(sb, accessOrderModel, fields, indent + INDENT);
-            generateDecoderGroups(sb, accessOrderModel, outerClassName, groups, indent + INDENT, true);
-            generateDecoderVarData(sb, accessOrderModel, varData, indent + INDENT);
+            generateDecoderFields(sb, fieldPrecedenceModel, fields, indent + INDENT);
+            generateDecoderGroups(sb, fieldPrecedenceModel, outerClassName, groups, indent + INDENT, true);
+            generateDecoderVarData(sb, fieldPrecedenceModel, varData, indent + INDENT);
 
             appendGroupInstanceDecoderDisplay(sb, fields, groups, varData, indent + INDENT);
             generateMessageLength(sb, groupName, false, groups, varData, indent + INDENT);
@@ -862,7 +895,7 @@ public class JavaGenerator implements CodeGenerator
     private void generateEncoderGroups(
         final StringBuilder sb,
         final String outerClassName,
-        final AccessOrderModel accessOrderModel,
+        final FieldPrecedenceModel fieldPrecedenceModel,
         final List<Token> tokens,
         final String indent,
         final boolean isSubGroup) throws IOException
@@ -892,7 +925,7 @@ public class JavaGenerator implements CodeGenerator
             final List<Token> varData = new ArrayList<>();
             i = collectVarData(tokens, i, varData);
 
-            generateGroupEncoderProperty(sb, groupName, accessOrderModel, groupToken, indent, isSubGroup);
+            generateGroupEncoderProperty(sb, groupName, fieldPrecedenceModel, groupToken, indent, isSubGroup);
             generateTypeJavadoc(sb, indent + INDENT, groupToken);
 
             if (shouldGenerateGroupOrderAnnotation)
@@ -900,11 +933,12 @@ public class JavaGenerator implements CodeGenerator
                 generateAnnotations(indent + INDENT, groupClassName, groups, sb, this::encoderName);
             }
             generateGroupEncoderClassHeader(
-                sb, groupName, outerClassName, accessOrderModel, groupToken, tokens, groups, index, indent + INDENT);
+                sb, groupName, outerClassName, fieldPrecedenceModel, groupToken,
+                tokens, groups, index, indent + INDENT);
 
-            generateEncoderFields(sb, groupClassName, accessOrderModel, fields, indent + INDENT);
-            generateEncoderGroups(sb, outerClassName, accessOrderModel, groups, indent + INDENT, true);
-            generateEncoderVarData(sb, groupClassName, accessOrderModel, varData, indent + INDENT);
+            generateEncoderFields(sb, groupClassName, fieldPrecedenceModel, fields, indent + INDENT);
+            generateEncoderGroups(sb, outerClassName, fieldPrecedenceModel, groups, indent + INDENT, true);
+            generateEncoderVarData(sb, groupClassName, fieldPrecedenceModel, varData, indent + INDENT);
 
             sb.append(indent).append("    }\n");
         }
@@ -914,7 +948,7 @@ public class JavaGenerator implements CodeGenerator
         final StringBuilder sb,
         final String groupName,
         final String parentMessageClassName,
-        final AccessOrderModel accessOrderModel,
+        final FieldPrecedenceModel fieldPrecedenceModel,
         final Token groupToken,
         final List<Token> tokens,
         final List<Token> subGroupTokens,
@@ -963,7 +997,7 @@ public class JavaGenerator implements CodeGenerator
             .append(indent).append("    }\n\n");
 
 
-        generateAccessOrderListenerMethodForNextGroupElement(sb, accessOrderModel, indent + "    ", groupToken);
+        generateAccessOrderListenerMethodForNextGroupElement(sb, fieldPrecedenceModel, indent + "    ", groupToken);
 
         sb.append(indent).append("    public ").append(className).append(" next()\n")
             .append(indent).append("    {\n")
@@ -971,7 +1005,7 @@ public class JavaGenerator implements CodeGenerator
             .append(indent).append("        {\n")
             .append(indent).append("            throw new java.util.NoSuchElementException();\n")
             .append(indent).append("        }\n\n")
-            .append(generateAccessOrderListenerCall(accessOrderModel, indent + "        ", "onNextElementAccessed"))
+            .append(generateAccessOrderListenerCall(fieldPrecedenceModel, indent + "        ", "onNextElementAccessed"))
             .append(indent).append("        offset = parentMessage.limit();\n")
             .append(indent).append("        parentMessage.limit(offset + blockLength);\n")
             .append(indent).append("        ++index;\n\n")
@@ -1020,7 +1054,7 @@ public class JavaGenerator implements CodeGenerator
             .append(indent).append("        return index < count;\n")
             .append(indent).append("    }\n");
 
-        if (null != accessOrderModel)
+        if (null != fieldPrecedenceModel)
         {
             sb.append("\n")
                 .append(indent).append("    private int codecState()\n")
@@ -1040,7 +1074,7 @@ public class JavaGenerator implements CodeGenerator
         final StringBuilder sb,
         final String groupName,
         final String parentMessageClassName,
-        final AccessOrderModel accessOrderModel,
+        final FieldPrecedenceModel fieldPrecedenceModel,
         final Token groupToken,
         final List<Token> tokens,
         final List<Token> subGroupTokens,
@@ -1102,12 +1136,12 @@ public class JavaGenerator implements CodeGenerator
             blockLengthPut,
             numInGroupPut);
 
-        generateAccessOrderListenerMethodForNextGroupElement(sb, accessOrderModel, ind + "    ", groupToken);
-        generateAccessOrderListenerMethodForResetGroupCount(sb, accessOrderModel, ind + "    ", groupToken);
+        generateAccessOrderListenerMethodForNextGroupElement(sb, fieldPrecedenceModel, ind + "    ", groupToken);
+        generateAccessOrderListenerMethodForResetGroupCount(sb, fieldPrecedenceModel, ind + "    ", groupToken);
 
         sb.append(ind).append("    public ").append(encoderName(groupName)).append(" next()\n")
             .append(ind).append("    {\n")
-            .append(generateAccessOrderListenerCall(accessOrderModel, ind + "        ", "onNextElementAccessed"))
+            .append(generateAccessOrderListenerCall(fieldPrecedenceModel, ind + "        ", "onNextElementAccessed"))
             .append(ind).append("        if (index >= count)\n")
             .append(ind).append("        {\n")
             .append(ind).append("            throw new java.util.NoSuchElementException();\n")
@@ -1124,7 +1158,7 @@ public class JavaGenerator implements CodeGenerator
 
         sb.append(ind).append("    public int resetCountToIndex()\n")
             .append(ind).append("    {\n")
-            .append(generateAccessOrderListenerCall(accessOrderModel, ind + "        ", "onResetCountToIndex"))
+            .append(generateAccessOrderListenerCall(fieldPrecedenceModel, ind + "        ", "onResetCountToIndex"))
             .append(ind).append("        count = index;\n")
             .append(ind).append("        ").append(resetCountPut).append(";\n\n")
             .append(ind).append("        return count;\n")
@@ -1150,7 +1184,7 @@ public class JavaGenerator implements CodeGenerator
             .append(ind).append("        return ").append(blockLength).append(";\n")
             .append(ind).append("    }\n");
 
-        if (null != accessOrderModel)
+        if (null != fieldPrecedenceModel)
         {
             sb.append("\n")
                 .append(ind).append("    private int codecState()\n")
@@ -1274,10 +1308,10 @@ public class JavaGenerator implements CodeGenerator
         sb.append(indent).append("    }\n");
     }
 
-    private static void generateGroupDecoderProperty(
+    private void generateGroupDecoderProperty(
         final StringBuilder sb,
         final String groupName,
-        final AccessOrderModel accessOrderModel,
+        final FieldPrecedenceModel fieldPrecedenceModel,
         final Token token,
         final String indent,
         final boolean isSubGroup)
@@ -1319,7 +1353,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "            return " + propertyName + ";\n" +
             indent + "        }\n\n";
 
-        generateAccessOrderListenerMethodForGroupWrap(sb, "decode", accessOrderModel, indent + "    ", token);
+        generateAccessOrderListenerMethodForGroupWrap(sb, "decode", fieldPrecedenceModel, indent + "    ", token);
 
         generateFlyweightPropertyJavadoc(sb, indent + INDENT, token, className);
         new Formatter(sb).format("\n" +
@@ -1333,13 +1367,13 @@ public class JavaGenerator implements CodeGenerator
             className,
             propertyName,
             actingVersionGuard,
-            generateAccessOrderListenerCall(accessOrderModel, indent + "        ", token, propertyName + ".count"));
+            generateAccessOrderListenerCall(fieldPrecedenceModel, indent + "        ", token, propertyName + ".count"));
     }
 
     private void generateGroupEncoderProperty(
         final StringBuilder sb,
         final String groupName,
-        final AccessOrderModel accessOrderModel,
+        final FieldPrecedenceModel fieldPrecedenceModel,
         final Token token,
         final String indent,
         final boolean isSubGroup)
@@ -1364,7 +1398,7 @@ public class JavaGenerator implements CodeGenerator
             formatPropertyName(groupName),
             token.id());
 
-        generateAccessOrderListenerMethodForGroupWrap(sb, "encode", accessOrderModel, indent + "    ", token);
+        generateAccessOrderListenerMethodForGroupWrap(sb, "encode", fieldPrecedenceModel, indent + "    ", token);
 
         generateGroupEncodePropertyJavadoc(sb, indent + INDENT, token, className);
         new Formatter(sb).format("\n" +
@@ -1376,12 +1410,12 @@ public class JavaGenerator implements CodeGenerator
             indent + "    }\n",
             className,
             propertyName,
-            generateAccessOrderListenerCall(accessOrderModel, indent + "        ", token, "count"));
+            generateAccessOrderListenerCall(fieldPrecedenceModel, indent + "        ", token, "count"));
     }
 
     private void generateDecoderVarData(
         final StringBuilder sb,
-        final AccessOrderModel accessOrderModel,
+        final FieldPrecedenceModel fieldPrecedenceModel,
         final List<Token> tokens,
         final String indent)
     {
@@ -1414,12 +1448,12 @@ public class JavaGenerator implements CodeGenerator
                 .append(indent).append("        return ").append(sizeOfLengthField).append(";\n")
                 .append(indent).append("    }\n");
 
-            generateAccessOrderListenerMethodForVarDataLength(sb, accessOrderModel, indent + "    ", token);
+            generateAccessOrderListenerMethodForVarDataLength(sb, fieldPrecedenceModel, indent + "    ", token);
 
             final CharSequence lengthAccessOrderListenerCall = generateAccessOrderListenerCall(
-                accessOrderModel, indent + "        ", accessOrderListenerMethodName(token, "Length"));
+                fieldPrecedenceModel, indent + "        ", accessOrderListenerMethodName(token, "Length"));
 
-            generateAccessOrderListenerMethod(sb, accessOrderModel, indent + "    ", token);
+            generateAccessOrderListenerMethod(sb, fieldPrecedenceModel, indent + "    ", token);
 
             sb.append("\n")
                 .append(indent).append("    public int ").append(methodPropName).append("Length()\n")
@@ -1432,7 +1466,7 @@ public class JavaGenerator implements CodeGenerator
                 .append(indent).append("    }\n");
 
             final CharSequence accessOrderListenerCall =
-                generateAccessOrderListenerCall(accessOrderModel, indent + "        ", token);
+                generateAccessOrderListenerCall(fieldPrecedenceModel, indent + "        ", token);
 
             generateDataDecodeMethods(sb, token, propertyName, sizeOfLengthField, lengthType,
                 byteOrderStr, characterEncoding, accessOrderListenerCall, indent);
@@ -1444,7 +1478,7 @@ public class JavaGenerator implements CodeGenerator
     private void generateEncoderVarData(
         final StringBuilder sb,
         final String className,
-        final AccessOrderModel accessOrderModel,
+        final FieldPrecedenceModel fieldPrecedenceModel,
         final List<Token> tokens,
         final String indent)
     {
@@ -1477,9 +1511,9 @@ public class JavaGenerator implements CodeGenerator
                 .append(sizeOfLengthField).append(";\n")
                 .append(indent).append("    }\n");
 
-            generateAccessOrderListenerMethod(sb, accessOrderModel, indent + "    ", token);
+            generateAccessOrderListenerMethod(sb, fieldPrecedenceModel, indent + "    ", token);
             final CharSequence accessOrderListenerCall =
-                generateAccessOrderListenerCall(accessOrderModel, indent + "        ", token);
+                generateAccessOrderListenerCall(fieldPrecedenceModel, indent + "        ", token);
 
             generateDataEncodeMethods(
                 sb,
@@ -3357,7 +3391,7 @@ public class JavaGenerator implements CodeGenerator
     }
 
     private CharSequence generateDecoderFlyweightCode(
-        final AccessOrderModel accessOrderModel,
+        final FieldPrecedenceModel fieldPrecedenceModel,
         final String className,
         final Token token)
     {
@@ -3365,7 +3399,7 @@ public class JavaGenerator implements CodeGenerator
 
         final StringBuilder methods = new StringBuilder();
 
-        methods.append(generateDecoderWrapListener(accessOrderModel, "    "));
+        methods.append(generateDecoderWrapListener(fieldPrecedenceModel, "    "));
 
         methods.append("    public ").append(className).append(" wrap(\n")
             .append("        final ").append(readOnlyBuffer).append(" buffer,\n")
@@ -3382,7 +3416,7 @@ public class JavaGenerator implements CodeGenerator
             .append("        this.actingBlockLength = actingBlockLength;\n")
             .append("        this.actingVersion = actingVersion;\n")
             .append("        limit(offset + actingBlockLength);\n\n")
-            .append(generateAccessOrderListenerCall(accessOrderModel, "        ", "onWrap", "actingVersion"))
+            .append(generateAccessOrderListenerCall(fieldPrecedenceModel, "        ", "onWrap", "actingVersion"))
             .append("        return this;\n")
             .append("    }\n\n");
 
@@ -3413,7 +3447,7 @@ public class JavaGenerator implements CodeGenerator
             .append("    {\n")
             .append("        final int currentLimit = limit();\n");
 
-        if (null != accessOrderModel)
+        if (null != fieldPrecedenceModel)
         {
             methods.append("        final int currentCodecState = codecState();\n");
         }
@@ -3423,9 +3457,9 @@ public class JavaGenerator implements CodeGenerator
             .append("        final int decodedLength = encodedLength();\n")
             .append("        limit(currentLimit);\n\n");
 
-        if (null != accessOrderModel)
+        if (null != fieldPrecedenceModel)
         {
-            methods.append("        if (").append(AccessOrderModel.PRECEDENCE_CHECKS_FLAG_NAME).append(")\n")
+            methods.append("        if (").append(precedenceChecksFlagName).append(")\n")
                 .append("        {\n")
                 .append("            codecState(currentCodecState);\n")
                 .append("        }\n\n");
@@ -3547,7 +3581,7 @@ public class JavaGenerator implements CodeGenerator
 
     private CharSequence generateEncoderFlyweightCode(
         final String className,
-        final AccessOrderModel accessOrderModel,
+        final FieldPrecedenceModel fieldPrecedenceModel,
         final Token token)
     {
         final String wrapMethod =
@@ -3560,7 +3594,7 @@ public class JavaGenerator implements CodeGenerator
             "        this.initialOffset = offset;\n" +
             "        this.offset = offset;\n" +
             "        limit(offset + BLOCK_LENGTH);\n\n" +
-            generateEncoderWrapListener(accessOrderModel, "        ") +
+            generateEncoderWrapListener(fieldPrecedenceModel, "        ") +
             "        return this;\n" +
             "    }\n\n";
 
@@ -3611,7 +3645,7 @@ public class JavaGenerator implements CodeGenerator
     private void generateEncoderFields(
         final StringBuilder sb,
         final String containingClassName,
-        final AccessOrderModel accessOrderModel,
+        final FieldPrecedenceModel fieldPrecedenceModel,
         final List<Token> tokens,
         final String indent)
     {
@@ -3627,9 +3661,9 @@ public class JavaGenerator implements CodeGenerator
                 generateEncodingOffsetMethod(sb, propertyName, fieldToken.offset(), indent);
                 generateEncodingLengthMethod(sb, propertyName, typeToken.encodedLength(), indent);
                 generateFieldMetaAttributeMethod(sb, fieldToken, indent);
-                generateAccessOrderListenerMethod(sb, accessOrderModel, indent + "    ", fieldToken);
+                generateAccessOrderListenerMethod(sb, fieldPrecedenceModel, indent + "    ", fieldToken);
                 final CharSequence accessOrderListenerCall = generateAccessOrderListenerCall(
-                    accessOrderModel, indent + "        ", fieldToken);
+                    fieldPrecedenceModel, indent + "        ", fieldToken);
 
                 switch (typeToken.signal())
                 {
@@ -3663,7 +3697,7 @@ public class JavaGenerator implements CodeGenerator
 
     private void generateDecoderFields(
         final StringBuilder sb,
-        final AccessOrderModel accessOrderModel,
+        final FieldPrecedenceModel fieldPrecedenceModel,
         final List<Token> tokens,
         final String indent)
     {
@@ -3680,9 +3714,9 @@ public class JavaGenerator implements CodeGenerator
                 generateEncodingLengthMethod(sb, propertyName, typeToken.encodedLength(), indent);
                 generateFieldMetaAttributeMethod(sb, fieldToken, indent);
 
-                generateAccessOrderListenerMethod(sb, accessOrderModel, indent + "    ", fieldToken);
+                generateAccessOrderListenerMethod(sb, fieldPrecedenceModel, indent + "    ", fieldToken);
                 final CharSequence accessOrderListenerCall = generateAccessOrderListenerCall(
-                    accessOrderModel, indent + "        ", fieldToken);
+                    fieldPrecedenceModel, indent + "        ", fieldToken);
 
                 switch (typeToken.signal())
                 {

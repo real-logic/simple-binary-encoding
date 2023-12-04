@@ -15,6 +15,7 @@
  */
 package uk.co.real_logic.sbe.generation;
 
+import uk.co.real_logic.sbe.generation.common.PrecedenceChecks;
 import uk.co.real_logic.sbe.generation.java.JavaOutputManager;
 import uk.co.real_logic.sbe.generation.c.CGenerator;
 import uk.co.real_logic.sbe.generation.c.COutputManager;
@@ -53,6 +54,7 @@ public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
                 "true".equals(System.getProperty(JAVA_GENERATE_INTERFACES)),
                 "true".equals(System.getProperty(DECODE_UNKNOWN_ENUM_VALUES)),
                 "true".equals(System.getProperty(TYPES_PACKAGE_OVERRIDE)),
+                PrecedenceChecks.newInstance(new PrecedenceChecks.Context()),
                 new JavaOutputManager(outputDir, ir.applicableNamespace()));
         }
     },
@@ -84,6 +86,7 @@ public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
             return new CppGenerator(
                 ir,
                 "true".equals(System.getProperty(DECODE_UNKNOWN_ENUM_VALUES)),
+                PrecedenceChecks.newInstance(new PrecedenceChecks.Context()),
                 new NamespaceOutputManager(outputDir, ir.applicableNamespace()));
         }
     },

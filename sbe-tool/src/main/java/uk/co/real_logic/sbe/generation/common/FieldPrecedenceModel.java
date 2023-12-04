@@ -38,47 +38,18 @@ import static uk.co.real_logic.sbe.ir.GenerationUtil.collectVarData;
 @SuppressWarnings("CodeBlock2Expr")
 // Lambdas without braces tend to conflict with the indentation Checkstyle expects.
 // Therefore, we allow lambdas with code blocks even when a lambda expression is possible.
-public final class AccessOrderModel
+public final class FieldPrecedenceModel
 {
-    /**
-     * Whether to generate access order checks.
-     */
-    private static final boolean GENERATE_ACCESS_ORDER_CHECKS = Boolean.parseBoolean(
-        System.getProperty("sbe.generate.precedence.checks", "false"));
-
-    /**
-     * The name of the symbol or macro that enables access order checks when building
-     * generated C# or C++ code.
-     */
-    public static final String PRECEDENCE_CHECKS_FLAG_NAME =
-        System.getProperty("sbe.precedence.checks.flagName", "SBE_ENABLE_PRECEDENCE_CHECKS");
-
-    /**
-     * The name of the system property that enables access order checks at runtime
-     * in generated Java code.
-     */
-    public static final String PRECEDENCE_CHECKS_PROP_NAME =
-        System.getProperty("sbe.precedence.checks.propName", "sbe.enable.precedence.checks");
-
     private final Map<Token, String> groupPathsByField = new HashMap<>();
     private final Set<Token> topLevelBlockFields = new HashSet<>();
-    private final CodecInteraction.HashConsingFactory interactionFactory =
-        new CodecInteraction.HashConsingFactory(groupPathsByField, topLevelBlockFields);
+    private final CodecInteraction.CodecInteractionFactory interactionFactory =
+        new CodecInteraction.CodecInteractionFactory(groupPathsByField, topLevelBlockFields);
     private final Map<CodecInteraction, List<TransitionGroup>> transitionsByInteraction = new LinkedHashMap<>();
     private final Map<State, List<TransitionGroup>> transitionsByState = new HashMap<>();
     private final Int2ObjectHashMap<State> versionWrappedStates = new Int2ObjectHashMap<>();
     private final State notWrappedState = allocateState("NOT_WRAPPED");
     private State encoderWrappedState;
     private Set<State> terminalEncoderStates;
-
-    /**
-     * Whether to generate access order checks.
-     * @return whether to generate access order checks.
-     */
-    public static boolean generateAccessOrderChecks()
-    {
-        return GENERATE_ACCESS_ORDER_CHECKS;
-    }
 
     /**
      * Builds a state machine that models whether codec interactions are safe.
@@ -90,14 +61,14 @@ public final class AccessOrderModel
      * @param versionsSelector a function that selects the versions to model in the state machine
      * @return the access order model
      */
-    public static AccessOrderModel newInstance(
+    public static FieldPrecedenceModel newInstance(
         final Token msgToken,
         final List<Token> fields,
         final List<Token> groups,
         final List<Token> varData,
         final Function<IntStream, IntStream> versionsSelector)
     {
-        final AccessOrderModel model = new AccessOrderModel();
+        final FieldPrecedenceModel model = new FieldPrecedenceModel();
         model.findTransitions(msgToken, fields, groups, varData, versionsSelector);
         return model;
     }
@@ -178,7 +149,7 @@ public final class AccessOrderModel
      * @see CodecInteraction
      * @return a hash-consing factory for codec interactions.
      */
-    public CodecInteraction.HashConsingFactory interactionFactory()
+    public CodecInteraction.CodecInteractionFactory interactionFactory()
     {
         return interactionFactory;
     }
@@ -620,7 +591,7 @@ public final class AccessOrderModel
         }
 
         /**
-         * In the scope of an {@code AccessOrderModel} instance, state numbers are contiguous
+         * In the scope of an {@code FieldPrecedenceModel} instance, state numbers are contiguous
          * and start at 0. This numbering scheme allows easy generation of lookup tables.
          * @return the state number
          */
@@ -1037,7 +1008,7 @@ public final class AccessOrderModel
          * is used to hash-cons the instances, so that they can be compared by
          * reference.
          */
-        public static final class HashConsingFactory
+        public static final class CodecInteractionFactory
         {
             private final Int2ObjectHashMap<CodecInteraction> wrapInteractions = new Int2ObjectHashMap<>();
             private final Map<Token, CodecInteraction> accessFieldInteractions = new HashMap<>();
@@ -1050,7 +1021,7 @@ public final class AccessOrderModel
             private final Map<Token, String> groupPathsByField;
             private final Set<Token> topLevelBlockFields;
 
-            HashConsingFactory(
+            CodecInteractionFactory(
                 final Map<Token, String> groupPathsByField,
                 final Set<Token> topLevelBlockFields)
             {
@@ -1161,7 +1132,6 @@ public final class AccessOrderModel
                 return moveToLastElementInteractions.computeIfAbsent(token,
                     t -> new MoveToLastElement(groupPathsByField.get(t), t));
             }
-
 
             /**
              * Find or create a {@link CodecInteraction} to represent resetting the count

@@ -18,7 +18,8 @@ package uk.co.real_logic.sbe.generation.cpp;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.generation.CodeGenerator;
 import uk.co.real_logic.sbe.generation.Generators;
-import uk.co.real_logic.sbe.generation.common.AccessOrderModel;
+import uk.co.real_logic.sbe.generation.common.FieldPrecedenceModel;
+import uk.co.real_logic.sbe.generation.common.PrecedenceChecks;
 import uk.co.real_logic.sbe.ir.Encoding;
 import uk.co.real_logic.sbe.ir.Ir;
 import uk.co.real_logic.sbe.ir.Signal;
@@ -32,7 +33,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.nio.ByteOrder;
 import java.util.*;
-import java.util.function.Function;
 
 import static uk.co.real_logic.sbe.generation.Generators.toLowerFirstChar;
 import static uk.co.real_logic.sbe.generation.Generators.toUpperFirstChar;
@@ -56,6 +56,8 @@ public class CppGenerator implements CodeGenerator
     private final Ir ir;
     private final OutputManager outputManager;
     private final boolean shouldDecodeUnknownEnumValues;
+    private final PrecedenceChecks precedenceChecks;
+    private final String precedenceChecksFlagName;
 
     /**
      * Create a new Go language {@link CodeGenerator}.
@@ -66,11 +68,35 @@ public class CppGenerator implements CodeGenerator
      */
     public CppGenerator(final Ir ir, final boolean shouldDecodeUnknownEnumValues, final OutputManager outputManager)
     {
+        this(
+            ir,
+            shouldDecodeUnknownEnumValues,
+            PrecedenceChecks.newInstance(new PrecedenceChecks.Context()),
+            outputManager
+        );
+    }
+
+    /**
+     * Create a new Go language {@link CodeGenerator}.
+     *
+     * @param ir                            for the messages and types.
+     * @param shouldDecodeUnknownEnumValues generate support for unknown enum values when decoding.
+     * @param precedenceChecks              whether and how to generate field precedence checks.
+     * @param outputManager                 for generating the codecs to.
+     */
+    public CppGenerator(
+        final Ir ir,
+        final boolean shouldDecodeUnknownEnumValues,
+        final PrecedenceChecks precedenceChecks,
+        final OutputManager outputManager)
+    {
         Verify.notNull(ir, "ir");
         Verify.notNull(outputManager, "outputManager");
 
         this.ir = ir;
         this.shouldDecodeUnknownEnumValues = shouldDecodeUnknownEnumValues;
+        this.precedenceChecks = precedenceChecks;
+        this.precedenceChecksFlagName = precedenceChecks.context().precedenceChecksFlagName();
         this.outputManager = outputManager;
     }
 
@@ -148,6 +174,7 @@ public class CppGenerator implements CodeGenerator
         {
             final Token msgToken = tokens.get(0);
             final String className = formatClassName(msgToken.name());
+            final FieldPrecedenceModel fieldPrecedenceModel = precedenceChecks.createCodecModel(tokens);
 
             try (Writer out = outputManager.createOutput(className))
             {
@@ -164,39 +191,28 @@ public class CppGenerator implements CodeGenerator
                 final List<Token> varData = new ArrayList<>();
                 collectVarData(messageBody, i, varData);
 
-                AccessOrderModel accessOrderModel = null;
-                if (AccessOrderModel.generateAccessOrderChecks())
-                {
-                    accessOrderModel = AccessOrderModel.newInstance(
-                        msgToken,
-                        fields,
-                        groups,
-                        varData,
-                        Function.identity());
-                }
-
                 out.append(generateFileHeader(ir.namespaces(), className, typesToInclude));
                 out.append(generateClassDeclaration(className));
-                out.append(generateMessageFlyweightCode(className, msgToken, accessOrderModel));
-                out.append(generateFullyEncodedCheck(accessOrderModel));
+                out.append(generateMessageFlyweightCode(className, msgToken, fieldPrecedenceModel));
+                out.append(generateFullyEncodedCheck(fieldPrecedenceModel));
 
                 final StringBuilder sb = new StringBuilder();
-                generateFields(sb, className, fields, accessOrderModel, BASE_INDENT);
-                generateGroups(sb, groups, accessOrderModel, BASE_INDENT);
-                generateVarData(sb, className, varData, accessOrderModel, BASE_INDENT);
+                generateFields(sb, className, fields, fieldPrecedenceModel, BASE_INDENT);
+                generateGroups(sb, groups, fieldPrecedenceModel, BASE_INDENT);
+                generateVarData(sb, className, varData, fieldPrecedenceModel, BASE_INDENT);
                 generateDisplay(sb, msgToken.name(), fields, groups, varData);
                 sb.append(generateMessageLength(groups, varData, BASE_INDENT));
                 sb.append("};\n");
-                generateLookupTableDefinitions(sb, className, accessOrderModel);
+                generateLookupTableDefinitions(sb, className, fieldPrecedenceModel);
                 sb.append(CppUtil.closingBraces(ir.namespaces().length)).append("#endif\n");
                 out.append(sb);
             }
         }
     }
 
-    private static CharSequence generateFullyEncodedCheck(final AccessOrderModel accessOrderModel)
+    private CharSequence generateFullyEncodedCheck(final FieldPrecedenceModel fieldPrecedenceModel)
     {
-        if (null == accessOrderModel)
+        if (null == fieldPrecedenceModel)
         {
             return "";
         }
@@ -207,11 +223,11 @@ public class CppGenerator implements CodeGenerator
 
         sb.append(indent).append("void checkEncodingIsComplete()\n")
             .append(indent).append("{\n")
-            .append("#if defined(").append(AccessOrderModel.PRECEDENCE_CHECKS_FLAG_NAME).append(")\n")
+            .append("#if defined(").append(precedenceChecksFlagName).append(")\n")
             .append(indent).append(INDENT).append("switch (m_codecState)\n")
             .append(indent).append(INDENT).append("{\n");
 
-        accessOrderModel.forEachTerminalEncoderState(state ->
+        fieldPrecedenceModel.forEachTerminalEncoderState(state ->
         {
             sb.append(indent).append(TWO_INDENT).append("case ").append(stateCaseForSwitchCase(state)).append(":\n")
                 .append(indent).append(THREE_INDENT).append("return;\n");
@@ -244,19 +260,19 @@ public class CppGenerator implements CodeGenerator
 
     private static void generateAccessOrderListenerMethod(
         final StringBuilder sb,
-        final AccessOrderModel accessOrderModel,
+        final FieldPrecedenceModel fieldPrecedenceModel,
         final String indent,
         final Token token)
     {
-        if (null == accessOrderModel)
+        if (null == fieldPrecedenceModel)
         {
             return;
         }
 
-        final AccessOrderModel.CodecInteraction fieldAccess =
-            accessOrderModel.interactionFactory().accessField(token);
+        final FieldPrecedenceModel.CodecInteraction fieldAccess =
+            fieldPrecedenceModel.interactionFactory().accessField(token);
 
-        final String constDeclaration = canChangeState(accessOrderModel, fieldAccess) ? "" : " const";
+        final String constDeclaration = canChangeState(fieldPrecedenceModel, fieldAccess) ? "" : " const";
 
         sb.append("\n")
             .append(indent).append("private:\n")
@@ -268,7 +284,7 @@ public class CppGenerator implements CodeGenerator
             sb,
             indent + TWO_INDENT,
             "access field",
-            accessOrderModel,
+            fieldPrecedenceModel,
             fieldAccess);
 
         sb.append(indent).append(INDENT).append("}\n\n")
@@ -276,8 +292,8 @@ public class CppGenerator implements CodeGenerator
     }
 
     private static boolean canChangeState(
-        final AccessOrderModel accessOrderModel,
-        final AccessOrderModel.CodecInteraction fieldAccess)
+        final FieldPrecedenceModel fieldPrecedenceModel,
+        final FieldPrecedenceModel.CodecInteraction fieldAccess)
     {
         if (fieldAccess.isTopLevelBlockFieldAccess())
         {
@@ -285,7 +301,7 @@ public class CppGenerator implements CodeGenerator
         }
 
         final MutableBoolean canChangeState = new MutableBoolean(false);
-        accessOrderModel.forEachTransition(fieldAccess, transition ->
+        fieldPrecedenceModel.forEachTransition(fieldAccess, transition ->
         {
             if (!transition.alwaysEndsInStartState())
             {
@@ -296,32 +312,32 @@ public class CppGenerator implements CodeGenerator
         return canChangeState.get();
     }
 
-    private static CharSequence generateAccessOrderListenerCall(
-        final AccessOrderModel accessOrderModel,
+    private CharSequence generateAccessOrderListenerCall(
+        final FieldPrecedenceModel fieldPrecedenceModel,
         final String indent,
         final Token token,
         final String... arguments)
     {
         return generateAccessOrderListenerCall(
-            accessOrderModel,
+            fieldPrecedenceModel,
             indent,
             accessOrderListenerMethodName(token),
             arguments);
     }
 
-    private static CharSequence generateAccessOrderListenerCall(
-        final AccessOrderModel accessOrderModel,
+    private CharSequence generateAccessOrderListenerCall(
+        final FieldPrecedenceModel fieldPrecedenceModel,
         final String indent,
         final String methodName,
         final String... arguments)
     {
-        if (null == accessOrderModel)
+        if (null == fieldPrecedenceModel)
         {
             return "";
         }
 
         final StringBuilder sb = new StringBuilder();
-        sb.append("#if defined(").append(AccessOrderModel.PRECEDENCE_CHECKS_FLAG_NAME).append(")\n")
+        sb.append("#if defined(").append(precedenceChecksFlagName).append(")\n")
             .append(indent).append(methodName).append("(");
 
         for (int i = 0; i < arguments.length; i++)
@@ -341,11 +357,11 @@ public class CppGenerator implements CodeGenerator
 
     private static void generateAccessOrderListenerMethodForGroupWrap(
         final StringBuilder sb,
-        final AccessOrderModel accessOrderModel,
+        final FieldPrecedenceModel fieldPrecedenceModel,
         final String indent,
         final Token token)
     {
-        if (null == accessOrderModel)
+        if (null == fieldPrecedenceModel)
         {
             return;
         }
@@ -358,28 +374,28 @@ public class CppGenerator implements CodeGenerator
             .append(indent).append(TWO_INDENT).append("if (0 == remaining)\n")
             .append(indent).append(TWO_INDENT).append("{\n");
 
-        final AccessOrderModel.CodecInteraction selectEmptyGroup =
-            accessOrderModel.interactionFactory().determineGroupIsEmpty(token);
+        final FieldPrecedenceModel.CodecInteraction selectEmptyGroup =
+            fieldPrecedenceModel.interactionFactory().determineGroupIsEmpty(token);
 
         generateAccessOrderListener(
             sb,
             indent + THREE_INDENT,
             "\" + action + \" count of repeating group",
-            accessOrderModel,
+            fieldPrecedenceModel,
             selectEmptyGroup);
 
         sb.append(indent).append(TWO_INDENT).append("}\n")
             .append(indent).append(TWO_INDENT).append("else\n")
             .append(indent).append(TWO_INDENT).append("{\n");
 
-        final AccessOrderModel.CodecInteraction selectNonEmptyGroup =
-            accessOrderModel.interactionFactory().determineGroupHasElements(token);
+        final FieldPrecedenceModel.CodecInteraction selectNonEmptyGroup =
+            fieldPrecedenceModel.interactionFactory().determineGroupHasElements(token);
 
         generateAccessOrderListener(
             sb,
             indent + THREE_INDENT,
             "\" + action + \" count of repeating group",
-            accessOrderModel,
+            fieldPrecedenceModel,
             selectNonEmptyGroup);
 
         sb.append(indent).append(TWO_INDENT).append("}\n")
@@ -389,11 +405,11 @@ public class CppGenerator implements CodeGenerator
 
     private static void generateAccessOrderListenerMethodForVarDataLength(
         final StringBuilder sb,
-        final AccessOrderModel accessOrderModel,
+        final FieldPrecedenceModel fieldPrecedenceModel,
         final String indent,
         final Token token)
     {
-        if (null == accessOrderModel)
+        if (null == fieldPrecedenceModel)
         {
             return;
         }
@@ -404,14 +420,14 @@ public class CppGenerator implements CodeGenerator
             .append("() const\n")
             .append(indent).append(INDENT).append("{\n");
 
-        final AccessOrderModel.CodecInteraction accessLength =
-            accessOrderModel.interactionFactory().accessVarDataLength(token);
+        final FieldPrecedenceModel.CodecInteraction accessLength =
+            fieldPrecedenceModel.interactionFactory().accessVarDataLength(token);
 
         generateAccessOrderListener(
             sb,
             indent + TWO_INDENT,
             "decode length of var data",
-            accessOrderModel,
+            fieldPrecedenceModel,
             accessLength);
 
         sb.append(indent).append(INDENT).append("}\n\n")
@@ -422,13 +438,13 @@ public class CppGenerator implements CodeGenerator
         final StringBuilder sb,
         final String indent,
         final String action,
-        final AccessOrderModel accessOrderModel,
-        final AccessOrderModel.CodecInteraction interaction)
+        final FieldPrecedenceModel fieldPrecedenceModel,
+        final FieldPrecedenceModel.CodecInteraction interaction)
     {
         if (interaction.isTopLevelBlockFieldAccess())
         {
             sb.append(indent).append("if (codecState() == ")
-                .append(qualifiedStateCase(accessOrderModel.notWrappedState()))
+                .append(qualifiedStateCase(fieldPrecedenceModel.notWrappedState()))
                 .append(")\n")
                 .append(indent).append("{\n");
             generateAccessOrderException(sb, indent + INDENT, action, interaction);
@@ -439,7 +455,7 @@ public class CppGenerator implements CodeGenerator
             sb.append(indent).append("switch (codecState())\n")
                 .append(indent).append("{\n");
 
-            accessOrderModel.forEachTransition(interaction, transitionGroup ->
+            fieldPrecedenceModel.forEachTransition(interaction, transitionGroup ->
             {
 
                 transitionGroup.forEachStartState(startState ->
@@ -467,7 +483,7 @@ public class CppGenerator implements CodeGenerator
         final StringBuilder sb,
         final String indent,
         final String action,
-        final AccessOrderModel.CodecInteraction interaction)
+        final FieldPrecedenceModel.CodecInteraction interaction)
     {
         sb.append(indent).append("throw AccessOrderError(")
             .append("std::string(\"Illegal field access order. \") +\n")
@@ -482,11 +498,11 @@ public class CppGenerator implements CodeGenerator
 
     private static void generateAccessOrderListenerMethodForNextGroupElement(
         final StringBuilder sb,
-        final AccessOrderModel accessOrderModel,
+        final FieldPrecedenceModel fieldPrecedenceModel,
         final String indent,
         final Token token)
     {
-        if (null == accessOrderModel)
+        if (null == fieldPrecedenceModel)
         {
             return;
         }
@@ -499,28 +515,28 @@ public class CppGenerator implements CodeGenerator
             .append(indent).append(TWO_INDENT).append("if (remaining > 1)\n")
             .append(indent).append(TWO_INDENT).append("{\n");
 
-        final AccessOrderModel.CodecInteraction selectNextElementInGroup =
-            accessOrderModel.interactionFactory().moveToNextElement(token);
+        final FieldPrecedenceModel.CodecInteraction selectNextElementInGroup =
+            fieldPrecedenceModel.interactionFactory().moveToNextElement(token);
 
         generateAccessOrderListener(
             sb,
             indent + THREE_INDENT,
             "access next element in repeating group",
-            accessOrderModel,
+            fieldPrecedenceModel,
             selectNextElementInGroup);
 
         sb.append(indent).append(TWO_INDENT).append("}\n")
             .append(indent).append(TWO_INDENT).append("else if (1 == remaining)\n")
             .append(indent).append(TWO_INDENT).append("{\n");
 
-        final AccessOrderModel.CodecInteraction selectLastElementInGroup =
-            accessOrderModel.interactionFactory().moveToLastElement(token);
+        final FieldPrecedenceModel.CodecInteraction selectLastElementInGroup =
+            fieldPrecedenceModel.interactionFactory().moveToLastElement(token);
 
         generateAccessOrderListener(
             sb,
             indent + THREE_INDENT,
             "access next element in repeating group",
-            accessOrderModel,
+            fieldPrecedenceModel,
             selectLastElementInGroup);
 
         sb.append(indent).append(TWO_INDENT).append("}\n")
@@ -529,11 +545,11 @@ public class CppGenerator implements CodeGenerator
 
     private static void generateAccessOrderListenerMethodForResetGroupCount(
         final StringBuilder sb,
-        final AccessOrderModel accessOrderModel,
+        final FieldPrecedenceModel fieldPrecedenceModel,
         final String indent,
         final Token token)
     {
-        if (null == accessOrderModel)
+        if (null == fieldPrecedenceModel)
         {
             return;
         }
@@ -542,14 +558,14 @@ public class CppGenerator implements CodeGenerator
             .append(indent).append(INDENT).append("void onResetCountToIndex()\n")
             .append(indent).append(INDENT).append("{\n");
 
-        final AccessOrderModel.CodecInteraction resetCountToIndex =
-            accessOrderModel.interactionFactory().resetCountToIndex(token);
+        final FieldPrecedenceModel.CodecInteraction resetCountToIndex =
+            fieldPrecedenceModel.interactionFactory().resetCountToIndex(token);
 
         generateAccessOrderListener(
             sb,
             indent + TWO_INDENT,
             "reset count of repeating group",
-            accessOrderModel,
+            fieldPrecedenceModel,
             resetCountToIndex);
 
         sb.append(indent).append(INDENT).append("}\n");
@@ -558,7 +574,7 @@ public class CppGenerator implements CodeGenerator
     private void generateGroups(
         final StringBuilder sb,
         final List<Token> tokens,
-        final AccessOrderModel accessOrderModel,
+        final FieldPrecedenceModel fieldPrecedenceModel,
         final String indent)
     {
         for (int i = 0, size = tokens.size(); i < size; i++)
@@ -573,7 +589,7 @@ public class CppGenerator implements CodeGenerator
             final Token numInGroupToken = Generators.findFirst("numInGroup", tokens, i);
             final String cppTypeForNumInGroup = cppTypeName(numInGroupToken.encoding().primitiveType());
 
-            generateGroupClassHeader(sb, groupName, groupToken, tokens, accessOrderModel, i, indent + INDENT);
+            generateGroupClassHeader(sb, groupName, groupToken, tokens, fieldPrecedenceModel, i, indent + INDENT);
 
             ++i;
             final int groupHeaderTokenCount = tokens.get(i).componentTokenCount();
@@ -581,30 +597,30 @@ public class CppGenerator implements CodeGenerator
 
             final List<Token> fields = new ArrayList<>();
             i = collectFields(tokens, i, fields);
-            generateFields(sb, formatClassName(groupName), fields, accessOrderModel, indent + INDENT);
+            generateFields(sb, formatClassName(groupName), fields, fieldPrecedenceModel, indent + INDENT);
 
             final List<Token> groups = new ArrayList<>();
             i = collectGroups(tokens, i, groups);
-            generateGroups(sb, groups, accessOrderModel, indent + INDENT);
+            generateGroups(sb, groups, fieldPrecedenceModel, indent + INDENT);
 
             final List<Token> varData = new ArrayList<>();
             i = collectVarData(tokens, i, varData);
-            generateVarData(sb, formatClassName(groupName), varData, accessOrderModel, indent + INDENT);
+            generateVarData(sb, formatClassName(groupName), varData, fieldPrecedenceModel, indent + INDENT);
 
             sb.append(generateGroupDisplay(groupName, fields, groups, varData, indent + INDENT + INDENT));
             sb.append(generateMessageLength(groups, varData, indent + INDENT + INDENT));
 
             sb.append(indent).append("    };\n");
-            generateGroupProperty(sb, groupName, groupToken, cppTypeForNumInGroup, accessOrderModel, indent);
+            generateGroupProperty(sb, groupName, groupToken, cppTypeForNumInGroup, fieldPrecedenceModel, indent);
         }
     }
 
-    private static void generateGroupClassHeader(
+    private void generateGroupClassHeader(
         final StringBuilder sb,
         final String groupName,
         final Token groupToken,
         final List<Token> tokens,
-        final AccessOrderModel accessOrderModel,
+        final FieldPrecedenceModel fieldPrecedenceModel,
         final int index,
         final String indent)
     {
@@ -638,7 +654,7 @@ public class CppGenerator implements CodeGenerator
             indent + "    }\n\n",
             groupClassName);
 
-        if (null != accessOrderModel)
+        if (null != fieldPrecedenceModel)
         {
             new Formatter(sb).format(
                 indent + "    CodecState *m_codecStatePtr = nullptr;\n\n" +
@@ -662,11 +678,11 @@ public class CppGenerator implements CodeGenerator
 
         sb.append(generateHiddenCopyConstructor(indent + "    ", groupClassName));
 
-        final String codecStateParameter = null == accessOrderModel ?
+        final String codecStateParameter = null == fieldPrecedenceModel ?
             ")\n" :
             ",\n " + indent + "        CodecState *codecState)\n";
 
-        final String codecStateAssignment = null == accessOrderModel ?
+        final String codecStateAssignment = null == fieldPrecedenceModel ?
             "" :
             indent + "        m_codecStatePtr = codecState;\n";
 
@@ -746,7 +762,7 @@ public class CppGenerator implements CodeGenerator
 
         if (groupToken.version() > 0)
         {
-            final String codecStateNullAssignment = null == accessOrderModel ?
+            final String codecStateNullAssignment = null == fieldPrecedenceModel ?
                 "" :
                 indent + "        m_codecStatePtr = nullptr;\n";
 
@@ -767,16 +783,16 @@ public class CppGenerator implements CodeGenerator
         }
 
 
-        if (null != accessOrderModel)
+        if (null != fieldPrecedenceModel)
         {
             sb.append("\n").append(indent).append("private:");
-            generateAccessOrderListenerMethodForNextGroupElement(sb, accessOrderModel, indent, groupToken);
-            generateAccessOrderListenerMethodForResetGroupCount(sb, accessOrderModel, indent, groupToken);
+            generateAccessOrderListenerMethodForNextGroupElement(sb, fieldPrecedenceModel, indent, groupToken);
+            generateAccessOrderListenerMethodForResetGroupCount(sb, fieldPrecedenceModel, indent, groupToken);
             sb.append("\n").append(indent).append("public:");
         }
 
-        final CharSequence onNextAccessOrderCall = null == accessOrderModel ? "" :
-            generateAccessOrderListenerCall(accessOrderModel, indent + TWO_INDENT, "onNextElementAccessed");
+        final CharSequence onNextAccessOrderCall = null == fieldPrecedenceModel ? "" :
+            generateAccessOrderListenerCall(fieldPrecedenceModel, indent + TWO_INDENT, "onNextElementAccessed");
 
         new Formatter(sb).format("\n" +
             indent + "    static SBE_CONSTEXPR std::uint64_t sbeHeaderSize() SBE_NOEXCEPT\n" +
@@ -844,7 +860,7 @@ public class CppGenerator implements CodeGenerator
         sb.append("\n")
             .append(indent).append("    inline std::uint64_t resetCountToIndex()\n")
             .append(indent).append("    {\n")
-            .append(generateAccessOrderListenerCall(accessOrderModel, indent + TWO_INDENT, "onResetCountToIndex"))
+            .append(generateAccessOrderListenerCall(fieldPrecedenceModel, indent + TWO_INDENT, "onResetCountToIndex"))
             .append(indent).append("        m_count = m_index;\n")
             .append(indent).append("        ").append(dimensionsClassName)
             .append(" dimensions(m_buffer, m_initialPosition, m_bufferLength, m_actingVersion);\n")
@@ -864,12 +880,12 @@ public class CppGenerator implements CodeGenerator
             .append(indent).append("    }\n\n");
     }
 
-    private static void generateGroupProperty(
+    private void generateGroupProperty(
         final StringBuilder sb,
         final String groupName,
         final Token token,
         final String cppTypeForNumInGroup,
-        final AccessOrderModel accessOrderModel,
+        final FieldPrecedenceModel fieldPrecedenceModel,
         final String indent)
     {
         final String className = formatClassName(groupName);
@@ -891,20 +907,20 @@ public class CppGenerator implements CodeGenerator
             groupName,
             token.id());
 
-        if (null != accessOrderModel)
+        if (null != fieldPrecedenceModel)
         {
             generateAccessOrderListenerMethodForGroupWrap(
                 sb,
-                accessOrderModel,
+                fieldPrecedenceModel,
                 indent,
                 token
             );
         }
 
-        final String codecStateArgument = null == accessOrderModel ? "" : ", codecStatePtr()";
+        final String codecStateArgument = null == fieldPrecedenceModel ? "" : ", codecStatePtr()";
 
-        final CharSequence onDecodeAccessOrderCall = null == accessOrderModel ? "" :
-            generateAccessOrderListenerCall(accessOrderModel, indent + TWO_INDENT, token,
+        final CharSequence onDecodeAccessOrderCall = null == fieldPrecedenceModel ? "" :
+            generateAccessOrderListenerCall(fieldPrecedenceModel, indent + TWO_INDENT, token,
             "m_" + propertyName + ".count()", "\"decode\"");
 
         if (token.version() > 0)
@@ -945,8 +961,8 @@ public class CppGenerator implements CodeGenerator
                 onDecodeAccessOrderCall);
         }
 
-        final CharSequence onEncodeAccessOrderCall = null == accessOrderModel ? "" :
-            generateAccessOrderListenerCall(accessOrderModel, indent + TWO_INDENT, token, "count", "\"encode\"");
+        final CharSequence onEncodeAccessOrderCall = null == fieldPrecedenceModel ? "" :
+            generateAccessOrderListenerCall(fieldPrecedenceModel, indent + TWO_INDENT, token, "count", "\"encode\"");
 
         new Formatter(sb).format("\n" +
             indent + "    %1$s &%2$sCount(const %3$s count)\n" +
@@ -983,7 +999,7 @@ public class CppGenerator implements CodeGenerator
         final StringBuilder sb,
         final String className,
         final List<Token> tokens,
-        final AccessOrderModel accessOrderModel,
+        final FieldPrecedenceModel fieldPrecedenceModel,
         final String indent)
     {
         for (int i = 0, size = tokens.size(); i < size;)
@@ -1008,10 +1024,10 @@ public class CppGenerator implements CodeGenerator
             generateVarDataDescriptors(
                 sb, token, propertyName, characterEncoding, lengthOfLengthField, indent);
 
-            generateAccessOrderListenerMethodForVarDataLength(sb, accessOrderModel, indent, token);
+            generateAccessOrderListenerMethodForVarDataLength(sb, fieldPrecedenceModel, indent, token);
 
             final CharSequence lengthAccessListenerCall = generateAccessOrderListenerCall(
-                accessOrderModel, indent + TWO_INDENT,
+                fieldPrecedenceModel, indent + TWO_INDENT,
                 accessOrderListenerMethodName(token, "Length"));
 
             new Formatter(sb).format("\n" +
@@ -1029,10 +1045,10 @@ public class CppGenerator implements CodeGenerator
                 lengthCppType,
                 lengthAccessListenerCall);
 
-            generateAccessOrderListenerMethod(sb, accessOrderModel, indent, token);
+            generateAccessOrderListenerMethod(sb, fieldPrecedenceModel, indent, token);
 
             final CharSequence accessOrderListenerCall =
-                generateAccessOrderListenerCall(accessOrderModel, indent + TWO_INDENT, token);
+                generateAccessOrderListenerCall(fieldPrecedenceModel, indent + TWO_INDENT, token);
 
             new Formatter(sb).format("\n" +
                 indent + "    std::uint64_t skip%1$s()\n" +
@@ -1808,7 +1824,7 @@ public class CppGenerator implements CodeGenerator
         final String propertyName,
         final Token propertyToken,
         final Token encodingToken,
-        final AccessOrderModel accessOrderModel,
+        final FieldPrecedenceModel fieldPrecedenceModel,
         final String indent)
     {
         generatePrimitiveFieldMetaData(sb, propertyName, encodingToken, indent);
@@ -1820,7 +1836,7 @@ public class CppGenerator implements CodeGenerator
         else
         {
             generatePrimitivePropertyMethods(
-                sb, containingClassName, propertyName, propertyToken, encodingToken, accessOrderModel, indent);
+                sb, containingClassName, propertyName, propertyToken, encodingToken, fieldPrecedenceModel, indent);
         }
     }
 
@@ -1830,19 +1846,19 @@ public class CppGenerator implements CodeGenerator
         final String propertyName,
         final Token propertyToken,
         final Token encodingToken,
-        final AccessOrderModel accessOrderModel,
+        final FieldPrecedenceModel fieldPrecedenceModel,
         final String indent)
     {
         final int arrayLength = encodingToken.arrayLength();
         if (arrayLength == 1)
         {
             generateSingleValueProperty(sb, containingClassName, propertyName, propertyToken, encodingToken,
-                accessOrderModel, indent);
+                fieldPrecedenceModel, indent);
         }
         else if (arrayLength > 1)
         {
             generateArrayProperty(sb, containingClassName, propertyName, propertyToken, encodingToken,
-                accessOrderModel, indent);
+                fieldPrecedenceModel, indent);
         }
     }
 
@@ -1970,9 +1986,9 @@ public class CppGenerator implements CodeGenerator
         return sb;
     }
 
-    private static String noexceptDeclaration(final AccessOrderModel accessOrderModel)
+    private static String noexceptDeclaration(final FieldPrecedenceModel fieldPrecedenceModel)
     {
-        return accessOrderModel == null ? " SBE_NOEXCEPT" : "";
+        return fieldPrecedenceModel == null ? " SBE_NOEXCEPT" : "";
     }
 
     private void generateSingleValueProperty(
@@ -1981,7 +1997,7 @@ public class CppGenerator implements CodeGenerator
         final String propertyName,
         final Token propertyToken,
         final Token encodingToken,
-        final AccessOrderModel accessOrderModel,
+        final FieldPrecedenceModel fieldPrecedenceModel,
         final String indent)
     {
         final PrimitiveType primitiveType = encodingToken.encoding().primitiveType();
@@ -1989,9 +2005,9 @@ public class CppGenerator implements CodeGenerator
         final int offset = encodingToken.offset();
 
         final CharSequence accessOrderListenerCall =
-            generateAccessOrderListenerCall(accessOrderModel, indent + TWO_INDENT, propertyToken);
+            generateAccessOrderListenerCall(fieldPrecedenceModel, indent + TWO_INDENT, propertyToken);
 
-        final String noexceptDeclaration = noexceptDeclaration(accessOrderModel);
+        final String noexceptDeclaration = noexceptDeclaration(fieldPrecedenceModel);
 
         new Formatter(sb).format("\n" +
             indent + "    SBE_NODISCARD %1$s %2$s() const%6$s\n" +
@@ -2031,7 +2047,7 @@ public class CppGenerator implements CodeGenerator
         final String propertyName,
         final Token propertyToken,
         final Token encodingToken,
-        final AccessOrderModel accessOrderModel,
+        final FieldPrecedenceModel fieldPrecedenceModel,
         final String indent)
     {
         final PrimitiveType primitiveType = encodingToken.encoding().primitiveType();
@@ -2039,9 +2055,9 @@ public class CppGenerator implements CodeGenerator
         final int offset = encodingToken.offset();
 
         final CharSequence accessOrderListenerCall =
-            generateAccessOrderListenerCall(accessOrderModel, indent + TWO_INDENT, propertyToken);
+            generateAccessOrderListenerCall(fieldPrecedenceModel, indent + TWO_INDENT, propertyToken);
 
-        final String noexceptDeclaration = noexceptDeclaration(accessOrderModel);
+        final String noexceptDeclaration = noexceptDeclaration(fieldPrecedenceModel);
 
         final int arrayLength = encodingToken.arrayLength();
         new Formatter(sb).format("\n" +
@@ -2570,9 +2586,9 @@ public class CppGenerator implements CodeGenerator
 
     private static CharSequence generateConstructorsAndOperators(
         final String className,
-        final AccessOrderModel accessOrderModel)
+        final FieldPrecedenceModel fieldPrecedenceModel)
     {
-        final String constructorWithCodecState = null == accessOrderModel ? "" : String.format(
+        final String constructorWithCodecState = null == fieldPrecedenceModel ? "" : String.format(
             "    %1$s(\n" +
             "        char *buffer,\n" +
             "        const std::uint64_t offset,\n" +
@@ -2631,7 +2647,7 @@ public class CppGenerator implements CodeGenerator
     private CharSequence generateMessageFlyweightCode(
         final String className,
         final Token token,
-        final AccessOrderModel accessOrderModel)
+        final FieldPrecedenceModel fieldPrecedenceModel)
     {
         final String blockLengthType = cppTypeName(ir.headerStructure().blockLengthType());
         final String templateIdType = cppTypeName(ir.headerStructure().templateIdType());
@@ -2642,7 +2658,7 @@ public class CppGenerator implements CodeGenerator
         final String semanticVersion = ir.semanticVersion() == null ? "" : ir.semanticVersion();
 
 
-        final String codecStateArgument = null == accessOrderModel ? "" : ", m_codecState";
+        final String codecStateArgument = null == fieldPrecedenceModel ? "" : ", m_codecState";
 
         return String.format(
             "private:\n" +
@@ -2851,23 +2867,23 @@ public class CppGenerator implements CodeGenerator
             generateLiteral(ir.headerStructure().schemaVersionType(), Integer.toString(ir.version())),
             semanticType,
             className,
-            generateConstructorsAndOperators(className, accessOrderModel),
+            generateConstructorsAndOperators(className, fieldPrecedenceModel),
             formatClassName(headerType),
             semanticVersion,
             codecStateArgument,
-            generateFieldOrderStateEnum(accessOrderModel),
-            generateLookupTableDeclarations(accessOrderModel),
-            generateFieldOrderStateMember(accessOrderModel),
-            generateAccessOrderErrorType(accessOrderModel),
-            generateEncoderWrapListener(accessOrderModel),
-            generateDecoderWrapListener(accessOrderModel),
-            generateDecoderWrapListenerCall(accessOrderModel),
+            generateFieldOrderStateEnum(fieldPrecedenceModel),
+            generateLookupTableDeclarations(fieldPrecedenceModel),
+            generateFieldOrderStateMember(fieldPrecedenceModel),
+            generateAccessOrderErrorType(fieldPrecedenceModel),
+            generateEncoderWrapListener(fieldPrecedenceModel),
+            generateDecoderWrapListener(fieldPrecedenceModel),
+            generateDecoderWrapListenerCall(fieldPrecedenceModel),
             generateHiddenCopyConstructor("    ", className));
     }
 
-    private CharSequence generateAccessOrderErrorType(final AccessOrderModel accessOrderModel)
+    private CharSequence generateAccessOrderErrorType(final FieldPrecedenceModel fieldPrecedenceModel)
     {
-        if (null == accessOrderModel)
+        if (null == fieldPrecedenceModel)
         {
             return "";
         }
@@ -2881,19 +2897,19 @@ public class CppGenerator implements CodeGenerator
         return sb;
     }
 
-    private static CharSequence generateLookupTableDeclarations(final AccessOrderModel accessOrderModel)
+    private static CharSequence generateLookupTableDeclarations(final FieldPrecedenceModel fieldPrecedenceModel)
     {
-        if (null == accessOrderModel)
+        if (null == fieldPrecedenceModel)
         {
             return "";
         }
 
         final StringBuilder sb = new StringBuilder();
         sb.append(INDENT).append("static const std::string STATE_NAME_LOOKUP[")
-            .append(accessOrderModel.stateCount())
+            .append(fieldPrecedenceModel.stateCount())
             .append("];\n");
         sb.append(INDENT).append("static const std::string STATE_TRANSITIONS_LOOKUP[")
-            .append(accessOrderModel.stateCount())
+            .append(fieldPrecedenceModel.stateCount())
             .append("];\n\n");
 
         sb.append(INDENT).append("static std::string codecStateName(CodecState state)\n")
@@ -2912,31 +2928,31 @@ public class CppGenerator implements CodeGenerator
     private static void generateLookupTableDefinitions(
         final StringBuilder sb,
         final String className,
-        final AccessOrderModel accessOrderModel)
+        final FieldPrecedenceModel fieldPrecedenceModel)
     {
-        if (null == accessOrderModel)
+        if (null == fieldPrecedenceModel)
         {
             return;
         }
 
         sb.append("\n").append("const std::string ").append(className).append("::STATE_NAME_LOOKUP[")
-            .append(accessOrderModel.stateCount()).append("] =\n")
+            .append(fieldPrecedenceModel.stateCount()).append("] =\n")
             .append("{\n");
-        accessOrderModel.forEachStateOrderedByStateNumber(state ->
+        fieldPrecedenceModel.forEachStateOrderedByStateNumber(state ->
         {
             sb.append(INDENT).append("\"").append(state.name()).append("\",\n");
         });
         sb.append("};\n\n");
 
         sb.append("const std::string ").append(className).append("::STATE_TRANSITIONS_LOOKUP[")
-            .append(accessOrderModel.stateCount()).append("] =\n")
+            .append(fieldPrecedenceModel.stateCount()).append("] =\n")
             .append("{\n");
-        accessOrderModel.forEachStateOrderedByStateNumber(state ->
+        fieldPrecedenceModel.forEachStateOrderedByStateNumber(state ->
         {
             sb.append(INDENT).append("\"");
             final MutableBoolean isFirst = new MutableBoolean(true);
             final Set<String> transitionDescriptions = new HashSet<>();
-            accessOrderModel.forEachTransitionFrom(state, transitionGroup ->
+            fieldPrecedenceModel.forEachTransitionFrom(state, transitionGroup ->
             {
                 if (transitionDescriptions.add(transitionGroup.exampleCode()))
                 {
@@ -2957,24 +2973,24 @@ public class CppGenerator implements CodeGenerator
         sb.append("};\n\n");
     }
 
-    private static CharSequence qualifiedStateCase(final AccessOrderModel.State state)
+    private static CharSequence qualifiedStateCase(final FieldPrecedenceModel.State state)
     {
         return "CodecState::" + state.name();
     }
 
-    private static CharSequence stateCaseForSwitchCase(final AccessOrderModel.State state)
+    private static CharSequence stateCaseForSwitchCase(final FieldPrecedenceModel.State state)
     {
         return qualifiedStateCase(state);
     }
 
-    private static CharSequence unqualifiedStateCase(final AccessOrderModel.State state)
+    private static CharSequence unqualifiedStateCase(final FieldPrecedenceModel.State state)
     {
         return state.name();
     }
 
-    private static CharSequence generateFieldOrderStateEnum(final AccessOrderModel accessOrderModel)
+    private static CharSequence generateFieldOrderStateEnum(final FieldPrecedenceModel fieldPrecedenceModel)
     {
-        if (null == accessOrderModel)
+        if (null == fieldPrecedenceModel)
         {
             return "";
         }
@@ -2989,12 +3005,12 @@ public class CppGenerator implements CodeGenerator
         sb.append("     * accessed safely. Tools such as PlantUML and Graphviz can render it.\n");
         sb.append("     *\n");
         sb.append("     * <pre>{@code\n");
-        accessOrderModel.generateGraph(sb, "     *   ");
+        fieldPrecedenceModel.generateGraph(sb, "     *   ");
         sb.append("     * }</pre>\n");
         sb.append("     */\n");
         sb.append(INDENT).append("enum class CodecState\n")
             .append(INDENT).append("{\n");
-        accessOrderModel.forEachStateOrderedByStateNumber(state ->
+        fieldPrecedenceModel.forEachStateOrderedByStateNumber(state ->
         {
             sb.append(INDENT).append(INDENT).append(unqualifiedStateCase(state))
                 .append(" = ").append(state.number())
@@ -3005,9 +3021,9 @@ public class CppGenerator implements CodeGenerator
         return sb;
     }
 
-    private static CharSequence generateFieldOrderStateMember(final AccessOrderModel accessOrderModel)
+    private static CharSequence generateFieldOrderStateMember(final FieldPrecedenceModel fieldPrecedenceModel)
     {
-        if (null == accessOrderModel)
+        if (null == fieldPrecedenceModel)
         {
             return "\n";
         }
@@ -3015,7 +3031,7 @@ public class CppGenerator implements CodeGenerator
         final StringBuilder sb = new StringBuilder();
 
         sb.append(INDENT).append("CodecState m_codecState = ")
-            .append(qualifiedStateCase(accessOrderModel.notWrappedState()))
+            .append(qualifiedStateCase(fieldPrecedenceModel.notWrappedState()))
             .append(";\n\n");
 
         sb.append(INDENT).append("CodecState codecState() const\n")
@@ -3036,14 +3052,14 @@ public class CppGenerator implements CodeGenerator
         return sb;
     }
 
-    private static CharSequence generateDecoderWrapListener(final AccessOrderModel accessOrderModel)
+    private static CharSequence generateDecoderWrapListener(final FieldPrecedenceModel fieldPrecedenceModel)
     {
-        if (null == accessOrderModel)
+        if (null == fieldPrecedenceModel)
         {
             return "";
         }
 
-        if (accessOrderModel.versionCount() == 1)
+        if (fieldPrecedenceModel.versionCount() == 1)
         {
             return "";
         }
@@ -3054,7 +3070,7 @@ public class CppGenerator implements CodeGenerator
             .append(INDENT).append(INDENT).append("switch(actingVersion)\n")
             .append(INDENT).append(INDENT).append("{\n");
 
-        accessOrderModel.forEachWrappedStateByVersion((version, state) ->
+        fieldPrecedenceModel.forEachWrappedStateByVersion((version, state) ->
         {
             sb.append(INDENT).append(TWO_INDENT).append("case ").append(version).append(":\n")
                 .append(INDENT).append(THREE_INDENT).append("codecState(")
@@ -3064,7 +3080,7 @@ public class CppGenerator implements CodeGenerator
 
         sb.append(INDENT).append(TWO_INDENT).append("default:\n")
             .append(INDENT).append(THREE_INDENT).append("codecState(")
-            .append(qualifiedStateCase(accessOrderModel.latestVersionWrappedState())).append(");\n")
+            .append(qualifiedStateCase(fieldPrecedenceModel.latestVersionWrappedState())).append(");\n")
             .append(INDENT).append(THREE_INDENT).append("break;\n")
             .append(INDENT).append(INDENT).append("}\n")
             .append(INDENT).append("}\n\n");
@@ -3073,37 +3089,37 @@ public class CppGenerator implements CodeGenerator
     }
 
 
-    private CharSequence generateDecoderWrapListenerCall(final AccessOrderModel accessOrderModel)
+    private CharSequence generateDecoderWrapListenerCall(final FieldPrecedenceModel fieldPrecedenceModel)
     {
-        if (null == accessOrderModel)
+        if (null == fieldPrecedenceModel)
         {
             return "";
         }
 
-        if (accessOrderModel.versionCount() == 1)
+        if (fieldPrecedenceModel.versionCount() == 1)
         {
             final StringBuilder sb = new StringBuilder();
-            sb.append("#if defined(").append(AccessOrderModel.PRECEDENCE_CHECKS_FLAG_NAME).append(")\n")
+            sb.append("#if defined(").append(precedenceChecksFlagName).append(")\n")
                 .append(TWO_INDENT).append("codecState(")
-                .append(qualifiedStateCase(accessOrderModel.latestVersionWrappedState())).append(");\n")
+                .append(qualifiedStateCase(fieldPrecedenceModel.latestVersionWrappedState())).append(");\n")
                 .append("#endif\n");
             return sb;
         }
 
-        return generateAccessOrderListenerCall(accessOrderModel, TWO_INDENT, "onWrapForDecode", "actingVersion");
+        return generateAccessOrderListenerCall(fieldPrecedenceModel, TWO_INDENT, "onWrapForDecode", "actingVersion");
     }
 
-    private CharSequence generateEncoderWrapListener(final AccessOrderModel accessOrderModel)
+    private CharSequence generateEncoderWrapListener(final FieldPrecedenceModel fieldPrecedenceModel)
     {
-        if (null == accessOrderModel)
+        if (null == fieldPrecedenceModel)
         {
             return "";
         }
 
         final StringBuilder sb = new StringBuilder();
-        sb.append("#if defined(").append(AccessOrderModel.PRECEDENCE_CHECKS_FLAG_NAME).append(")\n")
+        sb.append("#if defined(").append(precedenceChecksFlagName).append(")\n")
             .append(TWO_INDENT).append("codecState(")
-            .append(qualifiedStateCase(accessOrderModel.latestVersionWrappedState()))
+            .append(qualifiedStateCase(fieldPrecedenceModel.latestVersionWrappedState()))
             .append(");\n")
             .append("#endif\n");
         return sb;
@@ -3113,7 +3129,7 @@ public class CppGenerator implements CodeGenerator
         final StringBuilder sb,
         final String containingClassName,
         final List<Token> tokens,
-        final AccessOrderModel accessOrderModel,
+        final FieldPrecedenceModel fieldPrecedenceModel,
         final String indent)
     {
         for (int i = 0, size = tokens.size(); i < size; i++)
@@ -3127,29 +3143,29 @@ public class CppGenerator implements CodeGenerator
                 generateFieldMetaAttributeMethod(sb, signalToken, indent);
                 generateFieldCommonMethods(indent, sb, signalToken, encodingToken, propertyName);
 
-                generateAccessOrderListenerMethod(sb, accessOrderModel, indent, signalToken);
+                generateAccessOrderListenerMethod(sb, fieldPrecedenceModel, indent, signalToken);
 
                 switch (encodingToken.signal())
                 {
                     case ENCODING:
                         generatePrimitiveProperty(
                             sb, containingClassName, propertyName, signalToken, encodingToken,
-                            accessOrderModel, indent);
+                            fieldPrecedenceModel, indent);
                         break;
 
                     case BEGIN_ENUM:
                         generateEnumProperty(sb, containingClassName, signalToken, propertyName, encodingToken,
-                            accessOrderModel, indent);
+                            fieldPrecedenceModel, indent);
                         break;
 
                     case BEGIN_SET:
                         generateBitsetProperty(sb, propertyName, signalToken, encodingToken,
-                            accessOrderModel, indent);
+                            fieldPrecedenceModel, indent);
                         break;
 
                     case BEGIN_COMPOSITE:
                         generateCompositeProperty(sb, propertyName, signalToken, encodingToken,
-                            accessOrderModel, indent);
+                            fieldPrecedenceModel, indent);
                         break;
 
                     default:
@@ -3264,7 +3280,7 @@ public class CppGenerator implements CodeGenerator
         final Token fieldToken,
         final String propertyName,
         final Token encodingToken,
-        final AccessOrderModel accessOrderModel,
+        final FieldPrecedenceModel fieldPrecedenceModel,
         final String indent)
     {
         final String enumName = formatClassName(encodingToken.applicableTypeName());
@@ -3319,9 +3335,9 @@ public class CppGenerator implements CodeGenerator
             final String offsetStr = Integer.toString(offset);
 
             final CharSequence accessOrderListenerCall = generateAccessOrderListenerCall(
-                accessOrderModel, indent + TWO_INDENT, fieldToken);
+                fieldPrecedenceModel, indent + TWO_INDENT, fieldToken);
 
-            final String noexceptDeclaration = noexceptDeclaration(accessOrderModel);
+            final String noexceptDeclaration = noexceptDeclaration(fieldPrecedenceModel);
 
             new Formatter(sb).format("\n" +
                 indent + "    SBE_NODISCARD %1$s %2$sRaw() const%6$s\n" +
@@ -3373,12 +3389,12 @@ public class CppGenerator implements CodeGenerator
         }
     }
 
-    private static void generateBitsetProperty(
+    private void generateBitsetProperty(
         final StringBuilder sb,
         final String propertyName,
         final Token fieldToken,
         final Token encodingToken,
-        final AccessOrderModel accessOrderModel,
+        final FieldPrecedenceModel fieldPrecedenceModel,
         final String indent)
     {
         final String bitsetName = formatClassName(encodingToken.applicableTypeName());
@@ -3393,7 +3409,7 @@ public class CppGenerator implements CodeGenerator
             propertyName);
 
         final CharSequence accessOrderListenerCall = generateAccessOrderListenerCall(
-            accessOrderModel, indent + TWO_INDENT, fieldToken);
+            fieldPrecedenceModel, indent + TWO_INDENT, fieldToken);
 
         new Formatter(sb).format(
             indent + "    SBE_NODISCARD %1$s &%2$s()\n" +
@@ -3416,12 +3432,12 @@ public class CppGenerator implements CodeGenerator
             encodingToken.encoding().primitiveType().size());
     }
 
-    private static void generateCompositeProperty(
+    private void generateCompositeProperty(
         final StringBuilder sb,
         final String propertyName,
         final Token fieldToken,
         final Token encodingToken,
-        final AccessOrderModel accessOrderModel,
+        final FieldPrecedenceModel fieldPrecedenceModel,
         final String indent)
     {
         final String compositeName = formatClassName(encodingToken.applicableTypeName());
@@ -3435,7 +3451,7 @@ public class CppGenerator implements CodeGenerator
             propertyName);
 
         final CharSequence accessOrderListenerCall = generateAccessOrderListenerCall(
-            accessOrderModel, indent + TWO_INDENT, fieldToken);
+            fieldPrecedenceModel, indent + TWO_INDENT, fieldToken);
 
         new Formatter(sb).format(
             indent + "    SBE_NODISCARD %1$s &%2$s()\n" +

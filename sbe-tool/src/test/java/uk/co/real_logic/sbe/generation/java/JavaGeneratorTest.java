@@ -15,6 +15,12 @@
  */
 package uk.co.real_logic.sbe.generation.java;
 
+import uk.co.real_logic.sbe.Tests;
+import uk.co.real_logic.sbe.generation.common.PrecedenceChecks;
+import uk.co.real_logic.sbe.ir.Ir;
+import uk.co.real_logic.sbe.xml.IrGenerator;
+import uk.co.real_logic.sbe.xml.MessageSchema;
+import uk.co.real_logic.sbe.xml.ParserOptions;
 import org.agrona.DirectBuffer;
 import org.agrona.MutableDirectBuffer;
 import org.agrona.concurrent.UnsafeBuffer;
@@ -24,16 +30,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import uk.co.real_logic.sbe.Tests;
-import uk.co.real_logic.sbe.ir.Ir;
-import uk.co.real_logic.sbe.xml.IrGenerator;
-import uk.co.real_logic.sbe.xml.MessageSchema;
-import uk.co.real_logic.sbe.xml.ParserOptions;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.ByteOrder;
+import java.util.Arrays;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -252,6 +255,37 @@ class JavaGeneratorTest
         assertNotNull(groupFlyweight);
 
         assertThat(msgFlyweight.toString(), startsWith("[Car]"));
+    }
+
+    @Test
+    void shouldGenerateWithoutPrecedenceChecksByDefault() throws Exception
+    {
+        final PrecedenceChecks.Context context = new PrecedenceChecks.Context();
+        final PrecedenceChecks precedenceChecks = PrecedenceChecks.newInstance(context);
+        generator(precedenceChecks).generate();
+
+        final Field field = Arrays.stream(compileCarEncoder().getDeclaredFields())
+            .filter(f -> f.getName().equals(context.precedenceChecksFlagName()))
+            .findFirst()
+            .orElse(null);
+
+        assertNull(field);
+    }
+
+    @Test
+    void shouldGeneratePrecedenceChecksWhenEnabled() throws Exception
+    {
+        final PrecedenceChecks.Context context = new PrecedenceChecks.Context()
+            .shouldGeneratePrecedenceChecks(true);
+        final PrecedenceChecks precedenceChecks = PrecedenceChecks.newInstance(context);
+        generator(precedenceChecks).generate();
+
+        final Field field = Arrays.stream(compileCarEncoder().getDeclaredFields())
+            .filter(f -> f.getName().equals(context.precedenceChecksFlagName()))
+            .findFirst()
+            .orElse(null);
+
+        assertNotNull(field);
     }
 
     @Test
@@ -671,6 +705,12 @@ class JavaGeneratorTest
     private JavaGenerator generator()
     {
         return new JavaGenerator(ir, BUFFER_NAME, READ_ONLY_BUFFER_NAME, false, false, false, outputManager);
+    }
+
+    private JavaGenerator generator(final PrecedenceChecks precedenceChecks)
+    {
+        return new JavaGenerator(ir, BUFFER_NAME, READ_ONLY_BUFFER_NAME, false, false, false, false,
+            precedenceChecks, outputManager);
     }
 
     private void generateTypeStubs() throws IOException
