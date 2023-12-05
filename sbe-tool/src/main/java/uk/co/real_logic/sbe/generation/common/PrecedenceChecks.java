@@ -24,6 +24,7 @@ import java.util.OptionalInt;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
+import static java.util.Objects.requireNonNull;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectFields;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectGroups;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectVarData;
@@ -43,6 +44,7 @@ public final class PrecedenceChecks
 
     private PrecedenceChecks(final Context context)
     {
+        context.conclude();
         this.context = context;
     }
 
@@ -269,6 +271,15 @@ public final class PrecedenceChecks
         {
             this.precedenceChecksPropName = precedenceChecksPropName;
             return this;
+        }
+
+        /**
+         * Validates this {@link Context} instance.
+         */
+        public void conclude()
+        {
+            requireNonNull(precedenceChecksFlagName, "precedenceChecksFlagName");
+            requireNonNull(precedenceChecksPropName, "precedenceChecksPropName");
         }
     }
 }
