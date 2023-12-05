@@ -15,15 +15,15 @@
  */
 package uk.co.real_logic.sbe.generation;
 
-import uk.co.real_logic.sbe.generation.common.PrecedenceChecks;
-import uk.co.real_logic.sbe.generation.java.JavaOutputManager;
 import uk.co.real_logic.sbe.generation.c.CGenerator;
 import uk.co.real_logic.sbe.generation.c.COutputManager;
+import uk.co.real_logic.sbe.generation.common.PrecedenceChecks;
 import uk.co.real_logic.sbe.generation.cpp.CppGenerator;
 import uk.co.real_logic.sbe.generation.cpp.NamespaceOutputManager;
 import uk.co.real_logic.sbe.generation.golang.GolangGenerator;
 import uk.co.real_logic.sbe.generation.golang.GolangOutputManager;
 import uk.co.real_logic.sbe.generation.java.JavaGenerator;
+import uk.co.real_logic.sbe.generation.java.JavaOutputManager;
 import uk.co.real_logic.sbe.generation.rust.RustGenerator;
 import uk.co.real_logic.sbe.generation.rust.RustOutputManager;
 import uk.co.real_logic.sbe.ir.Ir;
@@ -122,25 +122,31 @@ public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
     };
 
     /**
-     * Returns the configured precedence checks.
+     * Returns the precedence checks to run, configured from system properties.
      *
-     * @return the configured precedence checks.
+     * @return the precedence checks to run, configured from system properties.
      */
     public static PrecedenceChecks precedenceChecks()
     {
-        final boolean shouldGeneratePrecedenceChecks =
-            Boolean.parseBoolean(System.getProperty(GENERATE_PRECEDENCE_CHECKS, "false"));
+        final PrecedenceChecks.Context context = new PrecedenceChecks.Context();
 
-        final String precedenceChecksFlagName =
-            System.getProperty(PRECEDENCE_CHECKS_FLAG_NAME, "SBE_ENABLE_PRECEDENCE_CHECKS");
+        final String shouldGeneratePrecedenceChecks = System.getProperty(GENERATE_PRECEDENCE_CHECKS);
+        if (shouldGeneratePrecedenceChecks != null)
+        {
+            context.shouldGeneratePrecedenceChecks(Boolean.parseBoolean(shouldGeneratePrecedenceChecks));
+        }
 
-        final String precedenceChecksPropName =
-            System.getProperty(JAVA_PRECEDENCE_CHECKS_PROPERTY_NAME, "sbe.enable.precedence.checks");
+        final String precedenceChecksFlagName = System.getProperty(PRECEDENCE_CHECKS_FLAG_NAME);
+        if (precedenceChecksFlagName != null)
+        {
+            context.precedenceChecksFlagName(precedenceChecksFlagName);
+        }
 
-        final PrecedenceChecks.Context context = new PrecedenceChecks.Context()
-            .shouldGeneratePrecedenceChecks(shouldGeneratePrecedenceChecks)
-            .precedenceChecksFlagName(precedenceChecksFlagName)
-            .precedenceChecksPropName(precedenceChecksPropName);
+        final String precedenceChecksPropName = System.getProperty(JAVA_PRECEDENCE_CHECKS_PROPERTY_NAME);
+        if (precedenceChecksPropName != null)
+        {
+            context.precedenceChecksPropName(precedenceChecksPropName);
+        }
 
         return PrecedenceChecks.newInstance(context);
     }

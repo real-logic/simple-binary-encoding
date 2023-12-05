@@ -166,8 +166,8 @@ public final class PrecedenceChecks
     public static final class Context
     {
         private boolean shouldGeneratePrecedenceChecks;
-        private String precedenceChecksFlagName;
-        private String precedenceChecksPropName;
+        private String precedenceChecksFlagName = "SBE_ENABLE_PRECEDENCE_CHECKS";
+        private String precedenceChecksPropName = "sbe.enable.precedence.checks";
 
         /**
          * Returns {@code true} if precedence checks should be generated; {@code false} otherwise.

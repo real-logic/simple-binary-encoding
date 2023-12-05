@@ -260,10 +260,7 @@ class JavaGeneratorTest
     @Test
     void shouldGenerateWithoutPrecedenceChecksByDefault() throws Exception
     {
-        final PrecedenceChecks.Context context = new PrecedenceChecks.Context()
-            .shouldGeneratePrecedenceChecks(false)
-            .precedenceChecksPropName("sbe.enable.precedence.checks")
-            .precedenceChecksFlagName("SBE_ENABLE_PRECEDENCE_CHECKS");
+        final PrecedenceChecks.Context context = new PrecedenceChecks.Context();
         final PrecedenceChecks precedenceChecks = PrecedenceChecks.newInstance(context);
         generator(precedenceChecks).generate();
 
@@ -279,9 +276,7 @@ class JavaGeneratorTest
     void shouldGeneratePrecedenceChecksWhenEnabled() throws Exception
     {
         final PrecedenceChecks.Context context = new PrecedenceChecks.Context()
-            .shouldGeneratePrecedenceChecks(true)
-            .precedenceChecksPropName("sbe.enable.precedence.checks")
-            .precedenceChecksFlagName("SBE_ENABLE_PRECEDENCE_CHECKS");
+            .shouldGeneratePrecedenceChecks(true);
         final PrecedenceChecks precedenceChecks = PrecedenceChecks.newInstance(context);
         generator(precedenceChecks).generate();
 

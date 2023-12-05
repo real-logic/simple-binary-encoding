@@ -18,7 +18,6 @@ package uk.co.real_logic.sbe.generation.cpp;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.generation.CodeGenerator;
 import uk.co.real_logic.sbe.generation.Generators;
-import uk.co.real_logic.sbe.generation.TargetCodeGeneratorLoader;
 import uk.co.real_logic.sbe.generation.common.FieldPrecedenceModel;
 import uk.co.real_logic.sbe.generation.common.PrecedenceChecks;
 import uk.co.real_logic.sbe.ir.Encoding;
@@ -72,7 +71,7 @@ public class CppGenerator implements CodeGenerator
         this(
             ir,
             shouldDecodeUnknownEnumValues,
-            TargetCodeGeneratorLoader.precedenceChecks(),
+            PrecedenceChecks.newInstance(new PrecedenceChecks.Context()),
             outputManager
         );
     }
