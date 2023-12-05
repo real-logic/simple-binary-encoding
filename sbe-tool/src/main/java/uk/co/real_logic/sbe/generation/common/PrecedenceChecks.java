@@ -15,7 +15,6 @@
  */
 package uk.co.real_logic.sbe.generation.common;
 
-import uk.co.real_logic.sbe.SbeTool;
 import uk.co.real_logic.sbe.ir.Token;
 
 import java.util.ArrayList;
@@ -161,45 +160,14 @@ public final class PrecedenceChecks
         return null;
     }
 
-    static final class Configuration
-    {
-        private static final boolean GENERATE_PRECEDENCE_CHECKS_VALUE =
-            Boolean.parseBoolean(System.getProperty(SbeTool.GENERATE_PRECEDENCE_CHECKS, "false"));
-
-        private static final String PRECEDENCE_CHECKS_FLAG_NAME_VALUE =
-            System.getProperty(SbeTool.PRECEDENCE_CHECKS_FLAG_NAME, "SBE_ENABLE_PRECEDENCE_CHECKS");
-
-        private static final String PRECEDENCE_CHECKS_PROPERTY_NAME_VALUE =
-            System.getProperty(SbeTool.JAVA_PRECEDENCE_CHECKS_PROPERTY_NAME, "sbe.enable.precedence.checks");
-
-        private Configuration()
-        {
-        }
-
-        static boolean shouldGeneratePrecedenceChecks()
-        {
-            return GENERATE_PRECEDENCE_CHECKS_VALUE;
-        }
-
-        static String precedenceChecksFlagName()
-        {
-            return PRECEDENCE_CHECKS_FLAG_NAME_VALUE;
-        }
-
-        static String precedenceChecksPropName()
-        {
-            return PRECEDENCE_CHECKS_PROPERTY_NAME_VALUE;
-        }
-    }
-
     /**
      * The context describing how precedence checks should be generated.
      */
     public static final class Context
     {
-        private boolean shouldGeneratePrecedenceChecks = Configuration.shouldGeneratePrecedenceChecks();
-        private String precedenceChecksFlagName = Configuration.precedenceChecksFlagName();
-        private String precedenceChecksPropName = Configuration.precedenceChecksPropName();
+        private boolean shouldGeneratePrecedenceChecks;
+        private String precedenceChecksFlagName;
+        private String precedenceChecksPropName;
 
         /**
          * Returns {@code true} if precedence checks should be generated; {@code false} otherwise.

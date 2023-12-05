@@ -54,7 +54,7 @@ public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
                 "true".equals(System.getProperty(JAVA_GENERATE_INTERFACES)),
                 "true".equals(System.getProperty(DECODE_UNKNOWN_ENUM_VALUES)),
                 "true".equals(System.getProperty(TYPES_PACKAGE_OVERRIDE)),
-                PrecedenceChecks.newInstance(new PrecedenceChecks.Context()),
+                precedenceChecks(),
                 new JavaOutputManager(outputDir, ir.applicableNamespace()));
         }
     },
@@ -86,7 +86,7 @@ public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
             return new CppGenerator(
                 ir,
                 "true".equals(System.getProperty(DECODE_UNKNOWN_ENUM_VALUES)),
-                PrecedenceChecks.newInstance(new PrecedenceChecks.Context()),
+                precedenceChecks(),
                 new NamespaceOutputManager(outputDir, ir.applicableNamespace()));
         }
     },
@@ -120,6 +120,30 @@ public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
                 new RustOutputManager(outputDir, ir.packageName()));
         }
     };
+
+    /**
+     * Returns the configured precedence checks.
+     *
+     * @return the configured precedence checks.
+     */
+    public static PrecedenceChecks precedenceChecks()
+    {
+        final boolean shouldGeneratePrecedenceChecks =
+            Boolean.parseBoolean(System.getProperty(GENERATE_PRECEDENCE_CHECKS, "false"));
+
+        final String precedenceChecksFlagName =
+            System.getProperty(PRECEDENCE_CHECKS_FLAG_NAME, "SBE_ENABLE_PRECEDENCE_CHECKS");
+
+        final String precedenceChecksPropName =
+            System.getProperty(JAVA_PRECEDENCE_CHECKS_PROPERTY_NAME, "sbe.enable.precedence.checks");
+
+        final PrecedenceChecks.Context context = new PrecedenceChecks.Context()
+            .shouldGeneratePrecedenceChecks(shouldGeneratePrecedenceChecks)
+            .precedenceChecksFlagName(precedenceChecksFlagName)
+            .precedenceChecksPropName(precedenceChecksPropName);
+
+        return PrecedenceChecks.newInstance(context);
+    }
 
     /**
      * Do a case-insensitive lookup of a target language for code generation.

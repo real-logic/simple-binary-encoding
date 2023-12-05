@@ -18,7 +18,7 @@ package uk.co.real_logic.sbe.generation.csharp;
 
 import uk.co.real_logic.sbe.generation.CodeGenerator;
 import uk.co.real_logic.sbe.generation.TargetCodeGenerator;
-import uk.co.real_logic.sbe.generation.common.PrecedenceChecks;
+import uk.co.real_logic.sbe.generation.TargetCodeGeneratorLoader;
 import uk.co.real_logic.sbe.ir.Ir;
 
 /**
@@ -33,7 +33,7 @@ public class CSharp implements TargetCodeGenerator
     {
         return new CSharpGenerator(
             ir,
-            PrecedenceChecks.newInstance(new PrecedenceChecks.Context()),
+            TargetCodeGeneratorLoader.precedenceChecks(),
             new CSharpNamespaceOutputManager(outputDir, ir.applicableNamespace()));
     }
 }
