@@ -205,6 +205,24 @@ public class SbeTool
     public static final String SCHEMA_TRANSFORM_VERSION = "sbe.schema.transform.version";
 
     /**
+     * Whether to generate field precedence checks. For example, whether to check that repeating groups are encoded
+     * in schema order.
+     */
+    public static final String GENERATE_PRECEDENCE_CHECKS = "sbe.generate.precedence.checks";
+
+    /**
+     * The name of the symbol or macro that enables access order checks when building
+     * generated C# or C++ code.
+     */
+    public static final String PRECEDENCE_CHECKS_FLAG_NAME = "sbe.precedence.checks.flag.name";
+
+    /**
+     * The name of the system property that enables access order checks at runtime
+     * in generated Java code.
+     */
+    public static final String JAVA_PRECEDENCE_CHECKS_PROPERTY_NAME = "sbe.java.precedence.checks.property.name";
+
+    /**
      * Main entry point for the SBE Tool.
      *
      * @param args command line arguments. A single filename is expected.

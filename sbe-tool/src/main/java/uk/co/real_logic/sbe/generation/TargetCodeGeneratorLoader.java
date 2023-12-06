@@ -15,14 +15,15 @@
  */
 package uk.co.real_logic.sbe.generation;
 
-import uk.co.real_logic.sbe.generation.java.JavaOutputManager;
 import uk.co.real_logic.sbe.generation.c.CGenerator;
 import uk.co.real_logic.sbe.generation.c.COutputManager;
+import uk.co.real_logic.sbe.generation.common.PrecedenceChecks;
 import uk.co.real_logic.sbe.generation.cpp.CppGenerator;
 import uk.co.real_logic.sbe.generation.cpp.NamespaceOutputManager;
 import uk.co.real_logic.sbe.generation.golang.GolangGenerator;
 import uk.co.real_logic.sbe.generation.golang.GolangOutputManager;
 import uk.co.real_logic.sbe.generation.java.JavaGenerator;
+import uk.co.real_logic.sbe.generation.java.JavaOutputManager;
 import uk.co.real_logic.sbe.generation.rust.RustGenerator;
 import uk.co.real_logic.sbe.generation.rust.RustOutputManager;
 import uk.co.real_logic.sbe.ir.Ir;
@@ -53,6 +54,7 @@ public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
                 "true".equals(System.getProperty(JAVA_GENERATE_INTERFACES)),
                 "true".equals(System.getProperty(DECODE_UNKNOWN_ENUM_VALUES)),
                 "true".equals(System.getProperty(TYPES_PACKAGE_OVERRIDE)),
+                precedenceChecks(),
                 new JavaOutputManager(outputDir, ir.applicableNamespace()));
         }
     },
@@ -84,6 +86,7 @@ public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
             return new CppGenerator(
                 ir,
                 "true".equals(System.getProperty(DECODE_UNKNOWN_ENUM_VALUES)),
+                precedenceChecks(),
                 new NamespaceOutputManager(outputDir, ir.applicableNamespace()));
         }
     },
@@ -117,6 +120,36 @@ public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
                 new RustOutputManager(outputDir, ir.packageName()));
         }
     };
+
+    /**
+     * Returns the precedence checks to run, configured from system properties.
+     *
+     * @return the precedence checks to run, configured from system properties.
+     */
+    public static PrecedenceChecks precedenceChecks()
+    {
+        final PrecedenceChecks.Context context = new PrecedenceChecks.Context();
+
+        final String shouldGeneratePrecedenceChecks = System.getProperty(GENERATE_PRECEDENCE_CHECKS);
+        if (shouldGeneratePrecedenceChecks != null)
+        {
+            context.shouldGeneratePrecedenceChecks(Boolean.parseBoolean(shouldGeneratePrecedenceChecks));
+        }
+
+        final String precedenceChecksFlagName = System.getProperty(PRECEDENCE_CHECKS_FLAG_NAME);
+        if (precedenceChecksFlagName != null)
+        {
+            context.precedenceChecksFlagName(precedenceChecksFlagName);
+        }
+
+        final String precedenceChecksPropName = System.getProperty(JAVA_PRECEDENCE_CHECKS_PROPERTY_NAME);
+        if (precedenceChecksPropName != null)
+        {
+            context.precedenceChecksPropName(precedenceChecksPropName);
+        }
+
+        return PrecedenceChecks.newInstance(context);
+    }
 
     /**
      * Do a case-insensitive lookup of a target language for code generation.

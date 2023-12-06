@@ -680,43 +680,43 @@ TEST_F(CodeGenTest, shouldBeAbleToEncodeAndDecodeHeaderPlusCarCorrectly)
     performanceFigures.next();
     EXPECT_EQ(performanceFigures.octaneRating(), perf1Octane);
 
-    Car::PerformanceFigures::Acceleration &acceleration = performanceFigures.acceleration();
-    EXPECT_EQ(acceleration.count(), ACCELERATION_COUNT);
-    ASSERT_TRUE(acceleration.hasNext());
-    acceleration.next();
-    EXPECT_EQ(acceleration.mph(), perf1aMph);
-    EXPECT_EQ(acceleration.seconds(), perf1aSeconds);
+    Car::PerformanceFigures::Acceleration &acceleration1 = performanceFigures.acceleration();
+    EXPECT_EQ(acceleration1.count(), ACCELERATION_COUNT);
+    ASSERT_TRUE(acceleration1.hasNext());
+    acceleration1.next();
+    EXPECT_EQ(acceleration1.mph(), perf1aMph);
+    EXPECT_EQ(acceleration1.seconds(), perf1aSeconds);
 
-    ASSERT_TRUE(acceleration.hasNext());
-    acceleration.next();
-    EXPECT_EQ(acceleration.mph(), perf1bMph);
-    EXPECT_EQ(acceleration.seconds(), perf1bSeconds);
+    ASSERT_TRUE(acceleration1.hasNext());
+    acceleration1.next();
+    EXPECT_EQ(acceleration1.mph(), perf1bMph);
+    EXPECT_EQ(acceleration1.seconds(), perf1bSeconds);
 
-    ASSERT_TRUE(acceleration.hasNext());
-    acceleration.next();
-    EXPECT_EQ(acceleration.mph(), perf1cMph);
-    EXPECT_EQ(acceleration.seconds(), perf1cSeconds);
+    ASSERT_TRUE(acceleration1.hasNext());
+    acceleration1.next();
+    EXPECT_EQ(acceleration1.mph(), perf1cMph);
+    EXPECT_EQ(acceleration1.seconds(), perf1cSeconds);
 
     ASSERT_TRUE(performanceFigures.hasNext());
     performanceFigures.next();
     EXPECT_EQ(performanceFigures.octaneRating(), perf2Octane);
 
-    acceleration = performanceFigures.acceleration();
-    EXPECT_EQ(acceleration.count(), ACCELERATION_COUNT);
-    ASSERT_TRUE(acceleration.hasNext());
-    acceleration.next();
-    EXPECT_EQ(acceleration.mph(), perf2aMph);
-    EXPECT_EQ(acceleration.seconds(), perf2aSeconds);
+    Car::PerformanceFigures::Acceleration &acceleration2 = performanceFigures.acceleration();
+    EXPECT_EQ(acceleration2.count(), ACCELERATION_COUNT);
+    ASSERT_TRUE(acceleration2.hasNext());
+    acceleration2.next();
+    EXPECT_EQ(acceleration2.mph(), perf2aMph);
+    EXPECT_EQ(acceleration2.seconds(), perf2aSeconds);
 
-    ASSERT_TRUE(acceleration.hasNext());
-    acceleration.next();
-    EXPECT_EQ(acceleration.mph(), perf2bMph);
-    EXPECT_EQ(acceleration.seconds(), perf2bSeconds);
+    ASSERT_TRUE(acceleration2.hasNext());
+    acceleration2.next();
+    EXPECT_EQ(acceleration2.mph(), perf2bMph);
+    EXPECT_EQ(acceleration2.seconds(), perf2bSeconds);
 
-    ASSERT_TRUE(acceleration.hasNext());
-    acceleration.next();
-    EXPECT_EQ(acceleration.mph(), perf2cMph);
-    EXPECT_EQ(acceleration.seconds(), perf2cSeconds);
+    ASSERT_TRUE(acceleration2.hasNext());
+    acceleration2.next();
+    EXPECT_EQ(acceleration2.mph(), perf2cMph);
+    EXPECT_EQ(acceleration2.seconds(), perf2cSeconds);
 
     EXPECT_EQ(m_carDecoder.manufacturerLength(), MANUFACTURER_LENGTH);
     EXPECT_EQ(std::string(m_carDecoder.manufacturer(), MANUFACTURER_LENGTH), MANUFACTURER);
@@ -748,7 +748,7 @@ struct CallbacksForEach
 
     void operator()(Car::PerformanceFigures &performanceFigures)
     {
-        Car::PerformanceFigures::Acceleration acceleration = performanceFigures.acceleration();
+        Car::PerformanceFigures::Acceleration &acceleration = performanceFigures.acceleration();
 
         countOfPerformanceFigures++;
         acceleration.forEach(*this);
@@ -806,7 +806,7 @@ TEST_F(CodeGenTest, shouldBeAbleUseOnStackCodecsAndGroupForEach)
 #if __cplusplus >= 201103L
     performanceFigures.forEach([&](Car::PerformanceFigures &figures)
     {
-        Car::PerformanceFigures::Acceleration acceleration = figures.acceleration();
+        Car::PerformanceFigures::Acceleration &acceleration = figures.acceleration();
 
         cbs.countOfPerformanceFigures++;
         acceleration.forEach(
@@ -964,13 +964,13 @@ TEST_F(CodeGenTest, shouldBeAbleToUseStdStringMethodsForDecode)
     Car::PerformanceFigures &perfFigures = carDecoder.performanceFigures();
 
     perfFigures.next();
-    Car::PerformanceFigures::Acceleration &acceleration = perfFigures.acceleration();
+    Car::PerformanceFigures::Acceleration &acceleration1 = perfFigures.acceleration();
 
-    acceleration.next().next().next();
+    acceleration1.next().next().next();
 
     perfFigures.next();
-    acceleration = perfFigures.acceleration();
-    acceleration.next().next().next();
+    Car::PerformanceFigures::Acceleration &acceleration2 = perfFigures.acceleration();
+    acceleration2.next().next().next();
 
     EXPECT_EQ(carDecoder.getManufacturerAsString(), manufacturer);
     EXPECT_EQ(carDecoder.getModelAsString(), model);
@@ -1037,15 +1037,15 @@ TEST_F(CodeGenTest, shouldPrintFullDecodedFlyweightRegardlessOfReadPosition)
     Car::PerformanceFigures &perfFigures = carDecoder.performanceFigures();
 
     perfFigures.next();
-    Car::PerformanceFigures::Acceleration &acceleration = perfFigures.acceleration();
+    Car::PerformanceFigures::Acceleration &acceleration1 = perfFigures.acceleration();
 
-    acceleration.next().next().next();
+    acceleration1.next().next().next();
 
     expectDisplayString(expectedDisplayString, carDecoder);
 
     perfFigures.next();
-    acceleration = perfFigures.acceleration();
-    acceleration.next().next().next();
+    Car::PerformanceFigures::Acceleration &acceleration2 = perfFigures.acceleration();
+    acceleration2.next().next().next();
 
     EXPECT_EQ(carDecoder.getManufacturerAsString(), manufacturer);
     EXPECT_EQ(carDecoder.getModelAsString(), model);

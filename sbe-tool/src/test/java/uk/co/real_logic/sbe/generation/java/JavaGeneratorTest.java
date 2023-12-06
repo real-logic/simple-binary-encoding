@@ -15,6 +15,12 @@
  */
 package uk.co.real_logic.sbe.generation.java;
 
+import uk.co.real_logic.sbe.Tests;
+import uk.co.real_logic.sbe.generation.common.PrecedenceChecks;
+import uk.co.real_logic.sbe.ir.Ir;
+import uk.co.real_logic.sbe.xml.IrGenerator;
+import uk.co.real_logic.sbe.xml.MessageSchema;
+import uk.co.real_logic.sbe.xml.ParserOptions;
 import org.agrona.DirectBuffer;
 import org.agrona.MutableDirectBuffer;
 import org.agrona.concurrent.UnsafeBuffer;
@@ -22,23 +28,23 @@ import org.agrona.generation.CompilerUtil;
 import org.agrona.generation.StringWriterOutputManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import uk.co.real_logic.sbe.Tests;
-import uk.co.real_logic.sbe.ir.Ir;
-import uk.co.real_logic.sbe.xml.IrGenerator;
-import uk.co.real_logic.sbe.xml.MessageSchema;
-import uk.co.real_logic.sbe.xml.ParserOptions;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.ByteOrder;
+import java.util.Arrays;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.startsWith;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.co.real_logic.sbe.generation.java.JavaGenerator.MESSAGE_HEADER_DECODER_TYPE;
 import static uk.co.real_logic.sbe.generation.java.ReflectionUtil.*;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
@@ -252,6 +258,37 @@ class JavaGeneratorTest
     }
 
     @Test
+    void shouldGenerateWithoutPrecedenceChecksByDefault() throws Exception
+    {
+        final PrecedenceChecks.Context context = new PrecedenceChecks.Context();
+        final PrecedenceChecks precedenceChecks = PrecedenceChecks.newInstance(context);
+        generator(precedenceChecks).generate();
+
+        final Field field = Arrays.stream(compileCarEncoder().getDeclaredFields())
+            .filter(f -> f.getName().equals(context.precedenceChecksFlagName()))
+            .findFirst()
+            .orElse(null);
+
+        assertNull(field);
+    }
+
+    @Test
+    void shouldGeneratePrecedenceChecksWhenEnabled() throws Exception
+    {
+        final PrecedenceChecks.Context context = new PrecedenceChecks.Context()
+            .shouldGeneratePrecedenceChecks(true);
+        final PrecedenceChecks precedenceChecks = PrecedenceChecks.newInstance(context);
+        generator(precedenceChecks).generate();
+
+        final Field field = Arrays.stream(compileCarEncoder().getDeclaredFields())
+            .filter(f -> f.getName().equals(context.precedenceChecksFlagName()))
+            .findFirst()
+            .orElse(null);
+
+        assertNotNull(field);
+    }
+
+    @Test
     void shouldGenerateRepeatingGroupDecoder() throws Exception
     {
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
@@ -298,8 +335,12 @@ class JavaGeneratorTest
         final Object encoder = wrap(buffer, compileCarEncoder().getConstructor().newInstance());
         final Object decoder = getCarDecoder(buffer, encoder);
 
+        setEmptyFuelFiguresGroup(encoder);
+        setEmptyPerformanceFiguresGroup(encoder);
         setManufacturer(encoder, expectedManufacturer);
 
+        skipFuelFiguresGroup(decoder);
+        skipPerformanceFiguresGroup(decoder);
         final String manufacturer = getManufacturer(decoder);
 
         assertEquals(expectedManufacturer, manufacturer);
@@ -402,28 +443,30 @@ class JavaGeneratorTest
         assertThat(result.toString(), is("R11R12"));
     }
 
-    @Test
-    void shouldGenerateGetVariableStringUsingAppendable() throws Exception
+    @ParameterizedTest
+    @ValueSource(strings = {"Red", "", "Red and Blue"})
+    void shouldGenerateGetVariableStringUsingAppendable(final String color) throws Exception
     {
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
         final StringBuilder result = new StringBuilder();
         generator().generate();
 
         final Object encoder = wrap(buffer, compileCarEncoder().getDeclaredConstructor().newInstance());
+        setEmptyFuelFiguresGroup(encoder);
+        setEmptyPerformanceFiguresGroup(encoder);
+        set(encoder, "manufacturer", String.class, "Bristol");
+        set(encoder, "model", String.class, "Britannia");
+        set(encoder, "activationCode", String.class, "12345");
+        set(encoder, "color", String.class, color);
+
         final Object decoder = getCarDecoder(buffer, encoder);
-        set(encoder, "color", String.class, "Red");
-        get(decoder, "color", result);
-        assertThat(result.toString(), is("Red"));
-
-        result.setLength(0);
-        set(encoder, "color", String.class, "");
-        get(decoder, "color", result);
-        assertThat(result.toString(), is(""));
-
-        result.setLength(0);
-        set(encoder, "color", String.class, "Red and Blue");
-        get(decoder, "color", result);
-        assertThat(result.toString(), is("Red and Blue"));
+        skipFuelFiguresGroup(decoder);
+        skipPerformanceFiguresGroup(decoder);
+        assertThat(get(decoder, "manufacturer"), equalTo("Bristol"));
+        assertThat(get(decoder, "model"), equalTo("Britannia"));
+        assertThat(get(decoder, "activationCode"), equalTo("12345"));
+        assertThat(get(decoder, "color", result), equalTo(color.length()));
+        assertThat(result.toString(), equalTo(color));
     }
 
     @Test
@@ -662,6 +705,12 @@ class JavaGeneratorTest
     private JavaGenerator generator()
     {
         return new JavaGenerator(ir, BUFFER_NAME, READ_ONLY_BUFFER_NAME, false, false, false, outputManager);
+    }
+
+    private JavaGenerator generator(final PrecedenceChecks precedenceChecks)
+    {
+        return new JavaGenerator(ir, BUFFER_NAME, READ_ONLY_BUFFER_NAME, false, false, false, false,
+            precedenceChecks, outputManager);
     }
 
     private void generateTypeStubs() throws IOException

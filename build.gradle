@@ -229,6 +229,9 @@ subprojects {
         }
 
         javaLauncher.set(toolchainLauncher)
+
+        systemProperty 'sbe.enable.ir.precedence.checks', 'true'
+        systemProperty 'sbe.enable.test.precedence.checks', 'true'
     }
 }
 
@@ -279,9 +282,12 @@ project(':sbe-tool') {
                 'sbe.output.dir': generatedDir,
                 'sbe.target.language': 'Java',
                 'sbe.validation.stop.on.error': 'true',
-                'sbe.validation.xsd': validationXsdPath)
+                'sbe.validation.xsd': validationXsdPath,
+                'sbe.generate.precedence.checks': 'true',
+                'sbe.java.precedence.checks.property.name': 'sbe.enable.test.precedence.checks')
         args = ['src/test/resources/json-printer-test-schema.xml',
-                'src/test/resources/composite-elements-schema.xml']
+                'src/test/resources/composite-elements-schema.xml',
+                'src/test/resources/field-order-check-schema.xml']
     }
 
     jar {
@@ -541,7 +547,8 @@ project(':sbe-benchmarks') {
                 'sbe.validation.stop.on.error': 'true',
                 'sbe.validation.xsd': validationXsdPath,
                 'sbe.java.encoding.buffer.type': 'org.agrona.concurrent.UnsafeBuffer',
-                'sbe.java.decoding.buffer.type': 'org.agrona.concurrent.UnsafeBuffer')
+                'sbe.java.decoding.buffer.type': 'org.agrona.concurrent.UnsafeBuffer',
+                'sbe.generate.precedence.checks': 'false')
         args = ['src/main/resources/car.xml', 'src/main/resources/fix-message-samples.xml']
     }
 
@@ -730,13 +737,15 @@ tasks.register('generateCSharpCodecsTests', JavaExec) {
             'sbe.output.dir': 'csharp/sbe-generated',
             'sbe.target.language': 'uk.co.real_logic.sbe.generation.csharp.CSharp',
             'sbe.xinclude.aware': 'true',
-            'sbe.validation.xsd': validationXsdPath)
+            'sbe.validation.xsd': validationXsdPath,
+            'sbe.generate.precedence.checks': 'true')
     args = ['sbe-tool/src/test/resources/FixBinary.xml',
             'sbe-tool/src/test/resources/issue435.xml',
             'sbe-tool/src/test/resources/issue483.xml',
             'sbe-tool/src/test/resources/issue560.xml',
             'sbe-tool/src/test/resources/since-deprecated-test-schema.xml',
             'sbe-tool/src/test/resources/example-bigendian-test-schema.xml',
+            'sbe-tool/src/test/resources/field-order-check-schema.xml',
             'sbe-benchmarks/src/main/resources/fix-message-samples.xml']
 }
 
@@ -753,7 +762,10 @@ tasks.register('generateJavaIrCodecs', JavaExec) {
     systemProperties(
             'sbe.output.dir': 'sbe-tool/src/main/java',
             'sbe.target.language': 'Java',
-            'sbe.validation.xsd': validationXsdPath)
+            'sbe.validation.xsd': validationXsdPath,
+            'sbe.generate.precedence.checks': 'true',
+            'sbe.precedence.checks.flag.name': 'SBE_ENABLE_IR_PRECEDENCE_CHECKS',
+            'sbe.java.precedence.checks.property.name': 'sbe.enable.ir.precedence.checks')
     args = ['sbe-tool/src/main/resources/sbe-ir.xml']
 }
 
@@ -763,7 +775,9 @@ tasks.register('generateCppIrCodecs', JavaExec) {
     systemProperties(
             'sbe.output.dir': 'sbe-tool/src/main/cpp',
             'sbe.target.language': 'cpp',
-            'sbe.validation.xsd': validationXsdPath)
+            'sbe.validation.xsd': validationXsdPath,
+            'sbe.generate.precedence.checks': 'true',
+            'sbe.precedence.checks.flag.name': 'SBE_ENABLE_IR_PRECEDENCE_CHECKS')
     args = ['sbe-tool/src/main/resources/sbe-ir.xml']
 }
 

@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include <iostream>
 #include <memory>
 #include <cstring>
 
@@ -217,43 +216,43 @@ public:
         performanceFigures.next();
         EXPECT_EQ(performanceFigures.octaneRating(), 95);
 
-        Car::PerformanceFigures::Acceleration &acceleration = performanceFigures.acceleration();
-        EXPECT_EQ(acceleration.count(), 3u);
-        EXPECT_TRUE(acceleration.hasNext());
-        acceleration.next();
-        EXPECT_EQ(acceleration.mph(), 30);
-        EXPECT_EQ(acceleration.seconds(), 4.0f);
+        Car::PerformanceFigures::Acceleration &acceleration1 = performanceFigures.acceleration();
+        EXPECT_EQ(acceleration1.count(), 3u);
+        EXPECT_TRUE(acceleration1.hasNext());
+        acceleration1.next();
+        EXPECT_EQ(acceleration1.mph(), 30);
+        EXPECT_EQ(acceleration1.seconds(), 4.0f);
 
-        EXPECT_TRUE(acceleration.hasNext());
-        acceleration.next();
-        EXPECT_EQ(acceleration.mph(), 60);
-        EXPECT_EQ(acceleration.seconds(), 7.5f);
+        EXPECT_TRUE(acceleration1.hasNext());
+        acceleration1.next();
+        EXPECT_EQ(acceleration1.mph(), 60);
+        EXPECT_EQ(acceleration1.seconds(), 7.5f);
 
-        EXPECT_TRUE(acceleration.hasNext());
-        acceleration.next();
-        EXPECT_EQ(acceleration.mph(), 100);
-        EXPECT_EQ(acceleration.seconds(), 12.2f);
+        EXPECT_TRUE(acceleration1.hasNext());
+        acceleration1.next();
+        EXPECT_EQ(acceleration1.mph(), 100);
+        EXPECT_EQ(acceleration1.seconds(), 12.2f);
 
         EXPECT_TRUE(performanceFigures.hasNext());
         performanceFigures.next();
         EXPECT_EQ(performanceFigures.octaneRating(), 99);
 
-        acceleration = performanceFigures.acceleration();
-        EXPECT_EQ(acceleration.count(), 3u);
-        EXPECT_TRUE(acceleration.hasNext());
-        acceleration.next();
-        EXPECT_EQ(acceleration.mph(), 30);
-        EXPECT_EQ(acceleration.seconds(), 3.8f);
+        Car::PerformanceFigures::Acceleration &acceleration2 = performanceFigures.acceleration();
+        EXPECT_EQ(acceleration2.count(), 3u);
+        EXPECT_TRUE(acceleration2.hasNext());
+        acceleration2.next();
+        EXPECT_EQ(acceleration2.mph(), 30);
+        EXPECT_EQ(acceleration2.seconds(), 3.8f);
 
-        EXPECT_TRUE(acceleration.hasNext());
-        acceleration.next();
-        EXPECT_EQ(acceleration.mph(), 60);
-        EXPECT_EQ(acceleration.seconds(), 7.1f);
+        EXPECT_TRUE(acceleration2.hasNext());
+        acceleration2.next();
+        EXPECT_EQ(acceleration2.mph(), 60);
+        EXPECT_EQ(acceleration2.seconds(), 7.1f);
 
-        EXPECT_TRUE(acceleration.hasNext());
-        acceleration.next();
-        EXPECT_EQ(acceleration.mph(), 100);
-        EXPECT_EQ(acceleration.seconds(), 11.8f);
+        EXPECT_TRUE(acceleration2.hasNext());
+        acceleration2.next();
+        EXPECT_EQ(acceleration2.mph(), 100);
+        EXPECT_EQ(acceleration2.seconds(), 11.8f);
 
         return m_carDecoder.encodedLength();
     }

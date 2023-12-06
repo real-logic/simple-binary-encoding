@@ -18,6 +18,7 @@ function(sbe_test name)
     add_executable("${name}" "${name}.cpp")
     target_include_directories("${name}"
         PRIVATE ${GTEST_SOURCE_DIR}/googletest/include
+        PRIVATE ${GTEST_SOURCE_DIR}/googlemock/include
         PRIVATE ${CXX_CODEC_TARGET_DIR}
     )
     target_compile_options("${name}" PRIVATE $<$<CXX_COMPILER_ID:AppleClang>:-Werror>)
@@ -40,6 +41,7 @@ set(MESSAGE_BLOCK_LENGTH_TEST ${CODEC_SCHEMA_DIR}/message-block-length-test.xml)
 set(GROUP_WITH_DATA_SCHEMA ${CODEC_SCHEMA_DIR}/group-with-data-schema.xml)
 set(ISSUE835_SCHEMA ${CODEC_SCHEMA_DIR}/issue835.xml)
 set(ISSUE889_SCHEMA ${CODEC_SCHEMA_DIR}/issue889.xml)
+set(ACCESS_ORDER_SCHEMA ${CODEC_SCHEMA_DIR}/field-order-check-schema.xml)
 
 set(GENERATED_CODECS
     ${CXX_CODEC_TARGET_DIR}
@@ -54,12 +56,16 @@ add_custom_command(
         ${GROUP_WITH_DATA_SCHEMA}
         ${ISSUE835_SCHEMA}
         ${ISSUE889_SCHEMA}
+        ${ACCESS_ORDER_SCHEMA}
     sbe-jar ${SBE_JAR}
     COMMAND
         ${Java_JAVA_EXECUTABLE}
             -Dsbe.output.dir=${CXX_CODEC_TARGET_DIR}
             -Dsbe.generate.ir="true"
             -Dsbe.target.language="cpp"
+            -Dsbe.generate.precedence.checks="true"
+            -Dsbe.precedence.checks.flag.name="SBE_ENABLE_PRECEDENCE_CHECKS_IN_TESTS"
+            -Dsbe.cpp.disable.implicit.copying="true"
             -jar ${SBE_JAR}
             ${CODE_GENERATION_SCHEMA}
             ${COMPOSITE_OFFSETS_SCHEMA}
@@ -68,6 +74,7 @@ add_custom_command(
             ${COMPOSITE_ELEMENTS_SCHEMA}
             ${ISSUE835_SCHEMA}
             ${ISSUE889_SCHEMA}
+            ${ACCESS_ORDER_SCHEMA}
 )
 
 add_custom_target(codecs DEPENDS ${GENERATED_CODECS})
@@ -83,3 +90,5 @@ sbe_test(Rc3OtfFullIrTest codecs)
 sbe_test(CompositeElementsTest codecs)
 sbe_test(Issue835Test codecs)
 sbe_test(Issue889Test codecs)
+sbe_test(FieldAccessOrderCheckTest codecs)
+target_compile_definitions(FieldAccessOrderCheckTest PRIVATE SBE_ENABLE_PRECEDENCE_CHECKS_IN_TESTS)

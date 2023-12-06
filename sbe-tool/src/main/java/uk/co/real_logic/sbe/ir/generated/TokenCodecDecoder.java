@@ -11,6 +11,130 @@ import org.agrona.DirectBuffer;
 @SuppressWarnings("all")
 public final class TokenCodecDecoder
 {
+    private static final boolean ENABLE_BOUNDS_CHECKS = !Boolean.getBoolean("agrona.disable.bounds.checks");
+
+    private static final boolean SBE_ENABLE_IR_PRECEDENCE_CHECKS = Boolean.parseBoolean(System.getProperty(
+        "sbe.enable.ir.precedence.checks",
+        Boolean.toString(ENABLE_BOUNDS_CHECKS)));
+
+    /**
+     * The states in which a encoder/decoder/codec can live.
+     *
+     * <p>The state machine diagram below, encoded in the dot language, describes
+     * the valid state transitions according to the order in which fields may be
+     * accessed safely. Tools such as PlantUML and Graphviz can render it.
+     *
+     * <pre>{@code
+     *   digraph G {
+     *       NOT_WRAPPED -> V0_BLOCK [label="  wrap(version=0)  "];
+     *       V0_BLOCK -> V0_BLOCK [label="  tokenOffset(?)  "];
+     *       V0_BLOCK -> V0_BLOCK [label="  tokenSize(?)  "];
+     *       V0_BLOCK -> V0_BLOCK [label="  fieldId(?)  "];
+     *       V0_BLOCK -> V0_BLOCK [label="  tokenVersion(?)  "];
+     *       V0_BLOCK -> V0_BLOCK [label="  componentTokenCount(?)  "];
+     *       V0_BLOCK -> V0_BLOCK [label="  signal(?)  "];
+     *       V0_BLOCK -> V0_BLOCK [label="  primitiveType(?)  "];
+     *       V0_BLOCK -> V0_BLOCK [label="  byteOrder(?)  "];
+     *       V0_BLOCK -> V0_BLOCK [label="  presence(?)  "];
+     *       V0_BLOCK -> V0_BLOCK [label="  deprecated(?)  "];
+     *       V0_BLOCK -> V0_BLOCK [label="  nameLength()  "];
+     *       V0_BLOCK -> V0_NAME_DONE [label="  name(?)  "];
+     *       V0_NAME_DONE -> V0_NAME_DONE [label="  constValueLength()  "];
+     *       V0_NAME_DONE -> V0_CONSTVALUE_DONE [label="  constValue(?)  "];
+     *       V0_CONSTVALUE_DONE -> V0_CONSTVALUE_DONE [label="  minValueLength()  "];
+     *       V0_CONSTVALUE_DONE -> V0_MINVALUE_DONE [label="  minValue(?)  "];
+     *       V0_MINVALUE_DONE -> V0_MINVALUE_DONE [label="  maxValueLength()  "];
+     *       V0_MINVALUE_DONE -> V0_MAXVALUE_DONE [label="  maxValue(?)  "];
+     *       V0_MAXVALUE_DONE -> V0_MAXVALUE_DONE [label="  nullValueLength()  "];
+     *       V0_MAXVALUE_DONE -> V0_NULLVALUE_DONE [label="  nullValue(?)  "];
+     *       V0_NULLVALUE_DONE -> V0_NULLVALUE_DONE [label="  characterEncodingLength()  "];
+     *       V0_NULLVALUE_DONE -> V0_CHARACTERENCODING_DONE [label="  characterEncoding(?)  "];
+     *       V0_CHARACTERENCODING_DONE -> V0_CHARACTERENCODING_DONE [label="  epochLength()  "];
+     *       V0_CHARACTERENCODING_DONE -> V0_EPOCH_DONE [label="  epoch(?)  "];
+     *       V0_EPOCH_DONE -> V0_EPOCH_DONE [label="  timeUnitLength()  "];
+     *       V0_EPOCH_DONE -> V0_TIMEUNIT_DONE [label="  timeUnit(?)  "];
+     *       V0_TIMEUNIT_DONE -> V0_TIMEUNIT_DONE [label="  semanticTypeLength()  "];
+     *       V0_TIMEUNIT_DONE -> V0_SEMANTICTYPE_DONE [label="  semanticType(?)  "];
+     *       V0_SEMANTICTYPE_DONE -> V0_SEMANTICTYPE_DONE [label="  descriptionLength()  "];
+     *       V0_SEMANTICTYPE_DONE -> V0_DESCRIPTION_DONE [label="  description(?)  "];
+     *       V0_DESCRIPTION_DONE -> V0_DESCRIPTION_DONE [label="  referencedNameLength()  "];
+     *       V0_DESCRIPTION_DONE -> V0_REFERENCEDNAME_DONE [label="  referencedName(?)  "];
+     *   }
+     * }</pre>
+     */
+    private static class CodecStates
+    {
+        private static final int NOT_WRAPPED = 0;
+        private static final int V0_BLOCK = 1;
+        private static final int V0_NAME_DONE = 2;
+        private static final int V0_CONSTVALUE_DONE = 3;
+        private static final int V0_MINVALUE_DONE = 4;
+        private static final int V0_MAXVALUE_DONE = 5;
+        private static final int V0_NULLVALUE_DONE = 6;
+        private static final int V0_CHARACTERENCODING_DONE = 7;
+        private static final int V0_EPOCH_DONE = 8;
+        private static final int V0_TIMEUNIT_DONE = 9;
+        private static final int V0_SEMANTICTYPE_DONE = 10;
+        private static final int V0_DESCRIPTION_DONE = 11;
+        private static final int V0_REFERENCEDNAME_DONE = 12;
+
+        private static final String[] STATE_NAME_LOOKUP =
+        {
+            "NOT_WRAPPED",
+            "V0_BLOCK",
+            "V0_NAME_DONE",
+            "V0_CONSTVALUE_DONE",
+            "V0_MINVALUE_DONE",
+            "V0_MAXVALUE_DONE",
+            "V0_NULLVALUE_DONE",
+            "V0_CHARACTERENCODING_DONE",
+            "V0_EPOCH_DONE",
+            "V0_TIMEUNIT_DONE",
+            "V0_SEMANTICTYPE_DONE",
+            "V0_DESCRIPTION_DONE",
+            "V0_REFERENCEDNAME_DONE",
+        };
+
+        private static final String[] STATE_TRANSITIONS_LOOKUP =
+        {
+            "\"wrap(version=0)\"",
+            "\"tokenOffset(?)\", \"tokenSize(?)\", \"fieldId(?)\", \"tokenVersion(?)\", \"componentTokenCount(?)\", \"signal(?)\", \"primitiveType(?)\", \"byteOrder(?)\", \"presence(?)\", \"deprecated(?)\", \"nameLength()\", \"name(?)\"",
+            "\"constValueLength()\", \"constValue(?)\"",
+            "\"minValueLength()\", \"minValue(?)\"",
+            "\"maxValueLength()\", \"maxValue(?)\"",
+            "\"nullValueLength()\", \"nullValue(?)\"",
+            "\"characterEncodingLength()\", \"characterEncoding(?)\"",
+            "\"epochLength()\", \"epoch(?)\"",
+            "\"timeUnitLength()\", \"timeUnit(?)\"",
+            "\"semanticTypeLength()\", \"semanticType(?)\"",
+            "\"descriptionLength()\", \"description(?)\"",
+            "\"referencedNameLength()\", \"referencedName(?)\"",
+            "",
+        };
+
+        private static String name(final int state)
+        {
+            return STATE_NAME_LOOKUP[state];
+        }
+
+        private static String transitions(final int state)
+        {
+            return STATE_TRANSITIONS_LOOKUP[state];
+        }
+    }
+
+    private int codecState = CodecStates.NOT_WRAPPED;
+
+    private int codecState()
+    {
+        return codecState;
+    }
+
+    private void codecState(int newState)
+    {
+        codecState = newState;
+    }
+
     public static final int BLOCK_LENGTH = 28;
     public static final int TEMPLATE_ID = 2;
     public static final int SCHEMA_ID = 1;
@@ -66,6 +190,19 @@ public final class TokenCodecDecoder
         return offset;
     }
 
+    private void onWrap(final int actingVersion)
+    {
+        switch(actingVersion)
+        {
+            case 0:
+                codecState(CodecStates.V0_BLOCK);
+                break;
+            default:
+                codecState(CodecStates.V0_BLOCK);
+                break;
+        }
+    }
+
     public TokenCodecDecoder wrap(
         final DirectBuffer buffer,
         final int offset,
@@ -81,6 +218,11 @@ public final class TokenCodecDecoder
         this.actingBlockLength = actingBlockLength;
         this.actingVersion = actingVersion;
         limit(offset + actingBlockLength);
+
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onWrap(actingVersion);
+        }
 
         return this;
     }
@@ -113,9 +255,15 @@ public final class TokenCodecDecoder
     public int sbeDecodedLength()
     {
         final int currentLimit = limit();
+        final int currentCodecState = codecState();
         sbeSkip();
         final int decodedLength = encodedLength();
         limit(currentLimit);
+
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            codecState(currentCodecState);
+        }
 
         return decodedLength;
     }
@@ -170,6 +318,17 @@ public final class TokenCodecDecoder
         return "";
     }
 
+    private void onTokenOffsetAccessed()
+    {
+        if (codecState() == CodecStates.NOT_WRAPPED)
+        {
+            throw new IllegalStateException("Illegal field access order. " +
+                "Cannot access field \"tokenOffset\" in state: " + CodecStates.name(codecState()) +
+                ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                "]. Please see the diagram in the Javadoc of the class TokenCodecDecoder#CodecStates.");
+        }
+    }
+
     public static int tokenOffsetNullValue()
     {
         return -2147483648;
@@ -187,6 +346,11 @@ public final class TokenCodecDecoder
 
     public int tokenOffset()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onTokenOffsetAccessed();
+        }
+
         return buffer.getInt(offset + 0, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
@@ -221,6 +385,17 @@ public final class TokenCodecDecoder
         return "";
     }
 
+    private void onTokenSizeAccessed()
+    {
+        if (codecState() == CodecStates.NOT_WRAPPED)
+        {
+            throw new IllegalStateException("Illegal field access order. " +
+                "Cannot access field \"tokenSize\" in state: " + CodecStates.name(codecState()) +
+                ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                "]. Please see the diagram in the Javadoc of the class TokenCodecDecoder#CodecStates.");
+        }
+    }
+
     public static int tokenSizeNullValue()
     {
         return -2147483648;
@@ -238,6 +413,11 @@ public final class TokenCodecDecoder
 
     public int tokenSize()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onTokenSizeAccessed();
+        }
+
         return buffer.getInt(offset + 4, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
@@ -272,6 +452,17 @@ public final class TokenCodecDecoder
         return "";
     }
 
+    private void onFieldIdAccessed()
+    {
+        if (codecState() == CodecStates.NOT_WRAPPED)
+        {
+            throw new IllegalStateException("Illegal field access order. " +
+                "Cannot access field \"fieldId\" in state: " + CodecStates.name(codecState()) +
+                ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                "]. Please see the diagram in the Javadoc of the class TokenCodecDecoder#CodecStates.");
+        }
+    }
+
     public static int fieldIdNullValue()
     {
         return -2147483648;
@@ -289,6 +480,11 @@ public final class TokenCodecDecoder
 
     public int fieldId()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onFieldIdAccessed();
+        }
+
         return buffer.getInt(offset + 8, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
@@ -323,6 +519,17 @@ public final class TokenCodecDecoder
         return "";
     }
 
+    private void onTokenVersionAccessed()
+    {
+        if (codecState() == CodecStates.NOT_WRAPPED)
+        {
+            throw new IllegalStateException("Illegal field access order. " +
+                "Cannot access field \"tokenVersion\" in state: " + CodecStates.name(codecState()) +
+                ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                "]. Please see the diagram in the Javadoc of the class TokenCodecDecoder#CodecStates.");
+        }
+    }
+
     public static int tokenVersionNullValue()
     {
         return -2147483648;
@@ -340,6 +547,11 @@ public final class TokenCodecDecoder
 
     public int tokenVersion()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onTokenVersionAccessed();
+        }
+
         return buffer.getInt(offset + 12, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
@@ -374,6 +586,17 @@ public final class TokenCodecDecoder
         return "";
     }
 
+    private void onComponentTokenCountAccessed()
+    {
+        if (codecState() == CodecStates.NOT_WRAPPED)
+        {
+            throw new IllegalStateException("Illegal field access order. " +
+                "Cannot access field \"componentTokenCount\" in state: " + CodecStates.name(codecState()) +
+                ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                "]. Please see the diagram in the Javadoc of the class TokenCodecDecoder#CodecStates.");
+        }
+    }
+
     public static int componentTokenCountNullValue()
     {
         return -2147483648;
@@ -391,6 +614,11 @@ public final class TokenCodecDecoder
 
     public int componentTokenCount()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onComponentTokenCountAccessed();
+        }
+
         return buffer.getInt(offset + 16, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
@@ -425,13 +653,34 @@ public final class TokenCodecDecoder
         return "";
     }
 
+    private void onSignalAccessed()
+    {
+        if (codecState() == CodecStates.NOT_WRAPPED)
+        {
+            throw new IllegalStateException("Illegal field access order. " +
+                "Cannot access field \"signal\" in state: " + CodecStates.name(codecState()) +
+                ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                "]. Please see the diagram in the Javadoc of the class TokenCodecDecoder#CodecStates.");
+        }
+    }
+
     public short signalRaw()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onSignalAccessed();
+        }
+
         return ((short)(buffer.getByte(offset + 20) & 0xFF));
     }
 
     public SignalCodec signal()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onSignalAccessed();
+        }
+
         return SignalCodec.get(((short)(buffer.getByte(offset + 20) & 0xFF)));
     }
 
@@ -466,13 +715,34 @@ public final class TokenCodecDecoder
         return "";
     }
 
+    private void onPrimitiveTypeAccessed()
+    {
+        if (codecState() == CodecStates.NOT_WRAPPED)
+        {
+            throw new IllegalStateException("Illegal field access order. " +
+                "Cannot access field \"primitiveType\" in state: " + CodecStates.name(codecState()) +
+                ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                "]. Please see the diagram in the Javadoc of the class TokenCodecDecoder#CodecStates.");
+        }
+    }
+
     public short primitiveTypeRaw()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onPrimitiveTypeAccessed();
+        }
+
         return ((short)(buffer.getByte(offset + 21) & 0xFF));
     }
 
     public PrimitiveTypeCodec primitiveType()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onPrimitiveTypeAccessed();
+        }
+
         return PrimitiveTypeCodec.get(((short)(buffer.getByte(offset + 21) & 0xFF)));
     }
 
@@ -507,13 +777,34 @@ public final class TokenCodecDecoder
         return "";
     }
 
+    private void onByteOrderAccessed()
+    {
+        if (codecState() == CodecStates.NOT_WRAPPED)
+        {
+            throw new IllegalStateException("Illegal field access order. " +
+                "Cannot access field \"byteOrder\" in state: " + CodecStates.name(codecState()) +
+                ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                "]. Please see the diagram in the Javadoc of the class TokenCodecDecoder#CodecStates.");
+        }
+    }
+
     public short byteOrderRaw()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onByteOrderAccessed();
+        }
+
         return ((short)(buffer.getByte(offset + 22) & 0xFF));
     }
 
     public ByteOrderCodec byteOrder()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onByteOrderAccessed();
+        }
+
         return ByteOrderCodec.get(((short)(buffer.getByte(offset + 22) & 0xFF)));
     }
 
@@ -548,13 +839,34 @@ public final class TokenCodecDecoder
         return "";
     }
 
+    private void onPresenceAccessed()
+    {
+        if (codecState() == CodecStates.NOT_WRAPPED)
+        {
+            throw new IllegalStateException("Illegal field access order. " +
+                "Cannot access field \"presence\" in state: " + CodecStates.name(codecState()) +
+                ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                "]. Please see the diagram in the Javadoc of the class TokenCodecDecoder#CodecStates.");
+        }
+    }
+
     public short presenceRaw()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onPresenceAccessed();
+        }
+
         return ((short)(buffer.getByte(offset + 23) & 0xFF));
     }
 
     public PresenceCodec presence()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onPresenceAccessed();
+        }
+
         return PresenceCodec.get(((short)(buffer.getByte(offset + 23) & 0xFF)));
     }
 
@@ -589,6 +901,17 @@ public final class TokenCodecDecoder
         return "";
     }
 
+    private void onDeprecatedAccessed()
+    {
+        if (codecState() == CodecStates.NOT_WRAPPED)
+        {
+            throw new IllegalStateException("Illegal field access order. " +
+                "Cannot access field \"deprecated\" in state: " + CodecStates.name(codecState()) +
+                ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                "]. Please see the diagram in the Javadoc of the class TokenCodecDecoder#CodecStates.");
+        }
+    }
+
     public static int deprecatedNullValue()
     {
         return 0;
@@ -606,6 +929,11 @@ public final class TokenCodecDecoder
 
     public int deprecated()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onDeprecatedAccessed();
+        }
+
         return buffer.getInt(offset + 24, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
@@ -640,14 +968,54 @@ public final class TokenCodecDecoder
         return 2;
     }
 
+    void onNameLengthAccessed()
+    {
+        switch (codecState())
+        {
+            case CodecStates.V0_BLOCK:
+                codecState(CodecStates.V0_BLOCK);
+                break;
+            default:
+                throw new IllegalStateException("Illegal field access order. " +
+                    "Cannot decode length of var data \"name\" in state: " + CodecStates.name(codecState()) +
+                    ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                    "]. Please see the diagram in the Javadoc of the class TokenCodecDecoder#CodecStates.");
+        }
+    }
+
+    private void onNameAccessed()
+    {
+        switch (codecState())
+        {
+            case CodecStates.V0_BLOCK:
+                codecState(CodecStates.V0_NAME_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Illegal field access order. " +
+                    "Cannot access field \"name\" in state: " + CodecStates.name(codecState()) +
+                    ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                    "]. Please see the diagram in the Javadoc of the class TokenCodecDecoder#CodecStates.");
+        }
+    }
+
     public int nameLength()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onNameLengthAccessed();
+        }
+
         final int limit = parentMessage.limit();
         return (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
     }
 
     public int skipName()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onNameAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -659,6 +1027,11 @@ public final class TokenCodecDecoder
 
     public int getName(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onNameAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -671,6 +1044,11 @@ public final class TokenCodecDecoder
 
     public int getName(final byte[] dst, final int dstOffset, final int length)
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onNameAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -683,6 +1061,11 @@ public final class TokenCodecDecoder
 
     public void wrapName(final DirectBuffer wrapBuffer)
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onNameAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -692,6 +1075,11 @@ public final class TokenCodecDecoder
 
     public String name()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onNameAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -738,14 +1126,54 @@ public final class TokenCodecDecoder
         return 2;
     }
 
+    void onConstValueLengthAccessed()
+    {
+        switch (codecState())
+        {
+            case CodecStates.V0_NAME_DONE:
+                codecState(CodecStates.V0_NAME_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Illegal field access order. " +
+                    "Cannot decode length of var data \"constValue\" in state: " + CodecStates.name(codecState()) +
+                    ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                    "]. Please see the diagram in the Javadoc of the class TokenCodecDecoder#CodecStates.");
+        }
+    }
+
+    private void onConstValueAccessed()
+    {
+        switch (codecState())
+        {
+            case CodecStates.V0_NAME_DONE:
+                codecState(CodecStates.V0_CONSTVALUE_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Illegal field access order. " +
+                    "Cannot access field \"constValue\" in state: " + CodecStates.name(codecState()) +
+                    ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                    "]. Please see the diagram in the Javadoc of the class TokenCodecDecoder#CodecStates.");
+        }
+    }
+
     public int constValueLength()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onConstValueLengthAccessed();
+        }
+
         final int limit = parentMessage.limit();
         return (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
     }
 
     public int skipConstValue()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onConstValueAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -757,6 +1185,11 @@ public final class TokenCodecDecoder
 
     public int getConstValue(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onConstValueAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -769,6 +1202,11 @@ public final class TokenCodecDecoder
 
     public int getConstValue(final byte[] dst, final int dstOffset, final int length)
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onConstValueAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -781,6 +1219,11 @@ public final class TokenCodecDecoder
 
     public void wrapConstValue(final DirectBuffer wrapBuffer)
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onConstValueAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -790,6 +1233,11 @@ public final class TokenCodecDecoder
 
     public String constValue()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onConstValueAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -836,14 +1284,54 @@ public final class TokenCodecDecoder
         return 2;
     }
 
+    void onMinValueLengthAccessed()
+    {
+        switch (codecState())
+        {
+            case CodecStates.V0_CONSTVALUE_DONE:
+                codecState(CodecStates.V0_CONSTVALUE_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Illegal field access order. " +
+                    "Cannot decode length of var data \"minValue\" in state: " + CodecStates.name(codecState()) +
+                    ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                    "]. Please see the diagram in the Javadoc of the class TokenCodecDecoder#CodecStates.");
+        }
+    }
+
+    private void onMinValueAccessed()
+    {
+        switch (codecState())
+        {
+            case CodecStates.V0_CONSTVALUE_DONE:
+                codecState(CodecStates.V0_MINVALUE_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Illegal field access order. " +
+                    "Cannot access field \"minValue\" in state: " + CodecStates.name(codecState()) +
+                    ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                    "]. Please see the diagram in the Javadoc of the class TokenCodecDecoder#CodecStates.");
+        }
+    }
+
     public int minValueLength()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onMinValueLengthAccessed();
+        }
+
         final int limit = parentMessage.limit();
         return (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
     }
 
     public int skipMinValue()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onMinValueAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -855,6 +1343,11 @@ public final class TokenCodecDecoder
 
     public int getMinValue(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onMinValueAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -867,6 +1360,11 @@ public final class TokenCodecDecoder
 
     public int getMinValue(final byte[] dst, final int dstOffset, final int length)
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onMinValueAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -879,6 +1377,11 @@ public final class TokenCodecDecoder
 
     public void wrapMinValue(final DirectBuffer wrapBuffer)
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onMinValueAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -888,6 +1391,11 @@ public final class TokenCodecDecoder
 
     public String minValue()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onMinValueAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -934,14 +1442,54 @@ public final class TokenCodecDecoder
         return 2;
     }
 
+    void onMaxValueLengthAccessed()
+    {
+        switch (codecState())
+        {
+            case CodecStates.V0_MINVALUE_DONE:
+                codecState(CodecStates.V0_MINVALUE_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Illegal field access order. " +
+                    "Cannot decode length of var data \"maxValue\" in state: " + CodecStates.name(codecState()) +
+                    ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                    "]. Please see the diagram in the Javadoc of the class TokenCodecDecoder#CodecStates.");
+        }
+    }
+
+    private void onMaxValueAccessed()
+    {
+        switch (codecState())
+        {
+            case CodecStates.V0_MINVALUE_DONE:
+                codecState(CodecStates.V0_MAXVALUE_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Illegal field access order. " +
+                    "Cannot access field \"maxValue\" in state: " + CodecStates.name(codecState()) +
+                    ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                    "]. Please see the diagram in the Javadoc of the class TokenCodecDecoder#CodecStates.");
+        }
+    }
+
     public int maxValueLength()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onMaxValueLengthAccessed();
+        }
+
         final int limit = parentMessage.limit();
         return (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
     }
 
     public int skipMaxValue()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onMaxValueAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -953,6 +1501,11 @@ public final class TokenCodecDecoder
 
     public int getMaxValue(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onMaxValueAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -965,6 +1518,11 @@ public final class TokenCodecDecoder
 
     public int getMaxValue(final byte[] dst, final int dstOffset, final int length)
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onMaxValueAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -977,6 +1535,11 @@ public final class TokenCodecDecoder
 
     public void wrapMaxValue(final DirectBuffer wrapBuffer)
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onMaxValueAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -986,6 +1549,11 @@ public final class TokenCodecDecoder
 
     public String maxValue()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onMaxValueAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -1032,14 +1600,54 @@ public final class TokenCodecDecoder
         return 2;
     }
 
+    void onNullValueLengthAccessed()
+    {
+        switch (codecState())
+        {
+            case CodecStates.V0_MAXVALUE_DONE:
+                codecState(CodecStates.V0_MAXVALUE_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Illegal field access order. " +
+                    "Cannot decode length of var data \"nullValue\" in state: " + CodecStates.name(codecState()) +
+                    ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                    "]. Please see the diagram in the Javadoc of the class TokenCodecDecoder#CodecStates.");
+        }
+    }
+
+    private void onNullValueAccessed()
+    {
+        switch (codecState())
+        {
+            case CodecStates.V0_MAXVALUE_DONE:
+                codecState(CodecStates.V0_NULLVALUE_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Illegal field access order. " +
+                    "Cannot access field \"nullValue\" in state: " + CodecStates.name(codecState()) +
+                    ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                    "]. Please see the diagram in the Javadoc of the class TokenCodecDecoder#CodecStates.");
+        }
+    }
+
     public int nullValueLength()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onNullValueLengthAccessed();
+        }
+
         final int limit = parentMessage.limit();
         return (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
     }
 
     public int skipNullValue()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onNullValueAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -1051,6 +1659,11 @@ public final class TokenCodecDecoder
 
     public int getNullValue(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onNullValueAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -1063,6 +1676,11 @@ public final class TokenCodecDecoder
 
     public int getNullValue(final byte[] dst, final int dstOffset, final int length)
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onNullValueAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -1075,6 +1693,11 @@ public final class TokenCodecDecoder
 
     public void wrapNullValue(final DirectBuffer wrapBuffer)
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onNullValueAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -1084,6 +1707,11 @@ public final class TokenCodecDecoder
 
     public String nullValue()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onNullValueAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -1130,14 +1758,54 @@ public final class TokenCodecDecoder
         return 2;
     }
 
+    void onCharacterEncodingLengthAccessed()
+    {
+        switch (codecState())
+        {
+            case CodecStates.V0_NULLVALUE_DONE:
+                codecState(CodecStates.V0_NULLVALUE_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Illegal field access order. " +
+                    "Cannot decode length of var data \"characterEncoding\" in state: " + CodecStates.name(codecState()) +
+                    ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                    "]. Please see the diagram in the Javadoc of the class TokenCodecDecoder#CodecStates.");
+        }
+    }
+
+    private void onCharacterEncodingAccessed()
+    {
+        switch (codecState())
+        {
+            case CodecStates.V0_NULLVALUE_DONE:
+                codecState(CodecStates.V0_CHARACTERENCODING_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Illegal field access order. " +
+                    "Cannot access field \"characterEncoding\" in state: " + CodecStates.name(codecState()) +
+                    ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                    "]. Please see the diagram in the Javadoc of the class TokenCodecDecoder#CodecStates.");
+        }
+    }
+
     public int characterEncodingLength()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onCharacterEncodingLengthAccessed();
+        }
+
         final int limit = parentMessage.limit();
         return (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
     }
 
     public int skipCharacterEncoding()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onCharacterEncodingAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -1149,6 +1817,11 @@ public final class TokenCodecDecoder
 
     public int getCharacterEncoding(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onCharacterEncodingAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -1161,6 +1834,11 @@ public final class TokenCodecDecoder
 
     public int getCharacterEncoding(final byte[] dst, final int dstOffset, final int length)
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onCharacterEncodingAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -1173,6 +1851,11 @@ public final class TokenCodecDecoder
 
     public void wrapCharacterEncoding(final DirectBuffer wrapBuffer)
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onCharacterEncodingAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -1182,6 +1865,11 @@ public final class TokenCodecDecoder
 
     public String characterEncoding()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onCharacterEncodingAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -1228,14 +1916,54 @@ public final class TokenCodecDecoder
         return 2;
     }
 
+    void onEpochLengthAccessed()
+    {
+        switch (codecState())
+        {
+            case CodecStates.V0_CHARACTERENCODING_DONE:
+                codecState(CodecStates.V0_CHARACTERENCODING_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Illegal field access order. " +
+                    "Cannot decode length of var data \"epoch\" in state: " + CodecStates.name(codecState()) +
+                    ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                    "]. Please see the diagram in the Javadoc of the class TokenCodecDecoder#CodecStates.");
+        }
+    }
+
+    private void onEpochAccessed()
+    {
+        switch (codecState())
+        {
+            case CodecStates.V0_CHARACTERENCODING_DONE:
+                codecState(CodecStates.V0_EPOCH_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Illegal field access order. " +
+                    "Cannot access field \"epoch\" in state: " + CodecStates.name(codecState()) +
+                    ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                    "]. Please see the diagram in the Javadoc of the class TokenCodecDecoder#CodecStates.");
+        }
+    }
+
     public int epochLength()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onEpochLengthAccessed();
+        }
+
         final int limit = parentMessage.limit();
         return (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
     }
 
     public int skipEpoch()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onEpochAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -1247,6 +1975,11 @@ public final class TokenCodecDecoder
 
     public int getEpoch(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onEpochAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -1259,6 +1992,11 @@ public final class TokenCodecDecoder
 
     public int getEpoch(final byte[] dst, final int dstOffset, final int length)
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onEpochAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -1271,6 +2009,11 @@ public final class TokenCodecDecoder
 
     public void wrapEpoch(final DirectBuffer wrapBuffer)
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onEpochAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -1280,6 +2023,11 @@ public final class TokenCodecDecoder
 
     public String epoch()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onEpochAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -1326,14 +2074,54 @@ public final class TokenCodecDecoder
         return 2;
     }
 
+    void onTimeUnitLengthAccessed()
+    {
+        switch (codecState())
+        {
+            case CodecStates.V0_EPOCH_DONE:
+                codecState(CodecStates.V0_EPOCH_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Illegal field access order. " +
+                    "Cannot decode length of var data \"timeUnit\" in state: " + CodecStates.name(codecState()) +
+                    ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                    "]. Please see the diagram in the Javadoc of the class TokenCodecDecoder#CodecStates.");
+        }
+    }
+
+    private void onTimeUnitAccessed()
+    {
+        switch (codecState())
+        {
+            case CodecStates.V0_EPOCH_DONE:
+                codecState(CodecStates.V0_TIMEUNIT_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Illegal field access order. " +
+                    "Cannot access field \"timeUnit\" in state: " + CodecStates.name(codecState()) +
+                    ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                    "]. Please see the diagram in the Javadoc of the class TokenCodecDecoder#CodecStates.");
+        }
+    }
+
     public int timeUnitLength()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onTimeUnitLengthAccessed();
+        }
+
         final int limit = parentMessage.limit();
         return (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
     }
 
     public int skipTimeUnit()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onTimeUnitAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -1345,6 +2133,11 @@ public final class TokenCodecDecoder
 
     public int getTimeUnit(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onTimeUnitAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -1357,6 +2150,11 @@ public final class TokenCodecDecoder
 
     public int getTimeUnit(final byte[] dst, final int dstOffset, final int length)
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onTimeUnitAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -1369,6 +2167,11 @@ public final class TokenCodecDecoder
 
     public void wrapTimeUnit(final DirectBuffer wrapBuffer)
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onTimeUnitAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -1378,6 +2181,11 @@ public final class TokenCodecDecoder
 
     public String timeUnit()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onTimeUnitAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -1424,14 +2232,54 @@ public final class TokenCodecDecoder
         return 2;
     }
 
+    void onSemanticTypeLengthAccessed()
+    {
+        switch (codecState())
+        {
+            case CodecStates.V0_TIMEUNIT_DONE:
+                codecState(CodecStates.V0_TIMEUNIT_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Illegal field access order. " +
+                    "Cannot decode length of var data \"semanticType\" in state: " + CodecStates.name(codecState()) +
+                    ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                    "]. Please see the diagram in the Javadoc of the class TokenCodecDecoder#CodecStates.");
+        }
+    }
+
+    private void onSemanticTypeAccessed()
+    {
+        switch (codecState())
+        {
+            case CodecStates.V0_TIMEUNIT_DONE:
+                codecState(CodecStates.V0_SEMANTICTYPE_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Illegal field access order. " +
+                    "Cannot access field \"semanticType\" in state: " + CodecStates.name(codecState()) +
+                    ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                    "]. Please see the diagram in the Javadoc of the class TokenCodecDecoder#CodecStates.");
+        }
+    }
+
     public int semanticTypeLength()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onSemanticTypeLengthAccessed();
+        }
+
         final int limit = parentMessage.limit();
         return (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
     }
 
     public int skipSemanticType()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onSemanticTypeAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -1443,6 +2291,11 @@ public final class TokenCodecDecoder
 
     public int getSemanticType(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onSemanticTypeAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -1455,6 +2308,11 @@ public final class TokenCodecDecoder
 
     public int getSemanticType(final byte[] dst, final int dstOffset, final int length)
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onSemanticTypeAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -1467,6 +2325,11 @@ public final class TokenCodecDecoder
 
     public void wrapSemanticType(final DirectBuffer wrapBuffer)
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onSemanticTypeAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -1476,6 +2339,11 @@ public final class TokenCodecDecoder
 
     public String semanticType()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onSemanticTypeAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -1522,14 +2390,54 @@ public final class TokenCodecDecoder
         return 2;
     }
 
+    void onDescriptionLengthAccessed()
+    {
+        switch (codecState())
+        {
+            case CodecStates.V0_SEMANTICTYPE_DONE:
+                codecState(CodecStates.V0_SEMANTICTYPE_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Illegal field access order. " +
+                    "Cannot decode length of var data \"description\" in state: " + CodecStates.name(codecState()) +
+                    ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                    "]. Please see the diagram in the Javadoc of the class TokenCodecDecoder#CodecStates.");
+        }
+    }
+
+    private void onDescriptionAccessed()
+    {
+        switch (codecState())
+        {
+            case CodecStates.V0_SEMANTICTYPE_DONE:
+                codecState(CodecStates.V0_DESCRIPTION_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Illegal field access order. " +
+                    "Cannot access field \"description\" in state: " + CodecStates.name(codecState()) +
+                    ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                    "]. Please see the diagram in the Javadoc of the class TokenCodecDecoder#CodecStates.");
+        }
+    }
+
     public int descriptionLength()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onDescriptionLengthAccessed();
+        }
+
         final int limit = parentMessage.limit();
         return (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
     }
 
     public int skipDescription()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onDescriptionAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -1541,6 +2449,11 @@ public final class TokenCodecDecoder
 
     public int getDescription(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onDescriptionAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -1553,6 +2466,11 @@ public final class TokenCodecDecoder
 
     public int getDescription(final byte[] dst, final int dstOffset, final int length)
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onDescriptionAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -1565,6 +2483,11 @@ public final class TokenCodecDecoder
 
     public void wrapDescription(final DirectBuffer wrapBuffer)
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onDescriptionAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -1574,6 +2497,11 @@ public final class TokenCodecDecoder
 
     public String description()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onDescriptionAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -1620,14 +2548,54 @@ public final class TokenCodecDecoder
         return 2;
     }
 
+    void onReferencedNameLengthAccessed()
+    {
+        switch (codecState())
+        {
+            case CodecStates.V0_DESCRIPTION_DONE:
+                codecState(CodecStates.V0_DESCRIPTION_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Illegal field access order. " +
+                    "Cannot decode length of var data \"referencedName\" in state: " + CodecStates.name(codecState()) +
+                    ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                    "]. Please see the diagram in the Javadoc of the class TokenCodecDecoder#CodecStates.");
+        }
+    }
+
+    private void onReferencedNameAccessed()
+    {
+        switch (codecState())
+        {
+            case CodecStates.V0_DESCRIPTION_DONE:
+                codecState(CodecStates.V0_REFERENCEDNAME_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Illegal field access order. " +
+                    "Cannot access field \"referencedName\" in state: " + CodecStates.name(codecState()) +
+                    ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                    "]. Please see the diagram in the Javadoc of the class TokenCodecDecoder#CodecStates.");
+        }
+    }
+
     public int referencedNameLength()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onReferencedNameLengthAccessed();
+        }
+
         final int limit = parentMessage.limit();
         return (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
     }
 
     public int skipReferencedName()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onReferencedNameAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -1639,6 +2607,11 @@ public final class TokenCodecDecoder
 
     public int getReferencedName(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onReferencedNameAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -1651,6 +2624,11 @@ public final class TokenCodecDecoder
 
     public int getReferencedName(final byte[] dst, final int dstOffset, final int length)
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onReferencedNameAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -1663,6 +2641,11 @@ public final class TokenCodecDecoder
 
     public void wrapReferencedName(final DirectBuffer wrapBuffer)
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onReferencedNameAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -1672,6 +2655,11 @@ public final class TokenCodecDecoder
 
     public String referencedName()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onReferencedNameAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);

@@ -11,6 +11,83 @@ import org.agrona.DirectBuffer;
 @SuppressWarnings("all")
 public final class FrameCodecDecoder
 {
+    private static final boolean ENABLE_BOUNDS_CHECKS = !Boolean.getBoolean("agrona.disable.bounds.checks");
+
+    private static final boolean SBE_ENABLE_IR_PRECEDENCE_CHECKS = Boolean.parseBoolean(System.getProperty(
+        "sbe.enable.ir.precedence.checks",
+        Boolean.toString(ENABLE_BOUNDS_CHECKS)));
+
+    /**
+     * The states in which a encoder/decoder/codec can live.
+     *
+     * <p>The state machine diagram below, encoded in the dot language, describes
+     * the valid state transitions according to the order in which fields may be
+     * accessed safely. Tools such as PlantUML and Graphviz can render it.
+     *
+     * <pre>{@code
+     *   digraph G {
+     *       NOT_WRAPPED -> V0_BLOCK [label="  wrap(version=0)  "];
+     *       V0_BLOCK -> V0_BLOCK [label="  irId(?)  "];
+     *       V0_BLOCK -> V0_BLOCK [label="  irVersion(?)  "];
+     *       V0_BLOCK -> V0_BLOCK [label="  schemaVersion(?)  "];
+     *       V0_BLOCK -> V0_BLOCK [label="  packageNameLength()  "];
+     *       V0_BLOCK -> V0_PACKAGENAME_DONE [label="  packageName(?)  "];
+     *       V0_PACKAGENAME_DONE -> V0_PACKAGENAME_DONE [label="  namespaceNameLength()  "];
+     *       V0_PACKAGENAME_DONE -> V0_NAMESPACENAME_DONE [label="  namespaceName(?)  "];
+     *       V0_NAMESPACENAME_DONE -> V0_NAMESPACENAME_DONE [label="  semanticVersionLength()  "];
+     *       V0_NAMESPACENAME_DONE -> V0_SEMANTICVERSION_DONE [label="  semanticVersion(?)  "];
+     *   }
+     * }</pre>
+     */
+    private static class CodecStates
+    {
+        private static final int NOT_WRAPPED = 0;
+        private static final int V0_BLOCK = 1;
+        private static final int V0_PACKAGENAME_DONE = 2;
+        private static final int V0_NAMESPACENAME_DONE = 3;
+        private static final int V0_SEMANTICVERSION_DONE = 4;
+
+        private static final String[] STATE_NAME_LOOKUP =
+        {
+            "NOT_WRAPPED",
+            "V0_BLOCK",
+            "V0_PACKAGENAME_DONE",
+            "V0_NAMESPACENAME_DONE",
+            "V0_SEMANTICVERSION_DONE",
+        };
+
+        private static final String[] STATE_TRANSITIONS_LOOKUP =
+        {
+            "\"wrap(version=0)\"",
+            "\"irId(?)\", \"irVersion(?)\", \"schemaVersion(?)\", \"packageNameLength()\", \"packageName(?)\"",
+            "\"namespaceNameLength()\", \"namespaceName(?)\"",
+            "\"semanticVersionLength()\", \"semanticVersion(?)\"",
+            "",
+        };
+
+        private static String name(final int state)
+        {
+            return STATE_NAME_LOOKUP[state];
+        }
+
+        private static String transitions(final int state)
+        {
+            return STATE_TRANSITIONS_LOOKUP[state];
+        }
+    }
+
+    private int codecState = CodecStates.NOT_WRAPPED;
+
+    private int codecState()
+    {
+        return codecState;
+    }
+
+    private void codecState(int newState)
+    {
+        codecState = newState;
+    }
+
     public static final int BLOCK_LENGTH = 12;
     public static final int TEMPLATE_ID = 1;
     public static final int SCHEMA_ID = 1;
@@ -66,6 +143,19 @@ public final class FrameCodecDecoder
         return offset;
     }
 
+    private void onWrap(final int actingVersion)
+    {
+        switch(actingVersion)
+        {
+            case 0:
+                codecState(CodecStates.V0_BLOCK);
+                break;
+            default:
+                codecState(CodecStates.V0_BLOCK);
+                break;
+        }
+    }
+
     public FrameCodecDecoder wrap(
         final DirectBuffer buffer,
         final int offset,
@@ -81,6 +171,11 @@ public final class FrameCodecDecoder
         this.actingBlockLength = actingBlockLength;
         this.actingVersion = actingVersion;
         limit(offset + actingBlockLength);
+
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onWrap(actingVersion);
+        }
 
         return this;
     }
@@ -113,9 +208,15 @@ public final class FrameCodecDecoder
     public int sbeDecodedLength()
     {
         final int currentLimit = limit();
+        final int currentCodecState = codecState();
         sbeSkip();
         final int decodedLength = encodedLength();
         limit(currentLimit);
+
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            codecState(currentCodecState);
+        }
 
         return decodedLength;
     }
@@ -170,6 +271,17 @@ public final class FrameCodecDecoder
         return "";
     }
 
+    private void onIrIdAccessed()
+    {
+        if (codecState() == CodecStates.NOT_WRAPPED)
+        {
+            throw new IllegalStateException("Illegal field access order. " +
+                "Cannot access field \"irId\" in state: " + CodecStates.name(codecState()) +
+                ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                "]. Please see the diagram in the Javadoc of the class FrameCodecDecoder#CodecStates.");
+        }
+    }
+
     public static int irIdNullValue()
     {
         return -2147483648;
@@ -187,6 +299,11 @@ public final class FrameCodecDecoder
 
     public int irId()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onIrIdAccessed();
+        }
+
         return buffer.getInt(offset + 0, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
@@ -221,6 +338,17 @@ public final class FrameCodecDecoder
         return "";
     }
 
+    private void onIrVersionAccessed()
+    {
+        if (codecState() == CodecStates.NOT_WRAPPED)
+        {
+            throw new IllegalStateException("Illegal field access order. " +
+                "Cannot access field \"irVersion\" in state: " + CodecStates.name(codecState()) +
+                ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                "]. Please see the diagram in the Javadoc of the class FrameCodecDecoder#CodecStates.");
+        }
+    }
+
     public static int irVersionNullValue()
     {
         return -2147483648;
@@ -238,6 +366,11 @@ public final class FrameCodecDecoder
 
     public int irVersion()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onIrVersionAccessed();
+        }
+
         return buffer.getInt(offset + 4, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
@@ -272,6 +405,17 @@ public final class FrameCodecDecoder
         return "";
     }
 
+    private void onSchemaVersionAccessed()
+    {
+        if (codecState() == CodecStates.NOT_WRAPPED)
+        {
+            throw new IllegalStateException("Illegal field access order. " +
+                "Cannot access field \"schemaVersion\" in state: " + CodecStates.name(codecState()) +
+                ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                "]. Please see the diagram in the Javadoc of the class FrameCodecDecoder#CodecStates.");
+        }
+    }
+
     public static int schemaVersionNullValue()
     {
         return -2147483648;
@@ -289,6 +433,11 @@ public final class FrameCodecDecoder
 
     public int schemaVersion()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onSchemaVersionAccessed();
+        }
+
         return buffer.getInt(offset + 8, java.nio.ByteOrder.LITTLE_ENDIAN);
     }
 
@@ -323,14 +472,54 @@ public final class FrameCodecDecoder
         return 2;
     }
 
+    void onPackageNameLengthAccessed()
+    {
+        switch (codecState())
+        {
+            case CodecStates.V0_BLOCK:
+                codecState(CodecStates.V0_BLOCK);
+                break;
+            default:
+                throw new IllegalStateException("Illegal field access order. " +
+                    "Cannot decode length of var data \"packageName\" in state: " + CodecStates.name(codecState()) +
+                    ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                    "]. Please see the diagram in the Javadoc of the class FrameCodecDecoder#CodecStates.");
+        }
+    }
+
+    private void onPackageNameAccessed()
+    {
+        switch (codecState())
+        {
+            case CodecStates.V0_BLOCK:
+                codecState(CodecStates.V0_PACKAGENAME_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Illegal field access order. " +
+                    "Cannot access field \"packageName\" in state: " + CodecStates.name(codecState()) +
+                    ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                    "]. Please see the diagram in the Javadoc of the class FrameCodecDecoder#CodecStates.");
+        }
+    }
+
     public int packageNameLength()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onPackageNameLengthAccessed();
+        }
+
         final int limit = parentMessage.limit();
         return (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
     }
 
     public int skipPackageName()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onPackageNameAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -342,6 +531,11 @@ public final class FrameCodecDecoder
 
     public int getPackageName(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onPackageNameAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -354,6 +548,11 @@ public final class FrameCodecDecoder
 
     public int getPackageName(final byte[] dst, final int dstOffset, final int length)
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onPackageNameAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -366,6 +565,11 @@ public final class FrameCodecDecoder
 
     public void wrapPackageName(final DirectBuffer wrapBuffer)
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onPackageNameAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -375,6 +579,11 @@ public final class FrameCodecDecoder
 
     public String packageName()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onPackageNameAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -421,14 +630,54 @@ public final class FrameCodecDecoder
         return 2;
     }
 
+    void onNamespaceNameLengthAccessed()
+    {
+        switch (codecState())
+        {
+            case CodecStates.V0_PACKAGENAME_DONE:
+                codecState(CodecStates.V0_PACKAGENAME_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Illegal field access order. " +
+                    "Cannot decode length of var data \"namespaceName\" in state: " + CodecStates.name(codecState()) +
+                    ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                    "]. Please see the diagram in the Javadoc of the class FrameCodecDecoder#CodecStates.");
+        }
+    }
+
+    private void onNamespaceNameAccessed()
+    {
+        switch (codecState())
+        {
+            case CodecStates.V0_PACKAGENAME_DONE:
+                codecState(CodecStates.V0_NAMESPACENAME_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Illegal field access order. " +
+                    "Cannot access field \"namespaceName\" in state: " + CodecStates.name(codecState()) +
+                    ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                    "]. Please see the diagram in the Javadoc of the class FrameCodecDecoder#CodecStates.");
+        }
+    }
+
     public int namespaceNameLength()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onNamespaceNameLengthAccessed();
+        }
+
         final int limit = parentMessage.limit();
         return (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
     }
 
     public int skipNamespaceName()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onNamespaceNameAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -440,6 +689,11 @@ public final class FrameCodecDecoder
 
     public int getNamespaceName(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onNamespaceNameAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -452,6 +706,11 @@ public final class FrameCodecDecoder
 
     public int getNamespaceName(final byte[] dst, final int dstOffset, final int length)
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onNamespaceNameAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -464,6 +723,11 @@ public final class FrameCodecDecoder
 
     public void wrapNamespaceName(final DirectBuffer wrapBuffer)
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onNamespaceNameAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -473,6 +737,11 @@ public final class FrameCodecDecoder
 
     public String namespaceName()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onNamespaceNameAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -519,14 +788,54 @@ public final class FrameCodecDecoder
         return 2;
     }
 
+    void onSemanticVersionLengthAccessed()
+    {
+        switch (codecState())
+        {
+            case CodecStates.V0_NAMESPACENAME_DONE:
+                codecState(CodecStates.V0_NAMESPACENAME_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Illegal field access order. " +
+                    "Cannot decode length of var data \"semanticVersion\" in state: " + CodecStates.name(codecState()) +
+                    ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                    "]. Please see the diagram in the Javadoc of the class FrameCodecDecoder#CodecStates.");
+        }
+    }
+
+    private void onSemanticVersionAccessed()
+    {
+        switch (codecState())
+        {
+            case CodecStates.V0_NAMESPACENAME_DONE:
+                codecState(CodecStates.V0_SEMANTICVERSION_DONE);
+                break;
+            default:
+                throw new IllegalStateException("Illegal field access order. " +
+                    "Cannot access field \"semanticVersion\" in state: " + CodecStates.name(codecState()) +
+                    ". Expected one of these transitions: [" + CodecStates.transitions(codecState()) +
+                    "]. Please see the diagram in the Javadoc of the class FrameCodecDecoder#CodecStates.");
+        }
+    }
+
     public int semanticVersionLength()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onSemanticVersionLengthAccessed();
+        }
+
         final int limit = parentMessage.limit();
         return (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
     }
 
     public int skipSemanticVersion()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onSemanticVersionAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -538,6 +847,11 @@ public final class FrameCodecDecoder
 
     public int getSemanticVersion(final MutableDirectBuffer dst, final int dstOffset, final int length)
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onSemanticVersionAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -550,6 +864,11 @@ public final class FrameCodecDecoder
 
     public int getSemanticVersion(final byte[] dst, final int dstOffset, final int length)
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onSemanticVersionAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -562,6 +881,11 @@ public final class FrameCodecDecoder
 
     public void wrapSemanticVersion(final DirectBuffer wrapBuffer)
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onSemanticVersionAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
@@ -571,6 +895,11 @@ public final class FrameCodecDecoder
 
     public String semanticVersion()
     {
+        if (SBE_ENABLE_IR_PRECEDENCE_CHECKS)
+        {
+            onSemanticVersionAccessed();
+        }
+
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         final int dataLength = (buffer.getShort(limit, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);

@@ -19,26 +19,30 @@ package uk.co.real_logic.sbe.generation.csharp;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.PrimitiveValue;
 import uk.co.real_logic.sbe.generation.CodeGenerator;
-import org.agrona.generation.OutputManager;
 import uk.co.real_logic.sbe.generation.Generators;
-import uk.co.real_logic.sbe.ir.*;
+import uk.co.real_logic.sbe.generation.common.FieldPrecedenceModel;
+import uk.co.real_logic.sbe.generation.common.PrecedenceChecks;
+import uk.co.real_logic.sbe.ir.Encoding;
+import uk.co.real_logic.sbe.ir.Ir;
+import uk.co.real_logic.sbe.ir.Signal;
+import uk.co.real_logic.sbe.ir.Token;
 import org.agrona.Verify;
+import org.agrona.collections.MutableBoolean;
+import org.agrona.generation.OutputManager;
 
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static java.lang.System.lineSeparator;
-
 import static uk.co.real_logic.sbe.generation.Generators.toLowerFirstChar;
 import static uk.co.real_logic.sbe.generation.Generators.toUpperFirstChar;
 import static uk.co.real_logic.sbe.generation.csharp.CSharpUtil.*;
-import static uk.co.real_logic.sbe.ir.GenerationUtil.collectVarData;
-import static uk.co.real_logic.sbe.ir.GenerationUtil.collectGroups;
-import static uk.co.real_logic.sbe.ir.GenerationUtil.collectFields;
-import static uk.co.real_logic.sbe.ir.GenerationUtil.findEndSignal;
+import static uk.co.real_logic.sbe.ir.GenerationUtil.*;
 
 /**
  * Codec generator for the CSharp programming language.
@@ -54,6 +58,8 @@ public class CSharpGenerator implements CodeGenerator
 
     private final Ir ir;
     private final OutputManager outputManager;
+    private final PrecedenceChecks precedenceChecks;
+    private final String precedenceChecksFlagName;
 
     /**
      * Create a new C# language {@link CodeGenerator}.
@@ -63,10 +69,31 @@ public class CSharpGenerator implements CodeGenerator
      */
     public CSharpGenerator(final Ir ir, final OutputManager outputManager)
     {
+        this(
+            ir,
+            PrecedenceChecks.newInstance(new PrecedenceChecks.Context()),
+            outputManager
+        );
+    }
+
+    /**
+     * Create a new C# language {@link CodeGenerator}.
+     *
+     * @param ir               for the messages and types.
+     * @param precedenceChecks whether and how to perform field precedence checks.
+     * @param outputManager    for generating the codecs to.
+     */
+    public CSharpGenerator(
+        final Ir ir,
+        final PrecedenceChecks precedenceChecks,
+        final OutputManager outputManager)
+    {
         Verify.notNull(ir, "ir");
         Verify.notNull(outputManager, "outputManager");
 
         this.ir = ir;
+        this.precedenceChecks = precedenceChecks;
+        this.precedenceChecksFlagName = precedenceChecks.context().precedenceChecksFlagName();
         this.outputManager = outputManager;
     }
 
@@ -123,32 +150,38 @@ public class CSharpGenerator implements CodeGenerator
         {
             final Token msgToken = tokens.get(0);
             final String className = formatClassName(msgToken.name());
+            final String stateClassName = className + ".CodecState";
+            final FieldPrecedenceModel fieldPrecedenceModel = precedenceChecks.createCodecModel(stateClassName, tokens);
 
             try (Writer out = outputManager.createOutput(className))
             {
+                final List<Token> messageBody = tokens.subList(1, tokens.size() - 1);
+                int offset = 0;
+                final List<Token> fields = new ArrayList<>();
+                offset = collectFields(messageBody, offset, fields);
+                final List<Token> groups = new ArrayList<>();
+                offset = collectGroups(messageBody, offset, groups);
+                final List<Token> varData = new ArrayList<>();
+                collectVarData(messageBody, offset, varData);
+
                 out.append(generateFileHeader(ir.applicableNamespace()));
                 out.append(generateDocumentation(BASE_INDENT, msgToken));
                 out.append(generateClassDeclaration(className));
-                out.append(generateMessageFlyweightCode(className, msgToken, BASE_INDENT));
+                out.append(generateMessageFlyweightCode(className, msgToken, fieldPrecedenceModel, BASE_INDENT));
 
-                final List<Token> messageBody = tokens.subList(1, tokens.size() - 1);
-                int offset = 0;
+                out.append(generateFieldOrderStates(BASE_INDENT + INDENT, fieldPrecedenceModel));
+                out.append(generateFullyEncodedCheck(BASE_INDENT + INDENT, fieldPrecedenceModel));
 
-                final List<Token> fields = new ArrayList<>();
-                offset = collectFields(messageBody, offset, fields);
-                out.append(generateFields(fields, BASE_INDENT));
+                out.append(generateFields(fieldPrecedenceModel, fields, BASE_INDENT));
 
-                final List<Token> groups = new ArrayList<>();
-                offset = collectGroups(messageBody, offset, groups);
                 final StringBuilder sb = new StringBuilder();
-                generateGroups(sb, className, groups, BASE_INDENT);
+                generateGroups(sb, className, groups, fieldPrecedenceModel, BASE_INDENT);
                 out.append(sb);
 
-                final List<Token> varData = new ArrayList<>();
-                collectVarData(messageBody, offset, varData);
-                out.append(generateVarData(varData, BASE_INDENT + INDENT));
+                out.append(generateVarData(fieldPrecedenceModel, varData, BASE_INDENT + INDENT));
 
-                out.append(generateDisplay(toUpperFirstChar(msgToken.name()), fields, groups, varData));
+                out.append(generateDisplay(toUpperFirstChar(msgToken.name()),
+                    fields, groups, varData, fieldPrecedenceModel));
 
                 out.append(INDENT + "}\n");
                 out.append("}\n");
@@ -160,6 +193,7 @@ public class CSharpGenerator implements CodeGenerator
         final StringBuilder sb,
         final String parentMessageClassName,
         final List<Token> tokens,
+        final FieldPrecedenceModel fieldPrecedenceModel,
         final String indent)
     {
         for (int i = 0, size = tokens.size(); i < size; i++)
@@ -170,23 +204,24 @@ public class CSharpGenerator implements CodeGenerator
                 throw new IllegalStateException("tokens must begin with BEGIN_GROUP: token=" + groupToken);
             }
             final String groupName = groupToken.name();
-            sb.append(generateGroupProperty(groupName, groupToken, indent + INDENT));
+            sb.append(generateGroupProperty(groupName, fieldPrecedenceModel, groupToken, indent + INDENT));
 
-            generateGroupClassHeader(sb, groupName, parentMessageClassName, tokens, i, indent + INDENT);
+            generateGroupClassHeader(sb, groupName, parentMessageClassName, tokens,
+                fieldPrecedenceModel, i, indent + INDENT);
             i++;
             i += tokens.get(i).componentTokenCount();
 
             final List<Token> fields = new ArrayList<>();
             i = collectFields(tokens, i, fields);
-            sb.append(generateFields(fields, indent + INDENT));
+            sb.append(generateFields(fieldPrecedenceModel, fields, indent + INDENT));
 
             final List<Token> groups = new ArrayList<>();
             i = collectGroups(tokens, i, groups);
-            generateGroups(sb, parentMessageClassName, groups, indent + INDENT);
+            generateGroups(sb, parentMessageClassName, groups, fieldPrecedenceModel, indent + INDENT);
 
             final List<Token> varData = new ArrayList<>();
             i = collectVarData(tokens, i, varData);
-            sb.append(generateVarData(varData, indent + INDENT + INDENT));
+            sb.append(generateVarData(fieldPrecedenceModel, varData, indent + INDENT + INDENT));
 
             appendGroupInstanceDisplay(sb, fields, groups, varData, indent + TWO_INDENT);
 
@@ -199,6 +234,7 @@ public class CSharpGenerator implements CodeGenerator
         final String groupName,
         final String parentMessageClassName,
         final List<Token> tokens,
+        final FieldPrecedenceModel fieldPrecedenceModel,
         final int index,
         final String indent)
     {
@@ -231,6 +267,16 @@ public class CSharpGenerator implements CodeGenerator
                 "%s.numInGroup - cannot be represented safely by an int. Please constrain the maxValue.",
                 groupName));
         }
+
+        sb.append("\n")
+            // The "file" access modifier is more suitable but only available from C# 11 onwards.
+            .append(indent).append(INDENT).append("internal void NotPresent()\n")
+            .append(indent).append(INDENT).append("{\n")
+            .append(indent).append(TWO_INDENT).append("_count = 0;\n")
+            .append(indent).append(TWO_INDENT).append("_index = 0;\n")
+            .append(indent).append(TWO_INDENT).append("_buffer = null;\n")
+            .append(indent).append(TWO_INDENT).append("_offset = 0;\n")
+            .append(indent).append(INDENT).append("}\n");
 
         sb.append(String.format("\n" +
             indent + INDENT + "public void WrapForDecode(%s parentMessage, DirectBuffer buffer, int actingVersion)\n" +
@@ -284,27 +330,50 @@ public class CSharpGenerator implements CodeGenerator
             blockLength,
             dimensionHeaderLength));
 
-        generateGroupEnumerator(sb, groupName, typeForNumInGroup, indent);
+        if (null != fieldPrecedenceModel)
+        {
+            sb.append("\n")
+                .append(indent).append("    private CodecState codecState()\n")
+                .append(indent).append("    {\n")
+                .append(indent).append("        return _parentMessage.codecState();\n")
+                .append(indent).append("    }\n");
+
+            sb.append("\n")
+                .append(indent).append("    private void codecState(CodecState newState)\n")
+                .append(indent).append("    {\n")
+                .append(indent).append("        _parentMessage.codecState(newState);\n")
+                .append(indent).append("    }\n");
+        }
+
+        final Token groupToken = tokens.get(index);
+        generateGroupEnumerator(sb, fieldPrecedenceModel, groupToken, groupName, typeForNumInGroup, indent);
     }
 
     private void generateGroupEnumerator(
         final StringBuilder sb,
+        final FieldPrecedenceModel fieldPrecedenceModel,
+        final Token groupToken,
         final String groupName,
         final String typeForNumInGroup,
         final String indent)
     {
+        generateAccessOrderListenerMethodForNextGroupElement(sb, fieldPrecedenceModel, indent + INDENT, groupToken);
+        generateAccessOrderListenerMethodForResetGroupCount(sb, fieldPrecedenceModel, indent + INDENT, groupToken);
+
         sb.append(
             indent + INDENT + "public int ActingBlockLength { get { return _blockLength; } }\n\n" +
             indent + INDENT + "public int Count { get { return _count; } }\n\n" +
-            indent + INDENT + "public bool HasNext { get { return _index < _count; } }\n");
+            indent + INDENT + "public bool HasNext { get { return _index < _count; } }\n\n");
 
         sb.append(String.format("\n" +
             indent + INDENT + "public int ResetCountToIndex()\n" +
             indent + INDENT + "{\n" +
+            "%s" +
             indent + INDENT + INDENT + "_count = _index;\n" +
             indent + INDENT + INDENT + "_dimensions.NumInGroup = (%s) _count;\n\n" +
             indent + INDENT + INDENT + "return _count;\n" +
             indent + INDENT + "}\n",
+            generateAccessOrderListenerCall(fieldPrecedenceModel, indent + TWO_INDENT, "OnResetCountToIndex"),
             typeForNumInGroup));
 
         sb.append(String.format("\n" +
@@ -314,6 +383,7 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + INDENT + "{\n" +
             indent + INDENT + INDENT + INDENT + "ThrowHelper.ThrowInvalidOperationException();\n" +
             indent + INDENT + INDENT + "}\n\n" +
+            generateAccessOrderListenerCall(fieldPrecedenceModel, indent + TWO_INDENT, "OnNextElementAccessed") +
             indent + INDENT + INDENT + "_offset = _parentMessage.Limit;\n" +
             indent + INDENT + INDENT + "_parentMessage.Limit = _offset + _blockLength;\n" +
             indent + INDENT + INDENT + "++_index;\n\n" +
@@ -338,7 +408,11 @@ public class CSharpGenerator implements CodeGenerator
             encoding.applicableMaxValue().longValue() <= Integer.MAX_VALUE;
     }
 
-    private CharSequence generateGroupProperty(final String groupName, final Token token, final String indent)
+    private CharSequence generateGroupProperty(
+        final String groupName,
+        final FieldPrecedenceModel fieldPrecedenceModel,
+        final Token token,
+        final String indent)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -355,7 +429,18 @@ public class CSharpGenerator implements CodeGenerator
             toUpperFirstChar(groupName),
             token.id()));
 
+        generateAccessOrderListenerMethodForGroupWrap(sb, fieldPrecedenceModel, indent, token);
+
         generateSinceActingDeprecated(sb, indent, toUpperFirstChar(groupName), token);
+
+        final String groupField = "_" + toLowerFirstChar(groupName);
+
+        final CharSequence accessOrderListenerCallOnDecode = generateAccessOrderListenerCall(
+            fieldPrecedenceModel,
+            indent + TWO_INDENT,
+            token,
+            groupField + ".Count",
+            "\"decode\"");
 
         sb.append(String.format("\n" +
             "%1$s" +
@@ -363,29 +448,46 @@ public class CSharpGenerator implements CodeGenerator
             indent + "{\n" +
             indent + INDENT + "get\n" +
             indent + INDENT + "{\n" +
+            "%5$s" +
+
             indent + INDENT + INDENT + "_%4$s.WrapForDecode(_parentMessage, _buffer, _actingVersion);\n" +
+            "%6$s" +
+
             indent + INDENT + INDENT + "return _%4$s;\n" +
             indent + INDENT + "}\n" +
             indent + "}\n",
             generateDocumentation(indent, token),
             className,
             toUpperFirstChar(groupName),
-            toLowerFirstChar(groupName)));
+            toLowerFirstChar(groupName),
+            generateGroupNotPresentCondition(token.version(), indent + INDENT + INDENT, groupField),
+            accessOrderListenerCallOnDecode));
 
+        final CharSequence accessOrderListenerCallOnEncode = generateAccessOrderListenerCall(
+            fieldPrecedenceModel,
+            indent + INDENT,
+            token,
+            "count",
+            "\"encode\"");
         sb.append(String.format("\n" +
             indent + "public %1$sGroup %2$sCount(int count)\n" +
             indent + "{\n" +
+            "%4$s" +
             indent + INDENT + "_%3$s.WrapForEncode(_parentMessage, _buffer, count);\n" +
             indent + INDENT + "return _%3$s;\n" +
             indent + "}\n",
             className,
             toUpperFirstChar(groupName),
-            toLowerFirstChar(groupName)));
+            toLowerFirstChar(groupName),
+            accessOrderListenerCallOnEncode));
 
         return sb;
     }
 
-    private CharSequence generateVarData(final List<Token> tokens, final String indent)
+    private CharSequence generateVarData(
+        final FieldPrecedenceModel fieldPrecedenceModel,
+        final List<Token> tokens,
+        final String indent)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -412,21 +514,34 @@ public class CSharpGenerator implements CodeGenerator
                 final ByteOrder byteOrder = lengthEncoding.byteOrder();
                 final String byteOrderStr = generateByteOrder(byteOrder, lengthEncoding.primitiveType().size());
 
+                generateAccessOrderListenerMethodForVarDataLength(sb, fieldPrecedenceModel, indent, token);
+                generateAccessOrderListenerMethod(sb, fieldPrecedenceModel, indent, token);
+
                 sb.append(String.format("\n" +
                     indent + "public const int %sHeaderSize = %d;\n",
                     propertyName,
                     sizeOfLengthField));
 
+                final CharSequence lengthAccessOrderListenerCall = generateAccessOrderListenerCall(
+                    fieldPrecedenceModel, indent + INDENT, accessOrderListenerMethodName(token, "Length"));
+
                 sb.append(String.format(indent + "\n" +
                     indent + "public int %1$sLength()\n" +
                     indent + "{\n" +
+                    "%5$s" +
+                    "%6$s" +
                     indent + INDENT + "_buffer.CheckLimit(_parentMessage.Limit + %2$d);\n" +
                     indent + INDENT + "return (int)_buffer.%3$sGet%4$s(_parentMessage.Limit);\n" +
                     indent + "}\n",
                     propertyName,
                     sizeOfLengthField,
                     lengthTypePrefix,
-                    byteOrderStr));
+                    byteOrderStr,
+                    generateArrayFieldNotPresentCondition(token.version(), indent, "0"),
+                    lengthAccessOrderListenerCall));
+
+                final CharSequence accessOrderListenerCall =
+                    generateAccessOrderListenerCall(fieldPrecedenceModel, indent + INDENT, token);
 
                 sb.append(String.format("\n" +
                     indent + "public int Get%1$s(byte[] dst, int dstOffset, int length) =>\n" +
@@ -437,6 +552,7 @@ public class CSharpGenerator implements CodeGenerator
                     indent + "public int Get%1$s(Span<byte> dst)\n" +
                     indent + "{\n" +
                     "%2$s" +
+                    "%6$s" +
                     indent + INDENT + "const int sizeOfLengthField = %3$d;\n" +
                     indent + INDENT + "int limit = _parentMessage.Limit;\n" +
                     indent + INDENT + "_buffer.CheckLimit(limit + sizeOfLengthField);\n" +
@@ -447,15 +563,18 @@ public class CSharpGenerator implements CodeGenerator
                     indent + INDENT + "return bytesCopied;\n" +
                     indent + "}\n",
                     propertyName,
-                    generateArrayFieldNotPresentCondition(token.version(), indent),
+                    generateArrayFieldNotPresentCondition(token.version(), indent, "0"),
                     sizeOfLengthField,
                     lengthTypePrefix,
-                    byteOrderStr));
+                    byteOrderStr,
+                    accessOrderListenerCall));
 
                 sb.append(String.format(indent + "\n" +
                     indent + "// Allocates and returns a new byte array\n" +
                     indent + "public byte[] Get%1$sBytes()\n" +
                     indent + "{\n" +
+                    "%5$s" +
+                    "%6$s" +
                     indent + INDENT + "const int sizeOfLengthField = %2$d;\n" +
                     indent + INDENT + "int limit = _parentMessage.Limit;\n" +
                     indent + INDENT + "_buffer.CheckLimit(limit + sizeOfLengthField);\n" +
@@ -468,7 +587,9 @@ public class CSharpGenerator implements CodeGenerator
                     propertyName,
                     sizeOfLengthField,
                     lengthTypePrefix,
-                    byteOrderStr));
+                    byteOrderStr,
+                    generateArrayFieldNotPresentCondition(token.version(), indent, "new byte[0]"),
+                    accessOrderListenerCall));
 
                 sb.append(String.format("\n" +
                     indent + "public int Set%1$s(byte[] src, int srcOffset, int length) =>\n" +
@@ -478,6 +599,7 @@ public class CSharpGenerator implements CodeGenerator
                 sb.append(String.format("\n" +
                     indent + "public int Set%1$s(ReadOnlySpan<byte> src)\n" +
                     indent + "{\n" +
+                    "%6$s" +
                     indent + INDENT + "const int sizeOfLengthField = %2$d;\n" +
                     indent + INDENT + "int limit = _parentMessage.Limit;\n" +
                     indent + INDENT + "_parentMessage.Limit = limit + sizeOfLengthField + src.Length;\n" +
@@ -489,7 +611,8 @@ public class CSharpGenerator implements CodeGenerator
                     sizeOfLengthField,
                     lengthTypePrefix,
                     lengthCSharpType,
-                    byteOrderStr));
+                    byteOrderStr,
+                    accessOrderListenerCall));
 
                 if (characterEncoding != null)  // only generate these string based methods if there is an encoding
                 {
@@ -497,6 +620,8 @@ public class CSharpGenerator implements CodeGenerator
                         .append(String.format(
                         indent + "public string Get%1$s()\n" +
                         indent + "{\n" +
+                        "%6$s" +
+                        "%7$s" +
                         indent + INDENT + "const int sizeOfLengthField = %2$d;\n" +
                         indent + INDENT + "int limit = _parentMessage.Limit;\n" +
                         indent + INDENT + "_buffer.CheckLimit(limit + sizeOfLengthField);\n" +
@@ -507,15 +632,22 @@ public class CSharpGenerator implements CodeGenerator
                         indent + "}\n\n" +
                         indent + "public void Set%1$s(string value)\n" +
                         indent + "{\n" +
+                        "%7$s" +
                         indent + INDENT + "var encoding = %1$sResolvedCharacterEncoding;\n" +
                         indent + INDENT + "const int sizeOfLengthField = %2$d;\n" +
                         indent + INDENT + "int limit = _parentMessage.Limit;\n" +
                         indent + INDENT + "int byteCount = _buffer.SetBytesFromString(encoding, value, " +
                         "limit + sizeOfLengthField);\n" +
                         indent + INDENT + "_parentMessage.Limit = limit + sizeOfLengthField + byteCount;\n" +
-                        indent + INDENT + "_buffer.%3$sPut%4$s(limit, (ushort)byteCount);\n" +
+                        indent + INDENT + "_buffer.%3$sPut%4$s(limit, (%5$s)byteCount);\n" +
                         indent + "}\n",
-                        propertyName, sizeOfLengthField, lengthTypePrefix, byteOrderStr));
+                        propertyName,
+                        sizeOfLengthField,
+                        lengthTypePrefix,
+                        byteOrderStr,
+                        lengthCSharpType,
+                        generateArrayFieldNotPresentCondition(token.version(), indent, "\"\""),
+                        accessOrderListenerCall));
                 }
             }
         }
@@ -588,23 +720,24 @@ public class CSharpGenerator implements CodeGenerator
         {
             final Token token = tokens.get(i);
             final String propertyName = formatPropertyName(token.name());
+            final FieldPrecedenceModel fieldPrecedenceModel = null;
 
             switch (token.signal())
             {
                 case ENCODING:
-                    sb.append(generatePrimitiveProperty(propertyName, token, token, indent));
+                    sb.append(generatePrimitiveProperty(propertyName, token, token, fieldPrecedenceModel, indent));
                     break;
 
                 case BEGIN_ENUM:
-                    sb.append(generateEnumProperty(propertyName, token, token, indent));
+                    sb.append(generateEnumProperty(propertyName, token, token, fieldPrecedenceModel, indent));
                     break;
 
                 case BEGIN_SET:
-                    sb.append(generateBitSetProperty(propertyName, token, token, indent));
+                    sb.append(generateBitSetProperty(propertyName, token, token, fieldPrecedenceModel, indent));
                     break;
 
                 case BEGIN_COMPOSITE:
-                    sb.append(generateCompositeProperty(propertyName, token, token, indent));
+                    sb.append(generateCompositeProperty(propertyName, token, token, fieldPrecedenceModel, indent));
                     break;
 
                 default:
@@ -747,7 +880,11 @@ public class CSharpGenerator implements CodeGenerator
     }
 
     private CharSequence generatePrimitiveProperty(
-        final String propertyName, final Token fieldToken, final Token typeToken, final String indent)
+        final String propertyName,
+        final Token fieldToken,
+        final Token typeToken,
+        final FieldPrecedenceModel fieldPrecedenceModel,
+        final String indent)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -759,7 +896,8 @@ public class CSharpGenerator implements CodeGenerator
         }
         else
         {
-            sb.append(generatePrimitivePropertyMethods(propertyName, fieldToken, typeToken, indent));
+            sb.append(generatePrimitivePropertyMethods(propertyName, fieldToken, typeToken,
+                fieldPrecedenceModel, indent));
         }
 
         return sb;
@@ -769,17 +907,20 @@ public class CSharpGenerator implements CodeGenerator
         final String propertyName,
         final Token fieldToken,
         final Token typeToken,
+        final FieldPrecedenceModel fieldPrecedenceModel,
         final String indent)
     {
         final int arrayLength = typeToken.arrayLength();
 
         if (arrayLength == 1)
         {
-            return generateSingleValueProperty(propertyName, fieldToken, typeToken, indent + INDENT);
+            return generateSingleValueProperty(propertyName, fieldToken, typeToken,
+                fieldPrecedenceModel, indent + INDENT);
         }
         else if (arrayLength > 1)
         {
-            return generateArrayProperty(propertyName, fieldToken, typeToken, indent + INDENT);
+            return generateArrayProperty(propertyName, fieldToken, typeToken,
+                fieldPrecedenceModel, indent + INDENT);
         }
 
         return "";
@@ -809,6 +950,7 @@ public class CSharpGenerator implements CodeGenerator
         final String propertyName,
         final Token fieldToken,
         final Token typeToken,
+        final FieldPrecedenceModel fieldPrecedenceModel,
         final String indent)
     {
         final String typeName = cSharpTypeName(typeToken.encoding().primitiveType());
@@ -817,6 +959,9 @@ public class CSharpGenerator implements CodeGenerator
         final ByteOrder byteOrder = typeToken.encoding().byteOrder();
         final String byteOrderStr = generateByteOrder(byteOrder, typeToken.encoding().primitiveType().size());
 
+        final CharSequence accessOrderListenerCall =
+            generateAccessOrderListenerCall(fieldPrecedenceModel, indent + TWO_INDENT, fieldToken);
+
         return String.format("\n" +
             "%1$s" +
             indent + "public %2$s %3$s\n" +
@@ -824,10 +969,12 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + "get\n" +
             indent + INDENT + "{\n" +
             "%4$s" +
+            "%8$s" +
             indent + INDENT + INDENT + "return _buffer.%5$sGet%7$s(_offset + %6$d);\n" +
             indent + INDENT + "}\n" +
             indent + INDENT + "set\n" +
             indent + INDENT + "{\n" +
+            "%8$s" +
             indent + INDENT + INDENT + "_buffer.%5$sPut%7$s(_offset + %6$d, value);\n" +
             indent + INDENT + "}\n" +
             indent + "}\n\n",
@@ -837,7 +984,8 @@ public class CSharpGenerator implements CodeGenerator
             generateFieldNotPresentCondition(fieldToken.version(), typeToken.encoding(), indent),
             typePrefix,
             offset,
-            byteOrderStr);
+            byteOrderStr,
+            accessOrderListenerCall);
     }
 
     private CharSequence generateFieldNotPresentCondition(
@@ -866,16 +1014,34 @@ public class CSharpGenerator implements CodeGenerator
             literal);
     }
 
-    private CharSequence generateArrayFieldNotPresentCondition(final int sinceVersion, final String indent)
+    private CharSequence generateGroupNotPresentCondition(
+        final int sinceVersion,
+        final String indent,
+        final String groupInstanceField)
     {
         if (0 == sinceVersion)
         {
             return "";
         }
 
-        return String.format(
-            indent + INDENT + INDENT + "if (_actingVersion < %d) return 0;\n\n",
-            sinceVersion);
+        return indent + "if (_actingVersion < " + sinceVersion + ")" +
+            indent + "{\n" +
+            indent + INDENT + groupInstanceField + ".NotPresent();\n" +
+            indent + INDENT + "return " + groupInstanceField + ";\n" +
+            indent + "}\n\n";
+    }
+
+    private CharSequence generateArrayFieldNotPresentCondition(
+        final int sinceVersion,
+        final String indent,
+        final String defaultValue)
+    {
+        if (0 == sinceVersion)
+        {
+            return "";
+        }
+
+        return indent + INDENT + "if (_actingVersion < " + sinceVersion + ") return " + defaultValue + ";\n\n";
     }
 
     private CharSequence generateBitSetNotPresentCondition(
@@ -912,7 +1078,7 @@ public class CSharpGenerator implements CodeGenerator
         final String propertyName,
         final Token fieldToken,
         final Token typeToken,
-        final String indent)
+        final FieldPrecedenceModel fieldPrecedenceModel, final String indent)
     {
         final String typeName = cSharpTypeName(typeToken.encoding().primitiveType());
         final String typePrefix = toUpperFirstChar(typeToken.encoding().primitiveType().primitiveName());
@@ -922,6 +1088,11 @@ public class CSharpGenerator implements CodeGenerator
         final int fieldLength = typeToken.arrayLength();
         final int typeSize = typeToken.encoding().primitiveType().size();
         final String propName = toUpperFirstChar(propertyName);
+
+        final CharSequence accessOrderListenerCall =
+            generateAccessOrderListenerCall(fieldPrecedenceModel, indent + INDENT, fieldToken);
+        final CharSequence accessOrderListenerCallDoubleIndent =
+            generateAccessOrderListenerCall(fieldPrecedenceModel, indent + TWO_INDENT, fieldToken);
 
         final StringBuilder sb = new StringBuilder();
 
@@ -938,12 +1109,14 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + INDENT + "ThrowHelper.ThrowIndexOutOfRangeException(index);\n" +
             indent + INDENT + "}\n\n" +
             "%5$s" +
+            "%10$s" +
             indent + INDENT + "return _buffer.%6$sGet%9$s(_offset + %7$d + (index * %8$d));\n" +
             indent + "}\n",
             generateDocumentation(indent, fieldToken),
             typeName, propName, fieldLength,
             generateFieldNotPresentCondition(fieldToken.version(), typeToken.encoding(), indent),
-            typePrefix, offset, typeSize, byteOrderStr));
+            typePrefix, offset, typeSize, byteOrderStr,
+            accessOrderListenerCall));
 
         sb.append(String.format("\n" +
             "%1$s" +
@@ -953,29 +1126,48 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + "{\n" +
             indent + INDENT + INDENT + "ThrowHelper.ThrowIndexOutOfRangeException(index);\n" +
             indent + INDENT + "}\n\n" +
+            "%9$s" +
             indent + INDENT + "_buffer.%5$sPut%8$s(_offset + %6$d + (index * %7$d), value);\n" +
             indent + "}\n",
             generateDocumentation(indent, fieldToken),
-            propName, typeName, fieldLength, typePrefix, offset, typeSize, byteOrderStr));
+            propName, typeName, fieldLength, typePrefix, offset, typeSize, byteOrderStr,
+            accessOrderListenerCall));
 
         sb.append(String.format("\n" +
             "%1$s" +
             indent + "public ReadOnlySpan<%2$s> %3$s\n" +
             indent + "{\n" +
-            indent + INDENT + "get => _buffer.AsReadOnlySpan<%2$s>(_offset + %4$s, %3$sLength);\n" +
-            indent + INDENT + "set => value.CopyTo(_buffer.AsSpan<%2$s>(_offset + %4$s, %3$sLength));\n" +
+            indent + INDENT + "get\n" +
+            indent + INDENT + "{\n" +
+            "%5$s" +
+            "%6$s" +
+            indent + INDENT + INDENT + "return _buffer.AsReadOnlySpan<%2$s>(_offset + %4$s, %3$sLength);\n" +
+            indent + INDENT + "}\n" +
+            indent + INDENT + "set\n" +
+            indent + INDENT + "{\n" +
+            "%6$s" +
+            indent + INDENT + INDENT + "value.CopyTo(_buffer.AsSpan<%2$s>(_offset + %4$s, %3$sLength));\n" +
+            indent + INDENT + "}\n" +
             indent + "}\n",
             generateDocumentation(indent, fieldToken),
-            typeName, propName, offset));
+            typeName, propName, offset,
+            generateArrayFieldNotPresentCondition(fieldToken.version(),
+            indent + INDENT + INDENT, "new " + typeName + "[0]"),
+            accessOrderListenerCallDoubleIndent));
 
         sb.append(String.format("\n" +
             "%1$s" +
             indent + "public Span<%2$s> %3$sAsSpan()\n" +
             indent + "{\n" +
+            "%5$s" +
+            "%6$s" +
             indent + INDENT + "return _buffer.AsSpan<%2$s>(_offset + %4$s, %3$sLength);\n" +
             indent + "}\n",
             generateDocumentation(indent, fieldToken),
-            typeName, propName, offset));
+            typeName, propName, offset,
+            generateArrayFieldNotPresentCondition(fieldToken.version(),
+            indent + INDENT + INDENT, "new " + typeName + "[0]"),
+            accessOrderListenerCall));
 
         if (typeToken.encoding().primitiveType() == PrimitiveType.CHAR)
         {
@@ -986,9 +1178,13 @@ public class CSharpGenerator implements CodeGenerator
                 indent + "{\n" +
                 indent + INDENT + "const int length = %2$d;\n" +
                 "%3$s" +
+                "%4$s" +
                 indent + INDENT + "return Get%1$s(new Span<byte>(dst, dstOffset, length));\n" +
                 indent + "}\n",
-                propName, fieldLength, generateArrayFieldNotPresentCondition(fieldToken.version(), indent), offset));
+                propName,
+                fieldLength,
+                generateArrayFieldNotPresentCondition(fieldToken.version(), indent, "0"),
+                accessOrderListenerCall));
 
             sb.append(String.format("\n" +
                 indent + "public int Get%1$s(Span<byte> dst)\n" +
@@ -999,10 +1195,15 @@ public class CSharpGenerator implements CodeGenerator
                 indent + INDENT + INDENT + "ThrowHelper.ThrowWhenSpanLengthTooSmall(dst.Length);\n" +
                 indent + INDENT + "}\n\n" +
                 "%3$s" +
+                "%5$s" +
                 indent + INDENT + "_buffer.GetBytes(_offset + %4$d, dst);\n" +
                 indent + INDENT + "return length;\n" +
                 indent + "}\n",
-                propName, fieldLength, generateArrayFieldNotPresentCondition(fieldToken.version(), indent), offset));
+                propName,
+                fieldLength,
+                generateArrayFieldNotPresentCondition(fieldToken.version(), indent, "0"),
+                offset,
+                accessOrderListenerCall));
 
             sb.append(String.format("\n" +
                 indent + "public void Set%1$s(byte[] src, int srcOffset)\n" +
@@ -1019,22 +1220,28 @@ public class CSharpGenerator implements CodeGenerator
                 indent + INDENT + "{\n" +
                 indent + INDENT + INDENT + "ThrowHelper.ThrowWhenSpanLengthTooLarge(src.Length);\n" +
                 indent + INDENT + "}\n\n" +
+                "%4$s" +
                 indent + INDENT + "_buffer.SetBytes(_offset + %3$d, src);\n" +
                 indent + "}\n",
-                propName, fieldLength, offset));
+                propName, fieldLength, offset,
+                accessOrderListenerCall));
 
             sb.append(String.format("\n" +
                 indent + "public void Set%1$s(string value)\n" +
                 indent + "{\n" +
+                "%3$s" +
                 indent + INDENT + "_buffer.SetNullTerminatedBytesFromString(%1$sResolvedCharacterEncoding, " +
                 "value, _offset + %2$s, %1$sLength, %1$sNullValue);\n" +
                 indent + "}\n" +
                 indent + "public string Get%1$s()\n" +
                 indent + "{\n" +
+                "%3$s" +
                 indent + INDENT + "return _buffer.GetStringFromNullTerminatedBytes(%1$sResolvedCharacterEncoding, " +
                 "_offset + %2$s, %1$sLength, %1$sNullValue);\n" +
                 indent + "}\n",
-                propName, offset));
+                propName,
+                offset,
+                accessOrderListenerCall));
         }
 
         return sb;
@@ -1156,7 +1363,11 @@ public class CSharpGenerator implements CodeGenerator
             size);
     }
 
-    private CharSequence generateMessageFlyweightCode(final String className, final Token token, final String indent)
+    private CharSequence generateMessageFlyweightCode(
+        final String className,
+        final Token token,
+        final FieldPrecedenceModel fieldPrecedenceModel,
+        final String indent)
     {
         final String blockLengthType = cSharpTypeName(ir.headerStructure().blockLengthType());
         final String templateIdType = cSharpTypeName(ir.headerStructure().templateIdType());
@@ -1184,16 +1395,18 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + "{\n" +
             indent + INDENT + INDENT + "_parentMessage = this;\n" +
             indent + INDENT + "}\n\n" +
-            indent + INDENT + "public void WrapForEncode(DirectBuffer buffer, int offset)\n" +
+            indent + INDENT + "public %10$s WrapForEncode(DirectBuffer buffer, int offset)\n" +
             indent + INDENT + "{\n" +
+            "%12$s" +
             indent + INDENT + INDENT + "_buffer = buffer;\n" +
             indent + INDENT + INDENT + "_offset = offset;\n" +
             indent + INDENT + INDENT + "_actingBlockLength = BlockLength;\n" +
             indent + INDENT + INDENT + "_actingVersion = SchemaVersion;\n" +
             indent + INDENT + INDENT + "Limit = offset + _actingBlockLength;\n" +
+            indent + INDENT + INDENT + "return this;\n" +
             indent + INDENT + "}\n\n" +
-            indent + INDENT + "public void WrapForEncodeAndApplyHeader(DirectBuffer buffer, int offset, " +
-                " MessageHeader headerEncoder)\n" +
+            indent + INDENT + "public %10$s WrapForEncodeAndApplyHeader(DirectBuffer buffer, int offset, " +
+                "MessageHeader headerEncoder)\n" +
             indent + INDENT + "{\n" +
             indent + INDENT + INDENT + "headerEncoder.Wrap(buffer, offset, SchemaVersion);\n" +
             indent + INDENT + INDENT + "headerEncoder.BlockLength = BlockLength;\n" +
@@ -1201,16 +1414,27 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + INDENT + "headerEncoder.SchemaId = SchemaId;\n" +
             indent + INDENT + INDENT + "headerEncoder.Version = SchemaVersion;\n" +
             indent + INDENT + INDENT + "\n" +
-            indent + INDENT + INDENT + "WrapForEncode(buffer, offset + MessageHeader.Size);\n" +
+            indent + INDENT + INDENT + "return WrapForEncode(buffer, offset + MessageHeader.Size);\n" +
             indent + INDENT + "}\n\n" +
-            indent + INDENT + "public void WrapForDecode(DirectBuffer buffer, int offset, " +
+            "%13$s" +
+            indent + INDENT + "public %10$s WrapForDecode(DirectBuffer buffer, int offset, " +
                 "int actingBlockLength, int actingVersion)\n" +
             indent + INDENT + "{\n" +
+            "%14$s" +
             indent + INDENT + INDENT + "_buffer = buffer;\n" +
             indent + INDENT + INDENT + "_offset = offset;\n" +
             indent + INDENT + INDENT + "_actingBlockLength = actingBlockLength;\n" +
             indent + INDENT + INDENT + "_actingVersion = actingVersion;\n" +
             indent + INDENT + INDENT + "Limit = offset + _actingBlockLength;\n" +
+            indent + INDENT + INDENT + "return this;\n" +
+            indent + INDENT + "}\n\n" +
+            indent + INDENT + "public %10$s WrapForDecodeAndApplyHeader(DirectBuffer buffer, int offset, " +
+                "MessageHeader headerDecoder)\n" +
+            indent + INDENT + "{\n" +
+            indent + INDENT + INDENT + "headerDecoder.Wrap(buffer, offset, SchemaVersion);\n" +
+            indent + INDENT + INDENT + "\n" +
+            indent + INDENT + INDENT + "return WrapForDecode(buffer, offset + MessageHeader.Size, " +
+            " headerDecoder.BlockLength, headerDecoder.Version);\n" +
             indent + INDENT + "}\n\n" +
             indent + INDENT + "public int Size\n" +
             indent + INDENT + "{\n" +
@@ -1241,10 +1465,507 @@ public class CSharpGenerator implements CodeGenerator
             generateLiteral(ir.headerStructure().schemaVersionType(), Integer.toString(ir.version())),
             semanticType,
             className,
-            semanticVersion);
+            semanticVersion,
+            generateEncoderWrapListener(fieldPrecedenceModel, indent + TWO_INDENT),
+            generateDecoderWrapListener(fieldPrecedenceModel, indent + INDENT),
+            generateAccessOrderListenerCall(fieldPrecedenceModel, indent + TWO_INDENT,
+                "OnWrapForDecode", "actingVersion"));
     }
 
-    private CharSequence generateFields(final List<Token> tokens, final String indent)
+    private static CharSequence qualifiedStateCase(final FieldPrecedenceModel.State state)
+    {
+        return "CodecState." + state.name();
+    }
+
+    private static CharSequence stateCaseForSwitchCase(final FieldPrecedenceModel.State state)
+    {
+        return qualifiedStateCase(state);
+    }
+
+    private static CharSequence unqualifiedStateCase(final FieldPrecedenceModel.State state)
+    {
+        return state.name();
+    }
+
+    private static CharSequence generateFieldOrderStates(
+        final String indent,
+        final FieldPrecedenceModel fieldPrecedenceModel)
+    {
+        if (null == fieldPrecedenceModel)
+        {
+            return "";
+        }
+
+        final StringBuilder sb = new StringBuilder();
+
+        sb.append(indent).append("///\n");
+
+        sb.append(indent).append("/// <summary>\n");
+        sb.append(indent).append("///   <para>\n");
+        sb.append(indent).append("///     The states in which a encoder/decoder/codec can live.\n");
+        sb.append(indent).append("///   </para>\n");
+        sb.append(indent).append("///   <para>\n");
+        sb.append(indent).append("///     The state machine diagram below, encoded in the dot language, describes\n");
+        sb.append(indent).append("///     the valid state transitions according to the order in which fields may be\n");
+        sb.append(indent).append("///     accessed safely. Tools such as PlantUML and Graphviz can render it.\n");
+        sb.append(indent).append("///   </para>\n");
+        sb.append(indent).append("///   <code>\n");
+        fieldPrecedenceModel.generateGraph(sb, indent + "///     ");
+        sb.append(indent).append("///   </code>\n");
+        sb.append(indent).append("/// </summary>\n");
+        sb.append(indent).append("private enum CodecState\n")
+            .append(indent).append("{\n");
+        fieldPrecedenceModel.forEachStateOrderedByStateNumber(state ->
+        {
+            sb.append(indent).append(INDENT).append(unqualifiedStateCase(state))
+                .append(" = ").append(state.number())
+                .append(",\n");
+        });
+        sb.append(indent).append("}\n\n");
+
+        sb.append("\n").append(indent).append("private static readonly string[] StateNameLookup = new []\n")
+            .append(indent).append("{\n");
+        fieldPrecedenceModel.forEachStateOrderedByStateNumber(state ->
+        {
+            sb.append(indent).append(INDENT).append("\"").append(state.name()).append("\",\n");
+        });
+        sb.append(indent).append("};\n\n");
+
+        sb.append(indent).append("private static readonly string[] StateTransitionsLookup = new []\n")
+            .append(indent).append("{\n");
+        fieldPrecedenceModel.forEachStateOrderedByStateNumber(state ->
+        {
+            sb.append(indent).append(INDENT).append("\"");
+            final MutableBoolean isFirst = new MutableBoolean(true);
+            final Set<String> transitionDescriptions = new HashSet<>();
+            fieldPrecedenceModel.forEachTransitionFrom(state, transitionGroup ->
+            {
+                if (transitionDescriptions.add(transitionGroup.exampleCode()))
+                {
+                    if (isFirst.get())
+                    {
+                        isFirst.set(false);
+                    }
+                    else
+                    {
+                        sb.append(", ");
+                    }
+
+                    sb.append("\\\"").append(transitionGroup.exampleCode()).append("\\\"");
+                }
+            });
+            sb.append("\",\n");
+        });
+        sb.append(indent).append("};\n\n");
+
+        sb.append(indent).append("private static string codecStateName(CodecState state)\n")
+            .append(indent).append("{\n")
+            .append(indent).append(INDENT).append("return StateNameLookup[(int) state];\n")
+            .append(indent).append("}\n\n");
+
+        sb.append(indent).append("private static string codecStateTransitions(CodecState state)\n")
+            .append(indent).append("{\n")
+            .append(indent).append(INDENT).append("return StateTransitionsLookup[(int) state];\n")
+            .append(indent).append("}\n\n");
+
+        sb.append(indent).append("private CodecState _codecState = ")
+            .append(qualifiedStateCase(fieldPrecedenceModel.notWrappedState()))
+            .append(";\n\n");
+
+        sb.append(indent).append("private CodecState codecState()\n")
+            .append(indent).append("{\n")
+            .append(indent).append(INDENT).append("return _codecState;\n")
+            .append(indent).append("}\n\n");
+
+        sb.append(indent).append("private void codecState(CodecState newState)\n")
+            .append(indent).append("{\n")
+            .append(indent).append(INDENT).append("_codecState = newState;\n")
+            .append(indent).append("}\n");
+
+        return sb;
+    }
+
+    private CharSequence generateFullyEncodedCheck(
+        final String indent,
+        final FieldPrecedenceModel fieldPrecedenceModel)
+    {
+        if (null == fieldPrecedenceModel)
+        {
+            return "";
+        }
+
+        final StringBuilder sb = new StringBuilder();
+        sb.append("\n");
+
+        sb.append(indent).append("public void CheckEncodingIsComplete()\n")
+            .append(indent).append("{\n")
+            .append("#if ").append(precedenceChecksFlagName).append("\n")
+            .append(indent).append(INDENT).append("switch (_codecState)\n")
+            .append(indent).append(INDENT).append("{\n");
+
+        fieldPrecedenceModel.forEachTerminalEncoderState(state ->
+        {
+            sb.append(indent).append(TWO_INDENT).append("case ").append(stateCaseForSwitchCase(state)).append(":\n")
+                .append(indent).append(THREE_INDENT).append("return;\n");
+        });
+
+        sb.append(indent).append(TWO_INDENT).append("default:\n")
+            .append(indent).append(THREE_INDENT)
+            .append("throw new InvalidOperationException(\"Not fully encoded, current state: \" +\n")
+            .append(indent).append(THREE_INDENT)
+            .append(INDENT).append("codecStateName(_codecState) + \", allowed transitions: \" +\n")
+            .append(indent).append(THREE_INDENT)
+            .append(INDENT).append("codecStateTransitions(_codecState));\n")
+            .append(indent).append(INDENT).append("}\n")
+            .append("#endif\n")
+            .append(indent).append("}\n\n");
+
+        return sb;
+    }
+
+    private static String accessOrderListenerMethodName(final Token token)
+    {
+        return "On" + Generators.toUpperFirstChar(token.name()) + "Accessed";
+    }
+
+    private static String accessOrderListenerMethodName(final Token token, final String suffix)
+    {
+        return "On" + Generators.toUpperFirstChar(token.name()) + suffix + "Accessed";
+    }
+
+    private static void generateAccessOrderListenerMethod(
+        final StringBuilder sb,
+        final FieldPrecedenceModel fieldPrecedenceModel,
+        final String indent,
+        final Token token)
+    {
+        if (null == fieldPrecedenceModel)
+        {
+            return;
+        }
+
+        sb.append("\n")
+            .append(indent).append("private void ").append(accessOrderListenerMethodName(token)).append("()\n")
+            .append(indent).append("{\n");
+
+        final FieldPrecedenceModel.CodecInteraction fieldAccess =
+            fieldPrecedenceModel.interactionFactory().accessField(token);
+
+        generateAccessOrderListener(
+            sb,
+            indent + INDENT,
+            "access field",
+            fieldPrecedenceModel,
+            fieldAccess);
+
+        sb.append(indent).append("}\n");
+    }
+
+    private CharSequence generateAccessOrderListenerCall(
+        final FieldPrecedenceModel fieldPrecedenceModel,
+        final String indent,
+        final Token token,
+        final String... arguments)
+    {
+        return generateAccessOrderListenerCall(
+            fieldPrecedenceModel,
+            indent,
+            accessOrderListenerMethodName(token),
+            arguments);
+    }
+
+    private CharSequence generateAccessOrderListenerCall(
+        final FieldPrecedenceModel fieldPrecedenceModel,
+        final String indent,
+        final String methodName,
+        final String... arguments)
+    {
+        if (null == fieldPrecedenceModel)
+        {
+            return "";
+        }
+
+        final StringBuilder sb = new StringBuilder();
+        sb.append("#if ").append(precedenceChecksFlagName).append("\n")
+            .append(indent).append(methodName).append("(");
+
+        for (int i = 0; i < arguments.length; i++)
+        {
+            if (i > 0)
+            {
+                sb.append(", ");
+            }
+            sb.append(arguments[i]);
+        }
+        sb.append(");\n");
+
+        sb.append("#endif\n");
+
+        return sb;
+    }
+
+    private static void generateAccessOrderListenerMethodForGroupWrap(
+        final StringBuilder sb,
+        final FieldPrecedenceModel fieldPrecedenceModel,
+        final String indent,
+        final Token token)
+    {
+        if (null == fieldPrecedenceModel)
+        {
+            return;
+        }
+
+        sb.append("\n")
+            .append(indent).append("private void ").append(accessOrderListenerMethodName(token))
+            .append("(int remaining, string action)\n")
+            .append(indent).append("{\n")
+            .append(indent).append(INDENT).append("if (remaining == 0)\n")
+            .append(indent).append(INDENT).append("{\n");
+
+        final FieldPrecedenceModel.CodecInteraction selectEmptyGroup =
+            fieldPrecedenceModel.interactionFactory().determineGroupIsEmpty(token);
+
+        generateAccessOrderListener(
+            sb,
+            indent + TWO_INDENT,
+            "\" + action + \" count of repeating group",
+            fieldPrecedenceModel,
+            selectEmptyGroup);
+
+        sb.append(indent).append(INDENT).append("}\n")
+            .append(indent).append(INDENT).append("else\n")
+            .append(indent).append(INDENT).append("{\n");
+
+        final FieldPrecedenceModel.CodecInteraction selectNonEmptyGroup =
+            fieldPrecedenceModel.interactionFactory().determineGroupHasElements(token);
+
+        generateAccessOrderListener(
+            sb,
+            indent + TWO_INDENT,
+            "\" + action + \" count of repeating group",
+            fieldPrecedenceModel,
+            selectNonEmptyGroup);
+
+        sb.append(indent).append(INDENT).append("}\n")
+            .append(indent).append("}\n");
+    }
+
+    private static void generateAccessOrderListener(
+        final StringBuilder sb,
+        final String indent,
+        final String action,
+        final FieldPrecedenceModel fieldPrecedenceModel,
+        final FieldPrecedenceModel.CodecInteraction interaction)
+    {
+        if (interaction.isTopLevelBlockFieldAccess())
+        {
+            sb.append(indent).append("if (codecState() == ")
+                .append(qualifiedStateCase(fieldPrecedenceModel.notWrappedState()))
+                .append(")\n")
+                .append(indent).append("{\n");
+            generateAccessOrderException(sb, indent + INDENT, action, fieldPrecedenceModel, interaction);
+            sb.append(indent).append("}\n");
+        }
+        else
+        {
+            sb.append(indent).append("switch (codecState())\n")
+                .append(indent).append("{\n");
+
+            fieldPrecedenceModel.forEachTransition(interaction, transitionGroup ->
+            {
+                transitionGroup.forEachStartState(startState ->
+                {
+                    sb.append(indent).append(INDENT)
+                        .append("case ").append(stateCaseForSwitchCase(startState)).append(":\n");
+                });
+                sb.append(indent).append(TWO_INDENT).append("codecState(")
+                    .append(qualifiedStateCase(transitionGroup.endState())).append(");\n")
+                    .append(indent).append(TWO_INDENT).append("break;\n");
+            });
+
+            sb.append(indent).append(INDENT).append("default:\n");
+            generateAccessOrderException(sb, indent + TWO_INDENT, action, fieldPrecedenceModel, interaction);
+            sb.append(indent).append("}\n");
+        }
+    }
+
+    private static void generateAccessOrderException(
+        final StringBuilder sb,
+        final String indent,
+        final String action,
+        final FieldPrecedenceModel fieldPrecedenceModel,
+        final FieldPrecedenceModel.CodecInteraction interaction)
+    {
+        sb.append(indent).append("throw new InvalidOperationException(")
+            .append("\"Illegal field access order. \" +\n")
+            .append(indent).append(INDENT)
+            .append("\"Cannot ").append(action).append(" \\\"").append(interaction.groupQualifiedName())
+            .append("\\\" in state: \" + codecStateName(codecState()) +\n")
+            .append(indent).append(INDENT)
+            .append("\". Expected one of these transitions: [\" + codecStateTransitions(codecState()) +\n")
+            .append(indent).append(INDENT)
+            .append("\"]. Please see the diagram in the docs of the enum ")
+            .append(fieldPrecedenceModel.generatedRepresentationClassName()).append(".\");\n");
+    }
+
+    private static void generateAccessOrderListenerMethodForNextGroupElement(
+        final StringBuilder sb,
+        final FieldPrecedenceModel fieldPrecedenceModel,
+        final String indent,
+        final Token token)
+    {
+        if (null == fieldPrecedenceModel)
+        {
+            return;
+        }
+
+        sb.append("\n");
+
+        sb.append(indent).append("private void OnNextElementAccessed()\n")
+            .append(indent).append("{\n")
+            .append(indent).append(INDENT).append("int remaining = ").append("_count - _index").append(";\n")
+            .append(indent).append(INDENT).append("if (remaining > 1)\n")
+            .append(indent).append(INDENT).append("{\n");
+
+        final FieldPrecedenceModel.CodecInteraction selectNextElementInGroup =
+            fieldPrecedenceModel.interactionFactory().moveToNextElement(token);
+
+        generateAccessOrderListener(
+            sb,
+            indent + TWO_INDENT,
+            "access next element in repeating group",
+            fieldPrecedenceModel,
+            selectNextElementInGroup);
+
+        sb.append(indent).append(INDENT).append("}\n")
+            .append(indent).append(INDENT).append("else if (remaining == 1)\n")
+            .append(indent).append(INDENT).append("{\n");
+
+        final FieldPrecedenceModel.CodecInteraction selectLastElementInGroup =
+            fieldPrecedenceModel.interactionFactory().moveToLastElement(token);
+
+        generateAccessOrderListener(
+            sb,
+            indent + TWO_INDENT,
+            "access next element in repeating group",
+            fieldPrecedenceModel,
+            selectLastElementInGroup);
+
+        sb.append(indent).append(INDENT).append("}\n")
+            .append(indent).append("}\n");
+    }
+
+    private static void generateAccessOrderListenerMethodForResetGroupCount(
+        final StringBuilder sb,
+        final FieldPrecedenceModel fieldPrecedenceModel,
+        final String indent,
+        final Token token)
+    {
+        if (null == fieldPrecedenceModel)
+        {
+            return;
+        }
+
+        sb.append(indent).append("private void OnResetCountToIndex()\n")
+            .append(indent).append("{\n");
+
+        final FieldPrecedenceModel.CodecInteraction resetCountToIndex =
+            fieldPrecedenceModel.interactionFactory().resetCountToIndex(token);
+
+        generateAccessOrderListener(
+            sb,
+            indent + "   ",
+            "reset count of repeating group",
+            fieldPrecedenceModel,
+            resetCountToIndex);
+
+        sb.append(indent).append("}\n");
+    }
+
+    private static void generateAccessOrderListenerMethodForVarDataLength(
+        final StringBuilder sb,
+        final FieldPrecedenceModel fieldPrecedenceModel,
+        final String indent,
+        final Token token)
+    {
+        if (null == fieldPrecedenceModel)
+        {
+            return;
+        }
+
+        sb.append("\n")
+            .append(indent).append("private void ")
+            .append(accessOrderListenerMethodName(token, "Length")).append("()\n")
+            .append(indent).append("{\n");
+
+        final FieldPrecedenceModel.CodecInteraction accessLength =
+            fieldPrecedenceModel.interactionFactory().accessVarDataLength(token);
+
+        generateAccessOrderListener(
+            sb,
+            indent + INDENT,
+            "decode length of var data",
+            fieldPrecedenceModel,
+            accessLength);
+
+        sb.append(indent).append("}\n");
+    }
+
+    private static CharSequence generateDecoderWrapListener(
+        final FieldPrecedenceModel fieldPrecedenceModel,
+        final String indent)
+    {
+        if (null == fieldPrecedenceModel)
+        {
+            return "";
+        }
+
+        final StringBuilder sb = new StringBuilder();
+        sb.append(indent).append("private void OnWrapForDecode(int actingVersion)\n")
+            .append(indent).append("{\n")
+            .append(indent).append(INDENT).append("switch(actingVersion)\n")
+            .append(indent).append(INDENT).append("{\n");
+
+        fieldPrecedenceModel.forEachWrappedStateByVersion((version, state) ->
+        {
+            sb.append(indent).append(TWO_INDENT).append("case ").append(version).append(":\n")
+                .append(indent).append(THREE_INDENT).append("codecState(")
+                .append(qualifiedStateCase(state)).append(");\n")
+                .append(indent).append(THREE_INDENT).append("break;\n");
+        });
+
+        sb.append(indent).append(TWO_INDENT).append("default:\n")
+            .append(indent).append(THREE_INDENT).append("codecState(")
+            .append(qualifiedStateCase(fieldPrecedenceModel.latestVersionWrappedState())).append(");\n")
+            .append(indent).append(THREE_INDENT).append("break;\n")
+            .append(indent).append(INDENT).append("}\n")
+            .append(indent).append("}\n\n");
+
+        return sb;
+    }
+
+    private CharSequence generateEncoderWrapListener(
+        final FieldPrecedenceModel fieldPrecedenceModel,
+        final String indent)
+    {
+        if (null == fieldPrecedenceModel)
+        {
+            return "";
+        }
+
+        final StringBuilder sb = new StringBuilder();
+        sb.append("#if ").append(precedenceChecksFlagName).append("\n")
+            .append(indent).append("codecState(")
+            .append(qualifiedStateCase(fieldPrecedenceModel.latestVersionWrappedState()))
+            .append(");\n")
+            .append("#endif\n");
+        return sb;
+    }
+
+    private CharSequence generateFields(
+        final FieldPrecedenceModel fieldPrecedenceModel,
+        final List<Token> tokens,
+        final String indent)
     {
         final StringBuilder sb = new StringBuilder();
 
@@ -1258,26 +1979,32 @@ public class CSharpGenerator implements CodeGenerator
 
                 generateFieldIdMethod(sb, signalToken, indent + INDENT);
                 generateSinceActingDeprecated(
-                    sb, indent, CSharpUtil.formatPropertyName(signalToken.name()), signalToken);
+                    sb, indent + INDENT, CSharpUtil.formatPropertyName(signalToken.name()), signalToken);
                 generateOffsetMethod(sb, signalToken, indent + INDENT);
                 generateFieldMetaAttributeMethod(sb, signalToken, indent + INDENT);
+
+                generateAccessOrderListenerMethod(sb, fieldPrecedenceModel, indent + INDENT, signalToken);
 
                 switch (encodingToken.signal())
                 {
                     case ENCODING:
-                        sb.append(generatePrimitiveProperty(propertyName, signalToken, encodingToken, indent));
+                        sb.append(generatePrimitiveProperty(propertyName, signalToken, encodingToken,
+                            fieldPrecedenceModel, indent));
                         break;
 
                     case BEGIN_ENUM:
-                        sb.append(generateEnumProperty(propertyName, signalToken, encodingToken, indent));
+                        sb.append(generateEnumProperty(propertyName, signalToken, encodingToken,
+                            fieldPrecedenceModel, indent));
                         break;
 
                     case BEGIN_SET:
-                        sb.append(generateBitSetProperty(propertyName, signalToken, encodingToken, indent));
+                        sb.append(generateBitSetProperty(propertyName, signalToken, encodingToken,
+                            fieldPrecedenceModel, indent));
                         break;
 
                     case BEGIN_COMPOSITE:
-                        sb.append(generateCompositeProperty(propertyName, signalToken, encodingToken, indent));
+                        sb.append(generateCompositeProperty(propertyName, signalToken, encodingToken,
+                            fieldPrecedenceModel, indent));
                         break;
 
                     default:
@@ -1352,6 +2079,7 @@ public class CSharpGenerator implements CodeGenerator
         final String propertyName,
         final Token fieldToken,
         final Token typeToken,
+        final FieldPrecedenceModel fieldPrecedenceModel,
         final String indent)
     {
         final String enumName = formatClassName(typeToken.applicableTypeName());
@@ -1381,6 +2109,9 @@ public class CSharpGenerator implements CodeGenerator
         }
         else
         {
+            final CharSequence accessOrderListenerCall = generateAccessOrderListenerCall(
+                fieldPrecedenceModel, indent + TWO_INDENT, fieldToken);
+
             return String.format("\n" +
                 "%1$s" +
                 indent + INDENT + "public %2$s %3$s\n" +
@@ -1388,10 +2119,12 @@ public class CSharpGenerator implements CodeGenerator
                 indent + INDENT + INDENT + "get\n" +
                 indent + INDENT + INDENT + "{\n" +
                 "%4$s" +
+                "%10$s" +
                 indent + INDENT + INDENT + INDENT + "return (%5$s)_buffer.%6$sGet%8$s(_offset + %7$d);\n" +
                 indent + INDENT + INDENT + "}\n" +
                 indent + INDENT + INDENT + "set\n" +
                 indent + INDENT + INDENT + "{\n" +
+                "%10$s" +
                 indent + INDENT + INDENT + INDENT + "_buffer.%6$sPut%8$s(_offset + %7$d, (%9$s)value);\n" +
                 indent + INDENT + INDENT + "}\n" +
                 indent + INDENT + "}\n\n",
@@ -1403,12 +2136,17 @@ public class CSharpGenerator implements CodeGenerator
                 typePrefix,
                 offset,
                 byteOrderStr,
-                enumUnderlyingType);
+                enumUnderlyingType,
+                accessOrderListenerCall);
         }
     }
 
     private String generateBitSetProperty(
-        final String propertyName, final Token fieldToken, final Token typeToken, final String indent)
+        final String propertyName,
+        final Token fieldToken,
+        final Token typeToken,
+        final FieldPrecedenceModel fieldPrecedenceModel,
+        final String indent)
     {
         final String bitSetName = formatClassName(typeToken.applicableTypeName());
         final int offset = typeToken.offset();
@@ -1416,6 +2154,8 @@ public class CSharpGenerator implements CodeGenerator
         final ByteOrder byteOrder = typeToken.encoding().byteOrder();
         final String byteOrderStr = generateByteOrder(byteOrder, typeToken.encoding().primitiveType().size());
         final String typeName = cSharpTypeName(typeToken.encoding().primitiveType());
+        final CharSequence accessOrderListenerCall = generateAccessOrderListenerCall(
+            fieldPrecedenceModel, indent + TWO_INDENT, fieldToken);
 
         return String.format("\n" +
             "%1$s" +
@@ -1424,10 +2164,12 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + INDENT + "get\n" +
             indent + INDENT + INDENT + "{\n" +
             "%4$s" +
+            "%10$s" +
             indent + INDENT + INDENT + INDENT + "return (%5$s)_buffer.%6$sGet%8$s(_offset + %7$d);\n" +
             indent + INDENT + INDENT + "}\n" +
             indent + INDENT + INDENT + "set\n" +
             indent + INDENT + INDENT + "{\n" +
+            "%10$s" +
             indent + INDENT + INDENT + INDENT + "_buffer.%6$sPut%8$s(_offset + %7$d, (%9$s)value);\n" +
             indent + INDENT + INDENT + "}\n" +
             indent + INDENT + "}\n",
@@ -1439,14 +2181,21 @@ public class CSharpGenerator implements CodeGenerator
             typePrefix,
             offset,
             byteOrderStr,
-            typeName);
+            typeName,
+            accessOrderListenerCall);
     }
 
     private Object generateCompositeProperty(
-        final String propertyName, final Token fieldToken, final Token typeToken, final String indent)
+        final String propertyName,
+        final Token fieldToken,
+        final Token typeToken,
+        final FieldPrecedenceModel fieldPrecedenceModel,
+        final String indent)
     {
         final String compositeName = CSharpUtil.formatClassName(typeToken.applicableTypeName());
         final int offset = typeToken.offset();
+        final CharSequence accessOrderListenerCall = generateAccessOrderListenerCall(
+            fieldPrecedenceModel, indent + THREE_INDENT, fieldToken);
         final StringBuilder sb = new StringBuilder();
 
         sb.append(String.format("\n" +
@@ -1462,6 +2211,7 @@ public class CSharpGenerator implements CodeGenerator
             indent + INDENT + INDENT + "get\n" +
             indent + INDENT + INDENT + "{\n" +
             "%4$s" +
+            "%7$s" +
             indent + INDENT + INDENT + INDENT + "_%5$s.Wrap(_buffer, _offset + %6$d, _actingVersion);\n" +
             indent + INDENT + INDENT + INDENT + "return _%5$s;\n" +
             indent + INDENT + INDENT + "}\n" +
@@ -1471,7 +2221,8 @@ public class CSharpGenerator implements CodeGenerator
             toUpperFirstChar(propertyName),
             generateTypeFieldNotPresentCondition(fieldToken.version(), indent),
             toLowerFirstChar(propertyName),
-            offset));
+            offset,
+            accessOrderListenerCall));
 
         return sb;
     }
@@ -1715,11 +2466,13 @@ public class CSharpGenerator implements CodeGenerator
                     {
                         if (typeToken.encoding().primitiveType() == PrimitiveType.CHAR)
                         {
+                            append(sb, indent, "builder.Append(\"'\");");
                             append(sb, indent, "for (int i = 0; i < " + fieldName +
                                 "Length && this.Get" + fieldName + "(i) > 0; ++i)");
                             append(sb, indent, "{");
                             append(sb, indent, "    builder.Append((char)this.Get" + fieldName + "(i));");
                             append(sb, indent, "}");
+                            append(sb, indent, "builder.Append(\"'\");");
                         }
                         else
                         {
@@ -1804,7 +2557,8 @@ public class CSharpGenerator implements CodeGenerator
         final String name,
         final List<Token> tokens,
         final List<Token> groups,
-        final List<Token> varData)
+        final List<Token> varData,
+        final FieldPrecedenceModel fieldPrecedenceModel)
     {
         final StringBuilder sb = new StringBuilder(100);
 
@@ -1818,6 +2572,15 @@ public class CSharpGenerator implements CodeGenerator
         append(sb, TWO_INDENT, "    }");
         sb.append('\n');
         append(sb, TWO_INDENT, "    int originalLimit = this.Limit;");
+        if (null != fieldPrecedenceModel)
+        {
+            sb.append("#if ").append(precedenceChecksFlagName).append("\n");
+            append(sb, TWO_INDENT, "    CodecState originalState = _codecState;");
+            sb.append(THREE_INDENT).append("_codecState = ")
+                .append(qualifiedStateCase(fieldPrecedenceModel.notWrappedState())).append(";\n");
+            append(sb, TWO_INDENT, "    OnWrapForDecode(_actingVersion);");
+            sb.append("#endif\n");
+        }
         append(sb, TWO_INDENT, "    this.Limit = _offset + _actingBlockLength;");
         append(sb, TWO_INDENT, "    builder.Append(\"[" + name + "](sbeTemplateId=\");");
         append(sb, TWO_INDENT, "    builder.Append(" + name + ".TemplateId);");
@@ -1841,6 +2604,12 @@ public class CSharpGenerator implements CodeGenerator
         sb.append('\n');
         appendDisplay(sb, tokens, groups, varData, THREE_INDENT);
         sb.append('\n');
+        if (null != fieldPrecedenceModel)
+        {
+            sb.append("#if ").append(precedenceChecksFlagName).append("\n");
+            append(sb, TWO_INDENT, "    _codecState = originalState;");
+            sb.append("#endif\n");
+        }
         append(sb, TWO_INDENT, "    this.Limit = originalLimit;");
         sb.append('\n');
         append(sb, TWO_INDENT, "}");
