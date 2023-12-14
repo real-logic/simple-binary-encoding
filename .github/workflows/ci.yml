@@ -202,8 +202,9 @@ jobs:
           key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
       - name: Install compiler
         run: |
-          curl -L https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-          sudo add-apt-repository "deb http://apt.llvm.org/focal/ llvm-toolchain-focal-${{ matrix.version }} main"
+          sudo mkdir -p /etc/apt/keyrings/
+          curl https://apt.llvm.org/llvm-snapshot.gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/llvm-snapshot.gpg
+          echo "deb [signed-by=/etc/apt/keyrings/llvm-snapshot.gpg] http://apt.llvm.org/focal/ llvm-toolchain-focal-${{ matrix.version }} main" | sudo tee /etc/apt/sources.list.d/llvm.list
           sudo apt-get update
           sudo apt-get install -y clang-${{ matrix.version }} libsparsehash-dev libidn11
           curl -O -L https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.tar.gz
@@ -218,7 +219,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: [ '13', '14', '15', '16' ]
+        version: [ '13', '14', '15', '16', '17' ]
     env:
       CC: clang-${{ matrix.version }}
       CXX: clang++-${{ matrix.version }}
@@ -239,8 +240,9 @@ jobs:
           key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
       - name: Install compiler
         run: |
-          curl -L https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
-          sudo add-apt-repository "deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-${{ matrix.version }} main"
+          sudo mkdir -p /etc/apt/keyrings/
+          curl https://apt.llvm.org/llvm-snapshot.gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/llvm-snapshot.gpg
+          echo "deb [signed-by=/etc/apt/keyrings/llvm-snapshot.gpg] http://apt.llvm.org/jammy/ llvm-toolchain-jammy-${{ matrix.version }} main" | sudo tee /etc/apt/sources.list.d/llvm.list
           sudo apt-get update
           sudo apt-get install -y clang-${{ matrix.version }}
           curl -O -L https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.tar.gz
