@@ -42,6 +42,7 @@ public class FieldAccessOrderCheckTest
     private final MutableDirectBuffer buffer = new ExpandableArrayBuffer();
     private final MessageHeaderEncoder messageHeaderEncoder = new MessageHeaderEncoder();
     private final MessageHeaderDecoder messageHeaderDecoder = new MessageHeaderDecoder();
+    private final Random random = new Random();
 
     @BeforeAll
     static void assumeDebugMode()
@@ -53,7 +54,7 @@ public class FieldAccessOrderCheckTest
     @BeforeEach
     void setUp()
     {
-        new Random().nextBytes(buffer.byteArray());
+        random.nextBytes(buffer.byteArray());
     }
 
     @Test
