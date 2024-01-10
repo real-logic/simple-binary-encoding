@@ -97,7 +97,6 @@ public final class FrameCodecDecoder
 
     private final FrameCodecDecoder parentMessage = this;
     private DirectBuffer buffer;
-    private int initialOffset;
     private int offset;
     private int limit;
     int actingBlockLength;
@@ -133,11 +132,6 @@ public final class FrameCodecDecoder
         return buffer;
     }
 
-    public int initialOffset()
-    {
-        return initialOffset;
-    }
-
     public int offset()
     {
         return offset;
@@ -166,7 +160,6 @@ public final class FrameCodecDecoder
         {
             this.buffer = buffer;
         }
-        this.initialOffset = offset;
         this.offset = offset;
         this.actingBlockLength = actingBlockLength;
         this.actingVersion = actingVersion;
@@ -202,7 +195,7 @@ public final class FrameCodecDecoder
 
     public FrameCodecDecoder sbeRewind()
     {
-        return wrap(buffer, initialOffset, actingBlockLength, actingVersion);
+        return wrap(buffer, offset, actingBlockLength, actingVersion);
     }
 
     public int sbeDecodedLength()
@@ -924,7 +917,7 @@ public final class FrameCodecDecoder
         }
 
         final FrameCodecDecoder decoder = new FrameCodecDecoder();
-        decoder.wrap(buffer, initialOffset, actingBlockLength, actingVersion);
+        decoder.wrap(buffer, offset, actingBlockLength, actingVersion);
 
         return decoder.appendTo(new StringBuilder()).toString();
     }
@@ -937,7 +930,7 @@ public final class FrameCodecDecoder
         }
 
         final int originalLimit = limit();
-        limit(initialOffset + actingBlockLength);
+        limit(offset + actingBlockLength);
         builder.append("[FrameCodec](sbeTemplateId=");
         builder.append(TEMPLATE_ID);
         builder.append("|sbeSchemaId=");

@@ -97,7 +97,6 @@ public final class FrameCodecEncoder
 
     private final FrameCodecEncoder parentMessage = this;
     private MutableDirectBuffer buffer;
-    private int initialOffset;
     private int offset;
     private int limit;
 
@@ -131,11 +130,6 @@ public final class FrameCodecEncoder
         return buffer;
     }
 
-    public int initialOffset()
-    {
-        return initialOffset;
-    }
-
     public int offset()
     {
         return offset;
@@ -147,7 +141,6 @@ public final class FrameCodecEncoder
         {
             this.buffer = buffer;
         }
-        this.initialOffset = offset;
         this.offset = offset;
         limit(offset + BLOCK_LENGTH);
 
@@ -727,7 +720,7 @@ public final class FrameCodecEncoder
         }
 
         final FrameCodecDecoder decoder = new FrameCodecDecoder();
-        decoder.wrap(buffer, initialOffset, BLOCK_LENGTH, SCHEMA_VERSION);
+        decoder.wrap(buffer, offset, BLOCK_LENGTH, SCHEMA_VERSION);
 
         return decoder.appendTo(builder);
     }

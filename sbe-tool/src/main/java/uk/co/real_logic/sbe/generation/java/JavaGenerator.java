@@ -3419,7 +3419,6 @@ public class JavaGenerator implements CodeGenerator
             .append("        {\n")
             .append("            this.buffer = buffer;\n")
             .append("        }\n")
-            .append("        this.initialOffset = offset;\n")
             .append("        this.offset = offset;\n")
             .append("        this.actingBlockLength = actingBlockLength;\n")
             .append("        this.actingVersion = actingVersion;\n")
@@ -3448,7 +3447,7 @@ public class JavaGenerator implements CodeGenerator
 
         methods.append("    public ").append(className).append(" sbeRewind()\n")
             .append("    {\n")
-            .append("        return wrap(buffer, initialOffset, actingBlockLength, actingVersion);\n")
+            .append("        return wrap(buffer, offset, actingBlockLength, actingVersion);\n")
             .append("    }\n\n");
 
         methods.append("    public int sbeDecodedLength()\n")
@@ -3516,7 +3515,6 @@ public class JavaGenerator implements CodeGenerator
             "    public static final java.nio.ByteOrder BYTE_ORDER = java.nio.ByteOrder.%14$s;\n\n" +
             "    private final %9$s parentMessage = this;\n" +
             "    private %11$s buffer;\n" +
-            "    private int initialOffset;\n" +
             "    private int offset;\n" +
             "    private int limit;\n" +
             "%13$s" +
@@ -3544,10 +3542,6 @@ public class JavaGenerator implements CodeGenerator
             "    public %11$s buffer()\n" +
             "    {\n" +
             "        return buffer;\n" +
-            "    }\n\n" +
-            "    public int initialOffset()\n" +
-            "    {\n" +
-            "        return initialOffset;\n" +
             "    }\n\n" +
             "    public int offset()\n" +
             "    {\n" +
@@ -3599,7 +3593,6 @@ public class JavaGenerator implements CodeGenerator
             "        {\n" +
             "            this.buffer = buffer;\n" +
             "        }\n" +
-            "        this.initialOffset = offset;\n" +
             "        this.offset = offset;\n" +
             "        limit(offset + BLOCK_LENGTH);\n\n" +
             generateEncoderWrapListener(fieldPrecedenceModel, "        ") +
@@ -4250,7 +4243,7 @@ public class JavaGenerator implements CodeGenerator
         append(sb, INDENT, "    }");
         sb.append('\n');
         append(sb, INDENT, "    final " + decoderName + " decoder = new " + decoderName + "();");
-        append(sb, INDENT, "    decoder.wrap(buffer, initialOffset, BLOCK_LENGTH, SCHEMA_VERSION);");
+        append(sb, INDENT, "    decoder.wrap(buffer, offset, BLOCK_LENGTH, SCHEMA_VERSION);");
         sb.append('\n');
         append(sb, INDENT, "    return decoder.appendTo(builder);");
         append(sb, INDENT, "}");
@@ -4369,7 +4362,7 @@ public class JavaGenerator implements CodeGenerator
         append(sb, INDENT, "    }");
         sb.append('\n');
         append(sb, INDENT, "    final int originalLimit = limit();");
-        append(sb, INDENT, "    limit(initialOffset + actingBlockLength);");
+        append(sb, INDENT, "    limit(offset + actingBlockLength);");
         append(sb, INDENT, "    builder.append(\"[" + name + "](sbeTemplateId=\");");
         append(sb, INDENT, "    builder.append(TEMPLATE_ID);");
         append(sb, INDENT, "    builder.append(\"|sbeSchemaId=\");");
@@ -4631,7 +4624,7 @@ public class JavaGenerator implements CodeGenerator
         append(sb, INDENT, "    }");
         sb.append('\n');
         append(sb, INDENT, "    final " + decoderName + " decoder = new " + decoderName + "();");
-        append(sb, INDENT, "    decoder.wrap(buffer, initialOffset, actingBlockLength, actingVersion);");
+        append(sb, INDENT, "    decoder.wrap(buffer, offset, actingBlockLength, actingVersion);");
         sb.append('\n');
         append(sb, INDENT, "    return decoder.appendTo(new StringBuilder()).toString();");
         append(sb, INDENT, "}");

@@ -144,7 +144,6 @@ public final class TokenCodecDecoder
 
     private final TokenCodecDecoder parentMessage = this;
     private DirectBuffer buffer;
-    private int initialOffset;
     private int offset;
     private int limit;
     int actingBlockLength;
@@ -180,11 +179,6 @@ public final class TokenCodecDecoder
         return buffer;
     }
 
-    public int initialOffset()
-    {
-        return initialOffset;
-    }
-
     public int offset()
     {
         return offset;
@@ -213,7 +207,6 @@ public final class TokenCodecDecoder
         {
             this.buffer = buffer;
         }
-        this.initialOffset = offset;
         this.offset = offset;
         this.actingBlockLength = actingBlockLength;
         this.actingVersion = actingVersion;
@@ -249,7 +242,7 @@ public final class TokenCodecDecoder
 
     public TokenCodecDecoder sbeRewind()
     {
-        return wrap(buffer, initialOffset, actingBlockLength, actingVersion);
+        return wrap(buffer, offset, actingBlockLength, actingVersion);
     }
 
     public int sbeDecodedLength()
@@ -2684,7 +2677,7 @@ public final class TokenCodecDecoder
         }
 
         final TokenCodecDecoder decoder = new TokenCodecDecoder();
-        decoder.wrap(buffer, initialOffset, actingBlockLength, actingVersion);
+        decoder.wrap(buffer, offset, actingBlockLength, actingVersion);
 
         return decoder.appendTo(new StringBuilder()).toString();
     }
@@ -2697,7 +2690,7 @@ public final class TokenCodecDecoder
         }
 
         final int originalLimit = limit();
-        limit(initialOffset + actingBlockLength);
+        limit(offset + actingBlockLength);
         builder.append("[TokenCodec](sbeTemplateId=");
         builder.append(TEMPLATE_ID);
         builder.append("|sbeSchemaId=");
