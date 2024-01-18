@@ -16,10 +16,15 @@
 package uk.co.real_logic.sbe.ir;
 
 import org.junit.jupiter.api.Test;
+import uk.co.real_logic.sbe.xml.IrGenerator;
+import uk.co.real_logic.sbe.xml.MessageSchema;
 import uk.co.real_logic.sbe.xml.ParserOptions;
 
 import java.io.InputStream;
+import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.lessThan;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import static uk.co.real_logic.sbe.Tests.getLocalResource;
@@ -42,5 +47,19 @@ class SinceVersionValidationTest
         }
 
         fail("expected IllegalStateException");
+    }
+
+    @Test
+    void shouldApplySinceVersionOnComposites() throws Exception
+    {
+        try (InputStream in = getLocalResource("issue967.xml"))
+        {
+            final MessageSchema schema = parse(in, ParserOptions.DEFAULT);
+            final IrGenerator irg = new IrGenerator();
+            final Ir ir = irg.generate(schema);
+
+            final List<Token> priceNull9Tokens = ir.getType("PRICENULL9");
+            assertThat(priceNull9Tokens.get(0).version(), lessThan(13));
+        }
     }
 }

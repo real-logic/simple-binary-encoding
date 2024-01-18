@@ -328,7 +328,14 @@ public class Ir
         while (endSignal != token.signal() || !name.equals(token.name()));
 
         updateComponentTokenCounts(typeTokens);
-        typesByNameMap.put(null == referencedName ? name : referencedName, typeTokens);
+
+        final String typeName = null == referencedName ? name : referencedName;
+        final List<Token> existingTypeTokens = typesByNameMap.get(typeName);
+
+        if (null == existingTypeTokens || existingTypeTokens.get(0).version() > typeTokens.get(0).version())
+        {
+            typesByNameMap.put(typeName, typeTokens);
+        }
 
         return i;
     }
