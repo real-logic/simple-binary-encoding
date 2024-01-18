@@ -131,8 +131,7 @@ public class JavaGenerator implements CodeGenerator
             shouldDecodeUnknownEnumValues,
             shouldSupportTypesPackageNames,
             PrecedenceChecks.newInstance(new PrecedenceChecks.Context()),
-            outputManager
-        );
+            outputManager);
     }
 
     /**
@@ -1466,7 +1465,7 @@ public class JavaGenerator implements CodeGenerator
             sb.append("\n")
                 .append(indent).append("    public int ").append(methodPropName).append("Length()\n")
                 .append(indent).append("    {\n")
-                .append(generateArrayFieldNotPresentCondition(token.version(), indent))
+                .append(generateArrayFieldNotPresentCondition(false, token.version(), indent))
                 .append(lengthAccessOrderListenerCall)
                 .append(indent).append("        final int limit = parentMessage.limit();\n")
                 .append(indent).append("        return ").append(PrimitiveType.UINT32 == lengthType ? "(int)" : "")
@@ -1563,7 +1562,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "        return dataLength;\n" +
             indent + "    }\n",
             Generators.toUpperFirstChar(propertyName),
-            generateStringNotPresentConditionForAppendable(token.version(), indent),
+            generateStringNotPresentConditionForAppendable(false, token.version(), indent),
             sizeOfLengthField,
             PrimitiveType.UINT32 == lengthType ? "(int)" : "",
             generateGet(lengthType, "limit", byteOrderStr),
@@ -1621,7 +1620,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "        return new String(tmp, %6$s);\n" +
                 indent + "    }\n",
                 formatPropertyName(propertyName),
-                generateStringNotPresentCondition(token.version(), indent),
+                generateStringNotPresentCondition(false, token.version(), indent),
                 sizeOfLengthField,
                 PrimitiveType.UINT32 == lengthType ? "(int)" : "",
                 generateGet(lengthType, "limit", byteOrderStr),
@@ -1644,7 +1643,7 @@ public class JavaGenerator implements CodeGenerator
                     indent + "        return dataLength;\n" +
                     indent + "    }\n",
                     Generators.toUpperFirstChar(propertyName),
-                    generateStringNotPresentConditionForAppendable(token.version(), indent),
+                    generateStringNotPresentConditionForAppendable(false, token.version(), indent),
                     sizeOfLengthField,
                     PrimitiveType.UINT32 == lengthType ? "(int)" : "",
                     generateGet(lengthType, "limit", byteOrderStr),
@@ -1853,7 +1852,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "    }\n",
             propertyName,
             exchangeType,
-            generateArrayFieldNotPresentCondition(token.version(), indent),
+            generateArrayFieldNotPresentCondition(false, token.version(), indent),
             accessOrderListenerCall,
             sizeOfLengthField,
             PrimitiveType.UINT32 == lengthType ? "(int)" : "",
@@ -2713,9 +2712,10 @@ public class JavaGenerator implements CodeGenerator
             indent + "        }\n\n";
     }
 
-    private static CharSequence generateArrayFieldNotPresentCondition(final int sinceVersion, final String indent)
+    private static CharSequence generateArrayFieldNotPresentCondition(
+        final boolean inComposite, final int sinceVersion, final String indent)
     {
-        if (0 == sinceVersion)
+        if (inComposite || 0 == sinceVersion)
         {
             return "";
         }
@@ -2728,9 +2728,9 @@ public class JavaGenerator implements CodeGenerator
     }
 
     private static CharSequence generateStringNotPresentConditionForAppendable(
-        final int sinceVersion, final String indent)
+        final boolean inComposite, final int sinceVersion, final String indent)
     {
-        if (0 == sinceVersion)
+        if (inComposite || 0 == sinceVersion)
         {
             return "";
         }
@@ -2742,9 +2742,10 @@ public class JavaGenerator implements CodeGenerator
             indent + "        }\n\n";
     }
 
-    private static CharSequence generateStringNotPresentCondition(final int sinceVersion, final String indent)
+    private static CharSequence generateStringNotPresentCondition(
+        final boolean inComposite, final int sinceVersion, final String indent)
     {
-        if (0 == sinceVersion)
+        if (inComposite || 0 == sinceVersion)
         {
             return "";
         }
@@ -2836,7 +2837,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "    }\n",
                 Generators.toUpperFirstChar(propertyName),
                 fieldLength,
-                generateArrayFieldNotPresentCondition(propertyToken.version(), indent),
+                generateArrayFieldNotPresentCondition(inComposite, propertyToken.version(), indent),
                 accessOrderListenerCall,
                 offset);
 
@@ -2852,7 +2853,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "        return new String(dst, 0, end, %s);\n" +
                 indent + "    }\n\n",
                 propertyName,
-                generateStringNotPresentCondition(propertyToken.version(), indent),
+                generateStringNotPresentCondition(inComposite, propertyToken.version(), indent),
                 accessOrderListenerCall,
                 fieldLength,
                 offset,
@@ -2886,7 +2887,7 @@ public class JavaGenerator implements CodeGenerator
                     indent + "        return %3$d;\n" +
                     indent + "    }\n\n",
                     Generators.toUpperFirstChar(propertyName),
-                    generateStringNotPresentConditionForAppendable(propertyToken.version(), indent),
+                    generateStringNotPresentConditionForAppendable(inComposite, propertyToken.version(), indent),
                     fieldLength,
                     offset,
                     accessOrderListenerCall);
@@ -2904,7 +2905,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "        return bytesCopied;\n" +
                 indent + "    }\n",
                 Generators.toUpperFirstChar(propertyName),
-                generateArrayFieldNotPresentCondition(propertyToken.version(), indent),
+                generateArrayFieldNotPresentCondition(inComposite, propertyToken.version(), indent),
                 accessOrderListenerCall,
                 fieldLength,
                 offset);
@@ -2920,7 +2921,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "    }\n",
                 Generators.toUpperFirstChar(propertyName),
                 fqMutableBuffer,
-                generateArrayFieldNotPresentCondition(propertyToken.version(), indent),
+                generateArrayFieldNotPresentCondition(inComposite, propertyToken.version(), indent),
                 accessOrderListenerCall,
                 fieldLength,
                 offset);
