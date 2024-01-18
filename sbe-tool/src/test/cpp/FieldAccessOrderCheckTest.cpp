@@ -123,9 +123,9 @@ TEST_F(FieldAccessOrderCheckTest, allowsEncodingAndDecodingVariableLengthFieldsI
     encoder.wrapForEncode(m_buffer, OFFSET, BUFFER_LEN);
     encoder.a(42);
     auto *bIn = "abc";
-    encoder.putB(bIn, strlen(bIn));
+    encoder.putB(bIn, static_cast<uint8_t>(strlen(bIn)));
     auto *cIn = "def";
-    encoder.putC(cIn, strlen(cIn));
+    encoder.putC(cIn, static_cast<uint8_t>(strlen(cIn)));
     encoder.checkEncodingIsComplete();
 
     MultipleVarLength decoder;
@@ -262,7 +262,7 @@ TEST_F(FieldAccessOrderCheckTest, disallowsSkippingEncodingOfVariableLengthField
             try
             {
                 auto *cIn = "cIn";
-                encoder.putC(cIn, std::strlen(cIn));
+                encoder.putC(cIn, static_cast<uint8_t>(std::strlen(cIn)));
             }
             catch (const std::exception &e)
             {
