@@ -1085,7 +1085,7 @@ public class CGenerator implements CodeGenerator
             "#include <string.h>\n",
             structName.toUpperCase()));
 
-        if (typesToInclude != null && typesToInclude.size() != 0)
+        if (typesToInclude != null && !typesToInclude.isEmpty())
         {
             sb.append("\n");
             for (final String incName : typesToInclude)

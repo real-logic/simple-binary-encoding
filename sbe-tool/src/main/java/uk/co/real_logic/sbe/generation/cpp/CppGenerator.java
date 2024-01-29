@@ -228,11 +228,9 @@ public class CppGenerator implements CodeGenerator
             .append(indent).append(INDENT).append("switch (m_codecState)\n")
             .append(indent).append(INDENT).append("{\n");
 
-        fieldPrecedenceModel.forEachTerminalEncoderState(state ->
-        {
+        fieldPrecedenceModel.forEachTerminalEncoderState((state) ->
             sb.append(indent).append(TWO_INDENT).append("case ").append(stateCaseForSwitchCase(state)).append(":\n")
-                .append(indent).append(THREE_INDENT).append("return;\n");
-        });
+            .append(indent).append(THREE_INDENT).append("return;\n"));
 
         sb.append(indent).append(TWO_INDENT).append("default:\n")
             .append(indent).append(THREE_INDENT)
@@ -456,14 +454,12 @@ public class CppGenerator implements CodeGenerator
             sb.append(indent).append("switch (codecState())\n")
                 .append(indent).append("{\n");
 
-            fieldPrecedenceModel.forEachTransition(interaction, transitionGroup ->
+            fieldPrecedenceModel.forEachTransition(interaction, (transitionGroup) ->
             {
 
-                transitionGroup.forEachStartState(startState ->
-                {
+                transitionGroup.forEachStartState((startState) ->
                     sb.append(indent).append(INDENT)
-                        .append("case ").append(stateCaseForSwitchCase(startState)).append(":\n");
-                });
+                    .append("case ").append(stateCaseForSwitchCase(startState)).append(":\n"));
 
                 if (!transitionGroup.alwaysEndsInStartState())
                 {
@@ -2935,21 +2931,19 @@ public class CppGenerator implements CodeGenerator
         sb.append("\n").append("const std::string ").append(className).append("::STATE_NAME_LOOKUP[")
             .append(fieldPrecedenceModel.stateCount()).append("] =\n")
             .append("{\n");
-        fieldPrecedenceModel.forEachStateOrderedByStateNumber(state ->
-        {
-            sb.append(INDENT).append("\"").append(state.name()).append("\",\n");
-        });
+        fieldPrecedenceModel.forEachStateOrderedByStateNumber((state) ->
+            sb.append(INDENT).append("\"").append(state.name()).append("\",\n"));
         sb.append("};\n\n");
 
         sb.append("const std::string ").append(className).append("::STATE_TRANSITIONS_LOOKUP[")
             .append(fieldPrecedenceModel.stateCount()).append("] =\n")
             .append("{\n");
-        fieldPrecedenceModel.forEachStateOrderedByStateNumber(state ->
+        fieldPrecedenceModel.forEachStateOrderedByStateNumber((state) ->
         {
             sb.append(INDENT).append("\"");
             final MutableBoolean isFirst = new MutableBoolean(true);
             final Set<String> transitionDescriptions = new HashSet<>();
-            fieldPrecedenceModel.forEachTransitionFrom(state, transitionGroup ->
+            fieldPrecedenceModel.forEachTransitionFrom(state, (transitionGroup) ->
             {
                 if (transitionDescriptions.add(transitionGroup.exampleCode()))
                 {
@@ -3007,12 +3001,10 @@ public class CppGenerator implements CodeGenerator
         sb.append("     */\n");
         sb.append(INDENT).append("enum class CodecState\n")
             .append(INDENT).append("{\n");
-        fieldPrecedenceModel.forEachStateOrderedByStateNumber(state ->
-        {
+        fieldPrecedenceModel.forEachStateOrderedByStateNumber((state) ->
             sb.append(INDENT).append(INDENT).append(unqualifiedStateCase(state))
-                .append(" = ").append(state.number())
-                .append(",\n");
-        });
+            .append(" = ").append(state.number())
+            .append(",\n"));
         sb.append(INDENT).append("};\n\n");
 
         return sb;
@@ -3068,12 +3060,10 @@ public class CppGenerator implements CodeGenerator
             .append(INDENT).append(INDENT).append("{\n");
 
         fieldPrecedenceModel.forEachWrappedStateByVersion((version, state) ->
-        {
             sb.append(INDENT).append(TWO_INDENT).append("case ").append(version).append(":\n")
-                .append(INDENT).append(THREE_INDENT).append("codecState(")
-                .append(qualifiedStateCase(state)).append(");\n")
-                .append(INDENT).append(THREE_INDENT).append("break;\n");
-        });
+            .append(INDENT).append(THREE_INDENT).append("codecState(")
+            .append(qualifiedStateCase(state)).append(");\n")
+            .append(INDENT).append(THREE_INDENT).append("break;\n"));
 
         sb.append(INDENT).append(TWO_INDENT).append("default:\n")
             .append(INDENT).append(THREE_INDENT).append("codecState(")

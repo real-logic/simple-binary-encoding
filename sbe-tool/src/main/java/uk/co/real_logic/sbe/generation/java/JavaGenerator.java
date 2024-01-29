@@ -368,30 +368,26 @@ public class JavaGenerator implements CodeGenerator
         sb.append("     */\n");
         sb.append("    private static class CodecStates\n")
             .append("    {\n");
-        fieldPrecedenceModel.forEachStateOrderedByStateNumber(state ->
-        {
+        fieldPrecedenceModel.forEachStateOrderedByStateNumber((state) ->
             sb.append("        private static final int ")
-                .append(unqualifiedStateCase(state))
-                .append(" = ").append(state.number())
-                .append(";\n");
-        });
+            .append(unqualifiedStateCase(state))
+            .append(" = ").append(state.number())
+            .append(";\n"));
 
         sb.append("\n").append("        private static final String[] STATE_NAME_LOOKUP =\n")
                 .append("        {\n");
-        fieldPrecedenceModel.forEachStateOrderedByStateNumber(state ->
-        {
-            sb.append("            \"").append(state.name()).append("\",\n");
-        });
+        fieldPrecedenceModel.forEachStateOrderedByStateNumber((state) ->
+            sb.append("            \"").append(state.name()).append("\",\n"));
         sb.append("        };\n\n");
 
         sb.append("        private static final String[] STATE_TRANSITIONS_LOOKUP =\n")
                 .append("        {\n");
-        fieldPrecedenceModel.forEachStateOrderedByStateNumber(state ->
+        fieldPrecedenceModel.forEachStateOrderedByStateNumber((state) ->
         {
             sb.append("            \"");
             final MutableBoolean isFirst = new MutableBoolean(true);
             final Set<String> transitionDescriptions = new HashSet<>();
-            fieldPrecedenceModel.forEachTransitionFrom(state, transitionGroup ->
+            fieldPrecedenceModel.forEachTransitionFrom(state, (transitionGroup) ->
             {
                 if (transitionDescriptions.add(transitionGroup.exampleCode()))
                 {
@@ -458,11 +454,9 @@ public class JavaGenerator implements CodeGenerator
             .append("            switch (codecState)\n")
             .append("            {\n");
 
-        fieldPrecedenceModel.forEachTerminalEncoderState(state ->
-        {
+        fieldPrecedenceModel.forEachTerminalEncoderState((state) ->
             sb.append("                case ").append(stateCaseForSwitchCase(state)).append(":\n")
-                .append("                    return;\n");
-        });
+            .append("                    return;\n"));
 
         sb.append("                default:\n")
             .append("                    throw new IllegalStateException(\"Not fully encoded, current state: \" +\n")
@@ -773,12 +767,10 @@ public class JavaGenerator implements CodeGenerator
             .append(indent).append("    {\n");
 
         fieldPrecedenceModel.forEachWrappedStateByVersion((version, state) ->
-        {
             sb.append(indent).append("        case ").append(version).append(":\n")
-                .append(indent).append("            codecState(")
-                .append(qualifiedStateCase(state)).append(");\n")
-                .append(indent).append("            break;\n");
-        });
+            .append(indent).append("            codecState(")
+            .append(qualifiedStateCase(state)).append(");\n")
+            .append(indent).append("            break;\n"));
 
         sb.append(indent).append("        default:\n")
             .append(indent).append("            codecState(")

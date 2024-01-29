@@ -266,7 +266,7 @@ public class ValidationUtil
 
     private static boolean isJavaIdentifier(final String token)
     {
-        if (token.length() == 0)
+        if (token.isEmpty())
         {
             return false;
         }

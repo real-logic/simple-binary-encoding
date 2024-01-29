@@ -126,7 +126,7 @@ public class IrDecoder implements AutoCloseable
             i = captureHeader(tokens);
         }
 
-        final ByteOrder byteOrder = tokens.size() > 0 ? tokens.get(0).encoding().byteOrder() : null;
+        final ByteOrder byteOrder = !tokens.isEmpty() ? tokens.get(0).encoding().byteOrder() : null;
         final Ir ir = new Ir(
             irPackageName, irNamespaceName, irId, irVersion, null, semanticVersion, byteOrder, irHeader);
 

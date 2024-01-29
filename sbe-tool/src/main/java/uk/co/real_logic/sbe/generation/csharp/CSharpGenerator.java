@@ -720,24 +720,23 @@ public class CSharpGenerator implements CodeGenerator
         {
             final Token token = tokens.get(i);
             final String propertyName = formatPropertyName(token.name());
-            final FieldPrecedenceModel fieldPrecedenceModel = null;
 
             switch (token.signal())
             {
                 case ENCODING:
-                    sb.append(generatePrimitiveProperty(propertyName, token, token, fieldPrecedenceModel, indent));
+                    sb.append(generatePrimitiveProperty(propertyName, token, token, null, indent));
                     break;
 
                 case BEGIN_ENUM:
-                    sb.append(generateEnumProperty(propertyName, token, token, fieldPrecedenceModel, indent));
+                    sb.append(generateEnumProperty(propertyName, token, token, null, indent));
                     break;
 
                 case BEGIN_SET:
-                    sb.append(generateBitSetProperty(propertyName, token, token, fieldPrecedenceModel, indent));
+                    sb.append(generateBitSetProperty(propertyName, token, token, null, indent));
                     break;
 
                 case BEGIN_COMPOSITE:
-                    sb.append(generateCompositeProperty(propertyName, token, token, fieldPrecedenceModel, indent));
+                    sb.append(generateCompositeProperty(propertyName, token, token, null, indent));
                     break;
 
                 default:
@@ -1515,30 +1514,26 @@ public class CSharpGenerator implements CodeGenerator
         sb.append(indent).append("/// </summary>\n");
         sb.append(indent).append("private enum CodecState\n")
             .append(indent).append("{\n");
-        fieldPrecedenceModel.forEachStateOrderedByStateNumber(state ->
-        {
+        fieldPrecedenceModel.forEachStateOrderedByStateNumber((state) ->
             sb.append(indent).append(INDENT).append(unqualifiedStateCase(state))
-                .append(" = ").append(state.number())
-                .append(",\n");
-        });
+            .append(" = ").append(state.number())
+            .append(",\n"));
         sb.append(indent).append("}\n\n");
 
         sb.append("\n").append(indent).append("private static readonly string[] StateNameLookup = new []\n")
             .append(indent).append("{\n");
-        fieldPrecedenceModel.forEachStateOrderedByStateNumber(state ->
-        {
-            sb.append(indent).append(INDENT).append("\"").append(state.name()).append("\",\n");
-        });
+        fieldPrecedenceModel.forEachStateOrderedByStateNumber((state) ->
+            sb.append(indent).append(INDENT).append("\"").append(state.name()).append("\",\n"));
         sb.append(indent).append("};\n\n");
 
         sb.append(indent).append("private static readonly string[] StateTransitionsLookup = new []\n")
             .append(indent).append("{\n");
-        fieldPrecedenceModel.forEachStateOrderedByStateNumber(state ->
+        fieldPrecedenceModel.forEachStateOrderedByStateNumber((state) ->
         {
             sb.append(indent).append(INDENT).append("\"");
             final MutableBoolean isFirst = new MutableBoolean(true);
             final Set<String> transitionDescriptions = new HashSet<>();
-            fieldPrecedenceModel.forEachTransitionFrom(state, transitionGroup ->
+            fieldPrecedenceModel.forEachTransitionFrom(state, (transitionGroup) ->
             {
                 if (transitionDescriptions.add(transitionGroup.exampleCode()))
                 {
@@ -1603,11 +1598,9 @@ public class CSharpGenerator implements CodeGenerator
             .append(indent).append(INDENT).append("switch (_codecState)\n")
             .append(indent).append(INDENT).append("{\n");
 
-        fieldPrecedenceModel.forEachTerminalEncoderState(state ->
-        {
+        fieldPrecedenceModel.forEachTerminalEncoderState((state) ->
             sb.append(indent).append(TWO_INDENT).append("case ").append(stateCaseForSwitchCase(state)).append(":\n")
-                .append(indent).append(THREE_INDENT).append("return;\n");
-        });
+            .append(indent).append(THREE_INDENT).append("return;\n"));
 
         sb.append(indent).append(TWO_INDENT).append("default:\n")
             .append(indent).append(THREE_INDENT)
@@ -1771,13 +1764,11 @@ public class CSharpGenerator implements CodeGenerator
             sb.append(indent).append("switch (codecState())\n")
                 .append(indent).append("{\n");
 
-            fieldPrecedenceModel.forEachTransition(interaction, transitionGroup ->
+            fieldPrecedenceModel.forEachTransition(interaction, (transitionGroup) ->
             {
-                transitionGroup.forEachStartState(startState ->
-                {
+                transitionGroup.forEachStartState((startState) ->
                     sb.append(indent).append(INDENT)
-                        .append("case ").append(stateCaseForSwitchCase(startState)).append(":\n");
-                });
+                    .append("case ").append(stateCaseForSwitchCase(startState)).append(":\n"));
                 sb.append(indent).append(TWO_INDENT).append("codecState(")
                     .append(qualifiedStateCase(transitionGroup.endState())).append(");\n")
                     .append(indent).append(TWO_INDENT).append("break;\n");
@@ -1927,12 +1918,10 @@ public class CSharpGenerator implements CodeGenerator
             .append(indent).append(INDENT).append("{\n");
 
         fieldPrecedenceModel.forEachWrappedStateByVersion((version, state) ->
-        {
             sb.append(indent).append(TWO_INDENT).append("case ").append(version).append(":\n")
-                .append(indent).append(THREE_INDENT).append("codecState(")
-                .append(qualifiedStateCase(state)).append(");\n")
-                .append(indent).append(THREE_INDENT).append("break;\n");
-        });
+            .append(indent).append(THREE_INDENT).append("codecState(")
+            .append(qualifiedStateCase(state)).append(");\n")
+            .append(indent).append(THREE_INDENT).append("break;\n"));
 
         sb.append(indent).append(TWO_INDENT).append("default:\n")
             .append(indent).append(THREE_INDENT).append("codecState(")

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sbe:messageSchema xmlns:sbe="http://fixprotocol.io/2016/sbe"
-                   xmlns:xi="http://www.w3.org/2001/XInclude"
                    package="nested-composite-name"
                    id="1"
                    version="0"
