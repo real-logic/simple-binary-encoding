@@ -48,8 +48,7 @@ namespace sbe { namespace otf {
 class IrDecoder
 {
 public:
-    IrDecoder() :
-        m_length(0)
+    IrDecoder()
     {
     }
 
@@ -142,7 +141,7 @@ protected:
     // OS specifics
     static long long getFileSize(const char *filename)
     {
-        struct stat fileStat;
+        struct stat fileStat{};
 
         if (::stat(filename, &fileStat) != 0)
         {
@@ -165,7 +164,7 @@ protected:
         int fd = fileno(fptr);
         while (remaining > 0)
         {
-            unsigned int bytes = static_cast<unsigned int>(4098 < remaining ? 4098 : remaining);
+            auto bytes = static_cast<unsigned int>(4098 < remaining ? 4098 : remaining);
             long long sz = ::read(fd, buffer + (length - remaining), bytes);
             remaining -= sz;
             if (sz < 0)
@@ -183,8 +182,8 @@ private:
     std::shared_ptr<std::vector<Token>> m_headerTokens;
     std::vector<std::shared_ptr<std::vector<Token>>> m_messages;
     std::unique_ptr<char[]> m_buffer;
-    std::uint64_t m_length;
-    int m_id;
+    std::uint64_t m_length = 0;
+    int m_id = 0;
 
     int decodeIr()
     {
@@ -232,10 +231,10 @@ private:
         tokenCodec.wrapForDecode(
             m_buffer.get(), offset, tokenCodec.sbeBlockLength(), tokenCodec.sbeSchemaVersion(), m_length);
 
-        Signal signal = static_cast<Signal>(tokenCodec.signal());
-        PrimitiveType type = static_cast<PrimitiveType>(tokenCodec.primitiveType());
-        Presence presence = static_cast<Presence>(tokenCodec.presence());
-        ByteOrder byteOrder = static_cast<ByteOrder>(tokenCodec.byteOrder());
+        auto signal = static_cast<Signal>(tokenCodec.signal());
+        auto type = static_cast<PrimitiveType>(tokenCodec.primitiveType());
+        auto presence = static_cast<Presence>(tokenCodec.presence());
+        auto byteOrder = static_cast<ByteOrder>(tokenCodec.byteOrder());
         std::int32_t tokenOffset = tokenCodec.tokenOffset();
         std::int32_t tokenSize = tokenCodec.tokenSize();
         std::int32_t id = tokenCodec.fieldId();
