@@ -48,9 +48,7 @@ namespace sbe { namespace otf {
 class IrDecoder
 {
 public:
-    IrDecoder()
-    {
-    }
+    IrDecoder() = default;
 
     int decode(char *irBuffer, std::uint64_t length)
     {
@@ -106,11 +104,13 @@ public:
         std::shared_ptr<std::vector<Token>> result;
 
         std::for_each(m_messages.begin(), m_messages.end(),
-            [&](std::shared_ptr<std::vector<Token>> tokens)
+            [&](const std::shared_ptr<std::vector<Token>> &tokens)
             {
                 Token &token = tokens->at(0);
 
-                if (token.signal() == Signal::BEGIN_MESSAGE && token.fieldId() == id && token.tokenVersion() == version)
+                if (token.signal() == Signal::BEGIN_MESSAGE &&
+                    token.fieldId() == id &&
+                    token.tokenVersion() <= version)
                 {
                     result = tokens;
                 }
@@ -124,7 +124,7 @@ public:
         std::shared_ptr<std::vector<Token>> result;
 
         std::for_each(m_messages.begin(), m_messages.end(),
-            [&](std::shared_ptr<std::vector<Token>> tokens)
+            [&](const std::shared_ptr<std::vector<Token>> &tokens)
             {
                 Token &token = tokens->at(0);
 
@@ -191,9 +191,14 @@ private:
 
         FrameCodec frame;
         std::uint64_t offset = 0;
-        char tmp[256];
+        char tmp[256] = {};
 
-        frame.wrapForDecode(m_buffer.get(), offset, frame.sbeBlockLength(), frame.sbeSchemaVersion(), m_length);
+        frame.wrapForDecode(
+            m_buffer.get(),
+            offset,
+            FrameCodec::sbeBlockLength(),
+            FrameCodec::sbeSchemaVersion(),
+            m_length);
 
         frame.getPackageName(tmp, sizeof(tmp));
 
@@ -229,7 +234,11 @@ private:
 
         TokenCodec tokenCodec;
         tokenCodec.wrapForDecode(
-            m_buffer.get(), offset, tokenCodec.sbeBlockLength(), tokenCodec.sbeSchemaVersion(), m_length);
+            m_buffer.get(),
+            offset,
+            TokenCodec::sbeBlockLength(),
+            TokenCodec::sbeSchemaVersion(),
+            m_length);
 
         auto signal = static_cast<Signal>(tokenCodec.signal());
         auto type = static_cast<PrimitiveType>(tokenCodec.primitiveType());
@@ -240,7 +249,7 @@ private:
         std::int32_t id = tokenCodec.fieldId();
         std::int32_t version = tokenCodec.tokenVersion();
         std::int32_t componentTokenCount = tokenCodec.componentTokenCount();
-        char tmpBuffer[256];
+        char tmpBuffer[256] = {};
         std::uint64_t tmpLen = 0;
 
         tmpLen = tokenCodec.getName(tmpBuffer, sizeof(tmpBuffer));

@@ -157,14 +157,13 @@ static void decodeComposite(
     std::uint64_t actingVersion,
     TokenListener &listener)
 {
-    listener.onBeginComposite(fieldToken, *tokens.get(), tokenIndex, toIndex);
+    listener.onBeginComposite(fieldToken, *tokens, tokenIndex, toIndex);
 
     for (size_t i = tokenIndex + 1; i < toIndex;)
     {
         Token &token = tokens->at(i);
         const size_t nextFieldIndex = i + token.componentTokenCount();
-
-        const std::size_t offset = static_cast<std::size_t>(token.offset());
+        const auto offset = static_cast<std::size_t>(token.offset());
 
         switch (token.signal())
         {
@@ -183,12 +182,12 @@ static void decodeComposite(
 
             case Signal::BEGIN_ENUM:
                 listener.onEnum(
-                    fieldToken, buffer + bufferIndex + offset, *tokens.get(), i, nextFieldIndex - 1, actingVersion);
+                    fieldToken, buffer + bufferIndex + offset, *tokens, i, nextFieldIndex - 1, actingVersion);
                 break;
 
             case Signal::BEGIN_SET:
                 listener.onBitSet(
-                    fieldToken, buffer + bufferIndex + offset, *tokens.get(), i, nextFieldIndex - 1, actingVersion);
+                    fieldToken, buffer + bufferIndex + offset, *tokens, i, nextFieldIndex - 1, actingVersion);
                 break;
 
             case Signal::ENCODING:
@@ -202,7 +201,7 @@ static void decodeComposite(
         i += token.componentTokenCount();
     }
 
-    listener.onEndComposite(fieldToken, *tokens.get(), tokenIndex, toIndex);
+    listener.onEndComposite(fieldToken, *tokens, tokenIndex, toIndex);
 }
 
 template<typename TokenListener>
@@ -246,13 +245,11 @@ static size_t decodeFields(
                 break;
 
             case Signal::BEGIN_ENUM:
-                listener.onEnum(
-                    fieldToken, buffer + offset, *tokens.get(), tokenIndex, nextFieldIndex - 2, actingVersion);
+                listener.onEnum(fieldToken, buffer + offset, *tokens, tokenIndex, nextFieldIndex - 2, actingVersion);
                 break;
 
             case Signal::BEGIN_SET:
-                listener.onBitSet(
-                    fieldToken, buffer + offset, *tokens.get(), tokenIndex, nextFieldIndex - 2, actingVersion);
+                listener.onBitSet(fieldToken, buffer + offset, *tokens, tokenIndex, nextFieldIndex - 2, actingVersion);
                 break;
 
             case Signal::ENCODING:
@@ -342,7 +339,7 @@ std::pair<size_t, size_t> decodeGroups(
         const bool isPresent = token.tokenVersion() <= static_cast<std::int32_t>(actingVersion);
 
         Token &dimensionsTypeComposite = tokens->at(tokenIndex + 1);
-        std::size_t dimensionsLength = static_cast<std::size_t>(dimensionsTypeComposite.encodedLength());
+        auto dimensionsLength = static_cast<std::size_t>(dimensionsTypeComposite.encodedLength());
 
         if ((bufferIndex + dimensionsLength) > length)
         {
@@ -391,7 +388,7 @@ std::pair<size_t, size_t> decodeGroups(
         tokenIndex += token.componentTokenCount();
     }
 
-    return std::pair<size_t, size_t>(bufferIndex, tokenIndex);
+    return { bufferIndex, tokenIndex };
 }
 
 /**
