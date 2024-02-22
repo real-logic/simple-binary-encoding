@@ -617,9 +617,9 @@ public class JavaGenerator implements CodeGenerator
             sb.append(indent).append("switch (codecState())\n")
                 .append(indent).append("{\n");
 
-            fieldPrecedenceModel.forEachTransition(interaction, transitionGroup ->
+            fieldPrecedenceModel.forEachTransition(interaction, (transitionGroup) ->
             {
-                transitionGroup.forEachStartState(startState ->
+                transitionGroup.forEachStartState((startState) ->
                     sb.append(indent).append("    case ").append(stateCaseForSwitchCase(startState)).append(":\n"));
                 sb.append(indent).append("        codecState(")
                     .append(qualifiedStateCase(transitionGroup.endState())).append(");\n")
