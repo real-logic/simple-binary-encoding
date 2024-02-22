@@ -4568,7 +4568,7 @@ public class JavaGenerator implements CodeGenerator
             {
                 final String typeName = formatClassName(decoderName(typeToken.applicableTypeName()));
                 append(sb, indent, "final " + typeName + " " + fieldName + " = this." + fieldName + "();");
-                append(sb, indent, "if (" + fieldName + " != null)");
+                append(sb, indent, "if (null != " + fieldName + ")");
                 append(sb, indent, "{");
                 append(sb, indent, "    " + fieldName + ".appendTo(builder);");
                 append(sb, indent, "}");
