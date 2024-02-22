@@ -64,7 +64,7 @@ jobs:
           echo "BUILD_JAVA_VERSION=${{ matrix.java }}" >> $GITHUB_ENV
           
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
+        uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
           config-file: ./.github/codeql/codeql-config.yml
@@ -73,7 +73,7 @@ jobs:
         run: ./gradlew
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
+        uses: github/codeql-action/analyze@v3
         with:
           category: "/language:${{matrix.language}}"
           
@@ -122,7 +122,7 @@ jobs:
           dotnet-version: ${{ matrix.dotnet }}
   
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
+        uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
           config-file: ./.github/codeql/codeql-config.yml
@@ -131,7 +131,7 @@ jobs:
         run: ./csharp/build.sh
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
+        uses: github/codeql-action/analyze@v3
         with:
           category: "/language:${{matrix.language}}"
           
@@ -175,7 +175,7 @@ jobs:
           echo "cmake-${CMAKE_VERSION}-Linux-x86_64/bin" >> $GITHUB_PATH
           
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
+        uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
           config-file: ./.github/codeql/codeql-config.yml
@@ -184,7 +184,7 @@ jobs:
         run: ./cppbuild/cppbuild
         
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
+        uses: github/codeql-action/analyze@v3
         with:
           category: "/language:${{ matrix.language }}"
           upload: false
@@ -199,6 +199,6 @@ jobs:
           output: sarif-results/${{ matrix.language }}.sarif
 
       - name: Upload SARIF
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: sarif-results/${{ matrix.language }}.sarif
