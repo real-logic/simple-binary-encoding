@@ -48,10 +48,7 @@ namespace sbe { namespace otf {
 class IrDecoder
 {
 public:
-    IrDecoder() :
-        m_length(0)
-    {
-    }
+    IrDecoder() = default;
 
     int decode(char *irBuffer, std::uint64_t length)
     {
@@ -107,11 +104,13 @@ public:
         std::shared_ptr<std::vector<Token>> result;
 
         std::for_each(m_messages.begin(), m_messages.end(),
-            [&](std::shared_ptr<std::vector<Token>> tokens)
+            [&](const std::shared_ptr<std::vector<Token>> &tokens)
             {
                 Token &token = tokens->at(0);
 
-                if (token.signal() == Signal::BEGIN_MESSAGE && token.fieldId() == id && token.tokenVersion() == version)
+                if (token.signal() == Signal::BEGIN_MESSAGE &&
+                    token.fieldId() == id &&
+                    token.tokenVersion() <= version)
                 {
                     result = tokens;
                 }
@@ -125,7 +124,7 @@ public:
         std::shared_ptr<std::vector<Token>> result;
 
         std::for_each(m_messages.begin(), m_messages.end(),
-            [&](std::shared_ptr<std::vector<Token>> tokens)
+            [&](const std::shared_ptr<std::vector<Token>> &tokens)
             {
                 Token &token = tokens->at(0);
 
@@ -142,7 +141,7 @@ protected:
     // OS specifics
     static long long getFileSize(const char *filename)
     {
-        struct stat fileStat;
+        struct stat fileStat{};
 
         if (::stat(filename, &fileStat) != 0)
         {
@@ -165,7 +164,7 @@ protected:
         int fd = fileno(fptr);
         while (remaining > 0)
         {
-            unsigned int bytes = static_cast<unsigned int>(4098 < remaining ? 4098 : remaining);
+            auto bytes = static_cast<unsigned int>(4098 < remaining ? 4098 : remaining);
             long long sz = ::read(fd, buffer + (length - remaining), bytes);
             remaining -= sz;
             if (sz < 0)
@@ -183,8 +182,8 @@ private:
     std::shared_ptr<std::vector<Token>> m_headerTokens;
     std::vector<std::shared_ptr<std::vector<Token>>> m_messages;
     std::unique_ptr<char[]> m_buffer;
-    std::uint64_t m_length;
-    int m_id;
+    std::uint64_t m_length = 0;
+    int m_id = 0;
 
     int decodeIr()
     {
@@ -192,9 +191,14 @@ private:
 
         FrameCodec frame;
         std::uint64_t offset = 0;
-        char tmp[256];
+        char tmp[256] = {};
 
-        frame.wrapForDecode(m_buffer.get(), offset, frame.sbeBlockLength(), frame.sbeSchemaVersion(), m_length);
+        frame.wrapForDecode(
+            m_buffer.get(),
+            offset,
+            FrameCodec::sbeBlockLength(),
+            FrameCodec::sbeSchemaVersion(),
+            m_length);
 
         frame.getPackageName(tmp, sizeof(tmp));
 
@@ -230,18 +234,22 @@ private:
 
         TokenCodec tokenCodec;
         tokenCodec.wrapForDecode(
-            m_buffer.get(), offset, tokenCodec.sbeBlockLength(), tokenCodec.sbeSchemaVersion(), m_length);
+            m_buffer.get(),
+            offset,
+            TokenCodec::sbeBlockLength(),
+            TokenCodec::sbeSchemaVersion(),
+            m_length);
 
-        Signal signal = static_cast<Signal>(tokenCodec.signal());
-        PrimitiveType type = static_cast<PrimitiveType>(tokenCodec.primitiveType());
-        Presence presence = static_cast<Presence>(tokenCodec.presence());
-        ByteOrder byteOrder = static_cast<ByteOrder>(tokenCodec.byteOrder());
+        auto signal = static_cast<Signal>(tokenCodec.signal());
+        auto type = static_cast<PrimitiveType>(tokenCodec.primitiveType());
+        auto presence = static_cast<Presence>(tokenCodec.presence());
+        auto byteOrder = static_cast<ByteOrder>(tokenCodec.byteOrder());
         std::int32_t tokenOffset = tokenCodec.tokenOffset();
         std::int32_t tokenSize = tokenCodec.tokenSize();
         std::int32_t id = tokenCodec.fieldId();
         std::int32_t version = tokenCodec.tokenVersion();
         std::int32_t componentTokenCount = tokenCodec.componentTokenCount();
-        char tmpBuffer[256];
+        char tmpBuffer[256] = {};
         std::uint64_t tmpLen = 0;
 
         tmpLen = tokenCodec.getName(tmpBuffer, sizeof(tmpBuffer));
