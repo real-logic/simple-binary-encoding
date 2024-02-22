@@ -4564,9 +4564,6 @@ public class JavaGenerator implements CodeGenerator
                 break;
 
             case BEGIN_SET:
-                append(sb, indent, "this." + fieldName + "().appendTo(builder);");
-                break;
-
             case BEGIN_COMPOSITE:
             {
                 final String typeName = formatClassName(decoderName(typeToken.applicableTypeName()));
