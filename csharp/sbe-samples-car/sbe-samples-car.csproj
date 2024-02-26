@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net45;netcoreapp3.1</TargetFrameworks>
+    <TargetFramework>net8.0</TargetFramework>
     <OutputType>exe</OutputType>
     <RootNamespace>Org.SbeTool.Sbe.Example.Car</RootNamespace>
     <AssemblyName>Org.SbeTool.Sbe.Example.Car</AssemblyName>
@@ -14,10 +14,6 @@
   <ItemGroup>
     <ProjectReference Include="..\sbe-dll\sbe-dll.csproj" />
     <ProjectReference Include="..\sbe-generated\sbe-generated.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0-preview.2" PrivateAssets="All" />
   </ItemGroup>
 
 </Project>
