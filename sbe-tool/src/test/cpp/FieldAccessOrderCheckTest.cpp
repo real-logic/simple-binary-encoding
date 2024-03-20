@@ -3624,7 +3624,7 @@ TEST_F(FieldAccessOrderCheckTest, allowsEncodingAndDecodingAsciiInsideGroupInSch
         AsciiInsideGroup::sbeSchemaVersion(),
         BUFFER_LEN
     );
-    char aOut[6];
+    char aOut[7] = {'\0'};
     decoder.getA(aOut, 6);
     EXPECT_STREQ(aOut, "GBPUSD");
     AsciiInsideGroup::B &b = decoder.b();
