@@ -1,5 +1,16 @@
-use baseline_bigendian::*;
-use car_codec::encoder::*;
+use baseline_bigendian::{
+    boolean_type::BooleanType,
+    boost_type::BoostType,
+    car_codec::{
+        encoder::{AccelerationEncoder, FuelFiguresEncoder, PerformanceFiguresEncoder},
+        *,
+    },
+    message_header_codec,
+    message_header_codec::MessageHeaderDecoder,
+    model::Model,
+    optional_extras::OptionalExtras,
+    Encoder, ReadBuf, SbeResult, WriteBuf,
+};
 
 #[test]
 fn big_endian_baseline_example() -> SbeResult<()> {

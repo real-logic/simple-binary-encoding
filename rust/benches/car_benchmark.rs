@@ -1,6 +1,6 @@
+use car_codec::encoder::*;
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use examples_uk_co_real_logic_sbe_benchmarks::*;
-use car_codec::encoder::*;
 
 const MANUFACTURER: &[u8] = b"MANUFACTURER";
 const MODEL: &[u8] = b"MODEL";

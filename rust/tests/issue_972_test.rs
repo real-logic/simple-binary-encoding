@@ -1,4 +1,4 @@
-use issue_972::*;
+use issue_972::{issue_972_codec::*, message_header_codec::MessageHeaderDecoder, *};
 
 fn create_encoder(buffer: &mut Vec<u8>) -> Issue972Encoder {
     let issue_972 = Issue972Encoder::default().wrap(
