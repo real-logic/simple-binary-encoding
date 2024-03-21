@@ -766,17 +766,9 @@ public class RustGenerator implements CodeGenerator
             formatFunctionName(name),
             rustPrimitiveType);
 
-        if (fieldToken.version() > 0)
-        {
-            indent(sb, level + 1, "if self.acting_version > 0 && self.acting_version < %d {\n", fieldToken.version());
-            indent(sb, level + 2, "return None;\n");
-            indent(sb, level + 1, "}\n\n");
-        }
-
         indent(sb, level + 1, "let value = self.get_buf().get_%s_at(self.%s);\n",
             rustPrimitiveType,
             getBufOffset(fieldToken));
-
 
         final String literal = generateRustLiteral(primitiveType, encoding.applicableNullValue().toString());
         if (literal.endsWith("::NAN"))
