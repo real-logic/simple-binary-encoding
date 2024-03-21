@@ -170,8 +170,8 @@ fn encode_car_from_scratch() -> SbeResult<(usize, Vec<u8>)> {
     car.model_year(2013);
     car.available(BooleanType::T);
     car.code(Model::A);
-    car.some_numbers([0, 1, 2, 3, 4]);
-    car.vehicle_code(*b"abcdef");
+    car.some_numbers(&[0, 1, 2, 3, 4]);
+    car.vehicle_code(b"abcdef");
 
     extras.set_cruise_control(true);
     extras.set_sports_pack(true);
@@ -181,7 +181,7 @@ fn encode_car_from_scratch() -> SbeResult<(usize, Vec<u8>)> {
     let mut engine = car.engine_encoder();
     engine.capacity(2000);
     engine.num_cylinders(4);
-    engine.manufacturer_code(*b"123");
+    engine.manufacturer_code(b"123");
     engine.efficiency(35);
     engine.booster_enabled(BooleanType::T);
     let mut booster = engine.booster_encoder();

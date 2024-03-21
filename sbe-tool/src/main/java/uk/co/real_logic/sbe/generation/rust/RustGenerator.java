@@ -379,7 +379,7 @@ public class RustGenerator implements CodeGenerator
             indent(sb, level, "/// - encodedLength: %d\n", typeToken.encodedLength());
             indent(sb, level, "/// - version: %d\n", typeToken.version());
             indent(sb, level, "#[inline]\n");
-            indent(sb, level, "pub fn %s(&mut self, value: [%s; %d]) {\n",
+            indent(sb, level, "pub fn %s(&mut self, value: &[%s; %d]) {\n",
                 formatFunctionName(name),
                 rustPrimitiveType,
                 arrayLength);
