@@ -63,7 +63,8 @@ class MessageCoderDef implements RustGenerator.ParentDef
         final List<Token> varData) throws IOException
     {
         indent(sb, 0, "pub mod %s {\n", codecType.toString().toLowerCase());
-        indent(sb, 1, "use super::*;\n\n");
+        indent(sb, 1, "use super::*;\n");
+        indent(sb, 1, "use message_header_codec::*;\n\n");
 
         // i.e. <name>Decoder or <name>Encoder
         final String msgTypeName = formatStructName(msgToken.name()) + codecType.name();

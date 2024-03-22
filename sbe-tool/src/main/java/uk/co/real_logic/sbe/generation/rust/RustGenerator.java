@@ -449,7 +449,9 @@ public class RustGenerator implements CodeGenerator
         final String name) throws IOException
     {
         final String referencedName = typeToken.referencedName();
-        final String enumType = formatStructName(referencedName == null ? typeToken.name() : referencedName);
+        final String enumType = format("%s::%s",
+            toLowerSnakeCase(referencedName == null ? typeToken.name() : referencedName),
+            formatStructName(referencedName == null ? typeToken.name() : referencedName));
 
         if (fieldToken.isConstantEncoding())
         {
@@ -479,7 +481,10 @@ public class RustGenerator implements CodeGenerator
     {
         final Encoding encoding = bitsetToken.encoding();
         final String rustPrimitiveType = rustTypeName(encoding.primitiveType());
-        final String structTypeName = formatStructName(bitsetToken.applicableTypeName());
+        final String referencedName = bitsetToken.referencedName();
+        final String structTypeName = format("%s::%s",
+            toLowerSnakeCase(referencedName == null ? bitsetToken.name() : referencedName),
+            formatStructName(bitsetToken.applicableTypeName()));
         indent(sb, level, "#[inline]\n");
         indent(sb, level, "pub fn %s(&mut self, value: %s) {\n", formatFunctionName(name), structTypeName);
 
@@ -496,7 +501,9 @@ public class RustGenerator implements CodeGenerator
         final String name) throws IOException
     {
         final String encoderName = toLowerSnakeCase(encoderName(name));
-        final String encoderTypeName = encoderName(formatStructName(typeToken.applicableTypeName()));
+        final String encoderTypeName = format("%s::%s",
+            codecModName(typeToken.referencedName() == null ? typeToken.name() : typeToken.referencedName()),
+            encoderName(formatStructName(typeToken.applicableTypeName())));
         indent(sb, level, "/// COMPOSITE ENCODER\n");
         indent(sb, level, "#[inline]\n");
         indent(sb, level, "pub fn %s(self) -> %2$s<Self> {\n",
@@ -556,7 +563,10 @@ public class RustGenerator implements CodeGenerator
         final String name) throws IOException
     {
         final String decoderName = toLowerSnakeCase(decoderName(name));
-        final String decoderTypeName = decoderName(formatStructName(typeToken.applicableTypeName()));
+        final String referencedName = typeToken.referencedName();
+        final String decoderTypeName = format("%s::%s",
+            codecModName(referencedName == null ? typeToken.name() : referencedName),
+            decoderName(formatStructName(typeToken.applicableTypeName())));
         indent(sb, level, "/// COMPOSITE DECODER\n");
         indent(sb, level, "#[inline]\n");
         if (fieldToken.version() > 0)
@@ -575,7 +585,7 @@ public class RustGenerator implements CodeGenerator
         }
         else
         {
-            indent(sb, level, "pub fn %s(self) -> %2$s<Self> {\n",
+            indent(sb, level, "pub fn %s(self) -> %s<Self> {\n",
                 decoderName,
                 decoderTypeName);
 
@@ -593,7 +603,11 @@ public class RustGenerator implements CodeGenerator
     {
         final Encoding encoding = bitsetToken.encoding();
         final String rustPrimitiveType = rustTypeName(encoding.primitiveType());
-        final String structTypeName = formatStructName(bitsetToken.applicableTypeName());
+        final String referencedName = bitsetToken.referencedName();
+        final String structTypeName = format("%s::%s",
+            toLowerSnakeCase(referencedName == null ? bitsetToken.name() : referencedName),
+            formatStructName(bitsetToken.applicableTypeName()));
+        indent(sb, level, "/// BIT SET DECODER\n");
         indent(sb, level, "#[inline]\n");
         indent(sb, level, "pub fn %s(&self) -> %s {\n", formatFunctionName(name), structTypeName);
 
@@ -834,7 +848,9 @@ public class RustGenerator implements CodeGenerator
         final String name) throws IOException
     {
         final String referencedName = typeToken.referencedName();
-        final String enumType = formatStructName(referencedName == null ? typeToken.name() : referencedName);
+        final String enumType = format("%s::%s",
+            toLowerSnakeCase(referencedName == null ? typeToken.name() : referencedName),
+            formatStructName(referencedName == null ? typeToken.name() : referencedName));
 
         if (fieldToken.isConstantEncoding())
         {

@@ -1,8 +1,4 @@
-use issue_895::{
-    issue_895_codec::{decoder::Issue895Decoder, encoder::Issue895Encoder},
-    MessageHeaderDecoder, ReadBuf, SbeResult, WriteBuf, ENCODED_LENGTH, SBE_BLOCK_LENGTH,
-    SBE_SCHEMA_ID, SBE_SCHEMA_VERSION, SBE_TEMPLATE_ID,
-};
+use issue_895::{issue_895_codec::*, message_header_codec::*, *};
 
 fn create_encoder(buffer: &mut Vec<u8>) -> Issue895Encoder {
     let issue_895 =

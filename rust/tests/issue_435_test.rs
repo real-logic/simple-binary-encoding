@@ -1,4 +1,8 @@
 use ::issue_435::*;
+use issue_435::{
+    enum_ref::EnumRef, issue_435_codec::*, message_header_codec::MessageHeaderDecoder,
+    set_ref::SetRef,
+};
 
 fn create_encoder(buffer: &mut Vec<u8>) -> Issue435Encoder {
     let issue_435 = Issue435Encoder::default().wrap(

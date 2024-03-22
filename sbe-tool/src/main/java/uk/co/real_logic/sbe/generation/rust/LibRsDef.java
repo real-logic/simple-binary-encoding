@@ -78,13 +78,6 @@ class LibRsDef
             }
             indent(libRs, 0, "\n");
 
-            // add re-export of modules
-            for (final String module : modules)
-            {
-                indent(libRs, 0, "pub use crate::%s::*;\n", toLowerSnakeCase(module));
-            }
-            indent(libRs, 0, "\n");
-
             generateSbeErrorEnum(libRs);
             generateEitherEnum(libRs);
 
@@ -163,6 +156,7 @@ class LibRsDef
         indent(writer, 0, "}\n");
 
         // impl ReadBuf ...
+        indent(writer, 0, "#[allow(dead_code)]\n");
         indent(writer, 0, "impl<%s> %s<%s> {\n", BUF_LIFETIME, READ_BUF_TYPE, BUF_LIFETIME);
         indent(writer, 1, "#[inline]\n");
         indent(writer, 1, "pub fn new(data: &%s [u8]) -> Self {\n", BUF_LIFETIME);
