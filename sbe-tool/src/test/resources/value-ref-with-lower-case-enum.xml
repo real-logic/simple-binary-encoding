@@ -15,6 +15,9 @@
 
         <enum name="engineType" encodingType="uint8">
             <validValue name="gas">0</validValue>
+            <validValue name="oIl">1</validValue>
+            <validValue name="winD">2</validValue>
+            <validValue name="SOLAR">3</validValue>
         </enum>
     </types>
 
