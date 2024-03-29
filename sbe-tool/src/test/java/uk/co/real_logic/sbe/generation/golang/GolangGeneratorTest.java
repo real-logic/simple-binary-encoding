@@ -25,9 +25,6 @@ import uk.co.real_logic.sbe.xml.ParserOptions;
 
 import java.io.InputStream;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.*;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
@@ -256,6 +253,7 @@ class GolangGeneratorTest
     }
 
     @Test
+    @SuppressWarnings("MethodLength")
     void shouldUseUpperCaseTypeNamesWhenReferencingBitSet() throws Exception
     {
         try (InputStream in = Tests.getLocalResource("message-with-lower-case-bitset.xml"))
@@ -271,24 +269,129 @@ class GolangGeneratorTest
             generator.generate();
 
             final String eventTypeSource = outputManager.getSource("test.EventType").toString();
-            System.out.println(eventTypeSource);
-            assertThat(eventTypeSource,
-                containsString("type EventType [8]bool\n" +
+            assertEquals("// Generated SBE (Simple Binary Encoding) message codec\n" +
+                "\n" +
+                "package test\n" +
+                "\n" +
+                "import (\n" +
+                "\t\"io\"\n" +
+                ")\n" +
+                "\n" +
+                "type EventType [8]bool\n" +
                 "type EventTypeChoiceValue uint8\n" +
                 "type EventTypeChoiceValues struct {\n" +
                 "\tA     EventTypeChoiceValue\n" +
                 "\tBb    EventTypeChoiceValue\n" +
                 "\tCcc   EventTypeChoiceValue\n" +
                 "\tD     EventTypeChoiceValue\n" +
-                "\tEeeee EventTypeChoiceValue\n}\n\n" +
-                "var EventTypeChoice = EventTypeChoiceValues{0, 1, 2, 3, 4}"));
+                "\tEeEee EventTypeChoiceValue\n" +
+                "}\n" +
+                "\n" +
+                "var EventTypeChoice = EventTypeChoiceValues{0, 1, 2, 3, 4}\n" +
+                "\n" +
+                "func (e *EventType) Encode(_m *SbeGoMarshaller, _w io.Writer) error {\n" +
+                "\tvar wireval uint8 = 0\n" +
+                "\tfor k, v := range e {\n" +
+                "\t\tif v {\n" +
+                "\t\t\twireval |= (1 << uint(k))\n" +
+                "\t\t}\n" +
+                "\t}\n" +
+                "\treturn _m.WriteUint8(_w, wireval)\n" +
+                "}\n" +
+                "\n" +
+                "func (e *EventType) Decode(_m *SbeGoMarshaller, _r io.Reader, actingVersion uint16) error {\n" +
+                "\tvar wireval uint8\n" +
+                "\n" +
+                "\tif err := _m.ReadUint8(_r, &wireval); err != nil {\n" +
+                "\t\treturn err\n" +
+                "\t}\n" +
+                "\n" +
+                "\tvar idx uint\n" +
+                "\tfor idx = 0; idx < 8; idx++ {\n" +
+                "\t\te[idx] = (wireval & (1 << idx)) > 0\n" +
+                "\t}\n" +
+                "\treturn nil\n" +
+                "}\n" +
+                "\n" +
+                "func (EventType) EncodedLength() int64 {\n" +
+                "\treturn 1\n" +
+                "}\n" +
+                "\n" +
+                "func (*EventType) ASinceVersion() uint16 {\n" +
+                "\treturn 0\n" +
+                "}\n" +
+                "\n" +
+                "func (e *EventType) AInActingVersion(actingVersion uint16) bool {\n" +
+                "\treturn actingVersion >= e.ASinceVersion()\n" +
+                "}\n" +
+                "\n" +
+                "func (*EventType) ADeprecated() uint16 {\n" +
+                "\treturn 0\n" +
+                "}\n" +
+                "\n" +
+                "func (*EventType) BbSinceVersion() uint16 {\n" +
+                "\treturn 0\n" +
+                "}\n" +
+                "\n" +
+                "func (e *EventType) BbInActingVersion(actingVersion uint16) bool {\n" +
+                "\treturn actingVersion >= e.BbSinceVersion()\n" +
+                "}\n" +
+                "\n" +
+                "func (*EventType) BbDeprecated() uint16 {\n" +
+                "\treturn 0\n" +
+                "}\n" +
+                "\n" +
+                "func (*EventType) CccSinceVersion() uint16 {\n" +
+                "\treturn 0\n" +
+                "}\n" +
+                "\n" +
+                "func (e *EventType) CccInActingVersion(actingVersion uint16) bool {\n" +
+                "\treturn actingVersion >= e.CccSinceVersion()\n" +
+                "}\n" +
+                "\n" +
+                "func (*EventType) CccDeprecated() uint16 {\n" +
+                "\treturn 0\n" +
+                "}\n" +
+                "\n" +
+                "func (*EventType) DSinceVersion() uint16 {\n" +
+                "\treturn 0\n" +
+                "}\n" +
+                "\n" +
+                "func (e *EventType) DInActingVersion(actingVersion uint16) bool {\n" +
+                "\treturn actingVersion >= e.DSinceVersion()\n" +
+                "}\n" +
+                "\n" +
+                "func (*EventType) DDeprecated() uint16 {\n" +
+                "\treturn 0\n" +
+                "}\n" +
+                "\n" +
+                "func (*EventType) EeEeeSinceVersion() uint16 {\n" +
+                "\treturn 0\n" +
+                "}\n" +
+                "\n" +
+                "func (e *EventType) EeEeeInActingVersion(actingVersion uint16) bool {\n" +
+                "\treturn actingVersion >= e.EeEeeSinceVersion()\n" +
+                "}\n" +
+                "\n" +
+                "func (*EventType) EeEeeDeprecated() uint16 {\n" +
+                "\treturn 0\n" +
+                "}\n", eventTypeSource);
 
             final String messageSource = outputManager.getSource("test.SomeMessage").toString();
-            assertThat(messageSource,
-                allOf(
-                containsString("type SomeMessage struct {\n\tMyEvent EventType\n}"),
-                containsString("func (s *SomeMessage) Encode(_m *SbeGoMarshaller, _w io.Writer," +
-                " doRangeCheck bool) error {\n" +
+            assertEquals("// Generated SBE (Simple Binary Encoding) message codec\n" +
+                "\n" +
+                "package test\n" +
+                "\n" +
+                "import (\n" +
+                "\t\"io\"\n" +
+                "\t\"io/ioutil\"\n" +
+                ")\n" +
+                "\n" +
+                "type SomeMessage struct {\n" +
+                "\tMyEvent EventType\n" +
+                "}\n" +
+                "\n" +
+                "func (s *SomeMessage) Encode(_m *SbeGoMarshaller, _w io.Writer, doRangeCheck bool) error {\n" +
                 "\tif doRangeCheck {\n" +
                 "\t\tif err := s.RangeCheck(s.SbeSchemaVersion(), s.SbeSchemaVersion()); err != nil {\n" +
                 "\t\t\treturn err\n" +
@@ -298,9 +401,10 @@ class GolangGeneratorTest
                 "\t\treturn err\n" +
                 "\t}\n" +
                 "\treturn nil\n" +
-                "}\n"),
-                containsString("func (s *SomeMessage) Decode(_m *SbeGoMarshaller, _r io.Reader," +
-                " actingVersion uint16, blockLength uint16, doRangeCheck bool) error {\n" +
+                "}\n" +
+                "\n" +
+                "func (s *SomeMessage) Decode(_m *SbeGoMarshaller, _r io.Reader, actingVersion uint16, " +
+                "blockLength uint16, doRangeCheck bool) error {\n" +
                 "\tif s.MyEventInActingVersion(actingVersion) {\n" +
                 "\t\tif err := s.MyEvent.Decode(_m, _r, actingVersion); err != nil {\n" +
                 "\t\t\treturn err\n" +
@@ -315,7 +419,69 @@ class GolangGeneratorTest
                 "\t\t}\n" +
                 "\t}\n" +
                 "\treturn nil\n" +
-                "}\n")));
+                "}\n" +
+                "\n" +
+                "func (s *SomeMessage) RangeCheck(actingVersion uint16, schemaVersion uint16) error {\n" +
+                "\treturn nil\n" +
+                "}\n" +
+                "\n" +
+                "func SomeMessageInit(s *SomeMessage) {\n" +
+                "\treturn\n" +
+                "}\n" +
+                "\n" +
+                "func (*SomeMessage) SbeBlockLength() (blockLength uint16) {\n" +
+                "\treturn 1\n" +
+                "}\n" +
+                "\n" +
+                "func (*SomeMessage) SbeTemplateId() (templateId uint16) {\n" +
+                "\treturn 1\n" +
+                "}\n" +
+                "\n" +
+                "func (*SomeMessage) SbeSchemaId() (schemaId uint16) {\n" +
+                "\treturn 973\n" +
+                "}\n" +
+                "\n" +
+                "func (*SomeMessage) SbeSchemaVersion() (schemaVersion uint16) {\n" +
+                "\treturn 0\n" +
+                "}\n" +
+                "\n" +
+                "func (*SomeMessage) SbeSemanticType() (semanticType []byte) {\n" +
+                "\treturn []byte(\"\")\n" +
+                "}\n" +
+                "\n" +
+                "func (*SomeMessage) SbeSemanticVersion() (semanticVersion string) {\n" +
+                "\treturn \"1.0\"\n" +
+                "}\n" +
+                "\n" +
+                "func (*SomeMessage) MyEventId() uint16 {\n" +
+                "\treturn 1\n" +
+                "}\n" +
+                "\n" +
+                "func (*SomeMessage) MyEventSinceVersion() uint16 {\n" +
+                "\treturn 0\n" +
+                "}\n" +
+                "\n" +
+                "func (s *SomeMessage) MyEventInActingVersion(actingVersion uint16) bool {\n" +
+                "\treturn actingVersion >= s.MyEventSinceVersion()\n" +
+                "}\n" +
+                "\n" +
+                "func (*SomeMessage) MyEventDeprecated() uint16 {\n" +
+                "\treturn 0\n" +
+                "}\n" +
+                "\n" +
+                "func (*SomeMessage) MyEventMetaAttribute(meta int) string {\n" +
+                "\tswitch meta {\n" +
+                "\tcase 1:\n" +
+                "\t\treturn \"\"\n" +
+                "\tcase 2:\n" +
+                "\t\treturn \"\"\n" +
+                "\tcase 3:\n" +
+                "\t\treturn \"\"\n" +
+                "\tcase 4:\n" +
+                "\t\treturn \"required\"\n" +
+                "\t}\n" +
+                "\treturn \"\"\n" +
+                "}\n", messageSource);
         }
     }
 }

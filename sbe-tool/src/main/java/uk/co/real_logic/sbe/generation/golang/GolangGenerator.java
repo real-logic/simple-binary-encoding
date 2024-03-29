@@ -1475,7 +1475,7 @@ public class GolangGenerator implements CodeGenerator
 
             for (final Token token : tokens.subList(1, tokens.size() - 1))
             {
-                generateSinceActingDeprecated(sb, choiceName, token.name(), token);
+                generateSinceActingDeprecated(sb, choiceName, formatPropertyName(token.name()), token);
             }
             out.append(generateFileHeader(ir.namespaces()));
             out.append(sb);
