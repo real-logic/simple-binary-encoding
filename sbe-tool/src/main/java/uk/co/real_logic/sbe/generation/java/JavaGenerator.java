@@ -2949,7 +2949,7 @@ public class JavaGenerator implements CodeGenerator
 
     private String byteOrderString(final Encoding encoding)
     {
-        return sizeOfPrimitive(encoding) == 1 ? "" : ", java.nio.ByteOrder." + encoding.byteOrder();
+        return sizeOfPrimitive(encoding) == 1 ? "" : ", BYTE_ORDER";
     }
 
     private CharSequence generatePrimitiveArrayPropertyEncode(

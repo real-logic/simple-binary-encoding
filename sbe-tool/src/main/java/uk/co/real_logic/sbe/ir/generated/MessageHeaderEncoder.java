@@ -82,7 +82,7 @@ public final class MessageHeaderEncoder
 
     public MessageHeaderEncoder blockLength(final int value)
     {
-        buffer.putShort(offset + 0, (short)value, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(offset + 0, (short)value, BYTE_ORDER);
         return this;
     }
 
@@ -114,7 +114,7 @@ public final class MessageHeaderEncoder
 
     public MessageHeaderEncoder templateId(final int value)
     {
-        buffer.putShort(offset + 2, (short)value, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(offset + 2, (short)value, BYTE_ORDER);
         return this;
     }
 
@@ -146,7 +146,7 @@ public final class MessageHeaderEncoder
 
     public MessageHeaderEncoder schemaId(final int value)
     {
-        buffer.putShort(offset + 4, (short)value, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(offset + 4, (short)value, BYTE_ORDER);
         return this;
     }
 
@@ -178,7 +178,7 @@ public final class MessageHeaderEncoder
 
     public MessageHeaderEncoder version(final int value)
     {
-        buffer.putShort(offset + 6, (short)value, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(offset + 6, (short)value, BYTE_ORDER);
         return this;
     }
 
