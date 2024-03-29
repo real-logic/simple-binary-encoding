@@ -714,7 +714,8 @@ tasks.register('generateGolangCodecs') {
             'generateGolangCodecTestBasic',
             'generateGolangCodecTestComposite',
             'generateGolangCodecsWithXIncludes',
-            'generateGolangCodecsWithXSD'
+            'generateGolangCodecsWithXSD',
+            ':sbe-all:jar'
 }
 
 /*
