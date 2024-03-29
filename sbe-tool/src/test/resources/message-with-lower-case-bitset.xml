@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <sbe:messageSchema xmlns:sbe="http://fixprotocol.io/2016/sbe"
-                   package="test"
+                   package="test973"
                    id="973"
                    version="0"
                    semanticVersion="1.0"

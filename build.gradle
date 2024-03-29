@@ -700,6 +700,8 @@ tasks.register('generateGolangCodecsWithXSD', JavaExec) {
             'sbe-tool/src/test/resources/issue849.xml',
             'sbe-tool/src/test/resources/since-deprecated-test-schema.xml',
             'sbe-tool/src/test/resources/example-bigendian-test-schema.xml',
+            'sbe-tool/src/test/resources/value-ref-with-lower-case-enum.xml',
+            'sbe-tool/src/test/resources/message-with-lower-case-bitset.xml',
             'gocode/resources/example-composite.xml',
             'gocode/resources/group-with-data-extension-schema.xml',
             'gocode/resources/simple.xml']

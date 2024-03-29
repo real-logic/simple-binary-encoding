@@ -268,10 +268,10 @@ class GolangGeneratorTest
             final GolangGenerator generator = new GolangGenerator(ir, outputManager);
             generator.generate();
 
-            final String eventTypeSource = outputManager.getSource("test.EventType").toString();
+            final String eventTypeSource = outputManager.getSource("test973.EventType").toString();
             assertEquals("// Generated SBE (Simple Binary Encoding) message codec\n" +
                 "\n" +
-                "package test\n" +
+                "package test973\n" +
                 "\n" +
                 "import (\n" +
                 "\t\"io\"\n" +
@@ -377,10 +377,10 @@ class GolangGeneratorTest
                 "\treturn 0\n" +
                 "}\n", eventTypeSource);
 
-            final String messageSource = outputManager.getSource("test.SomeMessage").toString();
+            final String messageSource = outputManager.getSource("test973.SomeMessage").toString();
             assertEquals("// Generated SBE (Simple Binary Encoding) message codec\n" +
                 "\n" +
-                "package test\n" +
+                "package test973\n" +
                 "\n" +
                 "import (\n" +
                 "\t\"io\"\n" +
