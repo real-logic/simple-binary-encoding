@@ -197,7 +197,7 @@ subprojects {
     javadoc {
         failOnError false
         title = '<h1>Simple Binary Encoding (SBE)</h1>'
-        options.bottom = '<i>Copyright &#169; 2013-2022 Real Logic Limited. All Rights Reserved.</i>'
+        options.bottom = '<i>Copyright &#169; 2013-2024 Real Logic Limited. All Rights Reserved.</i>'
         options.encoding = 'UTF-8'
         options.docEncoding = 'UTF-8'
         options.charSet = 'UTF-8'
