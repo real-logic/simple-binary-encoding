@@ -1574,7 +1574,7 @@ public class GolangGenerator implements CodeGenerator
         {
             sb.append(String.format(
                 "\t%1$s%2$s%3$sEnum\n",
-                token.name(),
+                formatPropertyName(token.name()),
                 generateWhitespace(longest - token.name().length() + 1),
                 enumName));
         }
