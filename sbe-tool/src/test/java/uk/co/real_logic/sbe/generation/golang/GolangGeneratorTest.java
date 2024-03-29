@@ -53,6 +53,8 @@ class GolangGeneratorTest
                 containsString("type EngineTypeValues struct {\n" +
                 "\tGas       EngineTypeEnum\n" +
                 "\tNullValue EngineTypeEnum\n}")));
+            final String messageSource = outputManager.getSource("issue505.SomeMessage").toString();
+            assertThat(messageSource, containsString("type SomeMessage struct {\n\tEngineType EngineTypeEnum\n}"));
         }
     }
 }

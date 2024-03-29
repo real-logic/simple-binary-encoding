@@ -1768,7 +1768,7 @@ public class GolangGenerator implements CodeGenerator
                                 sb.append("\t").append(propertyName)
                                     .append(generateWhitespace(length))
                                     .append(arrayspec)
-                                    .append(encodingToken.applicableTypeName())
+                                    .append(formatTypeName(encodingToken.applicableTypeName()))
                                     .append("Enum\n");
                                 break;
 
