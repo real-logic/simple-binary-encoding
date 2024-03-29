@@ -57,4 +57,35 @@ class GolangGeneratorTest
             assertThat(messageSource, containsString("type SomeMessage struct {\n\tEngineType EngineTypeEnum\n}"));
         }
     }
+
+    @Test
+    void shouldUseUpperCaseTypeNamesWhenReferencingBitSet() throws Exception
+    {
+        try (InputStream in = Tests.getLocalResource("message-with-lower-case-bitset.xml"))
+        {
+            final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
+            final MessageSchema schema = parse(in, options);
+            final IrGenerator irg = new IrGenerator();
+            final Ir ir = irg.generate(schema);
+            final StringWriterOutputManager outputManager = new StringWriterOutputManager();
+            outputManager.setPackageName(ir.applicableNamespace());
+
+            final GolangGenerator generator = new GolangGenerator(ir, outputManager);
+            generator.generate();
+
+            final String eventTypeSource = outputManager.getSource("test.EventType").toString();
+            assertThat(eventTypeSource,
+                containsString("type EventType [8]bool\n" +
+                "type EventTypeChoiceValue uint8\n" +
+                "type EventTypeChoiceValues struct {\n" +
+                "\tA     EventTypeChoiceValue\n" +
+                "\tBb    EventTypeChoiceValue\n" +
+                "\tCcc   EventTypeChoiceValue\n" +
+                "\tD     EventTypeChoiceValue\n" +
+                "\tEeeee EventTypeChoiceValue\n}\n\n" +
+                "var EventTypeChoice = EventTypeChoiceValues{0, 1, 2, 3, 4}"));
+            final String messageSource = outputManager.getSource("test.SomeMessage").toString();
+            assertThat(messageSource, containsString("type SomeMessage struct {\n\tMyEvent EventType\n}"));
+        }
+    }
 }
