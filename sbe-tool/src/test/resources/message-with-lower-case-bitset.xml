@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <sbe:messageSchema xmlns:sbe="http://fixprotocol.io/2016/sbe"
-                   package="issue505"
-                   id="505"
+                   package="test973"
+                   id="973"
                    version="0"
                    semanticVersion="1.0"
-                   description="issue 505 test case">
+                   description="lower case bitset">
     <types>
         <composite name="messageHeader" description="header">
             <type name="blockLength" primitiveType="uint16"/>
@@ -13,15 +13,16 @@
             <type name="version" primitiveType="uint16"/>
         </composite>
 
-        <enum name="engineType" encodingType="uint8">
-            <validValue name="gas">0</validValue>
-            <validValue name="oIl">1</validValue>
-            <validValue name="winD">2</validValue>
-            <validValue name="SOLAR">3</validValue>
-        </enum>
+        <set name="eventType" encodingType="uint8">
+            <choice name="a">0</choice>
+            <choice name="Bb">1</choice>
+            <choice name="ccc">2</choice>
+            <choice name="D">3</choice>
+            <choice name="eeEee">4</choice>
+        </set>
     </types>
 
     <sbe:message name="SomeMessage" id="1">
-        <field name="engineType" type="engineType" id="1" presence="constant" valueRef="engineType.gas"/>
+        <field name="myEvent" type="eventType" id="1"/>
     </sbe:message>
 </sbe:messageSchema>

@@ -87,7 +87,7 @@ public final class MessageHeaderDecoder
 
     public int blockLength()
     {
-        return (buffer.getShort(offset + 0, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        return (buffer.getShort(offset + 0, BYTE_ORDER) & 0xFFFF);
     }
 
 
@@ -123,7 +123,7 @@ public final class MessageHeaderDecoder
 
     public int templateId()
     {
-        return (buffer.getShort(offset + 2, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        return (buffer.getShort(offset + 2, BYTE_ORDER) & 0xFFFF);
     }
 
 
@@ -159,7 +159,7 @@ public final class MessageHeaderDecoder
 
     public int schemaId()
     {
-        return (buffer.getShort(offset + 4, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        return (buffer.getShort(offset + 4, BYTE_ORDER) & 0xFFFF);
     }
 
 
@@ -195,7 +195,7 @@ public final class MessageHeaderDecoder
 
     public int version()
     {
-        return (buffer.getShort(offset + 6, java.nio.ByteOrder.LITTLE_ENDIAN) & 0xFFFF);
+        return (buffer.getShort(offset + 6, BYTE_ORDER) & 0xFFFF);
     }
 
 

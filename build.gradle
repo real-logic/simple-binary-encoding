@@ -24,8 +24,8 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'org.ow2.asm:asm:9.6'
-        classpath 'org.ow2.asm:asm-commons:9.6'
+        classpath 'org.ow2.asm:asm:9.7'
+        classpath 'org.ow2.asm:asm-commons:9.7'
     }
 }
 
@@ -58,8 +58,8 @@ def hamcrestVersion = '2.2'
 def mockitoVersion = '4.11.0'
 def junitVersion = '5.10.2'
 def jmhVersion = '1.37'
-def agronaVersion = '1.21.0'
-def agronaVersionRange = '[1.21.0,2.0[' // allow any release >= 1.20.0 and < 2.0.0
+def agronaVersion = '1.21.1'
+def agronaVersionRange = '[1.21.1,2.0[' // allow any release >= 1.21.1 and < 2.0.0
 
 def sbeGroup = 'uk.co.real-logic'
 def sbeVersion = file('version.txt').text.trim()
@@ -197,7 +197,7 @@ subprojects {
     javadoc {
         failOnError false
         title = '<h1>Simple Binary Encoding (SBE)</h1>'
-        options.bottom = '<i>Copyright &#169; 2013-2022 Real Logic Limited. All Rights Reserved.</i>'
+        options.bottom = '<i>Copyright &#169; 2013-2024 Real Logic Limited. All Rights Reserved.</i>'
         options.encoding = 'UTF-8'
         options.docEncoding = 'UTF-8'
         options.charSet = 'UTF-8'
@@ -700,6 +700,8 @@ tasks.register('generateGolangCodecsWithXSD', JavaExec) {
             'sbe-tool/src/test/resources/issue849.xml',
             'sbe-tool/src/test/resources/since-deprecated-test-schema.xml',
             'sbe-tool/src/test/resources/example-bigendian-test-schema.xml',
+            'sbe-tool/src/test/resources/value-ref-with-lower-case-enum.xml',
+            'sbe-tool/src/test/resources/message-with-lower-case-bitset.xml',
             'gocode/resources/example-composite.xml',
             'gocode/resources/group-with-data-extension-schema.xml',
             'gocode/resources/simple.xml']
@@ -712,7 +714,8 @@ tasks.register('generateGolangCodecs') {
             'generateGolangCodecTestBasic',
             'generateGolangCodecTestComposite',
             'generateGolangCodecsWithXIncludes',
-            'generateGolangCodecsWithXSD'
+            'generateGolangCodecsWithXSD',
+            ':sbe-all:jar'
 }
 
 /*

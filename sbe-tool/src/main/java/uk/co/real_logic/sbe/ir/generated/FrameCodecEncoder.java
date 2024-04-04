@@ -243,7 +243,7 @@ public final class FrameCodecEncoder
             onIrIdAccessed();
         }
 
-        buffer.putInt(offset + 0, value, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putInt(offset + 0, value, BYTE_ORDER);
         return this;
     }
 
@@ -311,7 +311,7 @@ public final class FrameCodecEncoder
             onIrVersionAccessed();
         }
 
-        buffer.putInt(offset + 4, value, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putInt(offset + 4, value, BYTE_ORDER);
         return this;
     }
 
@@ -379,7 +379,7 @@ public final class FrameCodecEncoder
             onSchemaVersionAccessed();
         }
 
-        buffer.putInt(offset + 8, value, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putInt(offset + 8, value, BYTE_ORDER);
         return this;
     }
 
@@ -439,7 +439,7 @@ public final class FrameCodecEncoder
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        buffer.putShort(limit, (short)length, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(limit, (short)length, BYTE_ORDER);
         buffer.putBytes(limit + headerLength, src, srcOffset, length);
 
         return this;
@@ -460,7 +460,7 @@ public final class FrameCodecEncoder
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        buffer.putShort(limit, (short)length, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(limit, (short)length, BYTE_ORDER);
         buffer.putBytes(limit + headerLength, src, srcOffset, length);
 
         return this;
@@ -484,7 +484,7 @@ public final class FrameCodecEncoder
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        buffer.putShort(limit, (short)length, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(limit, (short)length, BYTE_ORDER);
         buffer.putBytes(limit + headerLength, bytes, 0, length);
 
         return this;
@@ -545,7 +545,7 @@ public final class FrameCodecEncoder
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        buffer.putShort(limit, (short)length, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(limit, (short)length, BYTE_ORDER);
         buffer.putBytes(limit + headerLength, src, srcOffset, length);
 
         return this;
@@ -566,7 +566,7 @@ public final class FrameCodecEncoder
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        buffer.putShort(limit, (short)length, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(limit, (short)length, BYTE_ORDER);
         buffer.putBytes(limit + headerLength, src, srcOffset, length);
 
         return this;
@@ -590,7 +590,7 @@ public final class FrameCodecEncoder
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        buffer.putShort(limit, (short)length, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(limit, (short)length, BYTE_ORDER);
         buffer.putBytes(limit + headerLength, bytes, 0, length);
 
         return this;
@@ -651,7 +651,7 @@ public final class FrameCodecEncoder
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        buffer.putShort(limit, (short)length, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(limit, (short)length, BYTE_ORDER);
         buffer.putBytes(limit + headerLength, src, srcOffset, length);
 
         return this;
@@ -672,7 +672,7 @@ public final class FrameCodecEncoder
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        buffer.putShort(limit, (short)length, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(limit, (short)length, BYTE_ORDER);
         buffer.putBytes(limit + headerLength, src, srcOffset, length);
 
         return this;
@@ -696,7 +696,7 @@ public final class FrameCodecEncoder
         final int headerLength = 2;
         final int limit = parentMessage.limit();
         parentMessage.limit(limit + headerLength + length);
-        buffer.putShort(limit, (short)length, java.nio.ByteOrder.LITTLE_ENDIAN);
+        buffer.putShort(limit, (short)length, BYTE_ORDER);
         buffer.putBytes(limit + headerLength, bytes, 0, length);
 
         return this;

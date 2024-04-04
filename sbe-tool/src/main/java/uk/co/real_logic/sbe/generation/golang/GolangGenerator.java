@@ -1055,12 +1055,16 @@ public class GolangGenerator implements CodeGenerator
                 // Encode of a constant is a nullop, decode is assignment
                 if (signalToken.isConstantEncoding())
                 {
+                    final String rawValue = signalToken.encoding().constValue().toString();
+                    final int dotIndex = rawValue.indexOf('.');
+                    final String constantValue = toUpperFirstChar(rawValue.substring(0, dotIndex)) + "." +
+                        toUpperFirstChar(rawValue.substring(dotIndex + 1));
                     decode.append(String.format(
                         "\t%1$s.%2$s = %3$s\n",
-                        varName, propertyName, signalToken.encoding().constValue()));
+                        varName, propertyName, constantValue));
                     init.append(String.format(
                         "\t%1$s.%2$s = %3$s\n",
-                        varName, propertyName, signalToken.encoding().constValue()));
+                        varName, propertyName, constantValue));
                 }
                 else
                 {
@@ -1471,7 +1475,7 @@ public class GolangGenerator implements CodeGenerator
 
             for (final Token token : tokens.subList(1, tokens.size() - 1))
             {
-                generateSinceActingDeprecated(sb, choiceName, token.name(), token);
+                generateSinceActingDeprecated(sb, choiceName, formatPropertyName(token.name()), token);
             }
             out.append(generateFileHeader(ir.namespaces()));
             out.append(sb);
@@ -1510,7 +1514,7 @@ public class GolangGenerator implements CodeGenerator
 
             for (final Token token : tokens.subList(1, tokens.size() - 1))
             {
-                generateSinceActingDeprecated(sb, enumName + "Enum", token.name(), token);
+                generateSinceActingDeprecated(sb, enumName + "Enum", formatPropertyName(token.name()), token);
             }
 
             out.append(generateFileHeader(ir.namespaces()));
@@ -1574,7 +1578,7 @@ public class GolangGenerator implements CodeGenerator
         {
             sb.append(String.format(
                 "\t%1$s%2$s%3$sEnum\n",
-                token.name(),
+                formatPropertyName(token.name()),
                 generateWhitespace(longest - token.name().length() + 1),
                 enumName));
         }
@@ -1768,7 +1772,7 @@ public class GolangGenerator implements CodeGenerator
                                 sb.append("\t").append(propertyName)
                                     .append(generateWhitespace(length))
                                     .append(arrayspec)
-                                    .append(encodingToken.applicableTypeName())
+                                    .append(formatTypeName(encodingToken.applicableTypeName()))
                                     .append("Enum\n");
                                 break;
 
@@ -1776,7 +1780,7 @@ public class GolangGenerator implements CodeGenerator
                                 sb.append("\t").append(propertyName)
                                     .append(generateWhitespace(length))
                                     .append(arrayspec)
-                                    .append(encodingToken.applicableTypeName())
+                                    .append(formatTypeName(encodingToken.applicableTypeName()))
                                     .append("\n");
                                 break;
 

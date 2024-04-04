@@ -15,12 +15,6 @@
  */
 package uk.co.real_logic.sbe.generation.java;
 
-import uk.co.real_logic.sbe.Tests;
-import uk.co.real_logic.sbe.generation.common.PrecedenceChecks;
-import uk.co.real_logic.sbe.ir.Ir;
-import uk.co.real_logic.sbe.xml.IrGenerator;
-import uk.co.real_logic.sbe.xml.MessageSchema;
-import uk.co.real_logic.sbe.xml.ParserOptions;
 import org.agrona.DirectBuffer;
 import org.agrona.MutableDirectBuffer;
 import org.agrona.concurrent.UnsafeBuffer;
@@ -29,7 +23,14 @@ import org.agrona.generation.StringWriterOutputManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import uk.co.real_logic.sbe.Tests;
+import uk.co.real_logic.sbe.generation.common.PrecedenceChecks;
+import uk.co.real_logic.sbe.ir.Ir;
+import uk.co.real_logic.sbe.xml.IrGenerator;
+import uk.co.real_logic.sbe.xml.MessageSchema;
+import uk.co.real_logic.sbe.xml.ParserOptions;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,11 +41,10 @@ import java.util.Arrays;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.startsWith;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static uk.co.real_logic.sbe.generation.java.JavaGenerator.MESSAGE_HEADER_DECODER_TYPE;
 import static uk.co.real_logic.sbe.generation.java.ReflectionUtil.*;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
@@ -444,7 +444,7 @@ class JavaGeneratorTest
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"Red", "", "Red and Blue"})
+    @ValueSource(strings = { "Red", "", "Red and Blue" })
     void shouldGenerateGetVariableStringUsingAppendable(final String color) throws Exception
     {
         final UnsafeBuffer buffer = new UnsafeBuffer(new byte[4096]);
@@ -598,6 +598,41 @@ class JavaGeneratorTest
             assertNotNull(sources.get(ir.applicableNamespace() + ".DaysEncoder"));
             assertNotNull(sources.get(ir.applicableNamespace() + ".DaysDecoder"));
             assertNotNull(sources.get(ir.applicableNamespace() + ".MessageHeaderEncoder"));
+        }
+    }
+
+    @ParameterizedTest
+    @CsvSource(
+        {
+            "code-generation-schema.xml, java.nio.ByteOrder.LITTLE_ENDIAN",
+            "example-bigendian-test-schema.xml, java.nio.ByteOrder.BIG_ENDIAN"
+        })
+    void shouldUseByteOrderConstantField(final String schemaFile, final String encodingType) throws Exception
+    {
+        try (InputStream in = Tests.getLocalResource(schemaFile))
+        {
+            final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
+            final MessageSchema schema = parse(in, options);
+            final IrGenerator irg = new IrGenerator();
+            ir = irg.generate(schema);
+
+            outputManager.clear();
+            outputManager.setPackageName(ir.applicableNamespace());
+
+            final JavaGenerator generator = new JavaGenerator(
+                ir, BUFFER_NAME, READ_ONLY_BUFFER_NAME, false, false, false, false, outputManager);
+
+            generator.generate();
+
+            for (final CharSequence code : new CharSequence[]{
+                outputManager.getSource(ir.applicableNamespace() + ".CarEncoder"),
+                outputManager.getSource(ir.applicableNamespace() + ".CarDecoder") })
+            {
+                assertThat(code.toString(), allOf(
+                    containsString("public static final java.nio.ByteOrder BYTE_ORDER = " + encodingType + ";"),
+                    not(containsString(encodingType + ")")),
+                    containsString(", BYTE_ORDER)")));
+            }
         }
     }
 
