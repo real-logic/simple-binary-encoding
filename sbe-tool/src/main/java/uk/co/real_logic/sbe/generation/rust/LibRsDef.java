@@ -45,9 +45,9 @@ class LibRsDef
      * @param schemaVersionType for acting_version type
      */
     LibRsDef(
-            final RustOutputManager outputManager,
-            final ByteOrder byteOrder,
-            final String schemaVersionType)
+        final RustOutputManager outputManager,
+        final ByteOrder byteOrder,
+        final String schemaVersionType)
     {
         this.outputManager = outputManager;
         this.byteOrder = byteOrder;
@@ -105,7 +105,7 @@ class LibRsDef
         indent(writer, 0, "}\n\n");
     }
 
-    static void generateDecoderTraits( final String schemaVersionType, final Writer writer) throws IOException
+    static void generateDecoderTraits(final String schemaVersionType, final Writer writer) throws IOException
     {
         indent(writer, 0, "pub trait ActingVersion {\n");
         indent(writer, 1, "fn acting_version(&self) -> %s;\n", schemaVersionType);

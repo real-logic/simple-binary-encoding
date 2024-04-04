@@ -890,11 +890,11 @@ public class RustGenerator implements CodeGenerator
     }
 
     static void generateDecoderGroups(
-            final String schemaVersionType,
-            final StringBuilder sb,
-            final List<Token> tokens,
-            final int level,
-            final ParentDef parentDef) throws IOException
+        final String schemaVersionType,
+        final StringBuilder sb,
+        final List<Token> tokens,
+        final int level,
+        final ParentDef parentDef) throws IOException
     {
         for (int i = 0, size = tokens.size(); i < size; i++)
         {
@@ -1164,9 +1164,9 @@ public class RustGenerator implements CodeGenerator
     }
 
     static void appendImplDecoderTrait(
-            final String schemaVersionType,
-            final Appendable out,
-            final String typeName) throws IOException
+        final String schemaVersionType,
+        final Appendable out,
+        final String typeName) throws IOException
     {
         indent(out, 1, "impl<%s> %s for %s {\n", BUF_LIFETIME, "ActingVersion", withLifetime(typeName));
         indent(out, 2, "#[inline]\n");
@@ -1281,9 +1281,9 @@ public class RustGenerator implements CodeGenerator
     }
 
     private static void generateComposites(
-            final String schemaVersionType,
-            final Ir ir,
-            final RustOutputManager outputManager) throws IOException
+        final String schemaVersionType,
+        final Ir ir,
+        final RustOutputManager outputManager) throws IOException
     {
         for (final List<Token> tokens : ir.types())
         {
@@ -1368,7 +1368,8 @@ public class RustGenerator implements CodeGenerator
         final int level,
         final String name) throws IOException
     {
-        indent(out, level, "impl<'a, P> ActingVersion for %s<P> where P: Reader<'a> + ActingVersion + Default {\n", name);
+        indent(out, level, "impl<'a, P> ActingVersion for %s<P> where P: Reader<'a> + ActingVersion + Default {\n",
+            name);
         indent(out, level + 1, "#[inline]\n");
         indent(out, level + 1, "fn acting_version(&self) -> %s {\n", schemaVersionType);
         indent(out, level + 2, "self.parent.as_ref().unwrap().acting_version()\n");
@@ -1386,16 +1387,17 @@ public class RustGenerator implements CodeGenerator
     }
 
     static void appendImplDecoderForComposite(
-            final String schemaVersionType,
-            final int version,
-            final Appendable out,
-            final int level,
-            final String name) throws IOException
+        final String schemaVersionType,
+        final int version,
+        final Appendable out,
+        final int level,
+        final String name) throws IOException
     {
         appendImplReaderForComposite(schemaVersionType, version, out, level, name);
 
         // impl Decoder...
-        indent(out, level, "impl<'a, P> Decoder<'a> for %s<P> where P: Decoder<'a> + ActingVersion + Default {\n", name);
+        indent(out, level, "impl<'a, P> Decoder<'a> for %s<P> where P: Decoder<'a> + ActingVersion + Default {\n",
+            name);
         indent(out, level + 1, "#[inline]\n");
         indent(out, level + 1, "fn get_limit(&self) -> usize {\n");
         indent(out, level + 2, "self.parent.as_ref().expect(\"parent missing\").get_limit()\n");
