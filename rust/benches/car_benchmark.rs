@@ -1,6 +1,12 @@
-use car_codec::encoder::*;
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use examples_uk_co_real_logic_sbe_benchmarks::*;
+use examples_uk_co_real_logic_sbe_benchmarks::{
+    boolean_type::BooleanType,
+    car_codec::{decoder::*, encoder::*},
+    message_header_codec::MessageHeaderDecoder,
+    model::Model,
+    optional_extras::OptionalExtras,
+    *,
+};
 
 const MANUFACTURER: &[u8] = b"MANUFACTURER";
 const MODEL: &[u8] = b"MODEL";
@@ -36,8 +42,8 @@ fn encode(state: &mut State) -> SbeResult<usize> {
     car.model_year(2005);
     car.serial_number(12345);
     car.available(BooleanType::T);
-    car.vehicle_code([97, 98, 99, 100, 101, 102]); // abcdef
-    car.some_numbers([0, 1, 2, 3, 4]);
+    car.vehicle_code(&[97, 98, 99, 100, 101, 102]); // abcdef
+    car.some_numbers(&[0, 1, 2, 3, 4]);
 
     extras.set_sports_pack(true);
     extras.set_sun_roof(true);
@@ -46,7 +52,7 @@ fn encode(state: &mut State) -> SbeResult<usize> {
     let mut engine = car.engine_encoder();
     engine.capacity(4200);
     engine.num_cylinders(8);
-    engine.manufacturer_code([97, 98, 99]); // abc
+    engine.manufacturer_code(&[97, 98, 99]); // abc
 
     car = engine.parent()?;
     fuel_figures = car.fuel_figures_encoder(3, fuel_figures);
