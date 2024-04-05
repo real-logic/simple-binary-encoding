@@ -76,7 +76,7 @@ class MessageCoderDef implements RustGenerator.ParentDef
         }
         else
         {
-            RustGenerator.appendImplDecoderTrait(sb, msgTypeName);
+            RustGenerator.appendImplDecoderTrait(schemaVersionType(), sb, msgTypeName);
         }
 
         RustGenerator.appendImplWithLifetimeHeader(sb, msgTypeName); // impl start
@@ -92,7 +92,7 @@ class MessageCoderDef implements RustGenerator.ParentDef
             appendMessageHeaderDecoderFn(sb);
 
             RustGenerator.generateDecoderFields(sb, fields, 2);
-            RustGenerator.generateDecoderGroups(sb, groups, 2, this);
+            RustGenerator.generateDecoderGroups(schemaVersionType(), sb, groups, 2, this);
             RustGenerator.generateDecoderVarData(sb, varData, 2, false);
         }
         else

@@ -1,6 +1,12 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use examples_uk_co_real_logic_sbe_benchmarks_fix::*;
-use market_data_incremental_refresh_trades_codec::encoder::*;
+use examples_uk_co_real_logic_sbe_benchmarks_fix::{
+    market_data_incremental_refresh_trades_codec::{encoder::*, *},
+    match_event_indicator::*,
+    md_update_action::*,
+    message_header_codec::*,
+    side::*,
+    *,
+};
 
 struct State {
     buffer: Vec<u8>,

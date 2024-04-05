@@ -35,19 +35,23 @@ class LibRsDef
 {
     private final RustOutputManager outputManager;
     private final ByteOrder byteOrder;
+    private final String schemaVersionType;
 
     /**
      * Create a new 'lib.rs' for the library being generated
      *
-     * @param outputManager for generating the codecs to.
-     * @param byteOrder for the Encoding.
+     * @param outputManager     for generating the codecs to.
+     * @param byteOrder         for the Encoding.
+     * @param schemaVersionType for acting_version type
      */
     LibRsDef(
         final RustOutputManager outputManager,
-        final ByteOrder byteOrder)
+        final ByteOrder byteOrder,
+        final String schemaVersionType)
     {
         this.outputManager = outputManager;
         this.byteOrder = byteOrder;
+        this.schemaVersionType = schemaVersionType;
     }
 
     void generate() throws IOException
@@ -82,7 +86,7 @@ class LibRsDef
             generateEitherEnum(libRs);
 
             generateEncoderTraits(libRs);
-            generateDecoderTraits(libRs);
+            generateDecoderTraits(schemaVersionType, libRs);
 
             generateReadBuf(libRs, byteOrder);
             generateWriteBuf(libRs, byteOrder);
@@ -101,8 +105,12 @@ class LibRsDef
         indent(writer, 0, "}\n\n");
     }
 
-    static void generateDecoderTraits(final Writer writer) throws IOException
+    static void generateDecoderTraits(final String schemaVersionType, final Writer writer) throws IOException
     {
+        indent(writer, 0, "pub trait ActingVersion {\n");
+        indent(writer, 1, "fn acting_version(&self) -> %s;\n", schemaVersionType);
+        indent(writer, 0, "}\n\n");
+
         indent(writer, 0, "pub trait Reader<'a>: Sized {\n");
         indent(writer, 1, "fn get_buf(&self) -> &ReadBuf<'a>;\n");
         indent(writer, 0, "}\n\n");

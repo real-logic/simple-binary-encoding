@@ -1,0 +1,31 @@
+<sbe:messageSchema
+    xmlns:sbe="http://fixprotocol.io/2016/sbe"
+    package="issue984"
+    id="984"
+    version="3"
+    semanticVersion="5.0.0"
+    byteOrder="littleEndian">
+  <types>
+    <type name="String4" length="4" primitiveType="char" semanticType="String"/>
+    <type name="String5" length="5" primitiveType="char" sinceVersion="2" semanticType="String"/>
+    <type name="String6" length="6" primitiveType="char" sinceVersion="3" semanticType="String"/>
+    <composite name="groupSize" description="Repeating group dimensions" semanticType="NumInGroup">
+      <type name="blockLength" primitiveType="uint16"/>
+      <type name="numInGroup" primitiveType="uint8"/>
+    </composite>
+    <composite name="messageHeader">
+      <type name="blockLength" primitiveType="uint16"/>
+      <type name="templateId" primitiveType="uint16" description="Template ID used to encode the message."/>
+      <type name="schemaId" primitiveType="uint16" description="ID of the system publishing the message."/>
+      <type name="version" primitiveType="uint16" description="Schema version."/>
+    </composite>
+  </types>
+  <sbe:message name="SimpleMessage" id="1">
+    <field name="id" id="2" type="uint16" semanticType="Int"/>
+    <group name="MyGroup" id="3" blockLength="15" dimensionType="groupSize">
+      <field name="f1" id="4" type="String4" offset="0" semanticType="String"/>
+      <field name="f2" id="5" type="String5" offset="4" semanticType="String"/>
+      <field name="f3" id="6" type="String6" offset="9" semanticType="String"/>
+    </group>
+  </sbe:message>
+</sbe:messageSchema>

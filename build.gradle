@@ -588,6 +588,7 @@ tasks.register('generateRustTestCodecs', JavaExec) {
     args = ['sbe-tool/src/test/resources/issue435.xml',
             'sbe-tool/src/test/resources/issue895.xml',
             'sbe-tool/src/test/resources/issue972.xml',
+            'sbe-tool/src/test/resources/issue984.xml',
             'sbe-tool/src/test/resources/example-bigendian-test-schema.xml',
             'sbe-tool/src/test/resources/nested-composite-name.xml',
     ]

@@ -127,11 +127,11 @@ public class RustGenerator implements CodeGenerator
         }
 
         // lib.rs
-        final LibRsDef libRsDef = new LibRsDef(outputManager, ir.byteOrder());
+        final LibRsDef libRsDef = new LibRsDef(outputManager, ir.byteOrder(), schemaVersionType());
 
         generateEnums(ir, outputManager);
         generateBitSets(ir, outputManager);
-        generateComposites(ir, outputManager);
+        generateComposites(schemaVersionType(), ir, outputManager);
 
         for (final List<Token> tokens : ir.messages())
         {
@@ -428,6 +428,7 @@ public class RustGenerator implements CodeGenerator
                 indent(sb, level, "/// - semanticType: %s\n", encoding.semanticType());
                 indent(sb, level, "/// - encodedOffset: %d\n", typeToken.offset());
                 indent(sb, level, "/// - encodedLength: %d\n", typeToken.encodedLength());
+                indent(sb, level, "/// - version: %d\n", typeToken.version());
                 indent(sb, level, "#[inline]\n");
                 indent(sb, level, "pub fn %s(&mut self, value: %s) {\n",
                     formatFunctionName(name),
@@ -575,7 +576,7 @@ public class RustGenerator implements CodeGenerator
                 decoderName,
                 decoderTypeName);
 
-            indent(sb, level + 1, "if self.acting_version > 0 && self.acting_version < %d {\n", fieldToken.version());
+            indent(sb, level + 1, "if self.acting_version() < %d {\n", fieldToken.version());
             indent(sb, level + 2, "return Either::Left(self);\n");
             indent(sb, level + 1, "}\n\n");
 
@@ -613,7 +614,7 @@ public class RustGenerator implements CodeGenerator
 
         if (bitsetToken.version() > 0)
         {
-            indent(sb, level + 1, "if self.acting_version > 0 && self.acting_version < %d {\n", bitsetToken.version());
+            indent(sb, level + 1, "if self.acting_version() < %d {\n", bitsetToken.version());
             indent(sb, level + 2, "return %s::default();\n", structTypeName);
             indent(sb, level + 1, "}\n\n");
         }
@@ -673,7 +674,7 @@ public class RustGenerator implements CodeGenerator
 
         if (fieldToken.version() > 0)
         {
-            indent(sb, level + 1, "if self.acting_version > 0 && self.acting_version < %d {\n", fieldToken.version());
+            indent(sb, level + 1, "if self.acting_version() < %d {\n", fieldToken.version());
             indent(sb, level + 2, "return [%s; %d];\n", encoding.applicableNullValue(), arrayLength);
             indent(sb, level + 1, "}\n\n");
         }
@@ -827,7 +828,7 @@ public class RustGenerator implements CodeGenerator
 
         if (fieldToken.version() > 0)
         {
-            indent(sb, level + 1, "if self.acting_version > 0 && self.acting_version < %d {\n", fieldToken.version());
+            indent(sb, level + 1, "if self.acting_version() < %d {\n", fieldToken.version());
             indent(sb, level + 2, "return %s;\n",
                 generateRustLiteral(encoding.primitiveType(), encoding.applicableNullValue().toString()));
             indent(sb, level + 1, "}\n\n");
@@ -876,7 +877,7 @@ public class RustGenerator implements CodeGenerator
 
             if (fieldToken.version() > 0)
             {
-                indent(sb, level + 1, "if self.acting_version < %d {\n", fieldToken.version());
+                indent(sb, level + 1, "if self.acting_version() < %d {\n", fieldToken.version());
                 indent(sb, level + 2, "return %s::default();\n", enumType);
                 indent(sb, level + 1, "}\n\n");
             }
@@ -889,6 +890,7 @@ public class RustGenerator implements CodeGenerator
     }
 
     static void generateDecoderGroups(
+        final String schemaVersionType,
         final StringBuilder sb,
         final List<Token> tokens,
         final int level,
@@ -936,7 +938,7 @@ public class RustGenerator implements CodeGenerator
                 indent(sb, level, "pub fn %s(self) -> Option<%2$s<Self>> {\n",
                     formatFunctionName(groupName), groupName);
 
-                indent(sb, level + 1, "if self.acting_version < %d {\n", groupToken.version());
+                indent(sb, level + 1, "if self.acting_version() < %d {\n", groupToken.version());
                 indent(sb, level + 2, "return None;\n");
                 indent(sb, level + 1, "}\n\n");
 
@@ -952,7 +954,7 @@ public class RustGenerator implements CodeGenerator
             indent(sb, level, "}\n\n");
 
             final SubGroup subGroup = parentDef.addSubGroup(groupName, level, groupToken);
-            subGroup.generateDecoder(tokens, fields, groups, varData, index);
+            subGroup.generateDecoder(schemaVersionType, tokens, fields, groups, varData, index);
         }
     }
 
@@ -984,7 +986,7 @@ public class RustGenerator implements CodeGenerator
             {
                 if (varDataToken.version() > 0)
                 {
-                    indent(sb, level + 1, "if self.acting_version > 0 && self.acting_version < %d {\n",
+                    indent(sb, level + 1, "if self.acting_version() < %d {\n",
                         varDataToken.version());
                     indent(sb, level + 2, "return (self.parent.as_ref().unwrap().get_limit(), 0);\n");
                     indent(sb, level + 1, "}\n\n");
@@ -1000,7 +1002,7 @@ public class RustGenerator implements CodeGenerator
             {
                 if (varDataToken.version() > 0)
                 {
-                    indent(sb, level + 1, "if self.acting_version > 0 && self.acting_version < %d {\n",
+                    indent(sb, level + 1, "if self.acting_version() < %d {\n",
                         varDataToken.version());
                     indent(sb, level + 2, "return (self.get_limit(), 0);\n");
                     indent(sb, level + 1, "}\n\n");
@@ -1020,7 +1022,7 @@ public class RustGenerator implements CodeGenerator
 
             if (varDataToken.version() > 0)
             {
-                indent(sb, level + 1, "if self.acting_version > 0 && self.acting_version < %d {\n",
+                indent(sb, level + 1, "if self.acting_version() < %d {\n",
                     varDataToken.version());
                 indent(sb, level + 2, "return &[] as &[u8];\n");
                 indent(sb, level + 1, "}\n\n");
@@ -1162,9 +1164,17 @@ public class RustGenerator implements CodeGenerator
     }
 
     static void appendImplDecoderTrait(
+        final String schemaVersionType,
         final Appendable out,
         final String typeName) throws IOException
     {
+        indent(out, 1, "impl<%s> %s for %s {\n", BUF_LIFETIME, "ActingVersion", withLifetime(typeName));
+        indent(out, 2, "#[inline]\n");
+        indent(out, 2, "fn acting_version(&self) -> %s {\n", schemaVersionType);
+        indent(out, 3, "self.acting_version\n");
+        indent(out, 2, "}\n");
+        indent(out, 1, "}\n\n");
+
         indent(out, 1, "impl<%s> %s for %s {\n", BUF_LIFETIME, withLifetime("Reader"), withLifetime(typeName));
         indent(out, 2, "#[inline]\n");
         indent(out, 2, "fn get_buf(&self) -> &ReadBuf<'a> {\n");
@@ -1271,6 +1281,7 @@ public class RustGenerator implements CodeGenerator
     }
 
     private static void generateComposites(
+        final String schemaVersionType,
         final Ir ir,
         final RustOutputManager outputManager) throws IOException
     {
@@ -1278,12 +1289,13 @@ public class RustGenerator implements CodeGenerator
         {
             if (!tokens.isEmpty() && tokens.get(0).signal() == Signal.BEGIN_COMPOSITE)
             {
-                generateComposite(tokens, outputManager);
+                generateComposite(schemaVersionType, tokens, outputManager);
             }
         }
     }
 
     private static void generateComposite(
+        final String schemaVersionType,
         final List<Token> tokens,
         final RustOutputManager outputManager) throws IOException
     {
@@ -1306,7 +1318,7 @@ public class RustGenerator implements CodeGenerator
 
             generateCompositeEncoder(tokens, encoderName(compositeName), out);
             indent(out, 0, "\n");
-            generateCompositeDecoder(tokens, decoderName(compositeName), out);
+            generateCompositeDecoder(schemaVersionType, tokens, decoderName(compositeName), out);
         }
     }
 
@@ -1350,12 +1362,23 @@ public class RustGenerator implements CodeGenerator
     }
 
     static void appendImplReaderForComposite(
+        final String schemaVersionType,
+        final int version,
         final Appendable out,
         final int level,
         final String name) throws IOException
     {
+        indent(out, level, "impl<'a, P> ActingVersion for %s<P> where P: Reader<'a> + ActingVersion + Default {\n",
+            name);
+        indent(out, level + 1, "#[inline]\n");
+        indent(out, level + 1, "fn acting_version(&self) -> %s {\n", schemaVersionType);
+        indent(out, level + 2, "self.parent.as_ref().unwrap().acting_version()\n");
+        indent(out, level + 1, "}\n");
+        indent(out, level, "}\n\n");
+
         // impl Reader...
-        indent(out, level, "impl<'a, P> Reader<'a> for %s<P> where P: Reader<'a> + Default {\n", name);
+        indent(out, level, "impl<'a, P> Reader<'a> for %s<P> where P: Reader<'a> %s+ Default {\n",
+            name, version > 0 ? "+ ActingVersion " : "");
         indent(out, level + 1, "#[inline]\n");
         indent(out, level + 1, "fn get_buf(&self) -> &ReadBuf<'a> {\n");
         indent(out, level + 2, "self.parent.as_ref().expect(\"parent missing\").get_buf()\n");
@@ -1364,14 +1387,17 @@ public class RustGenerator implements CodeGenerator
     }
 
     static void appendImplDecoderForComposite(
+        final String schemaVersionType,
+        final int version,
         final Appendable out,
         final int level,
         final String name) throws IOException
     {
-        appendImplReaderForComposite(out, level, name);
+        appendImplReaderForComposite(schemaVersionType, version, out, level, name);
 
         // impl Decoder...
-        indent(out, level, "impl<'a, P> Decoder<'a> for %s<P> where P: Decoder<'a> + Default {\n", name);
+        indent(out, level, "impl<'a, P> Decoder<'a> for %s<P> where P: Decoder<'a> + ActingVersion + Default {\n",
+            name);
         indent(out, level + 1, "#[inline]\n");
         indent(out, level + 1, "fn get_limit(&self) -> usize {\n");
         indent(out, level + 2, "self.parent.as_ref().expect(\"parent missing\").get_limit()\n");
@@ -1447,6 +1473,7 @@ public class RustGenerator implements CodeGenerator
     }
 
     private static void generateCompositeDecoder(
+        final String schemaVersionType,
         final List<Token> tokens,
         final String decoderName,
         final Writer out) throws IOException
@@ -1460,10 +1487,12 @@ public class RustGenerator implements CodeGenerator
         indent(out, 2, "offset: usize,\n");
         indent(out, 1, "}\n\n");
 
-        appendImplReaderForComposite(out, 1, decoderName);
+        final int version = tokens.stream().findFirst().get().version();
+        appendImplReaderForComposite(schemaVersionType, version, out, 1, decoderName);
 
         // impl<'a, P> start
-        indent(out, 1, "impl<'a, P> %s<P> where P: Reader<'a> + Default {\n", decoderName);
+        indent(out, 1, "impl<'a, P> %s<P> where P: Reader<'a> %s+ Default {\n",
+            decoderName, version > 0 ? "+ ActingVersion " : "");
         indent(out, 2, "pub fn wrap(mut self, parent: P, offset: usize) -> Self {\n");
         indent(out, 3, "self.parent = Some(parent);\n");
         indent(out, 3, "self.offset = offset;\n");
