@@ -186,15 +186,13 @@ public final class TokenCodecDecoder
 
     private void onWrap(final int actingVersion)
     {
-        switch(actingVersion)
+        if (actingVersion >= 0)
         {
-            case 0:
-                codecState(CodecStates.V0_BLOCK);
-                break;
-            default:
-                codecState(CodecStates.V0_BLOCK);
-                break;
+            codecState(CodecStates.V0_BLOCK);
+            return;
         }
+
+        throw new IllegalStateException("Unsupported acting version: " + actingVersion);
     }
 
     public TokenCodecDecoder wrap(

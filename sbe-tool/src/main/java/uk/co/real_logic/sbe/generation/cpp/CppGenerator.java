@@ -3055,22 +3055,37 @@ public class CppGenerator implements CodeGenerator
 
         final StringBuilder sb = new StringBuilder();
         sb.append(INDENT).append("void onWrapForDecode(std::uint64_t actingVersion)\n")
-            .append(INDENT).append("{\n")
-            .append(INDENT).append(INDENT).append("switch(actingVersion)\n")
-            .append(INDENT).append(INDENT).append("{\n");
+            .append(INDENT).append("{\n");
 
-        fieldPrecedenceModel.forEachWrappedStateByVersion((version, state) ->
-            sb.append(INDENT).append(TWO_INDENT).append("case ").append(version).append(":\n")
-            .append(INDENT).append(THREE_INDENT).append("codecState(")
-            .append(qualifiedStateCase(state)).append(");\n")
-            .append(INDENT).append(THREE_INDENT).append("break;\n"));
+        final MutableBoolean actingVersionCanBeTooLowToBeValid = new MutableBoolean(true);
 
-        sb.append(INDENT).append(TWO_INDENT).append("default:\n")
-            .append(INDENT).append(THREE_INDENT).append("codecState(")
-            .append(qualifiedStateCase(fieldPrecedenceModel.latestVersionWrappedState())).append(");\n")
-            .append(INDENT).append(THREE_INDENT).append("break;\n")
-            .append(INDENT).append(INDENT).append("}\n")
-            .append(INDENT).append("}\n\n");
+        fieldPrecedenceModel.forEachWrappedStateByVersionDesc((version, state) ->
+        {
+            if (version == 0)
+            {
+                actingVersionCanBeTooLowToBeValid.set(false);
+
+                sb.append(INDENT).append("    codecState(")
+                    .append(qualifiedStateCase(state)).append(");\n");
+            }
+            else
+            {
+                sb.append(INDENT).append("    if (actingVersion >= ").append(version).append(")\n")
+                    .append(INDENT).append("    {\n")
+                    .append(INDENT).append("        codecState(")
+                    .append(qualifiedStateCase(state)).append(");\n")
+                    .append(INDENT).append("        return;\n")
+                    .append(INDENT).append("    }\n\n");
+            }
+        });
+
+        if (actingVersionCanBeTooLowToBeValid.get())
+        {
+            sb.append(INDENT)
+                .append("    throw std::runtime_error(\"Unsupported acting version: \" + actingVersion);\n");
+        }
+
+        sb.append(INDENT).append("}\n\n");
 
         return sb;
     }
