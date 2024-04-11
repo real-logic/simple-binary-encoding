@@ -1912,22 +1912,20 @@ public class CSharpGenerator implements CodeGenerator
         }
 
         final StringBuilder sb = new StringBuilder();
+
         sb.append(indent).append("private void OnWrapForDecode(int actingVersion)\n")
-            .append(indent).append("{\n")
-            .append(indent).append(INDENT).append("switch(actingVersion)\n")
-            .append(indent).append(INDENT).append("{\n");
+            .append(indent).append("{\n");
 
-        fieldPrecedenceModel.forEachWrappedStateByVersion((version, state) ->
-            sb.append(indent).append(TWO_INDENT).append("case ").append(version).append(":\n")
-            .append(indent).append(THREE_INDENT).append("codecState(")
+        fieldPrecedenceModel.forEachWrappedStateByVersionDesc((version, state) ->
+            sb.append(indent).append("    if (actingVersion >= ").append(version).append(")\n")
+            .append(indent).append("    {\n")
+            .append(indent).append("        codecState(")
             .append(qualifiedStateCase(state)).append(");\n")
-            .append(indent).append(THREE_INDENT).append("break;\n"));
+            .append(indent).append("        return;\n")
+            .append(indent).append("    }\n\n"));
 
-        sb.append(indent).append(TWO_INDENT).append("default:\n")
-            .append(indent).append(THREE_INDENT).append("codecState(")
-            .append(qualifiedStateCase(fieldPrecedenceModel.latestVersionWrappedState())).append(");\n")
-            .append(indent).append(THREE_INDENT).append("break;\n")
-            .append(indent).append(INDENT).append("}\n")
+        sb.append(indent)
+            .append("    throw new InvalidOperationException(\"Unsupported acting version: \" + actingVersion);\n")
             .append(indent).append("}\n\n");
 
         return sb;

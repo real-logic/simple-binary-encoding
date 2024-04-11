@@ -46,7 +46,7 @@ public final class FieldPrecedenceModel
         new CodecInteraction.CodecInteractionFactory(groupPathsByField, topLevelBlockFields);
     private final Map<CodecInteraction, List<TransitionGroup>> transitionsByInteraction = new LinkedHashMap<>();
     private final Map<State, List<TransitionGroup>> transitionsByState = new HashMap<>();
-    private final Int2ObjectHashMap<State> versionWrappedStates = new Int2ObjectHashMap<>();
+    private final TreeMap<Integer, State> versionWrappedStates = new TreeMap<>();
     private final State notWrappedState = allocateState("NOT_WRAPPED");
     private final String generatedRepresentationClassName;
     private State encoderWrappedState;
@@ -103,13 +103,11 @@ public final class FieldPrecedenceModel
      * Iterates over the states after a codec is wrapped over a particular version of data.
      * @param consumer the consumer of the states.
      */
-    public void forEachWrappedStateByVersion(final IntObjConsumer<State> consumer)
+    public void forEachWrappedStateByVersionDesc(final IntObjConsumer<State> consumer)
     {
-        final Int2ObjectHashMap<State>.EntryIterator iterator = versionWrappedStates.entrySet().iterator();
-        while (iterator.hasNext())
+        for (final Map.Entry<Integer, State> entry : versionWrappedStates.descendingMap().entrySet())
         {
-            iterator.next();
-            consumer.accept(iterator.getIntKey(), iterator.getValue());
+            consumer.accept(entry.getKey(), entry.getValue());
         }
     }
 

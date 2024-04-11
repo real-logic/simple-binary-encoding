@@ -4,7 +4,7 @@
                    id="1"
                    description="Unit Test"
                    byteOrder="littleEndian"
-                   version="1">
+                   version="3">
     <types>
         <composite name="messageHeader" description="Message identifiers and length of message root">
             <type name="blockLength" primitiveType="uint16"/>
@@ -141,6 +141,7 @@
 
     <sbe:message name="AddGroupBeforeVarDataV1" id="1010">
         <field name="a" id="1" type="int32"/>
+        <!-- Not technically allowed by the v1 spec -->
         <group name="c" id="3" sinceVersion="1">
             <field name="d" id="4" type="int32"/>
         </group>
@@ -288,5 +289,44 @@
                 <data name="f" id="6" type="varDataEncoding"/>
             </group>
         </group>
+    </sbe:message>
+
+    <sbe:message name="SkipVersionAddPrimitiveV1" id="25">
+        <data name="b" id="3" type="varDataEncoding"/>
+    </sbe:message>
+
+    <sbe:message name="SkipVersionAddPrimitiveV2" id="1025">
+        <field name="a" id="1" type="int32" sinceVersion="2"/>
+        <data name="b" id="3" type="varDataEncoding"/>
+    </sbe:message>
+
+    <sbe:message name="SkipVersionAddGroupV1" id="26">
+        <field name="a" id="1" type="int32"/>
+        <data name="d" id="2" type="varDataEncoding"/>
+    </sbe:message>
+
+    <sbe:message name="SkipVersionAddGroupV2" id="1026">
+        <field name="a" id="1" type="int32"/>
+        <group name="b" id="3" sinceVersion="2">
+            <field name="c" id="4" type="int32" sinceVersion="2"/>
+        </group>
+    </sbe:message>
+
+    <sbe:message name="SkipVersionAddVarDataV1" id="27">
+        <field name="a" id="1" type="int32"/>
+    </sbe:message>
+
+    <sbe:message name="SkipVersionAddVarDataV2" id="1027">
+        <field name="a" id="1" type="int32"/>
+        <data name="b" id="2" sinceVersion="2" type="varDataEncoding"/>
+    </sbe:message>
+
+    <sbe:message name="SkipVersionAddGroupBeforeVarDataV2" id="1028">
+        <field name="a" id="1" type="int32"/>
+        <!-- Not technically allowed by the v1 spec -->
+        <group name="c" id="3" sinceVersion="2">
+            <field name="d" id="4" type="int32"/>
+        </group>
+        <data name="b" id="2" type="varDataEncoding"/>
     </sbe:message>
 </sbe:messageSchema>

@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Random;
@@ -3407,6 +3408,116 @@ public class FieldAccessOrderCheckTest
         assertThat(exception.getMessage(), containsString("Not fully encoded, current state: " + expectedState));
     }
 
+    @Test
+    void decodesNullValueForFutureVersionBlockFieldWhenCurrentVersionHasNoChangesInMessage()
+    {
+        final MessageHeaderEncoder headerEncoder = new MessageHeaderEncoder();
+        final SkipVersionAddPrimitiveV1Encoder encoder = new SkipVersionAddPrimitiveV1Encoder()
+            .wrapAndApplyHeader(buffer, OFFSET, headerEncoder);
+
+        headerEncoder
+            .templateId(SkipVersionAddPrimitiveV2Encoder.TEMPLATE_ID)
+            .version(1);
+
+        encoder.b("abc");
+
+        final SkipVersionAddPrimitiveV2Decoder decoder = new SkipVersionAddPrimitiveV2Decoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
+
+        assertThat(decoder.a(), equalTo(SkipVersionAddPrimitiveV2Decoder.aNullValue()));
+        assertThat(decoder.b(), equalTo("abc"));
+    }
+
+    @Test
+    void decodesEmptyFutureGroupWhenDecodingFromVersionWithNoChangesInMessage()
+    {
+        final MessageHeaderEncoder headerEncoder = new MessageHeaderEncoder();
+        final SkipVersionAddGroupV1Encoder encoder = new SkipVersionAddGroupV1Encoder()
+            .wrapAndApplyHeader(buffer, OFFSET, headerEncoder);
+
+        headerEncoder
+            .templateId(SkipVersionAddGroupV2Decoder.TEMPLATE_ID)
+            .version(1);
+
+        encoder.a(42);
+
+        final SkipVersionAddGroupV2Decoder decoder = new SkipVersionAddGroupV2Decoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
+
+        assertThat(decoder.a(), equalTo(42));
+        assertThat(decoder.b().count(), equalTo(0));
+    }
+
+    @Test
+    void decodesNullValueForFutureVarDataFieldWhenDecodingFromVersionWithNoChangesInMessage()
+    {
+        final MessageHeaderEncoder headerEncoder = new MessageHeaderEncoder();
+        final SkipVersionAddVarDataV1Encoder encoder = new SkipVersionAddVarDataV1Encoder()
+            .wrapAndApplyHeader(buffer, OFFSET, headerEncoder);
+
+        headerEncoder
+            .templateId(SkipVersionAddVarDataV2Decoder.TEMPLATE_ID)
+            .version(1);
+
+        encoder.a(42);
+
+        final SkipVersionAddVarDataV2Decoder decoder = new SkipVersionAddVarDataV2Decoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
+
+        assertThat(decoder.a(), equalTo(42));
+        assertThat(decoder.b(), equalTo(""));
+    }
+
+    @Test
+    void allowsDecodingUnknownFutureVersions()
+    {
+        final MessageHeaderEncoder headerEncoder = new MessageHeaderEncoder();
+        final SkipVersionAddPrimitiveV2Encoder encoder = new SkipVersionAddPrimitiveV2Encoder()
+            .wrapAndApplyHeader(buffer, OFFSET, headerEncoder);
+
+        headerEncoder
+            .templateId(SkipVersionAddPrimitiveV2Encoder.TEMPLATE_ID)
+            .version(42);
+
+        encoder.a(43).b("abc");
+
+        final SkipVersionAddPrimitiveV2Decoder decoder = new SkipVersionAddPrimitiveV2Decoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
+
+        assertThat(decoder.a(), equalTo(43));
+        assertThat(decoder.b(), equalTo("abc"));
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void allowsSkippingFutureGroupWhenDecodingFromVersionWithNoChangesInMessage(final boolean decodeGroup)
+    {
+        final MessageHeaderEncoder headerEncoder = new MessageHeaderEncoder();
+        final AddGroupBeforeVarDataV0Encoder encoder = new AddGroupBeforeVarDataV0Encoder()
+            .wrapAndApplyHeader(buffer, OFFSET, headerEncoder);
+
+        headerEncoder
+            .templateId(SkipVersionAddGroupBeforeVarDataV2Decoder.TEMPLATE_ID)
+            .version(1);
+
+        encoder.a(42).b("abc");
+
+        final SkipVersionAddGroupBeforeVarDataV2Decoder decoder = new SkipVersionAddGroupBeforeVarDataV2Decoder()
+            .wrapAndApplyHeader(buffer, OFFSET, messageHeaderDecoder);
+
+        assertThat(decoder.a(), equalTo(42));
+
+        if (decodeGroup)
+        {
+            for (final SkipVersionAddGroupBeforeVarDataV2Decoder.CDecoder group : decoder.c())
+            {
+                group.sbeSkip();
+            }
+        }
+
+        assertThat(decoder.b(), equalTo("abc"));
+    }
+
     private void modifyHeaderToLookLikeVersion0()
     {
         messageHeaderDecoder.wrap(buffer, OFFSET);
@@ -3418,9 +3529,9 @@ public class FieldAccessOrderCheckTest
     private void modifyHeaderToLookLikeVersion1()
     {
         messageHeaderDecoder.wrap(buffer, OFFSET);
-        assert messageHeaderDecoder.version() == 1;
+        assert messageHeaderDecoder.version() >= 1;
         final int v0TemplateId = messageHeaderDecoder.templateId() - 1_000;
         messageHeaderEncoder.wrap(buffer, OFFSET);
-        messageHeaderEncoder.templateId(v0TemplateId);
+        messageHeaderEncoder.templateId(v0TemplateId).version(1);
     }
 }

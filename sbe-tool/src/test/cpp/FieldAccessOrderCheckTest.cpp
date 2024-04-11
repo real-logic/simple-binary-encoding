@@ -51,6 +51,7 @@
 #include "order_check/NoBlock.h"
 #include "order_check/GroupWithNoBlock.h"
 #include "order_check/NestedGroupWithVarLength.h"
+#include "order_check/SkipVersionAddGroupBeforeVarDataV2.h"
 
 using namespace order::check;
 using ::testing::HasSubstr;
@@ -4935,3 +4936,22 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_tuple(2, 2, "V0_B_N_D_N_BLOCK")
     )
 );
+
+TEST_F(FieldAccessOrderCheckTest, allowsSkippingFutureGroupWhenDecodingFromVersionWithNoChangesInMessagePart1)
+{
+    AddGroupBeforeVarDataV0 encoder;
+    encoder.wrapForEncode(m_buffer, OFFSET, BUFFER_LEN);
+    encoder.a(42).putB("abc");
+
+    SkipVersionAddGroupBeforeVarDataV2 decoder;
+    decoder.wrapForDecode(
+        m_buffer,
+        OFFSET,
+        AddGroupBeforeVarDataV0::sbeBlockLength(),
+        1,
+        BUFFER_LEN
+    );
+
+    EXPECT_EQ(decoder.a(), 42);
+    EXPECT_EQ(decoder.getBAsString(), "abc");
+}

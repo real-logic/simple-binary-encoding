@@ -762,21 +762,18 @@ public class JavaGenerator implements CodeGenerator
 
         final StringBuilder sb = new StringBuilder();
         sb.append(indent).append("private void onWrap(final int actingVersion)\n")
-            .append(indent).append("{\n")
-            .append(indent).append("    switch(actingVersion)\n")
-            .append(indent).append("    {\n");
+            .append(indent).append("{\n");
 
-        fieldPrecedenceModel.forEachWrappedStateByVersion((version, state) ->
-            sb.append(indent).append("        case ").append(version).append(":\n")
-            .append(indent).append("            codecState(")
+        fieldPrecedenceModel.forEachWrappedStateByVersionDesc((version, state) ->
+            sb.append(indent).append("    if (actingVersion >= ").append(version).append(")\n")
+            .append(indent).append("    {\n")
+            .append(indent).append("        codecState(")
             .append(qualifiedStateCase(state)).append(");\n")
-            .append(indent).append("            break;\n"));
+            .append(indent).append("        return;\n")
+            .append(indent).append("    }\n\n"));
 
-        sb.append(indent).append("        default:\n")
-            .append(indent).append("            codecState(")
-            .append(qualifiedStateCase(fieldPrecedenceModel.latestVersionWrappedState())).append(");\n")
-            .append(indent).append("            break;\n")
-            .append(indent).append("    }\n")
+        sb.append(indent)
+            .append("    throw new IllegalStateException(\"Unsupported acting version: \" + actingVersion);\n")
             .append(indent).append("}\n\n");
 
         return sb;
