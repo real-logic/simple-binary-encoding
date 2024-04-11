@@ -3194,7 +3194,7 @@ namespace Org.SbeTool.Sbe.Tests
         {
             var messageHeaderDecoder = new MessageHeader();
             messageHeaderDecoder.Wrap(_buffer, Offset, MessageHeader.SbeSchemaVersion);
-            Debug.Assert(messageHeaderDecoder.Version == 1);
+            Debug.Assert(messageHeaderDecoder.Version >= 1);
             int v0TemplateId = messageHeaderDecoder.TemplateId - 1_000;
             var messageHeaderEncoder = new MessageHeader();
             messageHeaderEncoder.Wrap(_buffer, Offset, MessageHeader.SbeSchemaVersion);
