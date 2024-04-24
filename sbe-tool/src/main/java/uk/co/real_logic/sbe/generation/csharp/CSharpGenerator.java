@@ -2367,7 +2367,8 @@ public class CSharpGenerator implements CodeGenerator
 
             append(
                 sb, indent, "builder.Append(\"" + groupName + Separators.KEY_VALUE + Separators.BEGIN_GROUP + "\");");
-            append(sb, indent, "var " + varName + " = this." + groupName + ";");
+            append(sb, indent, "var " + varName + " = new " + groupName + "Group();");
+            append(sb, indent, varName + ".WrapForDecode(_parentMessage, _buffer, _actingVersion);");
             append(sb, indent, "if (" + varName + ".Count > 0)");
             append(sb, indent, "{");
             append(sb, indent, "    var first = true;");
