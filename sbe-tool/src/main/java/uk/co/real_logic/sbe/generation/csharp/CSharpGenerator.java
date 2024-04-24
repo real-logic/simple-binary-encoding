@@ -181,7 +181,7 @@ public class CSharpGenerator implements CodeGenerator
                 out.append(generateVarData(fieldPrecedenceModel, varData, BASE_INDENT + INDENT));
 
                 out.append(generateDisplay(toUpperFirstChar(msgToken.name()),
-                    fields, groups, varData, fieldPrecedenceModel));
+                    className, fields, groups, varData, fieldPrecedenceModel));
 
                 out.append(INDENT + "}\n");
                 out.append("}\n");
@@ -2406,13 +2406,22 @@ public class CSharpGenerator implements CodeGenerator
         return lengthBeforeFieldSeparator;
     }
 
-    private void appendToString(final StringBuilder sb, final String indent)
+    private void appendToString(final StringBuilder sb, final String indent, final String className)
     {
         sb.append('\n');
         append(sb, indent, "public override string ToString()");
         append(sb, indent, "{");
         append(sb, indent, "    var sb = new StringBuilder(100);");
-        append(sb, indent, "    this.BuildString(sb);");
+        if(null != className) 
+        {
+            append(sb, indent, "    var m = new " + className + "();");
+            append(sb, indent, "    m.WrapForDecode(_buffer, _offset, _actingBlockLength, _actingVersion);");
+            append(sb, indent, "    m.BuildString(sb);");
+        } 
+        else 
+        {
+            append(sb, indent, "    this.BuildString(sb);");
+        }
         append(sb, indent, "    return sb.ToString();");
         append(sb, indent, "}");
     }
@@ -2437,6 +2446,7 @@ public class CSharpGenerator implements CodeGenerator
 
     private CharSequence generateDisplay(
         final String name,
+        final String className,
         final List<Token> tokens,
         final List<Token> groups,
         final List<Token> varData,
@@ -2444,7 +2454,7 @@ public class CSharpGenerator implements CodeGenerator
     {
         final StringBuilder sb = new StringBuilder(100);
 
-        appendToString(sb, TWO_INDENT);
+        appendToString(sb, TWO_INDENT, className);
         sb.append('\n');
         append(sb, TWO_INDENT, "internal void BuildString(StringBuilder builder)");
         append(sb, TWO_INDENT, "{");
@@ -2502,7 +2512,7 @@ public class CSharpGenerator implements CodeGenerator
     {
         final StringBuilder sb = new StringBuilder();
 
-        appendToString(sb, TWO_INDENT);
+        appendToString(sb, TWO_INDENT, null);
         sb.append('\n');
         append(sb, TWO_INDENT, "internal void BuildString(StringBuilder builder)");
         append(sb, TWO_INDENT, "{");
