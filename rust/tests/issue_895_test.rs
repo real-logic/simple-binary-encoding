@@ -27,7 +27,7 @@ fn issue_895_both_some() -> SbeResult<()> {
     assert_eq!(SBE_TEMPLATE_ID, header.template_id());
     assert_eq!(SBE_SCHEMA_ID, header.schema_id());
 
-    let decoder = Issue895Decoder::default().header(header);
+    let decoder = Issue895Decoder::default().header(header, 0);
     assert_eq!(Some(2.07), decoder.optional_float());
     assert_eq!(Some(4.12), decoder.optional_double());
 
@@ -46,7 +46,7 @@ fn issue_895_float_none() -> SbeResult<()> {
     let buf = ReadBuf::new(buf.as_slice());
     let header = MessageHeaderDecoder::default().wrap(buf, 0);
 
-    let decoder = Issue895Decoder::default().header(header);
+    let decoder = Issue895Decoder::default().header(header, 0);
     assert_eq!(None, decoder.optional_float());
     assert_eq!(Some(4.12), decoder.optional_double());
 
@@ -65,7 +65,7 @@ fn issue_895_double_none() -> SbeResult<()> {
     let buf = ReadBuf::new(buffer.as_slice());
     let header = MessageHeaderDecoder::default().wrap(buf, 0);
 
-    let decoder = Issue895Decoder::default().header(header);
+    let decoder = Issue895Decoder::default().header(header, 0);
     assert_eq!(Some(2.07), decoder.optional_float());
     assert_eq!(None, decoder.optional_double());
 

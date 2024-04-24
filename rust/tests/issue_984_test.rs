@@ -34,7 +34,7 @@ fn round_trip() -> SbeResult<()> {
     assert_eq!(SBE_TEMPLATE_ID, header.template_id());
     assert_eq!(SBE_SCHEMA_ID, header.schema_id());
 
-    let simple_msg_decoder = SimpleMessageDecoder::default().header(header);
+    let simple_msg_decoder = SimpleMessageDecoder::default().header(header, 0);
     assert_eq!(1985, simple_msg_decoder.id());
     let mut grp_decoder = simple_msg_decoder.my_group_decoder();
     assert_eq!(1, grp_decoder.count());

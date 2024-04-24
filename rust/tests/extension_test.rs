@@ -43,7 +43,7 @@ fn decode_car_and_assert_expected_content(buffer: &[u8]) -> SbeResult<()> {
     let buf = ReadBuf::new(buffer);
     let header = MessageHeaderDecoder::default().wrap(buf, 0);
     assert_eq!(SBE_TEMPLATE_ID, header.template_id());
-    car = car.header(header);
+    car = car.header(header, 0);
 
     // Car...
     assert_eq!(1234, car.serial_number());

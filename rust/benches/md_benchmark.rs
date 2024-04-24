@@ -90,7 +90,7 @@ fn decode_md(state: &State) -> SbeResult<usize> {
 
     let buf = ReadBuf::new(state.buffer.as_slice());
     let header = MessageHeaderDecoder::default().wrap(buf, 0);
-    market_data = market_data.header(header);
+    market_data = market_data.header(header, 0);
 
     market_data.transact_time();
     market_data.event_time_delta();
