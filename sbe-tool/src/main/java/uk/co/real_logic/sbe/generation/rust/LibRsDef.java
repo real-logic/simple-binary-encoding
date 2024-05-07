@@ -61,6 +61,7 @@ class LibRsDef
             indent(libRs, 0, "#![forbid(unsafe_code)]\n");
             indent(libRs, 0, "#![allow(clippy::upper_case_acronyms)]\n");
             indent(libRs, 0, "#![allow(non_camel_case_types)]\n\n");
+            indent(libRs, 0, "#![allow(ambiguous_glob_reexports)]\n\n");
             indent(libRs, 0, "use ::core::{convert::TryInto};\n\n");
 
             final ArrayList<String> modules = new ArrayList<>();
@@ -169,11 +170,6 @@ class LibRsDef
         indent(writer, 1, "#[inline]\n");
         indent(writer, 1, "pub fn new(data: &%s [u8]) -> Self {\n", BUF_LIFETIME);
         indent(writer, 2, "Self { data }\n");
-        indent(writer, 1, "}\n\n");
-
-        indent(writer, 1, "#[inline]\n");
-        indent(writer, 1, "fn get_bytes<const COUNT: usize>(slice: &[u8]) -> [u8; COUNT] {\n");
-        indent(writer, 2, "slice.try_into().expect(\"slice with incorrect length\")\n");
         indent(writer, 1, "}\n\n");
 
         indent(writer, 1, "#[inline]\n");
