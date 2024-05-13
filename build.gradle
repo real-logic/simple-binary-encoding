@@ -280,6 +280,7 @@ project(':sbe-tool') {
 
     compileGeneratedJava {
         dependsOn 'generateTestCodecs'
+        dependsOn 'generateTestDtos'
         classpath += sourceSets.main.runtimeClasspath
     }
 
@@ -342,6 +343,21 @@ project(':sbe-tool') {
         args = ['src/test/resources/json-printer-test-schema.xml',
                 'src/test/resources/composite-elements-schema.xml',
                 'src/test/resources/field-order-check-schema.xml']
+    }
+
+    tasks.register('generateTestDtos', JavaExec) {
+        dependsOn 'compileJava'
+        mainClass.set('uk.co.real_logic.sbe.SbeTool')
+        classpath = sourceSets.main.runtimeClasspath
+        systemProperties(
+                'sbe.output.dir': generatedDir,
+                'sbe.target.language': 'java',
+                'sbe.validation.stop.on.error': 'true',
+                'sbe.validation.xsd': validationXsdPath,
+                'sbe.generate.precedence.checks': 'true',
+                'sbe.java.precedence.checks.property.name': 'sbe.enable.test.precedence.checks',
+                'sbe.java.generate.dtos': 'true')
+        args = ['src/test/resources/example-extension-schema.xml']
     }
 
     jar {

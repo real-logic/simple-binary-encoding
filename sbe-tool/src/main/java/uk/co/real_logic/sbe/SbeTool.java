@@ -195,7 +195,12 @@ public class SbeTool
     /**
      * Should generate C++ DTOs. Defaults to false.
      */
-    public static final String GENERATE_CPP_DTOS = "sbe.cpp.generate.dtos";
+    public static final String CPP_GENERATE_DTOS = "sbe.cpp.generate.dtos";
+
+    /**
+     * Should generate Java DTOs. Defaults to false.
+     */
+    public static final String JAVA_GENERATE_DTOS = "sbe.java.generate.dtos";
 
     /**
      * Configuration option used to manage sinceVersion based transformations. When set, parsed schemas will be

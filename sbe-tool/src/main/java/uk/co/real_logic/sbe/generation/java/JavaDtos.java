@@ -1,6 +1,6 @@
 /*
  * Copyright 2013-2024 Real Logic Limited.
- * Copyright 2017 MarketFactory Inc
+ * Copyright (C) 2017 MarketFactory, Inc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package uk.co.real_logic.sbe.generation.cpp;
+package uk.co.real_logic.sbe.generation.java;
 
 import uk.co.real_logic.sbe.generation.CodeGenerator;
 import uk.co.real_logic.sbe.generation.TargetCodeGenerator;
 import uk.co.real_logic.sbe.ir.Ir;
 
 /**
- * {@link CodeGenerator} factory for C++ DTOs.
+ * {@link CodeGenerator} factory for Java DTOs.
  */
-public class CppDtos implements TargetCodeGenerator
+public class JavaDtos implements TargetCodeGenerator
 {
     /**
      * {@inheritDoc}
      */
     public CodeGenerator newInstance(final Ir ir, final String outputDir)
     {
-        return new CppDtoGenerator(ir, new NamespaceOutputManager(outputDir, ir.applicableNamespace()));
+        return new JavaDtoGenerator(ir, new JavaOutputManager(outputDir, ir.applicableNamespace()));
     }
 }
