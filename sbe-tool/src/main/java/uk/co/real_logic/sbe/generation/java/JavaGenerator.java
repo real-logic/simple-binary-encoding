@@ -303,7 +303,7 @@ public class JavaGenerator implements CodeGenerator
 
             if (shouldGenerateGroupOrderAnnotation)
             {
-                generateAnnotations(BASE_INDENT, className, groups, out, this::encoderName);
+                generateAnnotations(BASE_INDENT, className, groups, out, JavaUtil::encoderName);
             }
             out.append(generateDeclaration(className, implementsString, msgToken));
 
@@ -816,7 +816,7 @@ public class JavaGenerator implements CodeGenerator
 
             if (shouldGenerateGroupOrderAnnotation)
             {
-                generateAnnotations(BASE_INDENT, className, groups, out, this::decoderName);
+                generateAnnotations(BASE_INDENT, className, groups, out, JavaUtil::decoderName);
             }
 
             out.append(generateDeclaration(className, implementsString, msgToken));
@@ -872,7 +872,7 @@ public class JavaGenerator implements CodeGenerator
 
             if (shouldGenerateGroupOrderAnnotation)
             {
-                generateAnnotations(indent + INDENT, groupName, groups, sb, this::decoderName);
+                generateAnnotations(indent + INDENT, groupName, groups, sb, JavaUtil::decoderName);
             }
             generateGroupDecoderClassHeader(sb, groupName, outerClassName, fieldPrecedenceModel, groupToken,
                 tokens, groups, index, indent + INDENT);
@@ -926,7 +926,7 @@ public class JavaGenerator implements CodeGenerator
 
             if (shouldGenerateGroupOrderAnnotation)
             {
-                generateAnnotations(indent + INDENT, groupClassName, groups, sb, this::encoderName);
+                generateAnnotations(indent + INDENT, groupClassName, groups, sb, JavaUtil::encoderName);
             }
             generateGroupEncoderClassHeader(
                 sb, groupName, outerClassName, fieldPrecedenceModel, groupToken,
@@ -4699,16 +4699,6 @@ public class JavaGenerator implements CodeGenerator
         {
             throw new IllegalArgumentException("Unable to find " + fullyQualifiedBufferImplementation, ex);
         }
-    }
-
-    private String encoderName(final String className)
-    {
-        return formatClassName(className) + "Encoder";
-    }
-
-    private String decoderName(final String className)
-    {
-        return formatClassName(className) + "Decoder";
     }
 
     private String implementsInterface(final String interfaceName)
