@@ -13,27 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package uk.co.real_logic.sbe.properties;
 
 import net.jqwik.api.*;
+import uk.co.real_logic.sbe.generation.common.PrecedenceChecks;
 import uk.co.real_logic.sbe.generation.cpp.CppDtoGenerator;
 import uk.co.real_logic.sbe.generation.cpp.CppGenerator;
 import uk.co.real_logic.sbe.generation.cpp.NamespaceOutputManager;
 import uk.co.real_logic.sbe.generation.csharp.CSharpDtoGenerator;
 import uk.co.real_logic.sbe.generation.csharp.CSharpGenerator;
 import uk.co.real_logic.sbe.generation.csharp.CSharpNamespaceOutputManager;
+import uk.co.real_logic.sbe.generation.java.JavaDtoGenerator;
+import uk.co.real_logic.sbe.generation.java.JavaGenerator;
+import uk.co.real_logic.sbe.ir.generated.MessageHeaderDecoder;
 import uk.co.real_logic.sbe.properties.arbitraries.SbeArbitraries;
+import uk.co.real_logic.sbe.properties.utils.InMemoryOutputManager;
+import org.agrona.DirectBuffer;
+import org.agrona.ExpandableArrayBuffer;
 import org.agrona.IoUtil;
+import org.agrona.MutableDirectBuffer;
+import org.agrona.concurrent.UnsafeBuffer;
 import org.agrona.io.DirectBufferInputStream;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+
+import static uk.co.real_logic.sbe.SbeTool.JAVA_DEFAULT_DECODING_BUFFER_TYPE;
+import static uk.co.real_logic.sbe.SbeTool.JAVA_DEFAULT_ENCODING_BUFFER_TYPE;
 
 @SuppressWarnings("ReadWriteStringCanBeUsed")
 public class DtosPropertyTest
@@ -44,6 +58,101 @@ public class DtosPropertyTest
     private static final String CPP_EXECUTABLE = System.getProperty("sbe.tests.cpp.executable", "g++");
     private static final boolean KEEP_DIR_ON_FAILURE = Boolean.parseBoolean(
         System.getProperty("sbe.tests.keep.dir.on.failure", "true"));
+    private final ExpandableArrayBuffer outputBuffer = new ExpandableArrayBuffer();
+
+//    @Test
+//    void oneRun() throws IOException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException,
+//        IllegalAccessException
+//    {
+//        javaDtoEncodeShouldBeTheInverseOfDtoDecode(encodedMessage().sample());
+//    }
+
+    @Property
+    @Disabled
+    void javaDtoEncodeShouldBeTheInverseOfDtoDecode(
+        @ForAll("encodedMessage") final SbeArbitraries.EncodedMessage encodedMessage
+    ) throws IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException,
+        IllegalAccessException
+    {
+        final String packageName = encodedMessage.ir().applicableNamespace();
+        final InMemoryOutputManager outputManager = new InMemoryOutputManager(packageName);
+
+        boolean success = false;
+
+        try
+        {
+            try
+            {
+                new JavaGenerator(
+                    encodedMessage.ir(),
+                    JAVA_DEFAULT_ENCODING_BUFFER_TYPE,
+                    JAVA_DEFAULT_DECODING_BUFFER_TYPE,
+                    false,
+                    false,
+                    false,
+                    false,
+                    PrecedenceChecks.newInstance(new PrecedenceChecks.Context()),
+                    outputManager)
+                    .generate();
+
+                new JavaDtoGenerator(encodedMessage.ir(), outputManager)
+                    .generate();
+            }
+            catch (final Exception generationException)
+            {
+                throw new AssertionError(
+                    "Code generation failed.\n\n" +
+                        "SCHEMA:\n" + encodedMessage.schema(),
+                    generationException);
+            }
+
+            try (URLClassLoader generatedClassLoader = outputManager.compileGeneratedSources())
+            {
+                final Class<?> dtoClass =
+                    generatedClassLoader.loadClass(packageName + ".TestMessageDto");
+
+                final Method decodeFrom =
+                    dtoClass.getMethod("decodeFrom", DirectBuffer.class, int.class, short.class, short.class);
+
+                final Method encodeWith =
+                    dtoClass.getMethod("encodeWithHeaderWith", dtoClass, MutableDirectBuffer.class, int.class);
+
+                final int inputLength = encodedMessage.length();
+                final ExpandableArrayBuffer inputBuffer = encodedMessage.buffer();
+                final MessageHeaderDecoder header = new MessageHeaderDecoder().wrap(inputBuffer, 0);
+                final short blockLength = (short)header.blockLength();
+                final short actingVersion = (short)header.version();
+                final Object dto = decodeFrom.invoke(null,
+                    encodedMessage.buffer(), MessageHeaderDecoder.ENCODED_LENGTH, blockLength, actingVersion);
+                outputBuffer.setMemory(0, outputBuffer.capacity(), (byte)0);
+                final int outputLength = (int)encodeWith.invoke(null, dto, outputBuffer, 0);
+                if (!areEqual(inputBuffer, inputLength, outputBuffer, outputLength))
+                {
+                    throw new AssertionError(
+                        "Input and output differ\n\n" +
+                            "SCHEMA:\n" + encodedMessage.schema());
+                }
+
+                success = true;
+            }
+        }
+        finally
+        {
+            if (!success)
+            {
+                outputManager.dumpSources();
+            }
+        }
+    }
+
+    private boolean areEqual(
+        final ExpandableArrayBuffer inputBuffer,
+        final int inputLength,
+        final ExpandableArrayBuffer outputBuffer,
+        final int outputLength)
+    {
+        return new UnsafeBuffer(inputBuffer, 0, inputLength).equals(new UnsafeBuffer(outputBuffer, 0, outputLength));
+    }
 
     @Property
     void csharpDtoEncodeShouldBeTheInverseOfDtoDecode(
@@ -274,4 +383,5 @@ public class DtosPropertyTest
             throw new RuntimeException(e);
         }
     }
+
 }

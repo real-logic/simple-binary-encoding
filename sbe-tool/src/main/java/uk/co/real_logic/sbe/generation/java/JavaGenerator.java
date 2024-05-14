@@ -160,6 +160,7 @@ public class JavaGenerator implements CodeGenerator
     {
         Verify.notNull(ir, "ir");
         Verify.notNull(outputManager, "outputManager");
+        Verify.notNull(precedenceChecks, "precedenceChecks");
 
         this.ir = ir;
         this.shouldSupportTypesPackageNames = shouldSupportTypesPackageNames;
