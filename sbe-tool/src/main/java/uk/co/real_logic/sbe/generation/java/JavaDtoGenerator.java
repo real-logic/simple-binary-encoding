@@ -165,11 +165,8 @@ public class JavaDtoGenerator implements CodeGenerator
                 out.append(indent).append(modifiers).append("class ").append(className).append("\n")
                     .append(indent).append("{\n")
                     .append(fieldSb)
-                    .append("\n")
                     .append(privateSb)
-                    .append("\n")
                     .append(publicSb)
-                    .append("\n")
                     .append(indent).append("}\n");
             }
             catch (final IOException exception)
@@ -420,7 +417,7 @@ public class JavaDtoGenerator implements CodeGenerator
         final String indent)
     {
         classBuilder.appendPublic().append("\n")
-            .append(indent).append("static List<").append(dtoClassName).append("> decodeManyWith(")
+            .append(indent).append("public static List<").append(dtoClassName).append("> decodeManyWith(")
             .append(decoderClassName).append(" decoder)\n")
             .append(indent).append("{\n")
             .append(indent).append(INDENT).append("List<").append(dtoClassName)
