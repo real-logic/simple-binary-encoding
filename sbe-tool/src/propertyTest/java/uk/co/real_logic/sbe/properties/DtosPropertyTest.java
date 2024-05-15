@@ -16,6 +16,8 @@
 package uk.co.real_logic.sbe.properties;
 
 import net.jqwik.api.*;
+import net.jqwik.api.footnotes.EnableFootnotes;
+import net.jqwik.api.footnotes.Footnotes;
 import uk.co.real_logic.sbe.generation.common.PrecedenceChecks;
 import uk.co.real_logic.sbe.generation.cpp.CppDtoGenerator;
 import uk.co.real_logic.sbe.generation.cpp.CppGenerator;
@@ -28,10 +30,7 @@ import uk.co.real_logic.sbe.generation.java.JavaGenerator;
 import uk.co.real_logic.sbe.ir.generated.MessageHeaderDecoder;
 import uk.co.real_logic.sbe.properties.arbitraries.SbeArbitraries;
 import uk.co.real_logic.sbe.properties.utils.InMemoryOutputManager;
-import org.agrona.DirectBuffer;
-import org.agrona.ExpandableArrayBuffer;
-import org.agrona.IoUtil;
-import org.agrona.MutableDirectBuffer;
+import org.agrona.*;
 import org.agrona.concurrent.UnsafeBuffer;
 import org.agrona.io.DirectBufferInputStream;
 
@@ -45,39 +44,32 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Base64;
+import java.util.stream.Stream;
 
+import static org.junit.jupiter.api.Assertions.fail;
 import static uk.co.real_logic.sbe.SbeTool.JAVA_DEFAULT_DECODING_BUFFER_TYPE;
 import static uk.co.real_logic.sbe.SbeTool.JAVA_DEFAULT_ENCODING_BUFFER_TYPE;
 
 @SuppressWarnings("ReadWriteStringCanBeUsed")
+@EnableFootnotes
 public class DtosPropertyTest
 {
     private static final String DOTNET_EXECUTABLE = System.getProperty("sbe.tests.dotnet.executable", "dotnet");
     private static final String SBE_DLL =
         System.getProperty("sbe.dll", "csharp/sbe-dll/bin/Release/netstandard2.0/SBE.dll");
     private static final String CPP_EXECUTABLE = System.getProperty("sbe.tests.cpp.executable", "g++");
-    private static final boolean KEEP_DIR_ON_FAILURE = Boolean.parseBoolean(
-        System.getProperty("sbe.tests.keep.dir.on.failure", "true"));
     private final ExpandableArrayBuffer outputBuffer = new ExpandableArrayBuffer();
 
-//    @Test
-//    void oneRun() throws IOException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException,
-//        IllegalAccessException
-//    {
-//        javaDtoEncodeShouldBeTheInverseOfDtoDecode(encodedMessage().sample());
-//    }
-
     @Property
-    @Disabled
     void javaDtoEncodeShouldBeTheInverseOfDtoDecode(
-        @ForAll("encodedMessage") final SbeArbitraries.EncodedMessage encodedMessage
+        @ForAll("encodedMessage") final SbeArbitraries.EncodedMessage encodedMessage,
+        final Footnotes footnotes
     ) throws IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException,
         IllegalAccessException
     {
         final String packageName = encodedMessage.ir().applicableNamespace();
         final InMemoryOutputManager outputManager = new InMemoryOutputManager(packageName);
-
-        boolean success = false;
 
         try
         {
@@ -100,10 +92,7 @@ public class DtosPropertyTest
             }
             catch (final Exception generationException)
             {
-                throw new AssertionError(
-                    "Code generation failed.\n\n" +
-                        "SCHEMA:\n" + encodedMessage.schema(),
-                    generationException);
+                fail("Code generation failed.", generationException);
             }
 
             try (URLClassLoader generatedClassLoader = outputManager.compileGeneratedSources())
@@ -128,39 +117,29 @@ public class DtosPropertyTest
                 final int outputLength = (int)encodeWith.invoke(null, dto, outputBuffer, 0);
                 if (!areEqual(inputBuffer, inputLength, outputBuffer, outputLength))
                 {
-                    throw new AssertionError(
-                        "Input and output differ\n\n" +
-                            "SCHEMA:\n" + encodedMessage.schema());
+                    fail("Input and output differ");
                 }
-
-                success = true;
             }
         }
-        finally
+        catch (final Throwable throwable)
         {
-            if (!success)
-            {
-                outputManager.dumpSources();
-            }
-        }
-    }
+            addInputFootnotes(footnotes, encodedMessage);
 
-    private boolean areEqual(
-        final ExpandableArrayBuffer inputBuffer,
-        final int inputLength,
-        final ExpandableArrayBuffer outputBuffer,
-        final int outputLength)
-    {
-        return new UnsafeBuffer(inputBuffer, 0, inputLength).equals(new UnsafeBuffer(outputBuffer, 0, outputLength));
+            final StringBuilder generatedSources = new StringBuilder();
+            outputManager.dumpSources(generatedSources);
+            footnotes.addFootnote(generatedSources.toString());
+
+            throw throwable;
+        }
     }
 
     @Property
     void csharpDtoEncodeShouldBeTheInverseOfDtoDecode(
-        @ForAll("encodedMessage") final SbeArbitraries.EncodedMessage encodedMessage
+        @ForAll("encodedMessage") final SbeArbitraries.EncodedMessage encodedMessage,
+        final Footnotes footnotes
     ) throws IOException, InterruptedException
     {
         final Path tempDir = Files.createTempDirectory("sbe-csharp-dto-test");
-        boolean success = false;
 
         try
         {
@@ -205,34 +184,27 @@ public class DtosPropertyTest
                         "DIR:" + tempDir + "\n\n" +
                         "SCHEMA:\n" + encodedMessage.schema());
             }
-            success = true;
+        }
+        catch (final Throwable throwable)
+        {
+            addInputFootnotes(footnotes, encodedMessage);
+            addGeneratedSourcesFootnotes(footnotes, tempDir, ".cs");
+
+            throw throwable;
         }
         finally
         {
-            if (!KEEP_DIR_ON_FAILURE || success)
-            {
-                IoUtil.delete(tempDir.toFile(), true);
-            }
-            else
-            {
-                Files.write(
-                    tempDir.resolve("schema.xml"),
-                    encodedMessage.schema().getBytes(StandardCharsets.UTF_8));
-
-                Files.write(
-                    tempDir.resolve("encoding.log"),
-                    encodedMessage.encodingLog().getBytes(StandardCharsets.UTF_8));
-            }
+            IoUtil.delete(tempDir.toFile(), true);
         }
     }
 
     @Property(shrinking = ShrinkingMode.OFF)
     void cppDtoEncodeShouldBeTheInverseOfDtoDecode(
-        @ForAll("encodedMessage") final SbeArbitraries.EncodedMessage encodedMessage
+        @ForAll("encodedMessage") final SbeArbitraries.EncodedMessage encodedMessage,
+        final Footnotes footnotes
     ) throws IOException, InterruptedException
     {
         final Path tempDir = Files.createTempDirectory("sbe-cpp-dto-test");
-        boolean success = false;
 
         try
         {
@@ -274,24 +246,17 @@ public class DtosPropertyTest
                     "Input and output files differ\n\n" +
                         "SCHEMA:\n" + encodedMessage.schema());
             }
-            success = true;
+        }
+        catch (final Throwable throwable)
+        {
+            addInputFootnotes(footnotes, encodedMessage);
+            addGeneratedSourcesFootnotes(footnotes, tempDir, ".cpp");
+
+            throw throwable;
         }
         finally
         {
-            if (!KEEP_DIR_ON_FAILURE || success)
-            {
-                IoUtil.delete(tempDir.toFile(), true);
-            }
-            else
-            {
-                Files.write(
-                    tempDir.resolve("schema.xml"),
-                    encodedMessage.schema().getBytes(StandardCharsets.UTF_8));
-
-                Files.write(
-                    tempDir.resolve("encoding.log"),
-                    encodedMessage.encodingLog().getBytes(StandardCharsets.UTF_8));
-            }
+            IoUtil.delete(tempDir.toFile(), true);
         }
     }
 
@@ -384,4 +349,52 @@ public class DtosPropertyTest
         }
     }
 
+    private boolean areEqual(
+        final ExpandableArrayBuffer inputBuffer,
+        final int inputLength,
+        final ExpandableArrayBuffer outputBuffer,
+        final int outputLength)
+    {
+        return new UnsafeBuffer(inputBuffer, 0, inputLength).equals(new UnsafeBuffer(outputBuffer, 0, outputLength));
+    }
+
+    private void addGeneratedSourcesFootnotes(
+        final Footnotes footnotes,
+        final Path directory,
+        final String suffix)
+    {
+        try (Stream<Path> contents = Files.walk(directory))
+        {
+            contents
+                .filter(path -> path.toString().endsWith(suffix))
+                .forEach(path ->
+                {
+                    try
+                    {
+                        footnotes.addFootnote(System.lineSeparator() + "File: " + path +
+                            System.lineSeparator() +
+                            new String(Files.readAllBytes(path), StandardCharsets.UTF_8));
+                    }
+                    catch (final IOException exn)
+                    {
+                        LangUtil.rethrowUnchecked(exn);
+                    }
+                });
+        }
+        catch (final IOException exn)
+        {
+            LangUtil.rethrowUnchecked(exn);
+        }
+    }
+
+    public void addInputFootnotes(final Footnotes footnotes, final SbeArbitraries.EncodedMessage encodedMessage)
+    {
+        final byte[] messageBytes = new byte[encodedMessage.length()];
+        encodedMessage.buffer().getBytes(0, messageBytes);
+        final byte[] base64EncodedMessageBytes = Base64.getEncoder().encode(messageBytes);
+
+        footnotes.addFootnote("Schema:" + System.lineSeparator() + encodedMessage.schema());
+        footnotes.addFootnote("Input Message:" + System.lineSeparator() +
+            new String(base64EncodedMessageBytes, StandardCharsets.UTF_8));
+    }
 }

@@ -84,14 +84,16 @@ public class InMemoryOutputManager implements DynamicPackageOutputManager
         return classLoader;
     }
 
-    public void dumpSources()
+    public void dumpSources(final StringBuilder builder)
     {
+        builder.append(System.lineSeparator()).append("Generated sources file count: ").append(sourceFiles.size())
+            .append(System.lineSeparator());
+
         sourceFiles.forEach((qualifiedName, file) ->
         {
-            System.out.println(
-                System.lineSeparator() + "Source file: " + qualifiedName +
-                System.lineSeparator() + file.sourceCode +
-                System.lineSeparator());
+            builder.append(System.lineSeparator()).append("Source file: ").append(qualifiedName)
+                .append(System.lineSeparator()).append(file.sourceCode)
+                .append(System.lineSeparator());
         });
     }
 
@@ -200,7 +202,7 @@ public class InMemoryOutputManager implements DynamicPackageOutputManager
             fileManager.outputFiles().forEach(file ->
             {
                 final byte[] classBytes = file.getClassBytes();
-                super.defineClass(file.getName(), classBytes, 0, classBytes.length);
+                super.defineClass(null, classBytes, 0, classBytes.length);
             });
         }
     }

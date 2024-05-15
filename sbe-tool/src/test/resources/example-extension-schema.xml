@@ -2,7 +2,7 @@
 <sbe:messageSchema xmlns:sbe="http://fixprotocol.io/2016/sbe"
                    package="extension"
                    id="1"
-                   version="1"
+                   version="2"
                    semanticVersion="5.2"
                    description="Example schema which extends baseline schema."
                    byteOrder="littleEndian">
@@ -86,7 +86,7 @@
         <field name="cupHolderCount" id="101" type="cupHolderCount_t" sinceVersion="1"/>
         <group name="fuelFigures" id="10" dimensionType="groupSizeEncoding">
             <field name="speed" id="11" type="uint16"/>
-            <field name="mpg" id="12" type="float"/>
+            <field name="mpg" id="12" type="float" sinceVersion="2"/>
             <data name="usageDescription" id="200" type="varAsciiEncoding"/>
         </group>
         <group name="performanceFigures" id="13" dimensionType="groupSizeEncoding">

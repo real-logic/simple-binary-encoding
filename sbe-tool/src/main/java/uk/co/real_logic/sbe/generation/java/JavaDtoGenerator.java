@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 import static uk.co.real_logic.sbe.generation.Generators.toLowerFirstChar;
 import static uk.co.real_logic.sbe.generation.Generators.toUpperFirstChar;
@@ -43,6 +44,7 @@ import static uk.co.real_logic.sbe.ir.GenerationUtil.collectVarData;
  */
 public class JavaDtoGenerator implements CodeGenerator
 {
+    private static final Predicate<Token> ALWAYS_FALSE_PREDICATE = ignored -> false;
     private static final String INDENT = "    ";
     private static final String BASE_INDENT = "";
 
@@ -97,7 +99,7 @@ public class JavaDtoGenerator implements CodeGenerator
             generateVarData(classBuilder, varData, BASE_INDENT + INDENT);
 
             generateDecodeWith(classBuilder, dtoClassName, decoderClassName, fields,
-                groups, varData, BASE_INDENT + INDENT);
+                groups, varData, BASE_INDENT + INDENT, fieldToken -> fieldToken.version() > msgToken.version());
             generateDecodeFrom(classBuilder, dtoClassName, decoderClassName, BASE_INDENT + INDENT);
             generateEncodeWith(classBuilder, dtoClassName, encoderClassName, fields, groups, varData,
                 BASE_INDENT + INDENT);
@@ -196,6 +198,13 @@ public class JavaDtoGenerator implements CodeGenerator
             final String groupClassName = formatDtoClassName(groupName);
             final String qualifiedDtoClassName = qualifiedParentDtoClassName + "." + groupClassName;
 
+            final Token dimToken = tokens.get(i + 1);
+            if (dimToken.signal() != Signal.BEGIN_COMPOSITE)
+            {
+                throw new IllegalStateException("groups must start with BEGIN_COMPOSITE: token=" + dimToken);
+            }
+            final int sinceVersion = dimToken.version();
+
             final String fieldName = formatFieldName(groupName);
             final String formattedPropertyName = formatPropertyName(groupName);
 
@@ -226,10 +235,22 @@ public class JavaDtoGenerator implements CodeGenerator
             i = collectVarData(tokens, i, varData);
             generateVarData(groupClassBuilder, varData, indent + INDENT);
 
+            final Predicate<Token> wasAddedAfterGroup = token ->
+            {
+                final boolean addedAfterParent = token.version() > sinceVersion;
+
+                if (addedAfterParent && token.signal() == Signal.BEGIN_VAR_DATA)
+                {
+                    throw new IllegalStateException("Cannot extend var data inside a group.");
+                }
+
+                return addedAfterParent;
+            };
+
             generateDecodeListWith(
                 groupClassBuilder, groupClassName, qualifiedDecoderClassName, indent + INDENT);
             generateDecodeWith(groupClassBuilder, groupClassName, qualifiedDecoderClassName,
-                fields, groups, varData, indent + INDENT);
+                fields, groups, varData, indent + INDENT, wasAddedAfterGroup);
             generateEncodeWith(
                 groupClassBuilder, groupClassName, qualifiedEncoderClassName, fields, groups, varData, indent + INDENT);
             generateComputeEncodedLength(groupClassBuilder, qualifiedDecoderClassName,
@@ -324,8 +345,10 @@ public class JavaDtoGenerator implements CodeGenerator
                     .append(qualifiedDecoderClassName).append(".")
                     .append(formatPropertyName(propertyName)).append("HeaderLength();\n");
 
+                final String characterEncoding = varDataToken.encoding().characterEncoding();
+                final String lengthAccessor = characterEncoding == null ? ".length" : ".length()";
                 lengthBuilder.append(indent).append(INDENT).append("encodedLength += ")
-                    .append(fieldName).append(".length()");
+                    .append(fieldName).append(lengthAccessor);
 
                 final int elementByteLength = varDataToken.encoding().primitiveType().size();
                 if (elementByteLength != 1)
@@ -358,7 +381,7 @@ public class JavaDtoGenerator implements CodeGenerator
             final Token token = tokens.get(i);
 
             generateFieldDecodeWith(
-                decodeBuilder, token, token, decoderClassName, indent + INDENT);
+                decodeBuilder, token, token, decoderClassName, indent + INDENT, ALWAYS_FALSE_PREDICATE);
 
             i += tokens.get(i).componentTokenCount();
         }
@@ -426,16 +449,17 @@ public class JavaDtoGenerator implements CodeGenerator
         final List<Token> fields,
         final List<Token> groups,
         final List<Token> varData,
-        final String indent)
+        final String indent,
+        final Predicate<Token> wasAddedAfterParent)
     {
         final StringBuilder decodeBuilder = classBuilder.appendPublic().append("\n")
             .append(indent).append("public static void decodeWith(").append(decoderClassName).append(" decoder, ")
             .append(dtoClassName).append(" dto)\n")
             .append(indent).append("{\n");
 
-        generateMessageFieldsDecodeWith(decodeBuilder, fields, decoderClassName, indent + INDENT);
+        generateMessageFieldsDecodeWith(decodeBuilder, fields, decoderClassName, indent + INDENT, wasAddedAfterParent);
         generateGroupsDecodeWith(decodeBuilder, groups, indent + INDENT);
-        generateVarDataDecodeWith(decodeBuilder, varData, indent + INDENT);
+        generateVarDataDecodeWith(decodeBuilder, decoderClassName, varData, indent + INDENT, wasAddedAfterParent);
         decodeBuilder.append(indent).append("}\n");
     }
 
@@ -466,7 +490,8 @@ public class JavaDtoGenerator implements CodeGenerator
         final StringBuilder sb,
         final List<Token> tokens,
         final String decoderClassName,
-        final String indent)
+        final String indent,
+        final Predicate<Token> wasAddedAfterParent)
     {
         for (int i = 0, size = tokens.size(); i < size; i++)
         {
@@ -475,7 +500,7 @@ public class JavaDtoGenerator implements CodeGenerator
             {
                 final Token encodingToken = tokens.get(i + 1);
 
-                generateFieldDecodeWith(sb, signalToken, encodingToken, decoderClassName, indent);
+                generateFieldDecodeWith(sb, signalToken, encodingToken, decoderClassName, indent, wasAddedAfterParent);
             }
         }
     }
@@ -485,17 +510,18 @@ public class JavaDtoGenerator implements CodeGenerator
         final Token fieldToken,
         final Token typeToken,
         final String decoderClassName,
-        final String indent)
+        final String indent,
+        final Predicate<Token> wasAddedAfterParent)
     {
         switch (typeToken.signal())
         {
             case ENCODING:
-                generatePrimitiveDecodeWith(sb, fieldToken, typeToken, decoderClassName, indent);
+                generatePrimitiveDecodeWith(sb, fieldToken, typeToken, decoderClassName, indent, wasAddedAfterParent);
                 break;
 
             case BEGIN_SET:
                 final String bitSetName = formatDtoClassName(typeToken.applicableTypeName());
-                generateBitSetDecodeWith(sb, fieldToken, bitSetName, indent);
+                generateBitSetDecodeWith(sb, decoderClassName, fieldToken, bitSetName, indent, wasAddedAfterParent);
                 break;
 
             case BEGIN_ENUM:
@@ -516,7 +542,8 @@ public class JavaDtoGenerator implements CodeGenerator
         final Token fieldToken,
         final Token typeToken,
         final String decoderClassName,
-        final String indent)
+        final String indent,
+        final Predicate<Token> wasAddedAfterParent)
     {
         if (typeToken.isConstantEncoding())
         {
@@ -543,12 +570,13 @@ public class JavaDtoGenerator implements CodeGenerator
                 indent,
                 "decoder.actingVersion() >= " + decoderClassName + "." + formattedPropertyName + "SinceVersion()",
                 "decoder." + formattedPropertyName + "()",
-                decoderNullValue
+                decoderNullValue,
+                wasAddedAfterParent
             );
         }
         else if (arrayLength > 1)
         {
-            generateArrayDecodeWith(sb, decoderClassName, fieldToken, typeToken, indent);
+            generateArrayDecodeWith(sb, decoderClassName, fieldToken, typeToken, indent, wasAddedAfterParent);
         }
     }
 
@@ -557,7 +585,8 @@ public class JavaDtoGenerator implements CodeGenerator
         final String decoderClassName,
         final Token fieldToken,
         final Token typeToken,
-        final String indent)
+        final String indent,
+        final Predicate<Token> wasAddedAfterParent)
     {
         if (fieldToken.isConstantEncoding())
         {
@@ -566,8 +595,9 @@ public class JavaDtoGenerator implements CodeGenerator
 
         final String propertyName = fieldToken.name();
         final String formattedPropertyName = formatPropertyName(propertyName);
+        final PrimitiveType primitiveType = typeToken.encoding().primitiveType();
 
-        if (typeToken.encoding().primitiveType() == PrimitiveType.CHAR)
+        if (primitiveType == PrimitiveType.CHAR)
         {
             generateRecordPropertyAssignment(
                 sb,
@@ -575,13 +605,14 @@ public class JavaDtoGenerator implements CodeGenerator
                 indent,
                 "decoder.actingVersion() >= " + decoderClassName + "." + formattedPropertyName + "SinceVersion()",
                 "decoder." + formattedPropertyName + "()",
-                "\"\""
+                "\"\"",
+                wasAddedAfterParent
             );
         }
         else
         {
             final StringBuilder initializerList = new StringBuilder();
-            final String elementType = javaTypeName(typeToken.encoding().primitiveType());
+            final String elementType = javaTypeName(primitiveType);
             initializerList.append("new ").append(elementType).append("[] { ");
             final int arrayLength = typeToken.arrayLength();
             for (int i = 0; i < arrayLength; i++)
@@ -598,16 +629,19 @@ public class JavaDtoGenerator implements CodeGenerator
                 indent,
                 "decoder.actingVersion() >= " + decoderClassName + "." + formattedPropertyName + "SinceVersion()",
                 initializerList,
-                null
+                "new " + elementType + "[0]",
+                wasAddedAfterParent
             );
         }
     }
 
     private void generateBitSetDecodeWith(
         final StringBuilder sb,
+        final String decoderClassName,
         final Token fieldToken,
         final String dtoTypeName,
-        final String indent)
+        final String indent,
+        final Predicate<Token> wasAddedAfterParent)
     {
         if (fieldToken.isConstantEncoding())
         {
@@ -617,11 +651,11 @@ public class JavaDtoGenerator implements CodeGenerator
         final String propertyName = fieldToken.name();
         final String formattedPropertyName = formatPropertyName(propertyName);
 
-        if (fieldToken.isOptionalEncoding())
+        if (wasAddedAfterParent.test(fieldToken))
         {
-            sb.append(indent).append("if (decoder.").append(formattedPropertyName).append("InActingVersion()");
-
-            sb.append(")\n")
+            sb.append(indent).append("if (decoder.actingVersion() >= ")
+                .append(decoderClassName).append(".")
+                .append(formattedPropertyName).append("SinceVersion())\n")
                 .append(indent).append("{\n");
 
             sb.append(indent).append(INDENT).append(dtoTypeName).append(".decodeWith(decoder.")
@@ -710,8 +744,10 @@ public class JavaDtoGenerator implements CodeGenerator
 
     private void generateVarDataDecodeWith(
         final StringBuilder sb,
+        final String decoderClassName,
         final List<Token> tokens,
-        final String indent)
+        final String indent,
+        final Predicate<Token> wasAddedAfterParent)
     {
         for (int i = 0; i < tokens.size(); i++)
         {
@@ -723,7 +759,7 @@ public class JavaDtoGenerator implements CodeGenerator
                 final Token varDataToken = Generators.findFirst("varData", tokens, i);
                 final String characterEncoding = varDataToken.encoding().characterEncoding();
 
-                final boolean isOptional = token.version() > 0;
+                final boolean isOptional = wasAddedAfterParent.test(token);
                 final String blockIndent = isOptional ? indent + INDENT : indent;
 
                 final String dataVar = toLowerFirstChar(propertyName) + "Data";
@@ -734,7 +770,7 @@ public class JavaDtoGenerator implements CodeGenerator
                 {
                     decoderValueExtraction.append(blockIndent).append("byte[] ").append(dataVar)
                         .append(" = new byte[decoder.").append(formattedPropertyName).append("Length()];\n")
-                        .append(blockIndent).append("decoder.get").append(formattedPropertyName)
+                        .append(blockIndent).append("decoder.get").append(toUpperFirstChar(formattedPropertyName))
                         .append("(").append(dataVar).append(", 0, decoder.").append(formattedPropertyName)
                         .append("Length());\n");
                 }
@@ -746,9 +782,9 @@ public class JavaDtoGenerator implements CodeGenerator
 
                 if (isOptional)
                 {
-                    sb.append(indent).append("if (decoder.").append(formattedPropertyName).append("InActingVersion()");
-
-                    sb.append(")\n")
+                    sb.append(indent).append("if (decoder.actingVersion() >= ")
+                        .append(decoderClassName).append(".")
+                        .append(formattedPropertyName).append("SinceVersion())\n")
                         .append(indent).append("{\n");
 
                     sb.append(decoderValueExtraction);
@@ -756,7 +792,7 @@ public class JavaDtoGenerator implements CodeGenerator
                     sb.append(indent).append(INDENT).append("dto.").append(formattedPropertyName).append("(")
                         .append(dataVar).append(");\n");
 
-                    final String nullDtoValue = "\"\"";
+                    final String nullDtoValue = characterEncoding == null ? "new byte[0]" : "\"\"";
 
                     sb.append(indent).append("}\n")
                         .append(indent).append("else\n")
@@ -782,27 +818,25 @@ public class JavaDtoGenerator implements CodeGenerator
         final String indent,
         final String presenceExpression,
         final CharSequence getExpression,
-        final String nullDecoderValueOrNull)
+        final String nullDecoderValue,
+        final Predicate<Token> wasAddedAfterParent)
     {
         final String propertyName = token.name();
         final String formattedPropertyName = formatPropertyName(propertyName);
 
-        if (token.isOptionalEncoding())
+        if (wasAddedAfterParent.test(token))
         {
-
             sb.append(indent).append("if (").append(presenceExpression).append(")\n")
                 .append(indent).append("{\n");
 
             sb.append(indent).append(INDENT).append("dto.").append(formattedPropertyName).append("(")
                 .append(getExpression).append(");\n");
 
-            final String nullValue = nullDecoderValueOrNull == null ? "null" : nullDecoderValueOrNull;
-
             sb.append(indent).append("}\n")
                 .append(indent).append("else\n")
                 .append(indent).append("{\n")
                 .append(indent).append(INDENT).append("dto.").append(formattedPropertyName).append("(")
-                .append(nullValue).append(");\n")
+                .append(nullDecoderValue).append(");\n")
                 .append(indent).append("}\n");
         }
         else
@@ -966,19 +1000,16 @@ public class JavaDtoGenerator implements CodeGenerator
         final String propertyName = fieldToken.name();
         final String formattedPropertyName = formatPropertyName(propertyName);
 
-        if (typeToken.encoding().primitiveType() == PrimitiveType.CHAR)
+        final PrimitiveType primitiveType = typeToken.encoding().primitiveType();
+
+        if (primitiveType == PrimitiveType.CHAR)
         {
             sb.append(indent).append("encoder.").append(toLowerFirstChar(propertyName)).append("(")
                 .append("dto.").append(formattedPropertyName).append("());\n");
         }
-        else if (typeToken.encoding().primitiveType() == PrimitiveType.UINT8)
-        {
-            sb.append(indent).append("encoder.put").append(toUpperFirstChar(propertyName)).append("(")
-                .append("dto.").append(formattedPropertyName).append("());\n");
-        }
         else
         {
-            final String javaTypeName = javaTypeName(typeToken.encoding().primitiveType());
+            final String javaTypeName = javaTypeName(primitiveType);
             sb.append(indent).append(javaTypeName).append("[] ").append(formattedPropertyName).append(" = ")
                 .append("dto.").append(formattedPropertyName).append("();\n")
                 .append(indent).append("for (int i = 0; i < ").append(formattedPropertyName).append(".length; i++)\n")
@@ -1103,7 +1134,9 @@ public class JavaDtoGenerator implements CodeGenerator
                 if (characterEncoding == null)
                 {
                     sb.append(indent).append("encoder.put").append(toUpperFirstChar(propertyName)).append("(")
-                        .append("dto.").append(formattedPropertyName).append("());\n");
+                        .append("dto.").append(formattedPropertyName).append("(),")
+                        .append("0,")
+                        .append("dto.").append(formattedPropertyName).append("().length);\n");
                 }
                 else
                 {
@@ -1310,7 +1343,9 @@ public class JavaDtoGenerator implements CodeGenerator
         final String fieldName = formatFieldName(propertyName);
         final String validateMethod = "validate" + toUpperFirstChar(propertyName);
 
-        if (typeToken.encoding().primitiveType() == PrimitiveType.CHAR)
+        final PrimitiveType primitiveType = typeToken.encoding().primitiveType();
+
+        if (primitiveType == PrimitiveType.CHAR)
         {
             final CharSequence typeName = "String";
 
@@ -1345,7 +1380,7 @@ public class JavaDtoGenerator implements CodeGenerator
         }
         else
         {
-            final String elementTypeName = javaTypeName(typeToken.encoding().primitiveType());
+            final String elementTypeName = javaTypeName(primitiveType);
             final String typeName = elementTypeName + "[]";
 
             classBuilder.appendField()
