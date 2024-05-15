@@ -1665,7 +1665,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "    }\n",
             propertyName,
             readOnlyBuffer,
-            generateWrapFieldNotPresentCondition(token.version(), indent),
+            generateWrapFieldNotPresentCondition(false, token.version(), indent),
             accessOrderListenerCall,
             sizeOfLengthField,
             PrimitiveType.UINT32 == lengthType ? "(int)" : "",
@@ -2671,9 +2671,12 @@ public class JavaGenerator implements CodeGenerator
             generatePut(encoding.primitiveType(), "offset + " + offset, "value", byteOrderStr));
     }
 
-    private CharSequence generateWrapFieldNotPresentCondition(final int sinceVersion, final String indent)
+    private CharSequence generateWrapFieldNotPresentCondition(
+        final boolean inComposite,
+        final int sinceVersion,
+        final String indent)
     {
-        if (0 == sinceVersion)
+        if (inComposite || 0 == sinceVersion)
         {
             return "";
         }
@@ -2925,7 +2928,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "    }\n",
                 Generators.toUpperFirstChar(propertyName),
                 readOnlyBuffer,
-                generateWrapFieldNotPresentCondition(propertyToken.version(), indent),
+                generateWrapFieldNotPresentCondition(inComposite, propertyToken.version(), indent),
                 accessOrderListenerCall,
                 offset,
                 fieldLength);
