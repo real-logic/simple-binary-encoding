@@ -48,6 +48,7 @@ import static uk.co.real_logic.sbe.ir.Signal.BEGIN_SET;
  */
 public class RustGenerator implements CodeGenerator
 {
+    private static final String CRATE_VERSION = System.getProperty("sbe.rust.crate.version");
     static final String WRITE_BUF_TYPE = "WriteBuf";
     static final String READ_BUF_TYPE = "ReadBuf";
     static final String BUF_LIFETIME = "'a";
@@ -114,10 +115,11 @@ public class RustGenerator implements CodeGenerator
             {
                 namespace = (ir.namespaceName() + "_" + packageName).toLowerCase();
             }
+            final String version = CRATE_VERSION == null ? "0.1.0" : CRATE_VERSION;
 
             indent(writer, 0, "[package]\n");
             indent(writer, 0, "name = \"%s\"\n", namespace);
-            indent(writer, 0, "version = \"0.1.0\"\n");
+            indent(writer, 0, "version = \"%s\"\n", version);
             indent(writer, 0, "authors = [\"sbetool\"]\n");
             indent(writer, 0, "description = \"%s\"\n", ir.description());
             indent(writer, 0, "edition = \"2021\"\n\n");
