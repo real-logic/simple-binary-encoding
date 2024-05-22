@@ -3,7 +3,7 @@
                    package="issue889"
                    id="1"
                    version="0"
-                   semanticVersion="1.0"
+                   semanticVersion="1.0.0"
                    description="Example null enum"
                    byteOrder="littleEndian">
     <types>

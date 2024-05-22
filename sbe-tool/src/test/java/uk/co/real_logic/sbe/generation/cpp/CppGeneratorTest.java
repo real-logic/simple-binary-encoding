@@ -69,7 +69,7 @@ class CppGeneratorTest
             generator.generate();
 
             final String source = outputManager.getSource("code.generation.test.Car").toString();
-            assertThat(source, containsString("static constexpr const char* SBE_SEMANTIC_VERSION = \"5.2\""));
+            assertThat(source, containsString("static constexpr const char* SBE_SEMANTIC_VERSION = \"5.2.0\""));
         }
     }
 }

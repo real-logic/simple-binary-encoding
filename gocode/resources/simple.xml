@@ -3,7 +3,7 @@
                    package="simple"
                    id="3"
                    version="2"
-                   semanticVersion="5.2"
+                   semanticVersion="5.2.0"
                    description="insert_type_here"
                    byteOrder="littleEndian">
     <types>

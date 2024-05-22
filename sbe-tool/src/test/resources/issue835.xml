@@ -5,7 +5,7 @@
     package="simple"
     id="1"
     version="9"
-    semanticVersion="FIX5SP2"
+    semanticVersion="1.0.0-FIX5SP2"
     description="20180308"
     byteOrder="littleEndian"
     xsi:schemaLocation="http://www.fixtradingcommunity.org/pg/file/fplpo/read/1196759/simple-binary-encoding-rc2xsd SimpleBinary-RC2.xsd">

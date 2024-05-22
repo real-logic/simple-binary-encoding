@@ -3,7 +3,7 @@
                    package="mktdata"
                    id="1"
                    version="9"
-                   semanticVersion="FIX5SP2"
+                   semanticVersion="1.0.0-FIX5SP2"
                    description="20180308"
                    byteOrder="littleEndian">
     <types>

@@ -3,7 +3,7 @@
                    package="composite.elements"
                    id="3"
                    version="0"
-                   semanticVersion="5.2"
+                   semanticVersion="5.2.0"
                    description="Unit Test"
                    byteOrder="littleEndian">
     <types>

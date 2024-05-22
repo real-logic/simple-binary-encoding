@@ -3,7 +3,7 @@
                    package="tests"
                    id="1"
                    version="0"
-                   semanticVersion="5.2"
+                   semanticVersion="5.2.0"
                    description="issue 567 example where group size doesn't fit in an int32"
                    byteOrder="littleEndian">
     <types>

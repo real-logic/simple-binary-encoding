@@ -3,7 +3,7 @@
                    package="code.generation.test"
                    id="6"
                    version="0"
-                   semanticVersion="5.2"
+                   semanticVersion="5.2.0"
                    description="Example schema"
                    byteOrder="littleEndian">
     <types>

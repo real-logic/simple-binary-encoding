@@ -3,7 +3,7 @@
                    package="since-deprecated"
                    id="109"
                    version="5"
-                   semanticVersion="5.2"
+                   semanticVersion="5.2.0"
                    description="Test case for transforming based on sinceVersion"
                    byteOrder="littleEndian">
     <types>

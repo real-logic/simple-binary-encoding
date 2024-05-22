@@ -3,7 +3,7 @@
                    package="uk.co.real_logic.sbe.benchmarks"
                    id="1"
                    version="1"
-                   semanticVersion="5.2"
+                   semanticVersion="5.2.0"
                    description="Example schema"
                    byteOrder="littleEndian">
     <types>
