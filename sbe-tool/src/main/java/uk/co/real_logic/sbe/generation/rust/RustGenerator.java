@@ -117,7 +117,7 @@ public class RustGenerator implements CodeGenerator
 
             indent(writer, 0, "[package]\n");
             indent(writer, 0, "name = \"%s\"\n", namespace);
-            indent(writer, 0, "version = \"0.1.0\"\n");
+            indent(writer, 0, "version = \"%s\"\n", ir.semanticVersion());
             indent(writer, 0, "authors = [\"sbetool\"]\n");
             indent(writer, 0, "description = \"%s\"\n", ir.description());
             indent(writer, 0, "edition = \"2021\"\n\n");
