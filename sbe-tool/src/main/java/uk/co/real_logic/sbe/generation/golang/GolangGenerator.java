@@ -1276,8 +1276,8 @@ public class GolangGenerator implements CodeGenerator
 
         // Write the group itself
         encode.append(String.format(
-            "\tfor _, prop := range %1$s.%2$s {\n" +
-            "\t\tif err := prop.Encode(_m, _w); err != nil {\n" +
+            "\tfor i := range %1$s.%2$s {\n" +
+            "\t\tif err := %1$s.%2$s[i].Encode(_m, _w); err != nil {\n" +
             "\t\t\treturn err\n" +
             "\t\t}\n",
             varName,
@@ -1329,8 +1329,8 @@ public class GolangGenerator implements CodeGenerator
 
         // Range check the group itself
         rc.append(String.format(
-            "\tfor _, prop := range %1$s.%2$s {\n" +
-            "\t\tif err := prop.RangeCheck(actingVersion, schemaVersion); err != nil {\n" +
+            "\tfor i := range %1$s.%2$s {\n" +
+            "\t\tif err := %1$s.%2$s[i].RangeCheck(actingVersion, schemaVersion); err != nil {\n" +
             "\t\t\treturn err\n" +
             "\t\t}\n" +
             "\t}\n",
