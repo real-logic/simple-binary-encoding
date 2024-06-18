@@ -47,7 +47,7 @@ class CharacterEncodingTest
             .append("                   package=\"code.generation.test\"\n")
             .append("                   id=\"6\"\n")
             .append("                   version=\"0\"\n")
-            .append("                   semanticVersion=\"5.2\"\n")
+            .append("                   semanticVersion=\"5.2.0\"\n")
             .append("                   description=\"Example schema\"\n")
             .append("                   byteOrder=\"littleEndian\">\n")
             .append("    <types>\n")

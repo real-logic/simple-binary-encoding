@@ -3,7 +3,7 @@
                    package="nested-composite-name"
                    id="1"
                    version="0"
-                   semanticVersion="5.2"
+                   semanticVersion="5.2.0"
                    description="test case for nested composite field where the field name from the composite name"
                    byteOrder="littleEndian">
     <types>

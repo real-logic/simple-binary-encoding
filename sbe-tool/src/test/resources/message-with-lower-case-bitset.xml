@@ -3,7 +3,7 @@
                    package="test973"
                    id="973"
                    version="0"
-                   semanticVersion="1.0"
+                   semanticVersion="1.0.0"
                    description="lower case bitset">
     <types>
         <composite name="messageHeader" description="header">

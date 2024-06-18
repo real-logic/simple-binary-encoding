@@ -3,7 +3,7 @@
                    package="issue848"
                    id="1"
                    version="0"
-                   semanticVersion="1.0"
+                   semanticVersion="1.0.0"
                    description="test case 848 20210511"
                    byteOrder="littleEndian">
     <types>

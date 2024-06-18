@@ -3,7 +3,7 @@
                    package="since.deprecated"
                    id="876"
                    version="4"
-                   semanticVersion="5.2"
+                   semanticVersion="5.2.0"
                    description="Issue 876 - Test case for Deprecated messages for Java"
                    byteOrder="littleEndian">
     <types>
