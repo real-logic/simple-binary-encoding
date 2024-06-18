@@ -73,6 +73,7 @@ class LibRsDef
                     .filter((fileName) -> fileName.endsWith(".rs"))
                     .filter((fileName) -> !fileName.equals("lib.rs"))
                     .map((fileName) -> fileName.substring(0, fileName.length() - 3))
+                    .sorted()
                     .forEach(modules::add);
             }
 

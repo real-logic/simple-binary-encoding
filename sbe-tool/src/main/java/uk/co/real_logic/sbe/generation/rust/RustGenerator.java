@@ -152,8 +152,8 @@ public class RustGenerator implements CodeGenerator
             try (Writer out = outputManager.createOutput(codecModName))
             {
                 indent(out, 0, "use crate::*;\n\n");
-                indent(out, 0, "pub use encoder::%sEncoder;\n", formatStructName(msgToken.name()));
-                indent(out, 0, "pub use decoder::%sDecoder;\n\n", formatStructName(msgToken.name()));
+                indent(out, 0, "pub use decoder::%sDecoder;\n", formatStructName(msgToken.name()));
+                indent(out, 0, "pub use encoder::%sEncoder;\n\n", formatStructName(msgToken.name()));
                 final String blockLengthType = blockLengthType();
                 final String templateIdType = rustTypeName(ir.headerStructure().templateIdType());
                 final String schemaIdType = rustTypeName(ir.headerStructure().schemaIdType());
