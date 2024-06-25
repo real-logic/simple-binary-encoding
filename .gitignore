@@ -119,4 +119,7 @@ rust/Cargo.lock
 .DS_Store
 /sbe-tool/src/main/golang/uk_co_real_logic_sbe_ir_generated/
 
+# JQwik
+*.jqwik-database
+
 /generated/

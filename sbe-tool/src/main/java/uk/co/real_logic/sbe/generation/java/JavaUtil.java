@@ -464,6 +464,16 @@ public class JavaUtil
             .append(indent).append(" */");
     }
 
+    static String encoderName(final String className)
+    {
+        return formatClassName(className) + "Encoder";
+    }
+
+    static String decoderName(final String className)
+    {
+        return formatClassName(className) + "Decoder";
+    }
+
     private static void escapeJavadoc(final Appendable out, final String doc) throws IOException
     {
         for (int i = 0, length = doc.length(); i < length; i++)
@@ -511,4 +521,5 @@ public class JavaUtil
             }
         }
     }
+
 }

@@ -39,6 +39,7 @@ set(COMPOSITE_ELEMENTS_SCHEMA ${CODEC_SCHEMA_DIR}/composite-elements-schema.xml)
 set(COMPOSITE_OFFSETS_SCHEMA ${CODEC_SCHEMA_DIR}/composite-offsets-schema.xml)
 set(MESSAGE_BLOCK_LENGTH_TEST ${CODEC_SCHEMA_DIR}/message-block-length-test.xml)
 set(GROUP_WITH_DATA_SCHEMA ${CODEC_SCHEMA_DIR}/group-with-data-schema.xml)
+set(DTO_SCHEMA ${CODEC_SCHEMA_DIR}/dto-test-schema.xml)
 set(ISSUE835_SCHEMA ${CODEC_SCHEMA_DIR}/issue835.xml)
 set(ISSUE889_SCHEMA ${CODEC_SCHEMA_DIR}/issue889.xml)
 set(ACCESS_ORDER_SCHEMA ${CODEC_SCHEMA_DIR}/field-order-check-schema.xml)
@@ -54,6 +55,7 @@ add_custom_command(
         ${COMPOSITE_OFFSETS_SCHEMA}
         ${MESSAGE_BLOCK_LENGTH_TEST}
         ${GROUP_WITH_DATA_SCHEMA}
+        ${DTO_SCHEMA}
         ${ISSUE835_SCHEMA}
         ${ISSUE889_SCHEMA}
         ${ACCESS_ORDER_SCHEMA}
@@ -66,12 +68,14 @@ add_custom_command(
             -Dsbe.generate.precedence.checks="true"
             -Dsbe.precedence.checks.flag.name="SBE_ENABLE_PRECEDENCE_CHECKS_IN_TESTS"
             -Dsbe.cpp.disable.implicit.copying="true"
+            -Dsbe.cpp.generate.dtos="true"
             -jar ${SBE_JAR}
             ${CODE_GENERATION_SCHEMA}
             ${COMPOSITE_OFFSETS_SCHEMA}
             ${MESSAGE_BLOCK_LENGTH_TEST}
             ${GROUP_WITH_DATA_SCHEMA}
             ${COMPOSITE_ELEMENTS_SCHEMA}
+            ${DTO_SCHEMA}
             ${ISSUE835_SCHEMA}
             ${ISSUE889_SCHEMA}
             ${ACCESS_ORDER_SCHEMA}
@@ -92,3 +96,27 @@ sbe_test(Issue835Test codecs)
 sbe_test(Issue889Test codecs)
 sbe_test(FieldAccessOrderCheckTest codecs)
 target_compile_definitions(FieldAccessOrderCheckTest PRIVATE SBE_ENABLE_PRECEDENCE_CHECKS_IN_TESTS)
+
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    # Check if the GCC version supports C++17
+    if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "7.0")
+        sbe_test(DtoTest codecs)
+        target_compile_features(DtoTest PRIVATE cxx_std_17)
+    endif()
+endif()
+
+if (CMAKE_CXX_COMPILER_ID STREQUAL "CLang")
+    # Check if CLang version supports C++17
+    if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "4.0")
+        sbe_test(DtoTest codecs)
+        target_compile_features(DtoTest PRIVATE cxx_std_17)
+    endif()
+endif()
+
+if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    # Check if MSVC version supports C++17
+    if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "19.14")
+        sbe_test(DtoTest codecs)
+        target_compile_options(DtoTest PRIVATE /std:c++17)
+    endif()
+endif()

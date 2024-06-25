@@ -89,7 +89,7 @@ public class EncodedDataType extends Type
 
             if (presence() != CONSTANT)
             {
-                handleError(node, "present must be constant when valueRef is set: " + valueRef);
+                handleError(node, "presence must be constant when valueRef is set: " + valueRef);
             }
         }
 

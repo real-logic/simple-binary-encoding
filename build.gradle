@@ -31,6 +31,7 @@ buildscript {
 
 plugins {
     id 'java-library'
+    id 'jvm-test-suite'
     id 'com.github.johnrengelman.shadow' version '8.1.1' apply false
     id 'com.github.ben-manes.versions' version '0.51.0'
 }
@@ -57,6 +58,8 @@ def checkstyleVersion = '9.3'
 def hamcrestVersion = '2.2'
 def mockitoVersion = '4.11.0'
 def junitVersion = '5.10.2'
+def jqwikVersion = '1.8.1'
+def jsonVersion = '20230618'
 def jmhVersion = '1.37'
 def agronaVersion = '1.21.2'
 def agronaVersionRange = '[1.21.2,2.0[' // allow any release >= 1.21.2 and < 2.0.0
@@ -164,6 +167,7 @@ jar.enabled = false
 
 subprojects {
     apply plugin: 'java-library'
+    apply plugin: 'jvm-test-suite'
     apply plugin: 'checkstyle'
 
     group = sbeGroup
@@ -216,22 +220,34 @@ subprojects {
         }
     }
 
-    test {
-        useJUnitPlatform()
+    testing {
+        suites {
+            test {
+                useJUnitJupiter junitVersion
 
-        testLogging {
-            for (def level : LogLevel.values())
-            {
-                def testLogging = get(level)
-                testLogging.exceptionFormat = 'full'
-                testLogging.events = ["FAILED", "STANDARD_OUT", "STANDARD_ERROR"]
+                targets {
+                    all {
+                        testTask.configure {
+                            useJUnitPlatform()
+
+                            testLogging {
+                                for (def level : LogLevel.values())
+                                {
+                                    def testLogging = get(level)
+                                    testLogging.exceptionFormat = 'full'
+                                    testLogging.events = ["FAILED", "STANDARD_OUT", "STANDARD_ERROR"]
+                                }
+                            }
+
+                            javaLauncher.set(toolchainLauncher)
+
+                            systemProperty 'sbe.enable.ir.precedence.checks', 'true'
+                            systemProperty 'sbe.enable.test.precedence.checks', 'true'
+                        }
+                    }
+                }
             }
         }
-
-        javaLauncher.set(toolchainLauncher)
-
-        systemProperty 'sbe.enable.ir.precedence.checks', 'true'
-        systemProperty 'sbe.enable.test.precedence.checks', 'true'
     }
 }
 
@@ -248,11 +264,6 @@ project(':sbe-tool') {
                 prefer(agronaVersion)
             }
         }
-        testImplementation files('build/classes/java/generated')
-        testImplementation "org.hamcrest:hamcrest:${hamcrestVersion}"
-        testImplementation "org.mockito:mockito-core:${mockitoVersion}"
-        testImplementation "org.junit.jupiter:junit-jupiter-params:${junitVersion}"
-        testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
     }
 
     def generatedDir = 'build/generated-src'
@@ -269,10 +280,54 @@ project(':sbe-tool') {
 
     compileGeneratedJava {
         dependsOn 'generateTestCodecs'
+        dependsOn 'generateTestDtos'
         classpath += sourceSets.main.runtimeClasspath
     }
 
     compileTestJava.dependsOn compileGeneratedJava
+
+    testing {
+        suites {
+            test {
+                dependencies {
+                    implementation files('build/classes/java/generated')
+                    implementation "org.hamcrest:hamcrest:${hamcrestVersion}"
+                    implementation "org.mockito:mockito-core:${mockitoVersion}"
+                    implementation "org.junit.jupiter:junit-jupiter-params:${junitVersion}"
+                }
+            }
+
+            propertyTest(JvmTestSuite) {
+                // We should be able to use _only_ the JQwik engine, but this issue is outstanding:
+                // https://github.com/gradle/gradle/issues/21299
+                useJUnitJupiter junitVersion
+
+                dependencies {
+                    implementation project()
+                    implementation("net.jqwik:jqwik:${jqwikVersion}") {
+                        // Exclude JUnit 5 dependencies that are already provided due to useJUnitJupiter
+                        exclude group: 'org.junit.platform', module: 'junit-platform-commons'
+                        exclude group: 'org.junit.platform', module: 'junit-platform-engine'
+                    }
+                    implementation "org.json:json:${jsonVersion}"
+                }
+
+
+                targets {
+                    all {
+                        testTask.configure {
+                            minHeapSize = '2g'
+                            maxHeapSize = '2g'
+
+                            javaLauncher.set(toolchainLauncher)
+
+                            systemProperty 'sbe.dll', "${rootProject.projectDir}/csharp/sbe-dll/bin/Release/netstandard2.0/SBE.dll"
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     tasks.register('generateTestCodecs', JavaExec) {
         dependsOn 'compileJava'
@@ -288,6 +343,21 @@ project(':sbe-tool') {
         args = ['src/test/resources/json-printer-test-schema.xml',
                 'src/test/resources/composite-elements-schema.xml',
                 'src/test/resources/field-order-check-schema.xml']
+    }
+
+    tasks.register('generateTestDtos', JavaExec) {
+        dependsOn 'compileJava'
+        mainClass.set('uk.co.real_logic.sbe.SbeTool')
+        classpath = sourceSets.main.runtimeClasspath
+        systemProperties(
+                'sbe.output.dir': generatedDir,
+                'sbe.target.language': 'java',
+                'sbe.validation.stop.on.error': 'true',
+                'sbe.validation.xsd': validationXsdPath,
+                'sbe.generate.precedence.checks': 'true',
+                'sbe.java.precedence.checks.property.name': 'sbe.enable.test.precedence.checks',
+                'sbe.java.generate.dtos': 'true')
+        args = ['src/test/resources/example-extension-schema.xml']
     }
 
     jar {
@@ -735,7 +805,7 @@ tasks.register('generateCSharpCodecsWithXIncludes', JavaExec) {
             'sbe-samples/src/main/resources/example-extension-schema.xml']
 }
 
-tasks.register('generateCSharpCodecsTests', JavaExec) {
+tasks.register('generateCSharpTestCodecs', JavaExec) {
     mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
     systemProperties(
@@ -754,9 +824,21 @@ tasks.register('generateCSharpCodecsTests', JavaExec) {
             'sbe-benchmarks/src/main/resources/fix-message-samples.xml']
 }
 
+tasks.register('generateCSharpTestDtos', JavaExec) {
+    mainClass.set('uk.co.real_logic.sbe.SbeTool')
+    classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
+    systemProperties(
+            'sbe.output.dir': 'csharp/sbe-generated',
+            'sbe.target.language': 'uk.co.real_logic.sbe.generation.csharp.CSharpDtos',
+            'sbe.xinclude.aware': 'true',
+            'sbe.validation.xsd': validationXsdPath)
+    args = ['sbe-samples/src/main/resources/example-extension-schema.xml']
+}
+
 tasks.register('generateCSharpCodecs') {
     description = 'Generate csharp codecs'
-    dependsOn 'generateCSharpCodecsTests',
+    dependsOn 'generateCSharpTestCodecs',
+            'generateCSharpTestDtos',
             'generateCSharpCodecsWithXIncludes'
 }
 

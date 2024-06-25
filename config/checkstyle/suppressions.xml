@@ -6,5 +6,6 @@
     <suppress files=".*generated-src.*" checks="."/>
     <suppress files=".*generated.*" checks="."/>
     <suppress files="[\\/]test[\\/]" checks="MissingJavadoc.*"/>
+    <suppress files="[\\/]propertyTest[\\/]" checks="MissingJavadoc.*"/>
     <suppress files="[\\/]sbe-benchmarks[\\/]" checks="MissingJavadoc.*"/>
 </suppressions>

@@ -197,7 +197,7 @@ public class PrimitiveValue
     /**
      * Maximum value representation for a single precision 32-bit floating point type.
      */
-    public static final float MIN_VALUE_FLOAT = Float.MIN_VALUE;
+    public static final float MIN_VALUE_FLOAT = -Float.MAX_VALUE;
 
     /**
      * Maximum value representation for a single precision 32-bit floating point type.
@@ -212,7 +212,7 @@ public class PrimitiveValue
     /**
      * Minimum value representation for a double precision 64-bit floating point type.
      */
-    public static final double MIN_VALUE_DOUBLE = Double.MIN_VALUE;
+    public static final double MIN_VALUE_DOUBLE = -Double.MAX_VALUE;
 
     /**
      * Maximum value representation for a double precision 64-bit floating point type.

@@ -1,0 +1,62 @@
+name: Slow checks
+
+on:
+  workflow_dispatch:
+    branches:
+      - '**'
+  schedule:
+    - cron: '0 12 * * *'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.java.installations.auto-detect=false -Dorg.gradle.warning.mode=fail'
+
+permissions:
+  contents: read
+
+jobs:
+  property-tests:
+    name: Property tests
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        java: [ '21' ]
+        dotnet: [ '8.0.x' ]
+    env:
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Setup java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: ${{ matrix.java }}
+      - name: Setup BUILD_JAVA_HOME & BUILD_JAVA_VERSION
+        run: |
+          java -Xinternalversion
+          echo "BUILD_JAVA_HOME=${JAVA_HOME}" >> $GITHUB_ENV
+          echo "BUILD_JAVA_VERSION=${{ matrix.java }}" >> $GITHUB_ENV
+      - name: Setup java 8 to run the Gradle script
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: 8
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: ${{ matrix.dotnet }}
+      - name: Build .NET library
+        run: ./csharp/build.sh
+      - name: Run property tests
+        run: ./gradlew propertyTest
+      - name: Upload test results
+        uses: actions/upload-artifact@v3
+        if: success() || failure()
+        with:
+          name: property-tests
+          path: sbe-tool/build/reports/tests/propertyTest

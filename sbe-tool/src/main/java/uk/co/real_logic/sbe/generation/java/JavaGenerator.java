@@ -160,6 +160,7 @@ public class JavaGenerator implements CodeGenerator
     {
         Verify.notNull(ir, "ir");
         Verify.notNull(outputManager, "outputManager");
+        Verify.notNull(precedenceChecks, "precedenceChecks");
 
         this.ir = ir;
         this.shouldSupportTypesPackageNames = shouldSupportTypesPackageNames;
@@ -303,7 +304,7 @@ public class JavaGenerator implements CodeGenerator
 
             if (shouldGenerateGroupOrderAnnotation)
             {
-                generateAnnotations(BASE_INDENT, className, groups, out, this::encoderName);
+                generateAnnotations(BASE_INDENT, className, groups, out, JavaUtil::encoderName);
             }
             out.append(generateDeclaration(className, implementsString, msgToken));
 
@@ -816,7 +817,7 @@ public class JavaGenerator implements CodeGenerator
 
             if (shouldGenerateGroupOrderAnnotation)
             {
-                generateAnnotations(BASE_INDENT, className, groups, out, this::decoderName);
+                generateAnnotations(BASE_INDENT, className, groups, out, JavaUtil::decoderName);
             }
 
             out.append(generateDeclaration(className, implementsString, msgToken));
@@ -872,7 +873,7 @@ public class JavaGenerator implements CodeGenerator
 
             if (shouldGenerateGroupOrderAnnotation)
             {
-                generateAnnotations(indent + INDENT, groupName, groups, sb, this::decoderName);
+                generateAnnotations(indent + INDENT, groupName, groups, sb, JavaUtil::decoderName);
             }
             generateGroupDecoderClassHeader(sb, groupName, outerClassName, fieldPrecedenceModel, groupToken,
                 tokens, groups, index, indent + INDENT);
@@ -926,7 +927,7 @@ public class JavaGenerator implements CodeGenerator
 
             if (shouldGenerateGroupOrderAnnotation)
             {
-                generateAnnotations(indent + INDENT, groupClassName, groups, sb, this::encoderName);
+                generateAnnotations(indent + INDENT, groupClassName, groups, sb, JavaUtil::encoderName);
             }
             generateGroupEncoderClassHeader(
                 sb, groupName, outerClassName, fieldPrecedenceModel, groupToken,
@@ -1032,6 +1033,10 @@ public class JavaGenerator implements CodeGenerator
             .append(indent).append("    public int actingBlockLength()\n")
             .append(indent).append("    {\n")
             .append(indent).append("        return blockLength;\n")
+            .append(indent).append("    }\n\n")
+            .append(indent).append("    public int actingVersion()\n")
+            .append(indent).append("    {\n")
+            .append(indent).append("        return parentMessage.actingVersion;\n")
             .append(indent).append("    }\n\n")
             .append(indent).append("    public int count()\n")
             .append(indent).append("    {\n")
@@ -1664,7 +1669,7 @@ public class JavaGenerator implements CodeGenerator
             indent + "    }\n",
             propertyName,
             readOnlyBuffer,
-            generateWrapFieldNotPresentCondition(token.version(), indent),
+            generateWrapFieldNotPresentCondition(false, token.version(), indent),
             accessOrderListenerCall,
             sizeOfLengthField,
             PrimitiveType.UINT32 == lengthType ? "(int)" : "",
@@ -2670,9 +2675,12 @@ public class JavaGenerator implements CodeGenerator
             generatePut(encoding.primitiveType(), "offset + " + offset, "value", byteOrderStr));
     }
 
-    private CharSequence generateWrapFieldNotPresentCondition(final int sinceVersion, final String indent)
+    private CharSequence generateWrapFieldNotPresentCondition(
+        final boolean inComposite,
+        final int sinceVersion,
+        final String indent)
     {
-        if (0 == sinceVersion)
+        if (inComposite || 0 == sinceVersion)
         {
             return "";
         }
@@ -2924,7 +2932,7 @@ public class JavaGenerator implements CodeGenerator
                 indent + "    }\n",
                 Generators.toUpperFirstChar(propertyName),
                 readOnlyBuffer,
-                generateWrapFieldNotPresentCondition(propertyToken.version(), indent),
+                generateWrapFieldNotPresentCondition(inComposite, propertyToken.version(), indent),
                 accessOrderListenerCall,
                 offset,
                 fieldLength);
@@ -4699,16 +4707,6 @@ public class JavaGenerator implements CodeGenerator
         {
             throw new IllegalArgumentException("Unable to find " + fullyQualifiedBufferImplementation, ex);
         }
-    }
-
-    private String encoderName(final String className)
-    {
-        return formatClassName(className) + "Encoder";
-    }
-
-    private String decoderName(final String className)
-    {
-        return formatClassName(className) + "Decoder";
     }
 
     private String implementsInterface(final String interfaceName)

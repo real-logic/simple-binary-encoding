@@ -18,10 +18,12 @@ package uk.co.real_logic.sbe.generation;
 import uk.co.real_logic.sbe.generation.c.CGenerator;
 import uk.co.real_logic.sbe.generation.c.COutputManager;
 import uk.co.real_logic.sbe.generation.common.PrecedenceChecks;
+import uk.co.real_logic.sbe.generation.cpp.CppDtoGenerator;
 import uk.co.real_logic.sbe.generation.cpp.CppGenerator;
 import uk.co.real_logic.sbe.generation.cpp.NamespaceOutputManager;
 import uk.co.real_logic.sbe.generation.golang.GolangGenerator;
 import uk.co.real_logic.sbe.generation.golang.GolangOutputManager;
+import uk.co.real_logic.sbe.generation.java.JavaDtoGenerator;
 import uk.co.real_logic.sbe.generation.java.JavaGenerator;
 import uk.co.real_logic.sbe.generation.java.JavaOutputManager;
 import uk.co.real_logic.sbe.generation.rust.RustGenerator;
@@ -46,7 +48,9 @@ public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
          */
         public CodeGenerator newInstance(final Ir ir, final String outputDir)
         {
-            return new JavaGenerator(
+            final JavaOutputManager outputManager = new JavaOutputManager(outputDir, ir.applicableNamespace());
+
+            final JavaGenerator codecGenerator = new JavaGenerator(
                 ir,
                 System.getProperty(JAVA_ENCODING_BUFFER_TYPE, JAVA_DEFAULT_ENCODING_BUFFER_TYPE),
                 System.getProperty(JAVA_DECODING_BUFFER_TYPE, JAVA_DEFAULT_DECODING_BUFFER_TYPE),
@@ -55,7 +59,18 @@ public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
                 "true".equals(System.getProperty(DECODE_UNKNOWN_ENUM_VALUES)),
                 "true".equals(System.getProperty(TYPES_PACKAGE_OVERRIDE)),
                 precedenceChecks(),
-                new JavaOutputManager(outputDir, ir.applicableNamespace()));
+                outputManager);
+
+            final JavaDtoGenerator dtoGenerator = new JavaDtoGenerator(ir, outputManager);
+
+            final CodeGenerator combinedGenerator = () ->
+            {
+                codecGenerator.generate();
+                dtoGenerator.generate();
+            };
+
+            final boolean generateDtos = "true".equals(System.getProperty(JAVA_GENERATE_DTOS));
+            return generateDtos ? combinedGenerator : codecGenerator;
         }
     },
 
@@ -83,11 +98,21 @@ public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
          */
         public CodeGenerator newInstance(final Ir ir, final String outputDir)
         {
-            return new CppGenerator(
-                ir,
-                "true".equals(System.getProperty(DECODE_UNKNOWN_ENUM_VALUES)),
-                precedenceChecks(),
-                new NamespaceOutputManager(outputDir, ir.applicableNamespace()));
+            final NamespaceOutputManager outputManager = new NamespaceOutputManager(
+                outputDir, ir.applicableNamespace());
+            final boolean decodeUnknownEnumValues = "true".equals(System.getProperty(DECODE_UNKNOWN_ENUM_VALUES));
+
+            final CodeGenerator codecGenerator = new CppGenerator(ir, decodeUnknownEnumValues, precedenceChecks(),
+                outputManager);
+            final CodeGenerator dtoGenerator = new CppDtoGenerator(ir, outputManager);
+            final CodeGenerator combinedGenerator = () ->
+            {
+                codecGenerator.generate();
+                dtoGenerator.generate();
+            };
+
+            final boolean generateDtos = "true".equals(System.getProperty(CPP_GENERATE_DTOS));
+            return generateDtos ? combinedGenerator : codecGenerator;
         }
     },
 

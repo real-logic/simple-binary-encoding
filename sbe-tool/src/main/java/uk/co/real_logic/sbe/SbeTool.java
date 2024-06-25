@@ -193,6 +193,16 @@ public class SbeTool
     public static final String DECODE_UNKNOWN_ENUM_VALUES = "sbe.decode.unknown.enum.values";
 
     /**
+     * Should generate C++ DTOs. Defaults to false.
+     */
+    public static final String CPP_GENERATE_DTOS = "sbe.cpp.generate.dtos";
+
+    /**
+     * Should generate Java DTOs. Defaults to false.
+     */
+    public static final String JAVA_GENERATE_DTOS = "sbe.java.generate.dtos";
+
+    /**
      * Configuration option used to manage sinceVersion based transformations. When set, parsed schemas will be
      * transformed to discard messages and types higher than the specified version. This can be useful when needing
      * to generate older versions of a schema to do version compatibility testing.
