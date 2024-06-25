@@ -20,6 +20,7 @@ package uk.co.real_logic.sbe.generation.csharp;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.generation.CodeGenerator;
 import uk.co.real_logic.sbe.generation.Generators;
+import uk.co.real_logic.sbe.ir.Encoding;
 import uk.co.real_logic.sbe.ir.Ir;
 import uk.co.real_logic.sbe.ir.Signal;
 import uk.co.real_logic.sbe.ir.Token;
@@ -1194,7 +1195,8 @@ public class CSharpDtoGenerator implements CodeGenerator
         final String indent)
     {
         final String nullableSuffix = fieldToken.isOptionalEncoding() ? "?" : "";
-        final String typeName = cSharpTypeName(typeToken.encoding().primitiveType()) + nullableSuffix;
+        final Encoding encoding = typeToken.encoding();
+        final String typeName = cSharpTypeName(encoding.primitiveType()) + nullableSuffix;
         final String formattedPropertyName = formatPropertyName(propertyName);
         final String fieldName = "_" + toLowerFirstChar(propertyName);
 
@@ -1242,17 +1244,35 @@ public class CSharpDtoGenerator implements CodeGenerator
                 .append("}\n");
         }
 
+        final boolean mustPreventLesser = !encoding.applicableMinValue().equals(encoding.primitiveType().minValue());
+        if (mustPreventLesser)
+        {
+            sb.append(indent).append(INDENT)
+                .append("if (value < ")
+                .append(codecClassName).append(".").append(formattedPropertyName).append("MinValue)\n")
+                .append(indent).append(INDENT)
+                .append("{\n")
+                .append(indent).append(INDENT).append(INDENT)
+                .append("throw new ArgumentException(\"value is less than minimum allowed: \" + value);\n")
+                .append(indent).append(INDENT)
+                .append("}\n");
+        }
+
+        final boolean mustPreventGreater = !encoding.applicableMaxValue().equals(encoding.primitiveType().maxValue());
+        if (mustPreventGreater)
+        {
+            sb.append(indent).append(INDENT)
+                .append("if (value > ")
+                .append(codecClassName).append(".").append(formattedPropertyName).append("MaxValue)\n")
+                .append(indent).append(INDENT)
+                .append("{\n")
+                .append(indent).append(INDENT).append(INDENT)
+                .append("throw new ArgumentException(\"value is greater than maximum allowed: \" + value);\n")
+                .append(indent).append(INDENT)
+                .append("}\n");
+        }
+
         sb.append(indent).append(INDENT)
-            .append("if (value < ")
-            .append(codecClassName).append(".").append(formattedPropertyName).append("MinValue || value > ")
-            .append(codecClassName).append(".").append(formattedPropertyName).append("MaxValue)\n")
-            .append(indent).append(INDENT)
-            .append("{\n")
-            .append(indent).append(INDENT).append(INDENT)
-            .append("throw new ArgumentException(\"value is out of allowed range: \" + value);\n")
-            .append(indent).append(INDENT)
-            .append("}\n")
-            .append(indent).append(INDENT)
             .append("return value;\n")
             .append(indent).append("}\n");
     }
