@@ -20,6 +20,7 @@ package uk.co.real_logic.sbe.generation.cpp;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.generation.CodeGenerator;
 import uk.co.real_logic.sbe.generation.Generators;
+import uk.co.real_logic.sbe.ir.Encoding;
 import uk.co.real_logic.sbe.ir.Ir;
 import uk.co.real_logic.sbe.ir.Signal;
 import uk.co.real_logic.sbe.ir.Token;
@@ -1489,7 +1490,8 @@ public class CppDtoGenerator implements CodeGenerator
         final Token typeToken,
         final String indent)
     {
-        final String elementTypeName = cppTypeName(typeToken.encoding().primitiveType());
+        final Encoding encoding = typeToken.encoding();
+        final String elementTypeName = cppTypeName(encoding.primitiveType());
         final CharSequence typeName = typeWithFieldOptionality(
             fieldToken,
             elementTypeName
@@ -1518,12 +1520,40 @@ public class CppDtoGenerator implements CodeGenerator
             .append(indent).append(INDENT).append(fieldName).append(" = value;\n")
             .append(indent).append("}\n");
 
+        generateSingleValuePropertyValidateMethod(
+            classBuilder,
+            codecClassName,
+            propertyName,
+            fieldToken,
+            indent,
+            validateMethod,
+            typeName,
+            formattedPropertyName,
+            elementTypeName,
+            encoding);
+    }
+
+    private static void generateSingleValuePropertyValidateMethod(
+        final ClassBuilder classBuilder,
+        final String codecClassName,
+        final String propertyName,
+        final Token fieldToken,
+        final String indent,
+        final String validateMethod,
+        final CharSequence typeName,
+        final String formattedPropertyName,
+        final String elementTypeName,
+        final Encoding encoding)
+    {
         final StringBuilder validateBuilder = classBuilder.appendPrivate().append("\n")
             .append(indent).append("static void ").append(validateMethod).append("(")
             .append(typeName).append(" value)\n")
             .append(indent).append("{\n");
 
         String value = "value";
+
+        final boolean mustPreventLesser = !encoding.applicableMinValue().equals(encoding.primitiveType().minValue());
+        final boolean mustPreventGreater = !encoding.applicableMaxValue().equals(encoding.primitiveType().maxValue());
 
         if (fieldToken.isOptionalEncoding())
         {
@@ -1548,27 +1578,48 @@ public class CppDtoGenerator implements CodeGenerator
                 .append(indent).append(INDENT)
                 .append("}\n");
 
-            validateBuilder.append(indent).append(INDENT)
-                .append(elementTypeName).append(" actualValue = value.value();\n");
+            if (mustPreventLesser || mustPreventGreater)
+            {
+                validateBuilder.append(indent).append(INDENT)
+                    .append(elementTypeName).append(" actualValue = value.value();\n");
 
-            value = "actualValue";
+                value = "actualValue";
+            }
         }
 
-        validateBuilder.append(indent).append(INDENT)
-            .append("if (").append(value).append(" < ")
-            .append(codecClassName).append("::").append(formattedPropertyName).append("MinValue() || ")
-            .append(value).append(" > ")
-            .append(codecClassName).append("::").append(formattedPropertyName).append("MaxValue())\n")
-            .append(indent).append(INDENT)
-            .append("{\n")
-            .append(indent).append(INDENT).append(INDENT)
-            .append("throw std::invalid_argument(\"")
-            .append(propertyName)
-            .append(": value is out of allowed range: \" + std::to_string(")
-            .append(value).append("));\n")
-            .append(indent).append(INDENT)
-            .append("}\n")
-            .append(indent).append("}\n");
+        if (mustPreventLesser)
+        {
+            validateBuilder.append(indent).append(INDENT)
+                .append("if (").append(value).append(" < ")
+                .append(codecClassName).append("::").append(formattedPropertyName).append("MinValue())\n")
+                .append(indent).append(INDENT)
+                .append("{\n")
+                .append(indent).append(INDENT).append(INDENT)
+                .append("throw std::invalid_argument(\"")
+                .append(propertyName)
+                .append(": value is less than allowed minimum: \" + std::to_string(")
+                .append(value).append("));\n")
+                .append(indent).append(INDENT)
+                .append("}\n");
+        }
+
+        if (mustPreventGreater)
+        {
+            validateBuilder.append(indent).append(INDENT)
+                .append("if (").append(value).append(" > ")
+                .append(codecClassName).append("::").append(formattedPropertyName).append("MaxValue())\n")
+                .append(indent).append(INDENT)
+                .append("{\n")
+                .append(indent).append(INDENT).append(INDENT)
+                .append("throw std::invalid_argument(\"")
+                .append(propertyName)
+                .append(": value is greater than allowed maximum: \" + std::to_string(")
+                .append(value).append("));\n")
+                .append(indent).append(INDENT)
+                .append("}\n");
+        }
+
+        validateBuilder.append(indent).append("}\n");
     }
 
     private void generateConstPropertyMethods(
