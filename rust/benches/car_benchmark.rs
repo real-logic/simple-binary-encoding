@@ -131,7 +131,7 @@ fn decode(state: &State) -> SbeResult<usize> {
 
     let buf = ReadBuf::new(state.buffer.as_slice());
     let header = MessageHeaderDecoder::default().wrap(buf, 0);
-    car = car.header(header);
+    car = car.header(header, 0);
 
     // Car...
     car.serial_number();
