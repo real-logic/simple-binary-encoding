@@ -240,8 +240,18 @@ public class SbeTool
      */
     public static void main(final String[] args) throws Exception
     {
-        if (args.length == 0)
-        {
+        mainWithProperties(args, System.getProperties());
+    }
+
+    /**
+     * Main entry point for the SBE Tool.
+     *
+     * @param args       command line arguments. A single filename is expected.
+     * @param properties Used to pass in system properties.
+     * @throws Exception if an error occurs during process of the message schema.
+     */
+    public static void mainWithProperties(final String[] args, java.util.Properties properties) throws Exception {
+        if (args.length == 0) {
             System.err.format("Usage: %s <filenames>...%n", SbeTool.class.getName());
             System.exit(-1);
         }
@@ -254,12 +264,12 @@ public class SbeTool
                 final String xsdFilename = System.getProperty(SbeTool.VALIDATION_XSD);
                 if (xsdFilename != null)
                 {
-                    validateAgainstSchema(fileName, xsdFilename);
+                    validateAgainstSchema(fileName, xsdFilename, properties);
                 }
 
-                final MessageSchema schema = parseSchema(fileName);
+                final MessageSchema schema = parseSchema(fileName, properties);
                 final SchemaTransformer transformer = new SchemaTransformerFactory(
-                    System.getProperty(SCHEMA_TRANSFORM_VERSION));
+                    properties.getProperty(SCHEMA_TRANSFORM_VERSION));
                 ir = new IrGenerator().generate(transformer.transform(schema), System.getProperty(TARGET_NAMESPACE));
             }
             else if (fileName.endsWith(".sbeir"))
@@ -276,16 +286,14 @@ public class SbeTool
                 return;
             }
 
-            final String outputDirName = System.getProperty(OUTPUT_DIR, ".");
-            if (Boolean.parseBoolean(System.getProperty(GENERATE_STUBS, "true")))
-            {
-                final String targetLanguage = System.getProperty(TARGET_LANGUAGE, "Java");
+            final String outputDirName = properties.getProperty(OUTPUT_DIR, ".");
+            if (Boolean.parseBoolean(properties.getProperty(GENERATE_STUBS, "true"))) {
+                final String targetLanguage = properties.getProperty(TARGET_LANGUAGE, "Java");
 
                 generate(ir, outputDirName, targetLanguage);
             }
 
-            if (Boolean.parseBoolean(System.getProperty(GENERATE_IR, "false")))
-            {
+            if (Boolean.parseBoolean(properties.getProperty(GENERATE_IR, "false"))) {
                 final File inputFile = new File(fileName);
                 final String inputFilename = inputFile.getName();
                 final int nameEnd = inputFilename.lastIndexOf('.');
@@ -307,15 +315,14 @@ public class SbeTool
      * @param xsdFilename       XSD against which to validate.
      * @throws Exception if an error occurs while validating.
      */
-    public static void validateAgainstSchema(final String sbeSchemaFilename, final String xsdFilename)
-        throws Exception
-    {
+    public static void validateAgainstSchema(final String sbeSchemaFilename, final String xsdFilename, java.util.Properties properties)
+            throws Exception {
         final ParserOptions.Builder optionsBuilder = ParserOptions.builder()
-            .xsdFilename(System.getProperty(VALIDATION_XSD))
-            .xIncludeAware(Boolean.parseBoolean(System.getProperty(XINCLUDE_AWARE)))
-            .stopOnError(Boolean.parseBoolean(System.getProperty(VALIDATION_STOP_ON_ERROR)))
-            .warningsFatal(Boolean.parseBoolean(System.getProperty(VALIDATION_WARNINGS_FATAL)))
-            .suppressOutput(Boolean.parseBoolean(System.getProperty(VALIDATION_SUPPRESS_OUTPUT)));
+                .xsdFilename(properties.getProperty(VALIDATION_XSD))
+                .xIncludeAware(Boolean.parseBoolean(properties.getProperty(XINCLUDE_AWARE)))
+                .stopOnError(Boolean.parseBoolean(properties.getProperty(VALIDATION_STOP_ON_ERROR)))
+                .warningsFatal(Boolean.parseBoolean(properties.getProperty(VALIDATION_WARNINGS_FATAL)))
+                .suppressOutput(Boolean.parseBoolean(properties.getProperty(VALIDATION_SUPPRESS_OUTPUT)));
 
         final Path path = Paths.get(sbeSchemaFilename);
         try (InputStream in = new BufferedInputStream(Files.newInputStream(path)))
@@ -337,15 +344,15 @@ public class SbeTool
      * @return the parsed {@link MessageSchema} for the specification found in the file.
      * @throws Exception if an error occurs when parsing the specification.
      */
-    public static MessageSchema parseSchema(final String sbeSchemaFilename)
+    public static MessageSchema parseSchema(final String sbeSchemaFilename, java.util.Properties properties)
         throws Exception
     {
         final ParserOptions.Builder optionsBuilder = ParserOptions.builder()
-            .xsdFilename(System.getProperty(VALIDATION_XSD))
-            .xIncludeAware(Boolean.parseBoolean(System.getProperty(XINCLUDE_AWARE)))
-            .stopOnError(Boolean.parseBoolean(System.getProperty(VALIDATION_STOP_ON_ERROR)))
-            .warningsFatal(Boolean.parseBoolean(System.getProperty(VALIDATION_WARNINGS_FATAL)))
-            .suppressOutput(Boolean.parseBoolean(System.getProperty(VALIDATION_SUPPRESS_OUTPUT)));
+                .xsdFilename(properties.getProperty(VALIDATION_XSD))
+                .xIncludeAware(Boolean.parseBoolean(properties.getProperty(XINCLUDE_AWARE)))
+                .stopOnError(Boolean.parseBoolean(properties.getProperty(VALIDATION_STOP_ON_ERROR)))
+                .warningsFatal(Boolean.parseBoolean(properties.getProperty(VALIDATION_WARNINGS_FATAL)))
+                .suppressOutput(Boolean.parseBoolean(properties.getProperty(VALIDATION_SUPPRESS_OUTPUT)));
 
         final Path path = Paths.get(sbeSchemaFilename);
         try (InputStream in = new BufferedInputStream(Files.newInputStream(path)))
