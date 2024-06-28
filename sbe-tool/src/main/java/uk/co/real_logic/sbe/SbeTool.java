@@ -240,7 +240,7 @@ public class SbeTool
      */
     public static void main(final String[] args) throws Exception
     {
-        main(args, System.getProperties());
+        mainWithProperties(args, System.getProperties());
     }
 
     /**
