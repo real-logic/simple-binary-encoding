@@ -1,6 +1,7 @@
 name: "CodeQL"
 
 on:
+  workflow_call:
   push:
     branches:
       - master
@@ -12,16 +13,16 @@ on:
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
-  
+
 env:
   GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.java.installations.auto-detect=false -Dorg.gradle.warning.mode=fail'
   CMAKE_VERSION: '3.14.7'
 
 permissions:
   contents: read
-  
+
 jobs:
- 
+
   java-analyze:
     name: Java Analyze ${{ matrix.java }}
     runs-on: ubuntu-22.04
@@ -62,13 +63,13 @@ jobs:
           java -Xinternalversion
           echo "BUILD_JAVA_HOME=${JAVA_HOME}" >> $GITHUB_ENV
           echo "BUILD_JAVA_VERSION=${{ matrix.java }}" >> $GITHUB_ENV
-          
+
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
           config-file: ./.github/codeql/codeql-config.yml
-        
+
       - name: Build with Gradle
         run: ./gradlew
 
@@ -76,7 +77,7 @@ jobs:
         uses: github/codeql-action/analyze@v3
         with:
           category: "/language:${{matrix.language}}"
-          
+
   csharp-analyze:
     name: C# Analyze ${{ matrix.dotnet }}
     runs-on: ubuntu-22.04
@@ -120,13 +121,13 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ matrix.dotnet }}
-  
+
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
           config-file: ./.github/codeql/codeql-config.yml
-        
+
       - name: Build
         run: ./csharp/build.sh
 
@@ -134,7 +135,7 @@ jobs:
         uses: github/codeql-action/analyze@v3
         with:
           category: "/language:${{matrix.language}}"
-          
+
   cpp-gcc-2204-analyze:
     name: C++ GCC Analyze ${{ matrix.version }}
     runs-on: ubuntu-22.04
@@ -173,16 +174,16 @@ jobs:
           curl -O -L https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.tar.gz
           tar xf cmake-${CMAKE_VERSION}-Linux-x86_64.tar.gz
           echo "cmake-${CMAKE_VERSION}-Linux-x86_64/bin" >> $GITHUB_PATH
-          
+
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
           config-file: ./.github/codeql/codeql-config.yml
-          
+
       - name: Build
         run: ./cppbuild/cppbuild
-        
+
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
         with:

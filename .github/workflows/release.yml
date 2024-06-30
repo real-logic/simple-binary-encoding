@@ -3,17 +3,21 @@ name: Release
 on:
   workflow_dispatch:
     inputs:
+      run-ci:
+        description: Run ci and test workflows
+        required: true
+        type: boolean
       release:
         description: Is release? (Will update master version.txt)
         required: true
         default: false
         type: boolean
-      tagged-version:
-        description: Release Version (For tagged version.txt)
+      release-version:
+        description: Released version (x.y.z)
         required: true
         type: string
-      new-version:
-        description: New Version (For branch version.txt)
+      next-version:
+        description: Next version (x.y.z)
         required: true
         type: string
 
@@ -25,51 +29,43 @@ env:
   GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.java.installations.auto-detect=false -Dorg.gradle.warning.mode=fail'
 
 jobs:
-  tag-release:
-    permissions:
-      contents: write
-    runs-on: ubuntu-22.04
-    steps:
-      - name: checkout
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.ref }}
-      - name: update-tag
-        if: ${{ inputs.release }}
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions"
-          echo ${{ inputs.tagged-version }} > version.txt
-          git add version.txt
-          git status
-          git commit -m "${{ inputs.tagged-version }} released."
-          git tag ${{ inputs.tagged-version }}
-          git push 
-          git push origin refs/tags/${{ inputs.tagged-version }}
+  run-release-ci:
+    name: Run ci workflows
+    uses: ./.github/workflows/pre-release-ci.yml
+    with:
+      run-ci: ${{ inputs.run-ci }}
+      codeql: ${{ inputs.run-ci }}
 
-  build-java:
+  pre-release:
+    name: Update version, tag repo, and return sha
+    needs: run-release-ci
+    uses: ./.github/workflows/pre-release.yml
+    with:
+      release: ${{ inputs.release }}
+      version: ${{ inputs.release-version }}
+
+  release:
+    name: Release java artifacts
     permissions:
       contents: write
       packages: write
-    needs: tag-release
-    runs-on: ubuntu-22.04
+    needs: pre-release
+    runs-on: ubuntu-latest
     steps:
       - name: checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.ref }}
+          ref: ${{ needs.pre-release.outputs.sha }}
       - name: Setup java
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: '8'
+          java-version: 8
       - name: Setup BUILD_JAVA_HOME & BUILD_JAVA_VERSION
         run: |
           java -Xinternalversion
           echo "BUILD_JAVA_HOME=${JAVA_HOME}" >> $GITHUB_ENV
           echo "BUILD_JAVA_VERSION=8" >> $GITHUB_ENV
-      - name: Setup Gradle
-        uses: gradle/gradle-build-action@v3
       - name: Publish with Gradle
         run: ./gradlew publish
         env:
@@ -78,23 +74,10 @@ jobs:
           ORG_GRADLE_PROJECT_signingKey: ${{ secrets.signingKey }}
           ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.signingPassword }}
 
-  update-tags:
-    permissions:
-      contents: write
-    needs: build-java
-    runs-on: ubuntu-22.04
-    steps:
-      - name: checkout
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.ref }}
-      - name: update-branch
-        if: ${{ inputs.release }}
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions"
-          echo ${{ inputs.new-version }} > version.txt
-          git add version.txt
-          git status
-          git commit -m "${{ inputs.tagged-version }} released."
-          git push
+  post-release:
+    name: Update version
+    needs: release
+    uses: ./.github/workflows/post-release.yml
+    with:
+      release: ${{ inputs.release }}
+      version: ${{ inputs.next-version }}
