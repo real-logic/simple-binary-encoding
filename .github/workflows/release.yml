@@ -1,0 +1,124 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: Is release? (Will create tag and update version)
+        required: true
+        default: false
+        type: boolean
+      release-version:
+        description: Released version (x.y.z)
+        required: true
+        type: string
+      next-version:
+        description: Next version (x.y.z)
+        required: true
+        type: string
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.java.installations.auto-detect=false -Dorg.gradle.warning.mode=fail'
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+
+  codeql:
+    uses: ./.github/workflows/codeql.yml
+
+  pre-release:
+    name: Update version, tag repo, and return sha
+    permissions:
+      contents: write
+    needs: [ ci, codeql ]
+    runs-on: ubuntu-latest
+    outputs:
+      sha: ${{ steps.return-sha.outputs.sha }}
+    steps:
+      - id: checkout
+        name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - id: validate
+        name: Validate no new commits
+        run: |
+          current_sha=$(git rev-parse HEAD)
+          if test $current_sha != '${{ github.sha }}'
+          then exit 1
+          fi
+      - id: tag-version
+        if: ${{ inputs.release }}
+        name: Update version and tag repo
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@aeron.io"
+          echo ${{ inputs.release-version }} > version.txt
+          git add version.txt
+          git status
+          git commit -m "${{ inputs.release-version }} version update."
+          git push
+          git tag ${{ inputs.release-version }}
+          git push origin refs/tags/${{ inputs.release-version }}
+      - id: return-sha
+        name: Return current SHA
+        run: |
+          git rev-parse HEAD
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+  release:
+    name: Release java artifacts
+    permissions:
+      contents: read
+      packages: write
+    needs: pre-release
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.pre-release.outputs.sha }}
+      - name: Setup java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: 8
+      - name: Setup BUILD_JAVA_HOME & BUILD_JAVA_VERSION
+        run: |
+          java -Xinternalversion
+          echo "BUILD_JAVA_HOME=${JAVA_HOME}" >> $GITHUB_ENV
+          echo "BUILD_JAVA_VERSION=8" >> $GITHUB_ENV
+      - name: Publish with Gradle
+        run: ./gradlew publish
+        env:
+          ORG_GRADLE_PROJECT_ossrhUsername: ${{ secrets.ossrhUsername }}
+          ORG_GRADLE_PROJECT_ossrhPassword: ${{ secrets.ossrhPassword }}
+          ORG_GRADLE_PROJECT_signingKey: ${{ secrets.signingKey }}
+          ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.signingPassword }}
+
+  post-release:
+    name: Update version
+    permissions:
+      contents: write
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - name: Commit snapshot version to current branch
+        if: ${{ inputs.release }}
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@aeron.io"
+          echo ${{ inputs.next-version }}-SNAPSHOT > version.txt
+          git add version.txt
+          git status
+          git commit -m "${{ inputs.next-version }}-SNAPSHOT version update."
+          git push
