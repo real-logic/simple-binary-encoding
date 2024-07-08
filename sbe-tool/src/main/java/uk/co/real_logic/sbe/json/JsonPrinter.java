@@ -15,6 +15,7 @@
  */
 package uk.co.real_logic.sbe.json;
 
+import org.agrona.DirectBuffer;
 import org.agrona.concurrent.UnsafeBuffer;
 import uk.co.real_logic.sbe.ir.Ir;
 import uk.co.real_logic.sbe.ir.Token;
@@ -62,7 +63,7 @@ public class JsonPrinter
      * @param buffer with encoded message and header.
      * @param offset at which the header begins.
      */
-    public void print(final StringBuilder output, final UnsafeBuffer buffer, final int offset)
+    public void print(final StringBuilder output, final DirectBuffer buffer, final int offset)
     {
         final int blockLength = headerDecoder.getBlockLength(buffer, offset);
         final int templateId = headerDecoder.getTemplateId(buffer, offset);
