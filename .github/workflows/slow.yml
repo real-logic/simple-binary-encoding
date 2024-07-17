@@ -1,6 +1,7 @@
 name: Slow checks
 
 on:
+  workflow_call:
   workflow_dispatch:
     branches:
       - '**'
@@ -8,7 +9,7 @@ on:
     - cron: '0 12 * * *'
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: slow-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 env:

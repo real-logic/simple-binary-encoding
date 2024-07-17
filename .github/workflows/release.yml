@@ -1,0 +1,62 @@
+name: Release
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - '*.*.*'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.java.installations.auto-detect=false -Dorg.gradle.warning.mode=fail'
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+
+  codeql:
+    uses: ./.github/workflows/codeql.yml
+
+  slow:
+    uses: ./.github/workflows/slow.yml
+
+  release:
+    name: Release java artifacts
+    permissions:
+      contents: write
+      packages: write
+    needs: [ ci , codeql, slow ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: true
+      - name: Setup java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: 8
+      - name: Setup BUILD_JAVA_HOME & BUILD_JAVA_VERSION
+        run: |
+          java -Xinternalversion
+          echo "BUILD_JAVA_HOME=${JAVA_HOME}" >> $GITHUB_ENV
+          echo "BUILD_JAVA_VERSION=8" >> $GITHUB_ENV
+      - name: Publish with Gradle
+        run: ./gradlew publish
+        env:
+          ORG_GRADLE_PROJECT_ossrhUsername: ${{ secrets.ossrhUsername }}
+          ORG_GRADLE_PROJECT_ossrhPassword: ${{ secrets.ossrhPassword }}
+          ORG_GRADLE_PROJECT_signingKey: ${{ secrets.signingKey }}
+          ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.signingPassword }}
