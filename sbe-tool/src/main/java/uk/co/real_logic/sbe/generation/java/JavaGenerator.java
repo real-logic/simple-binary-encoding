@@ -274,14 +274,14 @@ public class JavaGenerator implements CodeGenerator
 
             final String decoderClassName = formatClassName(decoderName(msgToken.name()));
             final String decoderStateClassName = decoderClassName + "#CodecStates";
-            final FieldPrecedenceModel decoderPrecedenceModel =
-                precedenceChecks.createDecoderModel(decoderStateClassName, tokens);
+            final FieldPrecedenceModel decoderPrecedenceModel = precedenceChecks.createDecoderModel(
+                decoderStateClassName, tokens);
             generateDecoder(decoderClassName, msgToken, fields, groups, varData, hasVarData, decoderPrecedenceModel);
 
             final String encoderClassName = formatClassName(encoderName(msgToken.name()));
             final String encoderStateClassName = encoderClassName + "#CodecStates";
-            final FieldPrecedenceModel encoderPrecedenceModel =
-                precedenceChecks.createEncoderModel(encoderStateClassName, tokens);
+            final FieldPrecedenceModel encoderPrecedenceModel = precedenceChecks.createEncoderModel(
+                encoderStateClassName, tokens);
             generateEncoder(encoderClassName, msgToken, fields, groups, varData, hasVarData, encoderPrecedenceModel);
         }
     }
@@ -839,7 +839,8 @@ public class JavaGenerator implements CodeGenerator
 
     private void generateDecoderGroups(
         final StringBuilder sb,
-        final FieldPrecedenceModel fieldPrecedenceModel, final String outerClassName,
+        final FieldPrecedenceModel fieldPrecedenceModel,
+        final String outerClassName,
         final List<Token> tokens,
         final String indent,
         final boolean isSubGroup) throws IOException
@@ -992,7 +993,6 @@ public class JavaGenerator implements CodeGenerator
             .append(indent).append("        blockLength = ").append(blockLenCast).append(blockLengthGet).append(";\n")
             .append(indent).append("        count = ").append(numInGroupCast).append(numInGroupGet).append(";\n")
             .append(indent).append("    }\n\n");
-
 
         generateAccessOrderListenerMethodForNextGroupElement(sb, fieldPrecedenceModel, indent + "    ", groupToken);
 
@@ -2345,16 +2345,16 @@ public class JavaGenerator implements CodeGenerator
     }
 
 
-    private CharSequence generateFileHeader(final String packageName, final Set<String> importedTypesPackages,
+    private CharSequence generateFileHeader(
+        final String packageName,
+        final Set<String> importedTypesPackages,
         final String fqBuffer)
     {
-        final StringBuilder importStatements = generateImportStatements(importedTypesPackages, packageName);
-
         return "/* Generated SBE (Simple Binary Encoding) message codec. */\n" +
             "package " + packageName + ";\n\n" +
             "import " + fqBuffer + ";\n" +
             interfaceImportLine() +
-            importStatements;
+            generateImportStatements(importedTypesPackages, packageName);
     }
 
     private CharSequence generateMainHeader(
@@ -4469,7 +4469,6 @@ public class JavaGenerator implements CodeGenerator
             append(sb, indent, groupName + ".offset = " + groupName + "OriginalOffset;");
             append(sb, indent, groupName + ".index = " + groupName + "OriginalIndex;");
             Separator.END_GROUP.appendToGeneratedBuilder(sb, indent);
-
 
             lengthBeforeLastGeneratedSeparator = sb.length();
             Separator.FIELD.appendToGeneratedBuilder(sb, indent);
