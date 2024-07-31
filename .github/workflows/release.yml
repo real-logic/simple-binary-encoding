@@ -16,12 +16,20 @@ env:
 jobs:
   ci:
     uses: ./.github/workflows/ci.yml
-
-  codeql:
-    uses: ./.github/workflows/codeql.yml
+    permissions:
+      contents: read
 
   slow:
     uses: ./.github/workflows/slow.yml
+    permissions:
+      contents: read
+
+  codeql:
+    uses: ./.github/workflows/codeql.yml
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
 
   release:
     name: Release java artifacts
