@@ -28,7 +28,7 @@ namespace Org.SbeTool.Sbe.Tests
     }
 
     [TestMethod]
-    public void CheckToStringDontMessWithGroupIteration()
+    public void CheckToStringDoesNotBreakGroupIteration()
     {
       var encoder = new MDIncrementalRefreshBook46()
         .WrapForEncodeAndApplyHeader(_buffer, Offset, _messageHeader);

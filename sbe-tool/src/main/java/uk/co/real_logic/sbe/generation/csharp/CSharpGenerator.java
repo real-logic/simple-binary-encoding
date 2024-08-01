@@ -2406,22 +2406,26 @@ public class CSharpGenerator implements CodeGenerator
         return lengthBeforeFieldSeparator;
     }
 
-    private void appendToString(final StringBuilder sb, final String indent, final String className)
+    private void appendToString(final StringBuilder sb, final String indent)
     {
         sb.append('\n');
         append(sb, indent, "public override string ToString()");
         append(sb, indent, "{");
         append(sb, indent, "    var sb = new StringBuilder(100);");
-        if(null != className) 
-        {
-            append(sb, indent, "    var m = new " + className + "();");
-            append(sb, indent, "    m.WrapForDecode(_buffer, _offset, _actingBlockLength, _actingVersion);");
-            append(sb, indent, "    m.BuildString(sb);");
-        } 
-        else 
-        {
-            append(sb, indent, "    this.BuildString(sb);");
-        }
+        append(sb, indent, "    this.BuildString(sb);");
+        append(sb, indent, "    return sb.ToString();");
+        append(sb, indent, "}");
+    }
+
+    private void appendMessageToString(final StringBuilder sb, final String indent, final String className)
+    {
+        sb.append('\n');
+        append(sb, indent, "public override string ToString()");
+        append(sb, indent, "{");
+        append(sb, indent, "    var sb = new StringBuilder(100);");
+        append(sb, indent, "    var m = new " + className + "();");
+        append(sb, indent, "    m.WrapForDecode(_buffer, _offset, _actingBlockLength, _actingVersion);");
+        append(sb, indent, "    m.BuildString(sb);");
         append(sb, indent, "    return sb.ToString();");
         append(sb, indent, "}");
     }
@@ -2454,7 +2458,7 @@ public class CSharpGenerator implements CodeGenerator
     {
         final StringBuilder sb = new StringBuilder(100);
 
-        appendToString(sb, TWO_INDENT, className);
+        appendMessageToString(sb, TWO_INDENT, className);
         sb.append('\n');
         append(sb, TWO_INDENT, "internal void BuildString(StringBuilder builder)");
         append(sb, TWO_INDENT, "{");
@@ -2512,7 +2516,7 @@ public class CSharpGenerator implements CodeGenerator
     {
         final StringBuilder sb = new StringBuilder();
 
-        appendToString(sb, TWO_INDENT, null);
+        appendToString(sb, TWO_INDENT);
         sb.append('\n');
         append(sb, TWO_INDENT, "internal void BuildString(StringBuilder builder)");
         append(sb, TWO_INDENT, "{");
