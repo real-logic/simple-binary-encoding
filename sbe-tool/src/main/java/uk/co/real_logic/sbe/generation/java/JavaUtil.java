@@ -155,22 +155,34 @@ public class JavaUtil
      */
     public static String formatPropertyName(final String value)
     {
-        String formattedValue = Generators.toLowerFirstChar(value);
+        return formatForJavaKeyword(Generators.toLowerFirstChar(value));
+    }
 
-        if (ValidationUtil.isJavaKeyword(formattedValue))
+    /**
+     * Format a name for generated code.
+     * <p>
+     * If the formatted name is a keyword then {@link SbeTool#KEYWORD_APPEND_TOKEN} is appended if set.
+     *
+     * @param value to be formatted.
+     * @return the string formatted as a valid name.
+     * @throws IllegalStateException if a keyword and {@link SbeTool#KEYWORD_APPEND_TOKEN} is not set.
+     */
+    public static String formatForJavaKeyword(final String value)
+    {
+        if (ValidationUtil.isJavaKeyword(value))
         {
             final String keywordAppendToken = System.getProperty(SbeTool.KEYWORD_APPEND_TOKEN);
             if (null == keywordAppendToken)
             {
                 throw new IllegalStateException(
-                    "Invalid property name='" + formattedValue +
+                    "Invalid property name='" + value +
                     "' please correct the schema or consider setting system property: " + SbeTool.KEYWORD_APPEND_TOKEN);
             }
 
-            formattedValue += keywordAppendToken;
+            return value + keywordAppendToken;
         }
 
-        return formattedValue;
+        return value;
     }
 
     /**

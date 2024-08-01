@@ -2238,7 +2238,7 @@ public class JavaGenerator implements CodeGenerator
             final Encoding encoding = token.encoding();
             final CharSequence constVal = generateLiteral(encoding.primitiveType(), encoding.constValue().toString());
             generateTypeJavadoc(sb, INDENT, token);
-            sb.append(INDENT).append(token.name()).append('(').append(constVal).append("),\n\n");
+            sb.append(INDENT).append(formatForJavaKeyword(token.name())).append('(').append(constVal).append("),\n\n");
         }
 
         if (shouldDecodeUnknownEnumValues)
@@ -2297,7 +2297,7 @@ public class JavaGenerator implements CodeGenerator
         for (final Token token : tokens)
         {
             final String constStr = token.encoding().constValue().toString();
-            final String name = token.name();
+            final String name = formatForJavaKeyword(token.name());
             sb.append("            case ").append(constStr).append(": return ").append(name).append(";\n");
         }
 
