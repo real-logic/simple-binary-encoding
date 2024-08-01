@@ -17,6 +17,8 @@
 package uk.co.real_logic.sbe.generation.csharp;
 
 import uk.co.real_logic.sbe.PrimitiveType;
+import uk.co.real_logic.sbe.SbeTool;
+import uk.co.real_logic.sbe.ValidationUtil;
 import uk.co.real_logic.sbe.generation.Generators;
 import uk.co.real_logic.sbe.ir.Token;
 
@@ -239,6 +241,30 @@ public class CSharpUtil
     public static String formatPropertyName(final String str)
     {
         return toUpperFirstChar(str);
+    }
+
+    /**
+     * Format a String with a suffix in case it's a keyword.
+     *
+     * @param value to be formatted.
+     * @return the formatted string.
+     */
+    public static String formatForCSharpKeyword(final String value)
+    {
+        if (ValidationUtil.isCSharpKeyword(value))
+        {
+            final String keywordAppendToken = System.getProperty(SbeTool.KEYWORD_APPEND_TOKEN);
+            if (null == keywordAppendToken)
+            {
+                throw new IllegalStateException(
+                    "Invalid property name='" + value +
+                    "' please correct the schema or consider setting system property: " + SbeTool.KEYWORD_APPEND_TOKEN);
+            }
+
+            return value + keywordAppendToken;
+        }
+
+        return value;
     }
 
     /**
