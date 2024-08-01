@@ -1960,6 +1960,8 @@ public class CGenerator implements CodeGenerator
             "    return %2$s;\n" +
             "}\n\n" +
 
+            "#define %13$s_SBE_TEMPLATE_ID %4$s\n\n" +
+
             "SBE_ONE_DEF %3$s %10$s_sbe_template_id(void)\n" +
             "{\n" +
             "    return %4$s;\n" +
@@ -2100,7 +2102,23 @@ public class CGenerator implements CodeGenerator
             semanticType,
             structName,
             messageHeaderStruct,
-            semanticVersion);
+            semanticVersion,
+            toUppercaseWithUnderscores(structName));
+    }
+
+    private String toUppercaseWithUnderscores(final String camelCaseString)
+    {
+        final StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < camelCaseString.length(); i++)
+        {
+            final char theChar = camelCaseString.charAt(i);
+            if (Character.isUpperCase(theChar))
+            {
+                sb.append("_");
+            }
+            sb.append(Character.toUpperCase(theChar));
+        }
+        return sb.toString();
     }
 
     private CharSequence generateFieldFunctions(
