@@ -1471,7 +1471,11 @@ public class CppGenerator implements CodeGenerator
         {
             final CharSequence constVal = generateLiteral(
                 token.encoding().primitiveType(), token.encoding().constValue().toString());
-            sb.append("        ").append(token.name()).append(" = ").append(constVal).append(",\n");
+            sb.append("        ")
+                .append(formatForCppKeyword(token.name()))
+                .append(" = ")
+                .append(constVal)
+                .append(",\n");
         }
 
         final CharSequence nullLiteral = generateLiteral(
@@ -1505,7 +1509,11 @@ public class CppGenerator implements CodeGenerator
             final CharSequence constVal = generateLiteral(
                 token.encoding().primitiveType(), token.encoding().constValue().toString());
 
-            sb.append("            case ").append(constVal).append(": return ").append(token.name()).append(";\n");
+            sb.append("            case ")
+                .append(constVal)
+                .append(": return ")
+                .append(formatForCppKeyword(token.name()))
+                .append(";\n");
         }
 
         final CharSequence nullVal = generateLiteral(
@@ -3839,7 +3847,7 @@ public class CppGenerator implements CodeGenerator
         {
             new Formatter(sb).format(
                 "            case %1$s: return \"%1$s\";\n",
-                token.name());
+                formatForCppKeyword(token.name()));
         }
 
         sb.append("            case NULL_VALUE: return \"NULL_VALUE\";\n").append("        }\n\n");

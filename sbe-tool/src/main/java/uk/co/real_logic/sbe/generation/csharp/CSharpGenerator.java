@@ -775,7 +775,7 @@ public class CSharpGenerator implements CodeGenerator
         for (final Token token : tokens)
         {
             sb.append(generateDocumentation(INDENT + INDENT, token))
-              .append(INDENT).append(INDENT).append(token.name()).append(" = ")
+              .append(INDENT).append(INDENT).append(formatForCSharpKeyword(token.name())).append(" = ")
               .append(token.encoding().constValue()).append(",\n");
         }
 

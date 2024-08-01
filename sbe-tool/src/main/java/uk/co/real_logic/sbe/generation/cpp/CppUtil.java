@@ -67,22 +67,31 @@ public class CppUtil
      */
     public static String formatPropertyName(final String value)
     {
-        String formattedValue = toLowerFirstChar(value);
+        return formatForCppKeyword(toLowerFirstChar(value));
+    }
 
-        if (ValidationUtil.isCppKeyword(formattedValue))
+    /**
+     * Format a String with a suffix in case it's a keyword.
+     *
+     * @param value to be formatted.
+     * @return the formatted string.
+     */
+    public static String formatForCppKeyword(final String value)
+    {
+        if (ValidationUtil.isCppKeyword(value))
         {
             final String keywordAppendToken = System.getProperty(SbeTool.KEYWORD_APPEND_TOKEN);
             if (null == keywordAppendToken)
             {
                 throw new IllegalStateException(
-                    "Invalid property name='" + formattedValue +
+                    "Invalid property name='" + value +
                     "' please correct the schema or consider setting system property: " + SbeTool.KEYWORD_APPEND_TOKEN);
             }
 
-            formattedValue += keywordAppendToken;
+            return value + keywordAppendToken;
         }
 
-        return formattedValue;
+        return value;
     }
 
     /**
