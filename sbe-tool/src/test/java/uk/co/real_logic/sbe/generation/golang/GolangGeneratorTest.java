@@ -217,7 +217,7 @@ class GolangGeneratorTest
                 "}\n" +
                 "\n" +
                 "func (*SomeMessage) SbeSemanticVersion() (semanticVersion string) {\n" +
-                "\treturn \"1.0\"\n" +
+                "\treturn \"1.0.0\"\n" +
                 "}\n" +
                 "\n" +
                 "func (*SomeMessage) EngineTypeId() uint16 {\n" +
@@ -450,7 +450,7 @@ class GolangGeneratorTest
                 "}\n" +
                 "\n" +
                 "func (*SomeMessage) SbeSemanticVersion() (semanticVersion string) {\n" +
-                "\treturn \"1.0\"\n" +
+                "\treturn \"1.0.0\"\n" +
                 "}\n" +
                 "\n" +
                 "func (*SomeMessage) MyEventId() uint16 {\n" +

@@ -3,7 +3,7 @@
                    package="issue505"
                    id="505"
                    version="0"
-                   semanticVersion="1.0"
+                   semanticVersion="1.0.0"
                    description="issue 505 test case">
     <types>
         <composite name="messageHeader" description="header">

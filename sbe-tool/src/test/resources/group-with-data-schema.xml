@@ -3,7 +3,7 @@
                    package="group.with.data"
                    id="1"
                    version="0"
-                   semanticVersion="5.2"
+                   semanticVersion="5.2.0"
                    byteOrder="littleEndian">
     <types>
         <type name="Symbol" description="Symbol" length="9" primitiveType="char" semanticType="char"/>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<ns2:messageSchema xmlns:ns2="http://www.fixprotocol.org/ns/simple/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" package="iLinkBinary" id="8" version="5" semanticVersion="FIX5.0" description="20200212" byteOrder="littleEndian" xsi:schemaLocation="http://www.fixtradingcommunity.org/pg/file/fplpo/read/1196759/simple-binary-encoding-rc2xsd SimpleBinary-RC2.xsd">
+<ns2:messageSchema xmlns:ns2="http://www.fixprotocol.org/ns/simple/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" package="iLinkBinary" id="8" version="5" semanticVersion="1.0.0-FIX5.0" description="20200212" byteOrder="littleEndian" xsi:schemaLocation="http://www.fixtradingcommunity.org/pg/file/fplpo/read/1196759/simple-binary-encoding-rc2xsd SimpleBinary-RC2.xsd">
     <types>
         <type name="CHAR" description="char" primitiveType="char"/>
         <type name="ClientFlowType" description="ClientFlowType" presence="constant" length="10" primitiveType="char" semanticType="String">IDEMPOTENT</type>

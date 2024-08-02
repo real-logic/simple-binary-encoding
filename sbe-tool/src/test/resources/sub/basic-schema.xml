@@ -2,7 +2,7 @@
 <messageSchema package="SBE tests"
                id="2"
                xmlns:xi="http://www.w3.org/2001/XInclude"
-               semanticVersion="5.2"
+               semanticVersion="5.2.0"
                description="Unit Test"
                byteOrder="littleEndian">
     <xi:include href='sub2/common.xml'/>

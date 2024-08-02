@@ -3,7 +3,7 @@
                    package="issue472"
                    id="472"
                    version="0"
-                   semanticVersion="1.0"
+                   semanticVersion="1.0.0"
                    description="issue 472 test case"
                    byteOrder="bigEndian">
     <types>

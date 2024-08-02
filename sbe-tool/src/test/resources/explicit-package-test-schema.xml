@@ -3,7 +3,7 @@
                    package="test.message.schema"
                    id="879"
                    version="1"
-                   semanticVersion="1.0"
+                   semanticVersion="1.0.0"
                    description="Issue 507 - Test case for explicit packages for types"
                    byteOrder="littleEndian">
     <types>
