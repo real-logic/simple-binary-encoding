@@ -1,0 +1,25 @@
+<sbe:messageSchema
+    xmlns:sbe="http://fixprotocol.io/2016/sbe"
+    package="issue987"
+    id="987"
+    version="1"
+    semanticVersion="1.0.0"
+    byteOrder="littleEndian">
+  <types>
+    <composite name="messageHeader">
+      <type name="blockLength" primitiveType="uint16" description="Length of the root of the FIX message contained before repeating groups or variable/conditions fields."/>
+      <type name="templateId" primitiveType="uint16" description="Template ID used to encode the message."/>
+      <type name="schemaId" primitiveType="uint16" description="ID of the system publishing the message."/>
+      <type name="version" primitiveType="uint16" description="Schema version."/>
+    </composite>
+
+    <composite name="NewComposite">
+      <type name="f1" primitiveType="uint16" semanticType="Int"/>
+      <type name="f2" primitiveType="uint32" semanticType="Int" offset="4"/>
+    </composite>
+  </types>
+  <sbe:message name="issue987" id="1">
+    <field name="oldField" id="1" type="uint16" semanticType="Int"/>
+    <field name="newField" id="2" type="NewComposite" />
+  </sbe:message>
+</sbe:messageSchema>

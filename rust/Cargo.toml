@@ -15,6 +15,7 @@ issue_435 = { path = "../generated/rust/issue435" }
 issue_895 = { path = "../generated/rust/issue895" }
 issue_972 = { path = "../generated/rust/issue972" }
 issue_984 = { path = "../generated/rust/issue984" }
+issue_987 = { path = "../generated/rust/issue987" }
 baseline_bigendian = { path = "../generated/rust/baseline-bigendian" }
 nested_composite_name = { path = "../generated/rust/nested-composite-name" }
 

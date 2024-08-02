@@ -33,7 +33,7 @@ fn issue_435_ref_test() -> SbeResult<()> {
     assert_eq!(SBE_SCHEMA_ID, header.schema_id());
     assert_eq!(*SetRef::default().set_one(true), header.s());
 
-    let decoder = Issue435Decoder::default().header(header);
+    let decoder = Issue435Decoder::default().header(header, 0);
     assert_eq!(EnumRef::Two, decoder.example_decoder().e());
 
     Ok(())
