@@ -19,11 +19,11 @@ all: example test # bench
 # This target is used to build golang files using parent gradle
 # script's invocation of sbe-tool in case it needs to be run again. We
 # use this one output file to check that dependency as it's simple
-DEP=src/simple/SbeMarshalling.go
+DEP=src/struct/simple/SbeMarshalling.go
 $(DEP): $(SBE_JAR)
 	(cd ..; ./gradlew generateGolangCodecs)
 	(export GOPATH=$(GOPATH) && \
-	cd src/simple && \
+	cd src/struct/simple && \
 	go build && \
 	$(SAVE_FORMAT) \
 	go fmt && \
@@ -31,27 +31,27 @@ $(DEP): $(SBE_JAR)
 
 # Will regenerate codecs by removing dependencies
 clean:
-	rm -f src/*/SbeMarshalling.go src/*/*/SbeMarshalling.go
+	rm -f src/struct/*/SbeMarshalling.go src/struct/*/*/SbeMarshalling.go
 
 # Example code and benchmarking 
-example: src/example-schema/example-schema
-src/example-schema/example-schema: $(DEP)
+example: src/struct/example-schema/example-schema
+src/struct/example-schema/example-schema: $(DEP)
 	(export GOPATH=$(GOPATH) && \
-	cd src/example-schema && \
+	cd src/struct/example-schema && \
 	go build && \
 	go fmt && \
 	./example-schema)
 
 bench: $(DEP)
 	(export GOPATH=$(GOPATH) && \
-        cd src/example-schema && \
+        cd src/struct/example-schema && \
 	go test --bench . -cpuprofile=cpu.out && \
 	go tool pprof -text example-schema.test cpu.out)
 
-src/baseline/SbeMarshalling.go: $(DEP)
+src/struct/baseline/SbeMarshalling.go: $(DEP)
 	$(GOPATH)/sbe-tool -d src -s $(EXAMPLES_SCHEMA)
 	(export GOPATH=$(GOPATH) && \
-        cd src/baseline && \
+        cd src/struct/baseline && \
 	go build && \
 	go fmt && \
 	go test && \
@@ -59,13 +59,13 @@ src/baseline/SbeMarshalling.go: $(DEP)
 
 # The first set does a make install as there is a test that uses
 # multiple packages and needs them in GOPATH The second set work in
-# src/foo, and the third need a GOPATH addition as for Java and C++
+# src/struct/foo, and the third need a GOPATH addition as for Java and C++
 # they generate into the same directory but golang doesn't allow that
 test: $(DEP)
 	(export GOPATH=$(GOPATH) && \
 		(for t in baseline extension; do \
 		export GOPATH=$(GOPATH) && \
-	        cd $(GOPATH)/src/$$t && \
+	        cd $(GOPATH)/src/struct/$$t && \
 		go build && \
 		go fmt && \
 		go test && \
@@ -73,14 +73,37 @@ test: $(DEP)
 		;done))
 	(export GOPATH=$(GOPATH) && \
 		(for t in baseline-bigendian mktdata group_with_data group_with_data_extension composite_elements composite since-deprecated simple issue435 issue472 issue483 issue488 issue560 issue847 issue848 issue849 issue505 test973; do \
-		cd $(GOPATH)/src/$$t && \
+		cd $(GOPATH)/src/struct/$$t && \
 		go build && \
 		go fmt && \
 		go test \
 		;done))
 	(for t in vardata group basic; do \
 		export GOPATH=$(GOPATH)/$$t && \
-		cd $(GOPATH)/src/$$t/'SBE tests' && \
+		cd $(GOPATH)/src/struct/$$t/'SBE tests' && \
+		go build && \
+		go fmt && \
+		go test \
+		;done)
+	(export GOPATH=$(GOPATH) && \
+		(for t in baseline extension; do \
+		export GOPATH=$(GOPATH) && \
+	        cd $(GOPATH)/src/flyweight/$$t && \
+		go build && \
+		go fmt && \
+		go test && \
+		go install \
+		;done))
+	(export GOPATH=$(GOPATH) && \
+		(for t in baseline-bigendian mktdata group_with_data group_with_data_extension composite_elements composite since-deprecated simple issue435 issue472 issue483 issue488 issue560 issue847 issue848 issue849; do \
+		cd $(GOPATH)/src/flyweight/$$t && \
+		go build && \
+		go fmt && \
+		go test \
+		;done))
+	(for t in vardata group basic; do \
+		export GOPATH=$(GOPATH)/$$t && \
+		cd $(GOPATH)/src/flyweight/$$t/'SBE tests' && \
 		go build && \
 		go fmt && \
 		go test \

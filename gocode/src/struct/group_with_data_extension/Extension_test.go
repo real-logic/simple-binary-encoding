@@ -3,8 +3,8 @@ package group_with_data_extension
 import (
 	"bytes"
 	"fmt"
-	"group_with_data"
 	"math"
+	"struct/group_with_data"
 	"testing"
 )
 

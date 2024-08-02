@@ -243,6 +243,12 @@ public class SbeTool
     public static final String JAVA_PRECEDENCE_CHECKS_PROPERTY_NAME = "sbe.java.precedence.checks.property.name";
 
     /**
+     * Boolean system property to generate flyweights instead of structs in generated Go code.
+     * Defaults to false
+     */
+    public static final String GO_GENERATE_FLYWEIGHTS = "sbe.go.generate.generate.flyweights";
+
+    /**
      * Main entry point for the SBE Tool.
      *
      * @param args command line arguments. A single filename is expected.
