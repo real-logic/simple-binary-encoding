@@ -61,8 +61,8 @@ def junitVersion = '5.10.3'
 def jqwikVersion = '1.9.0'
 def jsonVersion = '20240303'
 def jmhVersion = '1.37'
-def agronaVersion = '1.21.2'
-def agronaVersionRange = '[1.21.2,2.0[' // allow any release >= 1.21.2 and < 2.0.0
+def agronaVersion = '1.22.0'
+def agronaVersionRange = '[1.22.0,2.0[' // allow any release >= 1.22.0 and < 2.0.0
 
 def sbeGroup = 'uk.co.real-logic'
 def sbeVersion = file('version.txt').text.trim()
