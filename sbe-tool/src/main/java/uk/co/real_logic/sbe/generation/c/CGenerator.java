@@ -613,7 +613,7 @@ public class CGenerator implements CodeGenerator
                 "    return ret;\n" +
                 "}\n",
                 propertyName,
-                generateStringViewNotPresentCondition(token.version()),
+                generateStringViewNotPresentCondition(token.version(), outermostStruct),
                 lengthOfLengthField,
                 lengthCType,
                 structName,
@@ -1032,7 +1032,9 @@ public class CGenerator implements CodeGenerator
             sinceVersion);
     }
 
-    private static CharSequence generateStringViewNotPresentCondition(final int sinceVersion)
+    private static CharSequence generateStringViewNotPresentCondition(
+        final int sinceVersion,
+        final String outermostStruct)
     {
         if (0 == sinceVersion)
         {
@@ -1042,9 +1044,11 @@ public class CGenerator implements CodeGenerator
         return String.format(
             "    if (codec->acting_version < %1$d)\n" +
             "    {\n" +
-            "        return { NULL, 0 };\n" +
+            "        struct %2$s_string_view ret = { NULL, 0 };\n" +
+            "        return ret;\n" +
             "    }\n\n",
-            sinceVersion);
+            sinceVersion,
+            outermostStruct);
     }
 
     private static CharSequence generateTypeFieldNotPresentCondition(final int sinceVersion)
