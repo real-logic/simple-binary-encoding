@@ -151,6 +151,16 @@ public class SbeTool
     public static final String CPP_NAMESPACES_COLLAPSE = "sbe.cpp.namespaces.collapse";
 
     /**
+     * Version of the Rust crate to generate.
+     */
+    public static final String RUST_CRATE_VERSION = "sbe.rust.crate.version";
+
+    /**
+     * The default version of the Rust crate to generate, when not specified via the system property.
+     */
+    public static final String RUST_DEFAULT_CRATE_VERSION = "0.1.0";
+
+    /**
      * Boolean system property to turn on or off generation of the interface hierarchy. Defaults to false.
      */
     public static final String JAVA_GENERATE_INTERFACES = "sbe.java.generate.interfaces";

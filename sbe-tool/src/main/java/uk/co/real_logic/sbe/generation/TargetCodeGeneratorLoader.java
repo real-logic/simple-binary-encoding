@@ -142,6 +142,7 @@ public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
         {
             return new RustGenerator(
                 ir,
+                System.getProperty(RUST_CRATE_VERSION, RUST_DEFAULT_CRATE_VERSION),
                 new RustOutputManager(outputDir, ir.packageName()));
         }
     };
