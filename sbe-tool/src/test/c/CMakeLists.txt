@@ -34,6 +34,7 @@ endfunction()
 find_package(Java REQUIRED)
 
 set(CODE_GENERATION_SCHEMA ${CODEC_SCHEMA_DIR}/code-generation-schema.xml)
+set(CODE_GENERATION_SCHEMA_WITH_VERSION ${CODEC_SCHEMA_DIR}/code-generation-schema-with-version.xml)
 set(GROUP_WITH_DATA_SCHEMA ${CODEC_SCHEMA_DIR}/group-with-data-schema.xml)
 set(ISSUE889_SCHEMA ${CODEC_SCHEMA_DIR}/issue889.xml)
 
@@ -43,13 +44,14 @@ set(GENERATED_CODECS
 
 add_custom_command(
     OUTPUT ${GENERATED_CODECS}
-    DEPENDS sbe-jar ${SBE_JAR} ${CODE_GENERATION_SCHEMA} ${GROUP_WITH_DATA_SCHEMA} ${ISSUE889_SCHEMA}
+    DEPENDS sbe-jar ${SBE_JAR} ${CODE_GENERATION_SCHEMA} ${CODE_GENERATION_SCHEMA_WITH_VERSION} ${GROUP_WITH_DATA_SCHEMA} ${ISSUE889_SCHEMA}
     COMMAND
         ${Java_JAVA_EXECUTABLE}
             -Dsbe.output.dir=${C_CODEC_TARGET_DIR}
             -Dsbe.target.language="C"
             -jar ${SBE_JAR}
             ${CODE_GENERATION_SCHEMA}
+            ${CODE_GENERATION_SCHEMA_WITH_VERSION}
             ${GROUP_WITH_DATA_SCHEMA}
             ${ISSUE889_SCHEMA}
 )
@@ -70,3 +72,11 @@ target_include_directories(CComplianceTest
 )
 
 add_dependencies(CComplianceTest c_codecs)
+
+add_executable(CComplianceWithVersionTest CComplianceWithVersionTest.c)
+
+target_include_directories(CComplianceWithVersionTest
+    PRIVATE ${C_CODEC_TARGET_DIR}
+)
+
+add_dependencies(CComplianceWithVersionTest c_codecs)

@@ -13,13 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#include "code_generation_test/car.h"
-#include "code_generation_test/messageHeader.h"
-
-#include "group_with_data/testMessage1.h"
-#include "group_with_data/testMessage2.h"
-#include "group_with_data/testMessage3.h"
-#include "group_with_data/testMessage4.h"
+#include "code_generation_test_version/car.h"
+#include "code_generation_test_version/messageHeader.h"
 
 int main(void)
 {
