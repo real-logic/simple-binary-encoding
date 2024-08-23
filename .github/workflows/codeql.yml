@@ -34,7 +34,6 @@ jobs:
       fail-fast: false
       matrix:
         language: [ 'java' ]
-        java: [ '17' ]
 
     steps:
       - name: Checkout code
