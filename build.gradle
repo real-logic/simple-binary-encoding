@@ -294,7 +294,7 @@ project(':sbe-tool') {
         suites {
             test {
                 dependencies {
-                    implementation files('build/classes/java/generated')
+                    implementation files("${layout.buildDirectory.get()}/classes/java/generated")
                     implementation "org.hamcrest:hamcrest:${hamcrestVersion}"
                     implementation "org.mockito:mockito-core:${mockitoVersion}"
                     implementation "org.junit.jupiter:junit-jupiter-params:${junitVersion}"
@@ -491,7 +491,7 @@ project(':sbe-samples') {
 
     dependencies {
         api project(':sbe-tool')
-        implementation files('build/classes/java/generated')
+        implementation files("${layout.buildDirectory.get()}/classes/java/generated")
     }
 
     def generatedDir = 'build/generated-src'
@@ -608,7 +608,7 @@ project(':sbe-benchmarks') {
         implementation "org.openjdk.jmh:jmh-core:${jmhVersion}"
         annotationProcessor "org.openjdk.jmh:jmh-generator-annprocess:${jmhVersion}"
         implementation project(':sbe-tool')
-        implementation files('build/classes/java/generated')
+        implementation files("${layout.buildDirectory.get()}/classes/java/generated")
     }
 
     sourceSets {
