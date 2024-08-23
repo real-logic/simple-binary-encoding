@@ -32,7 +32,7 @@ buildscript {
 plugins {
     id 'java-library'
     id 'jvm-test-suite'
-    id 'com.github.johnrengelman.shadow' version '8.1.1' apply false
+    id 'com.gradleup.shadow' version '8.3.0' apply false
     id 'com.github.ben-manes.versions' version '0.51.0'
 }
 
@@ -422,7 +422,7 @@ project(':sbe-tool') {
 project(':sbe-all') {
     apply plugin: 'maven-publish'
     apply plugin: 'signing'
-    apply plugin: 'com.github.johnrengelman.shadow'
+    apply plugin: 'com.gradleup.shadow'
 
     dependencies {
         implementation project(':sbe-tool')
@@ -606,7 +606,7 @@ project(':sbe-samples') {
 }
 
 project(':sbe-benchmarks') {
-    apply plugin: 'com.github.johnrengelman.shadow'
+    apply plugin: 'com.gradleup.shadow'
 
     dependencies {
         implementation "org.openjdk.jmh:jmh-core:${jmhVersion}"
