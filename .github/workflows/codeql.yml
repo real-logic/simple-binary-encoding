@@ -16,7 +16,6 @@ concurrency:
   
 env:
   GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.java.installations.auto-detect=false -Dorg.gradle.warning.mode=fail'
-  CMAKE_VERSION: '3.14.7'
   JAVA_TOOL_OPTIONS: "--add-opens=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED"
 
 permissions:
@@ -167,10 +166,7 @@ jobs:
       - name: Install compiler
         run: |
           sudo apt-get install -y g++-${{ matrix.version }}
-          curl -O -L https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.tar.gz
-          tar xf cmake-${CMAKE_VERSION}-Linux-x86_64.tar.gz
-          echo "cmake-${CMAKE_VERSION}-Linux-x86_64/bin" >> $GITHUB_PATH
-          
+
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:

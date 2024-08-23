@@ -42,7 +42,7 @@ jobs:
           java -Xinternalversion
           echo "BUILD_JAVA_HOME=${JAVA_HOME}" >> $GITHUB_ENV
           echo "BUILD_JAVA_VERSION=${{ matrix.java }}" >> $GITHUB_ENV
-      - name: Setup java 8 to run the Gradle script
+      - name: Setup java 17 to run the Gradle script
         uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
