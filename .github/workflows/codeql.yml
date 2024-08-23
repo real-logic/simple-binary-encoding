@@ -63,14 +63,14 @@ jobs:
           echo "BUILD_JAVA_HOME=${JAVA_HOME}" >> $GITHUB_ENV
           echo "BUILD_JAVA_VERSION=${{ matrix.java }}" >> $GITHUB_ENV
 
-      - name: Build with Gradle
-        run: ./gradlew
-
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
           config-file: ./.github/codeql/codeql-config.yml
+
+      - name: Build with Gradle
+        run: ./gradlew
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
