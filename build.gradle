@@ -185,7 +185,7 @@ subprojects {
         toolchain {
             languageVersion = JavaLanguageVersion.of(buildJavaVersion)
         }
-        sourceCompatibility = 17
+        sourceCompatibility = JavaVersion.VERSION_17
     }
 
     checkstyle.toolVersion = "${checkstyleVersion}"
