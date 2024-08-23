@@ -25,7 +25,7 @@ jobs:
  
   java-analyze:
     name: Java Analyze ${{ matrix.java }}
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     permissions:
       actions: read
       contents: read
@@ -80,7 +80,7 @@ jobs:
           
   csharp-analyze:
     name: C# Analyze ${{ matrix.dotnet }}
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     permissions:
       actions: read
       contents: read
@@ -138,7 +138,7 @@ jobs:
           
   cpp-gcc-2204-analyze:
     name: C++ GCC Analyze ${{ matrix.version }}
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     permissions:
       actions: read
       contents: read

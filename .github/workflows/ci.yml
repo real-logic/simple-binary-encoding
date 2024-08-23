@@ -29,8 +29,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: [ '8', '17', '21' ]
-        os: [ 'ubuntu-22.04', 'windows-latest' ]
+        java: [ '17', '21' ]
+        os: [ 'ubuntu-24.04', 'windows-latest' ]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -62,13 +62,13 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: 8
+          java-version: 17
       - name: Build with Gradle
         run: ./gradlew
 
   csharp-build:
     name: C# ${{ matrix.dotnet }}
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
@@ -97,7 +97,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: 8
+          java-version: 17
       - name: Cache NuGet dependencies
         uses: actions/cache@v4
         with:
@@ -154,17 +154,17 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: 8
+          java-version: 17
       - name: Build
         run: ./cppbuild/cppbuild
 
-  cpp-gcc-2204-build:
-    name: C++ GCC ${{ matrix.version }} (Ubuntu 22.04)
-    runs-on: ubuntu-22.04
+  cpp-gcc-2404-build:
+    name: C++ GCC ${{ matrix.version }} (Ubuntu 24.04)
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
-        version: [ '11', '12', '13' ]
+        version: [ '11', '12', '13', '14' ]
     env:
       CC: gcc-${{ matrix.version }}
       CXX: g++-${{ matrix.version }}
@@ -197,7 +197,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: 8
+          java-version: 17
       - name: Build
         run: ./cppbuild/cppbuild
 
@@ -242,17 +242,17 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: 8
+          java-version: 17
       - name: Build
         run: ./cppbuild/cppbuild
 
-  cpp-clang-2204-build:
-    name: C++ Clang ${{ matrix.version }} (Ubuntu 22.04)
-    runs-on: ubuntu-22.04
+  cpp-clang-2404-build:
+    name: C++ Clang ${{ matrix.version }} (Ubuntu 24.04)
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
-        version: [ '13', '14', '15', '16', '17' ]
+        version: [ '13', '14', '15', '16', '17', '18' ]
     env:
       CC: clang-${{ matrix.version }}
       CXX: clang++-${{ matrix.version }}
@@ -287,7 +287,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: 8
+          java-version: 17
       - name: Build
         run: ./cppbuild/cppbuild
 
@@ -297,7 +297,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ 'macos-14' ]
+        os: [ 'macos-latest' ]
     env:
       CC: clang
       CXX: clang++
@@ -327,7 +327,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: 8
+          java-version: 17
       - name: Build
         run: cmake --version && ./cppbuild/cppbuild
 
@@ -368,13 +368,13 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: 8
+          java-version: 17
       - name: Build
         run: cppbuild/cppbuild.cmd
 
   rust-build:
     name: Rust ${{ matrix.rust }}
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
@@ -406,12 +406,12 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: 8
+          java-version: 17
       - run: ./gradlew runRustTests
 
   golang-build:
     name: Golang ${{ matrix.version }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
@@ -441,7 +441,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: 8
+          java-version: 17
       - name: Generate codecs
         run: ./gradlew generateGolangCodecs
       - name: Go
