@@ -64,7 +64,7 @@ jobs:
           distribution: 'zulu'
           java-version: 17
       - name: Build with Gradle
-        run: ./gradlew
+        run: ./gradlew --stacktrace
 
   csharp-build:
     name: C# ${{ matrix.dotnet }}
