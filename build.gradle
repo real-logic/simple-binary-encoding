@@ -297,7 +297,8 @@ project(':sbe-tool') {
                     implementation files("${layout.buildDirectory.get()}/classes/java/generated")
                     implementation "org.hamcrest:hamcrest:${hamcrestVersion}"
                     implementation "org.mockito:mockito-core:${mockitoVersion}"
-                    implementation "org.junit.jupiter:junit-jupiter-params:${junitVersion}"
+                    implementation platform("org.junit:junit-bom:${junitVersion}")
+                    implementation "org.junit.jupiter:junit-jupiter-params"
                 }
             }
 
