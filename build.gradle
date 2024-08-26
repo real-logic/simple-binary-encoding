@@ -54,7 +54,7 @@ def toolchainLauncher = javaToolchains.launcherFor {
     languageVersion = JavaLanguageVersion.of(buildJavaVersion)
 }
 
-def checkstyleVersion = '9.3'
+def checkstyleVersion = '10.18.0'
 def hamcrestVersion = '3.0'
 def mockitoVersion = '5.12.0'
 def junitVersion = '5.11.0'
@@ -163,6 +163,11 @@ allprojects {
     configurations.configureEach {
         resolutionStrategy {
             failOnVersionConflict()
+            // patching conflicting Checkstyle dependencies
+            force "org.codehaus.plexus:plexus-utils:3.3.0",
+                  "org.apache.commons:commons-lang3:3.8.1",
+                  "org.apache.httpcomponents:httpcore:4.4.14",
+                  "commons-codec:commons-codec:1.15"
         }
     }
 
