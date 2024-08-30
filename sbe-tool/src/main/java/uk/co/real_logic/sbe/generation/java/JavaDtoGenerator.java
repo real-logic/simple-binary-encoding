@@ -1359,7 +1359,7 @@ public class JavaDtoGenerator implements CodeGenerator
 
             classBuilder.appendPublic().append("\n")
                 .append(generateDocumentation(indent, fieldToken))
-                .append(indent).append("void ").append(formattedPropertyName)
+                .append(indent).append("public void ").append(formattedPropertyName)
                 .append("(").append(typeName).append(" value)\n")
                 .append(indent).append("{\n")
                 .append(indent).append(INDENT).append(validateMethod).append("(value);\n")
