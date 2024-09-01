@@ -1112,7 +1112,7 @@ public class RustGenerator implements CodeGenerator
 
         indent(writer, 0, "impl core::fmt::Debug for %s {\n", bitSetType);
         indent(writer, 1, "#[inline]\n");
-        indent(writer, 1, "fn fmt(&self, fmt: &mut core::fmt::Formatter) -> core::fmt::Result {\n");
+        indent(writer, 1, "fn fmt(&self, fmt: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {\n");
         indent(writer, 2, "write!(fmt, \"%s[", bitSetType);
 
         final StringBuilder builder = new StringBuilder();
