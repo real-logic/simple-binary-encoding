@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package uk.co.real_logic.sbe.properties.schema;
 
 import uk.co.real_logic.sbe.ir.Encoding;
@@ -27,8 +26,7 @@ public final class FieldSchema
     public FieldSchema(
         final TypeSchema type,
         final Encoding.Presence presence,
-        final short sinceVersion
-    )
+        final short sinceVersion)
     {
         assert sinceVersion == 0 || presence.equals(Encoding.Presence.OPTIONAL);
         this.type = type;

@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package uk.co.real_logic.sbe.properties.schema;
 
 import java.util.List;
@@ -32,7 +31,6 @@ public final class CompositeTypeSchema implements TypeSchema
         return fields;
     }
 
-    @Override
     public void accept(final TypeSchemaVisitor visitor)
     {
         visitor.onComposite(this);

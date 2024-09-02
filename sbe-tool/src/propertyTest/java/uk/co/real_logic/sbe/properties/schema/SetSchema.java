@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package uk.co.real_logic.sbe.properties.schema;
 
 import java.util.Set;
@@ -41,7 +40,6 @@ public final class SetSchema implements TypeSchema
         return choices;
     }
 
-    @Override
     public void accept(final TypeSchemaVisitor visitor)
     {
         visitor.onSet(this);

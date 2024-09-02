@@ -64,8 +64,8 @@ public class DtosPropertyTest
     @Property
     void javaDtoEncodeShouldBeTheInverseOfDtoDecode(
         @ForAll("encodedMessage") final SbeArbitraries.EncodedMessage encodedMessage,
-        final Footnotes footnotes
-    ) throws IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException,
+        final Footnotes footnotes)
+        throws IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException,
         IllegalAccessException
     {
         final String packageName = encodedMessage.ir().applicableNamespace();
@@ -136,8 +136,8 @@ public class DtosPropertyTest
     @Property
     void csharpDtoEncodeShouldBeTheInverseOfDtoDecode(
         @ForAll("encodedMessage") final SbeArbitraries.EncodedMessage encodedMessage,
-        final Footnotes footnotes
-    ) throws IOException, InterruptedException
+        final Footnotes footnotes)
+        throws IOException, InterruptedException
     {
         final Path tempDir = Files.createTempDirectory("sbe-csharp-dto-test");
 
@@ -201,17 +201,14 @@ public class DtosPropertyTest
     @Property(shrinking = ShrinkingMode.OFF)
     void cppDtoEncodeShouldBeTheInverseOfDtoDecode(
         @ForAll("encodedMessage") final SbeArbitraries.EncodedMessage encodedMessage,
-        final Footnotes footnotes
-    ) throws IOException, InterruptedException
+        final Footnotes footnotes) throws IOException, InterruptedException
     {
         final Path tempDir = Files.createTempDirectory("sbe-cpp-dto-test");
 
         try
         {
             final NamespaceOutputManager outputManager = new NamespaceOutputManager(
-                tempDir.toString(),
-                "sbe_property_test"
-            );
+                tempDir.toString(), "sbe_property_test");
 
             try
             {
@@ -244,7 +241,7 @@ public class DtosPropertyTest
             {
                 throw new AssertionError(
                     "Input and output files differ\n\n" +
-                        "SCHEMA:\n" + encodedMessage.schema());
+                    "SCHEMA:\n" + encodedMessage.schema());
             }
         }
         catch (final Throwable throwable)

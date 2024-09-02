@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package uk.co.real_logic.sbe.properties.utils;
 
 import org.agrona.generation.DynamicPackageOutputManager;
 
+import javax.tools.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -26,7 +26,6 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.*;
-import javax.tools.*;
 
 /**
  * An implementation of {@link DynamicPackageOutputManager} that stores generated source code in memory and compiles it
@@ -43,13 +42,11 @@ public class InMemoryOutputManager implements DynamicPackageOutputManager
         this.packageName = packageName;
     }
 
-    @Override
     public Writer createOutput(final String name)
     {
         return new InMemoryWriter(name);
     }
 
-    @Override
     public void setPackageName(final String packageName)
     {
         packageNameOverride = packageName;
@@ -71,8 +68,7 @@ public class InMemoryOutputManager implements DynamicPackageOutputManager
             null,
             null,
             null,
-            sourceFiles.values()
-        );
+            sourceFiles.values());
 
         if (!task.call())
         {
@@ -106,7 +102,6 @@ public class InMemoryOutputManager implements DynamicPackageOutputManager
             this.name = name;
         }
 
-        @Override
         public void close() throws IOException
         {
             super.close();
@@ -135,7 +130,6 @@ public class InMemoryOutputManager implements DynamicPackageOutputManager
             super(fileManager);
         }
 
-        @Override
         public JavaFileObject getJavaFileForOutput(
             final Location location,
             final String className,
@@ -172,13 +166,11 @@ public class InMemoryOutputManager implements DynamicPackageOutputManager
             this.outputStream = new ByteArrayOutputStream();
         }
 
-        @Override
         public CharSequence getCharContent(final boolean ignoreEncodingErrors)
         {
             return sourceCode;
         }
 
-        @Override
         public ByteArrayOutputStream openOutputStream()
         {
             return outputStream;

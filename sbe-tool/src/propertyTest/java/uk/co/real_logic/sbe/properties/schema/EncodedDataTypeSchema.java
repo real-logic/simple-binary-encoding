@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package uk.co.real_logic.sbe.properties.schema;
 
 import uk.co.real_logic.sbe.PrimitiveType;
@@ -30,8 +29,7 @@ public final class EncodedDataTypeSchema implements TypeSchema
         final PrimitiveType primitiveType,
         final int length,
         final Encoding.Presence presence,
-        final boolean isEmbedded
-    )
+        final boolean isEmbedded)
     {
         this.primitiveType = primitiveType;
         this.length = length;
@@ -54,16 +52,13 @@ public final class EncodedDataTypeSchema implements TypeSchema
         return presence;
     }
 
-    @Override
     public boolean isEmbedded()
     {
         return isEmbedded;
     }
 
-    @Override
     public void accept(final TypeSchemaVisitor visitor)
     {
         visitor.onEncoded(this);
     }
-
 }

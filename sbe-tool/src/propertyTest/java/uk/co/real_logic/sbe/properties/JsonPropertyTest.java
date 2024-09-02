@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package uk.co.real_logic.sbe.properties;
 
 import net.jqwik.api.Arbitrary;
@@ -29,9 +28,7 @@ import org.json.JSONObject;
 public class JsonPropertyTest
 {
     @Property
-    void shouldGenerateValidJson(
-        @ForAll("encodedMessage") final SbeArbitraries.EncodedMessage encodedMessage
-    )
+    void shouldGenerateValidJson(@ForAll("encodedMessage") final SbeArbitraries.EncodedMessage encodedMessage)
     {
         final StringBuilder output = new StringBuilder();
         final JsonPrinter printer = new JsonPrinter(encodedMessage.ir());

@@ -13,20 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package uk.co.real_logic.sbe.properties.schema;
 
-import uk.co.real_logic.sbe.ir.Encoding;
 import org.agrona.collections.MutableInteger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import uk.co.real_logic.sbe.ir.Encoding;
 
-import java.io.File;
-import java.io.StringWriter;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
@@ -34,6 +28,11 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import java.io.File;
+import java.io.StringWriter;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.requireNonNull;
 
@@ -81,8 +80,7 @@ public final class TestXmlSchemaWriter
             final TypeSchemaConverter typeSchemaConverter = new TypeSchemaConverter(
                 document,
                 topLevelTypes,
-                typeToName
-            );
+                typeToName);
 
             final Set<TypeSchema> visitedTypes = new HashSet<>();
             appendTypes(
@@ -197,15 +195,13 @@ public final class TestXmlSchemaWriter
             createTypeElement(document, "blockLength", "uint16"),
             createTypeElement(document, "templateId", "uint16"),
             createTypeElement(document, "schemaId", "uint16"),
-            createTypeElement(document, "version", "uint16")
-        ));
+            createTypeElement(document, "version", "uint16")));
 
         types.appendChild(createCompositeElement(
             document,
             "groupSizeEncoding",
             createTypeElement(document, "blockLength", "uint16"),
-            createTypeElement(document, "numInGroup", "uint16")
-        ));
+            createTypeElement(document, "numInGroup", "uint16")));
 
         return types;
     }
@@ -256,8 +252,7 @@ public final class TestXmlSchemaWriter
     private static Element createCompositeElement(
         final Document document,
         final String name,
-        final Element... types
-    )
+        final Element... types)
     {
         final Element composite = document.createElement("composite");
         composite.setAttribute("name", name);
@@ -377,10 +372,9 @@ public final class TestXmlSchemaWriter
             this.document = document;
             this.topLevelTypes = topLevelTypes;
             this.typeToName = typeToName;
-            nextName = ignored -> "Type" + typeToName.size();
+            nextName = (ignored) -> "Type" + typeToName.size();
         }
 
-        @Override
         public void onEncoded(final EncodedDataTypeSchema type)
         {
             result = createTypeElement(
@@ -392,7 +386,6 @@ public final class TestXmlSchemaWriter
             );
         }
 
-        @Override
         public void onComposite(final CompositeTypeSchema type)
         {
             final Element[] members = type.fields().stream()
@@ -403,14 +396,13 @@ public final class TestXmlSchemaWriter
                 final Element member = members[i];
                 member.setAttribute("name", "member" + i + "Of" + member.getAttribute("name"));
             }
+
             result = createCompositeElement(
                 document,
                 typeToName.computeIfAbsent(type, nextName),
-                members
-            );
+                members);
         }
 
-        @Override
         public void onEnum(final EnumTypeSchema type)
         {
             result = createEnumElement(
@@ -421,15 +413,13 @@ public final class TestXmlSchemaWriter
             );
         }
 
-        @Override
         public void onSet(final SetSchema type)
         {
             result = createSetElement(
                 document,
                 typeToName.computeIfAbsent(type, nextName),
                 type.encodingType(),
-                type.choices()
-            );
+                type.choices());
         }
 
         private Element embedOrReference(final TypeSchema type)
@@ -464,8 +454,8 @@ public final class TestXmlSchemaWriter
 
         public Node convert(final VarDataSchema varData)
         {
-            final Element lengthElement = createTypeElement(document, "length",
-                varData.lengthEncoding().primitiveName());
+            final Element lengthElement = createTypeElement(
+                document, "length", varData.lengthEncoding().primitiveName());
 
             if (varData.lengthEncoding().size() >= 4)
             {
@@ -484,8 +474,7 @@ public final class TestXmlSchemaWriter
                 document,
                 typeToName.computeIfAbsent(varData, nextName),
                 lengthElement,
-                varDataElement
-            );
+                varDataElement);
         }
     }
 }

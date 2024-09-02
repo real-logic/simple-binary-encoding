@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package uk.co.real_logic.sbe.properties.arbitraries;
 
 import net.jqwik.api.Arbitraries;
@@ -268,9 +267,7 @@ public final class SbeArbitraries
                 (short)0,
                 (short)0,
                 (short)1,
-                (short)2
-            )
-        );
+                (short)2));
     }
 
     public static Arbitrary<MessageSchema> messageSchema()
@@ -352,8 +349,10 @@ public final class SbeArbitraries
         {
             case UNRESTRICTED:
                 return Arbitraries.chars();
+
             case JSON_PRINTER_COMPATIBLE:
                 return Arbitraries.chars().alpha();
+
             default:
                 throw new IllegalArgumentException("Unsupported mode: " + mode);
         }
