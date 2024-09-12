@@ -32,7 +32,7 @@ buildscript {
 plugins {
     id 'java-library'
     id 'jvm-test-suite'
-    id 'com.gradleup.shadow' version '8.3.0' apply false
+    id 'com.gradleup.shadow' version '8.3.1' apply false
     id 'com.github.ben-manes.versions' version '0.51.0'
 }
 
