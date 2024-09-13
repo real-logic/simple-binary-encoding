@@ -18,22 +18,11 @@ import java.nio.file.Files
 import java.nio.file.StandardOpenOption
 import java.security.MessageDigest
 
-buildscript {
-    repositories {
-        gradlePluginPortal()
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'org.ow2.asm:asm:9.7'
-        classpath 'org.ow2.asm:asm-commons:9.7'
-    }
-}
-
 plugins {
     id 'java-library'
     id 'jvm-test-suite'
-    id 'com.gradleup.shadow' version '8.3.1' apply false
-    id 'com.github.ben-manes.versions' version '0.51.0'
+    alias(libs.plugins.shadow).apply(false)
+    alias(libs.plugins.versions)
 }
 
 defaultTasks 'clean', 'build'
@@ -53,16 +42,6 @@ int buildJavaVersion = getBuildJavaVersion()
 def toolchainLauncher = javaToolchains.launcherFor {
     languageVersion = JavaLanguageVersion.of(buildJavaVersion)
 }
-
-def checkstyleVersion = '10.18.0'
-def hamcrestVersion = '3.0'
-def mockitoVersion = '5.13.0'
-def junitVersion = '5.11.0'
-def jqwikVersion = '1.9.0'
-def jsonVersion = '20240303'
-def jmhVersion = '1.37'
-def agronaVersion = '1.23.0'
-def agronaVersionRange = "[${agronaVersion},2.0["
 
 def sbeGroup = 'uk.co.real-logic'
 def sbeVersion = file('version.txt').text.trim()
@@ -193,7 +172,7 @@ subprojects {
         sourceCompatibility = JavaVersion.VERSION_17
     }
 
-    checkstyle.toolVersion = "${checkstyleVersion}"
+    checkstyle.toolVersion = libs.versions.checkstyle.get()
 
     tasks.withType(Sign).configureEach {
         onlyIf {
@@ -219,7 +198,7 @@ subprojects {
         options.encoding = 'UTF-8'
         options.docEncoding = 'UTF-8'
         options.charSet = 'UTF-8'
-        options.links("https://www.javadoc.io/doc/org.agrona/agrona/${agronaVersion}/")
+        options.links("https://www.javadoc.io/doc/org.agrona/agrona/${libs.versions.agrona.get()}/")
         if (buildJavaVersion >= 23) { // early access JavaDoc location is different
             options.links("https://download.java.net/java/early_access/jdk${buildJavaVersion}/docs/api/")
         }
@@ -232,7 +211,7 @@ subprojects {
     testing {
         suites {
             test {
-                useJUnitJupiter junitVersion
+                useJUnitJupiter libs.versions.junit.get()
 
                 targets {
                     all {
@@ -267,12 +246,7 @@ project(':sbe-tool') {
     apply plugin: 'signing'
 
     dependencies {
-        api("org.agrona:agrona") {
-            version {
-                strictly(agronaVersionRange)
-                prefer(agronaVersion)
-            }
-        }
+        api libs.agrona
     }
 
     def generatedDir = "${layout.buildDirectory.get()}/generated-src"
@@ -300,9 +274,9 @@ project(':sbe-tool') {
             test {
                 dependencies {
                     implementation files("${layout.buildDirectory.get()}/classes/java/generated")
-                    implementation "org.hamcrest:hamcrest:${hamcrestVersion}"
-                    implementation "org.mockito:mockito-core:${mockitoVersion}"
-                    implementation platform("org.junit:junit-bom:${junitVersion}")
+                    implementation libs.hamcrest
+                    implementation libs.mockito
+                    implementation platform("org.junit:junit-bom:${libs.versions.junit.get()}")
                     implementation "org.junit.jupiter:junit-jupiter-params"
                 }
             }
@@ -310,16 +284,16 @@ project(':sbe-tool') {
             propertyTest(JvmTestSuite) {
                 // We should be able to use _only_ the JQwik engine, but this issue is outstanding:
                 // https://github.com/gradle/gradle/issues/21299
-                useJUnitJupiter junitVersion
+                useJUnitJupiter libs.versions.junit.get()
 
                 dependencies {
                     implementation project()
-                    implementation("net.jqwik:jqwik:${jqwikVersion}") {
+                    implementation(libs.jqwik) {
                         // Exclude JUnit 5 dependencies that are already provided due to useJUnitJupiter
                         exclude group: 'org.junit.platform', module: 'junit-platform-commons'
                         exclude group: 'org.junit.platform', module: 'junit-platform-engine'
                     }
-                    implementation "org.json:json:${jsonVersion}"
+                    implementation libs.json
                 }
 
 
@@ -611,8 +585,8 @@ project(':sbe-benchmarks') {
     apply plugin: 'com.gradleup.shadow'
 
     dependencies {
-        implementation "org.openjdk.jmh:jmh-core:${jmhVersion}"
-        annotationProcessor "org.openjdk.jmh:jmh-generator-annprocess:${jmhVersion}"
+        implementation libs.jmh.core
+        annotationProcessor libs.jmh.generator.annprocess
         implementation project(':sbe-tool')
         implementation files("${layout.buildDirectory.get()}/classes/java/generated")
     }
