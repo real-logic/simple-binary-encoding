@@ -260,6 +260,158 @@ func NewPrimitiveValue(t PrimitiveType, value []byte) PrimitiveValue {
 	return p
 }
 
+func ParsePrimitiveValue(t PrimitiveType, value []byte) (PrimitiveValue, error) {
+	p := PrimitiveValue{PrimitiveType: t}
+
+	var err error
+
+	switch t {
+	case CHAR:
+		if len(value) > 1 {
+			p.arrayValue = string(value)
+			p.size = len(value)
+		} else {
+			p.asInt = int64(value[0])
+			p.size = 1
+		}
+	case INT8:
+		p.asInt, err = strconv.ParseInt(string(value), 10, 8)
+		p.size = 1
+	case INT16:
+		p.asInt, err = strconv.ParseInt(string(value), 10, 16)
+		p.size = 2
+	case INT32:
+		p.asInt, err = strconv.ParseInt(string(value), 10, 32)
+		p.size = 4
+	case INT64:
+		p.asInt, err = strconv.ParseInt(string(value), 10, 64)
+		p.size = 8
+	case UINT8:
+		p.asUInt, err = strconv.ParseUint(string(value), 10, 8)
+		p.size = 1
+	case UINT16:
+		p.asUInt, err = strconv.ParseUint(string(value), 10, 16)
+		p.size = 2
+	case UINT32:
+		p.asUInt, err = strconv.ParseUint(string(value), 10, 32)
+		p.size = 4
+	case UINT64:
+		p.asUInt, err = strconv.ParseUint(string(value), 10, 64)
+		p.size = 8
+	case FLOAT:
+		p.asDouble, err = strconv.ParseFloat(string(value), 32)
+		p.size = 4
+	case DOUBLE:
+		p.asDouble, err = strconv.ParseFloat(string(value), 64)
+		p.size = 8
+	default:
+		p.PrimitiveType = NONE
+		p.size = 0
+	}
+
+	return p, err
+}
+
+func NewNoneValue() PrimitiveValue {
+	return PrimitiveValue{}
+}
+
+func NewCharValue(value byte) PrimitiveValue {
+	return PrimitiveValue{
+		PrimitiveType: CHAR,
+		size:          1,
+		asInt:         int64(value),
+	}
+}
+
+func NewStringValue(value string) PrimitiveValue {
+	return PrimitiveValue{
+		PrimitiveType: CHAR,
+		size:          len(value),
+		arrayValue:    value,
+	}
+}
+
+func NewInt8Value(value int8) PrimitiveValue {
+	return PrimitiveValue{
+		PrimitiveType: INT8,
+		size:          1,
+		asInt:         int64(value),
+	}
+}
+
+func NewInt16Value(value int16) PrimitiveValue {
+	return PrimitiveValue{
+		PrimitiveType: INT16,
+		size:          2,
+		asInt:         int64(value),
+	}
+}
+
+func NewInt32Value(value int32) PrimitiveValue {
+	return PrimitiveValue{
+		PrimitiveType: INT32,
+		size:          4,
+		asInt:         int64(value),
+	}
+}
+
+func NewInt64Value(value int64) PrimitiveValue {
+	return PrimitiveValue{
+		PrimitiveType: INT64,
+		size:          8,
+		asInt:         value,
+	}
+}
+
+func NewUInt8Value(value uint8) PrimitiveValue {
+	return PrimitiveValue{
+		PrimitiveType: UINT8,
+		size:          1,
+		asUInt:        uint64(value),
+	}
+}
+
+func NewUInt16Value(value uint16) PrimitiveValue {
+	return PrimitiveValue{
+		PrimitiveType: UINT16,
+		size:          2,
+		asUInt:        uint64(value),
+	}
+}
+
+func NewUInt32Value(value uint32) PrimitiveValue {
+	return PrimitiveValue{
+		PrimitiveType: UINT32,
+		size:          4,
+		asUInt:        uint64(value),
+	}
+}
+
+func NewUInt64Value(value uint64) PrimitiveValue {
+	return PrimitiveValue{
+		PrimitiveType: UINT64,
+		size:          8,
+		asUInt:        value,
+	}
+}
+
+func NewFloatValue(value float32) PrimitiveValue {
+	return PrimitiveValue{
+		PrimitiveType: FLOAT,
+		size:          4,
+		asDouble:      float64(value),
+	}
+}
+
+func NewDoubleValue(value float64) PrimitiveValue {
+	return PrimitiveValue{
+		PrimitiveType: DOUBLE,
+		size:          8,
+		asDouble:      value,
+	}
+}
+
 func (p *PrimitiveValue) AsInt() int64 {
 	return p.asInt
 }
@@ -273,6 +425,18 @@ func (p *PrimitiveValue) AsDouble() float64 {
 }
 
 func (p *PrimitiveValue) GetArray() string {
+	return p.arrayValue
+}
+
+func (p *PrimitiveValue) AsString() string {
+	if p.size <= 1 {
+		return string(byte(p.asInt))
+	}
+	for i := 0; i < len(p.arrayValue); i++ {
+		if p.arrayValue[i] == 0 {
+			return p.arrayValue[:i]
+		}
+	}
 	return p.arrayValue
 }
 
