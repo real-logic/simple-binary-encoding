@@ -19,11 +19,11 @@ all: example test # bench
 # This target is used to build golang files using parent gradle
 # script's invocation of sbe-tool in case it needs to be run again. We
 # use this one output file to check that dependency as it's simple
-DEP=src/struct/simple/SbeMarshalling.go
+DEP=struct/src/simple/SbeMarshalling.go
 $(DEP): $(SBE_JAR)
 	(cd ..; ./gradlew generateGolangCodecs)
-	(export GOPATH=$(GOPATH) && \
-	cd src/struct/simple && \
+	(export GOPATH=$(GOPATH)/struct && \
+	cd struct/src/simple && \
 	go build && \
 	$(SAVE_FORMAT) \
 	go fmt && \
@@ -31,27 +31,27 @@ $(DEP): $(SBE_JAR)
 
 # Will regenerate codecs by removing dependencies
 clean:
-	rm -f src/struct/*/SbeMarshalling.go src/struct/*/*/SbeMarshalling.go
+	rm -f struct/src/*/SbeMarshalling.go struct/src/*/*/SbeMarshalling.go
 
-# Example code and benchmarking 
-example: src/struct/example-schema/example-schema
-src/struct/example-schema/example-schema: $(DEP)
-	(export GOPATH=$(GOPATH) && \
-	cd src/struct/example-schema && \
+# Example code and benchmarking
+example: struct/src/example-schema/example-schema
+struct/src/example-schema/example-schema: $(DEP)
+	(export GOPATH=$(GOPATH)/struct && \
+	cd struct/src/example-schema && \
 	go build && \
 	go fmt && \
 	./example-schema)
 
 bench: $(DEP)
-	(export GOPATH=$(GOPATH) && \
-        cd src/struct/example-schema && \
+	(export GOPATH=$(GOPATH)/struct && \
+        cd struct/src/example-schema && \
 	go test --bench . -cpuprofile=cpu.out && \
 	go tool pprof -text example-schema.test cpu.out)
 
-src/struct/baseline/SbeMarshalling.go: $(DEP)
+struct/src/baseline/SbeMarshalling.go: $(DEP)
 	$(GOPATH)/sbe-tool -d src -s $(EXAMPLES_SCHEMA)
-	(export GOPATH=$(GOPATH) && \
-        cd src/struct/baseline && \
+	(export GOPATH=$(GOPATH)/struct && \
+        cd struct/src/baseline && \
 	go build && \
 	go fmt && \
 	go test && \
@@ -59,51 +59,51 @@ src/struct/baseline/SbeMarshalling.go: $(DEP)
 
 # The first set does a make install as there is a test that uses
 # multiple packages and needs them in GOPATH The second set work in
-# src/struct/foo, and the third need a GOPATH addition as for Java and C++
+# struct/src/foo, and the third need a GOPATH addition as for Java and C++
 # they generate into the same directory but golang doesn't allow that
 test: $(DEP)
-	(export GOPATH=$(GOPATH) && \
+	(export GOPATH=$(GOPATH)/struct && \
 		(for t in baseline extension; do \
-		export GOPATH=$(GOPATH) && \
-	        cd $(GOPATH)/src/struct/$$t && \
+		export GOPATH=$(GOPATH)/struct && \
+	        cd $(GOPATH)/struct/src/$$t && \
 		go build && \
 		go fmt && \
 		go test && \
 		go install \
 		;done))
-	(export GOPATH=$(GOPATH) && \
+	(export GOPATH=$(GOPATH)/struct && \
 		(for t in baseline-bigendian mktdata group_with_data group_with_data_extension composite_elements composite since-deprecated simple issue435 issue472 issue483 issue488 issue560 issue847 issue848 issue849 issue505 test973; do \
-		cd $(GOPATH)/src/struct/$$t && \
+		cd $(GOPATH)/struct/src/$$t && \
 		go build && \
 		go fmt && \
 		go test \
 		;done))
 	(for t in vardata group basic; do \
-		export GOPATH=$(GOPATH)/$$t && \
-		cd $(GOPATH)/src/struct/$$t/'SBE tests' && \
+		export GOPATH=$(GOPATH)/struct/$$t && \
+		cd $(GOPATH)/struct/src/$$t/'SBE tests' && \
 		go build && \
 		go fmt && \
 		go test \
 		;done)
-	(export GOPATH=$(GOPATH) && \
+	(export GOPATH=$(GOPATH)/flyweight && \
 		(for t in baseline extension; do \
-		export GOPATH=$(GOPATH) && \
-	        cd $(GOPATH)/src/flyweight/$$t && \
+		export GOPATH=$(GOPATH)/flyweight && \
+	        cd $(GOPATH)/flyweight/src/$$t && \
 		go build && \
 		go fmt && \
 		go test && \
 		go install \
 		;done))
-	(export GOPATH=$(GOPATH) && \
+	(export GOPATH=$(GOPATH)/flyweight && \
 		(for t in baseline-bigendian mktdata group_with_data group_with_data_extension composite_elements composite since-deprecated simple issue435 issue472 issue483 issue488 issue560 issue847 issue848 issue849; do \
-		cd $(GOPATH)/src/flyweight/$$t && \
+		cd $(GOPATH)/flyweight/src/$$t && \
 		go build && \
 		go fmt && \
 		go test \
 		;done))
 	(for t in vardata group basic; do \
-		export GOPATH=$(GOPATH)/$$t && \
-		cd $(GOPATH)/src/flyweight/$$t/'SBE tests' && \
+		export GOPATH=$(GOPATH)/flyweight/$$t && \
+		cd $(GOPATH)/flyweight/src/$$t/'SBE tests' && \
 		go build && \
 		go fmt && \
 		go test \

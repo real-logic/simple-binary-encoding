@@ -1,8 +1,8 @@
 package group_with_data_extension
 
 import (
-	"flyweight/group_with_data"
 	"fmt"
+	"group_with_data"
 	"math"
 	"testing"
 )
