@@ -108,3 +108,10 @@ test: $(DEP)
 		go fmt && \
 		go test \
 		;done)
+	(export SBE_JAR=$(SBE_JAR) && \
+	 export GO111MODULE=on && \
+		(cd $(GOPATH)/flyweight/src/otf && \
+			go generate && \
+			go build && \
+			go fmt && \
+			go test))

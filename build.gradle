@@ -865,6 +865,7 @@ tasks.register('generateGolangCodecs') {
             'generateGolangFlyweightCodecTestComposite',
             'generateGolangFlyweightCodecsWithXIncludes',
             'generateGolangFlyweightCodecsWithXSD',
+	    'generateIrCodecs',
             ':sbe-all:jar'
 }
 
@@ -953,6 +954,7 @@ tasks.register('generateGolangIrCodecs', JavaExec) {
     systemProperties(
             'sbe.output.dir': 'sbe-tool/src/main/golang',
             'sbe.target.language': 'golang',
+	    'sbe.go.generate.generate.flyweights': true,
             'sbe.validation.xsd': validationXsdPath)
     args = ['sbe-tool/src/main/resources/sbe-ir.xml']
 }

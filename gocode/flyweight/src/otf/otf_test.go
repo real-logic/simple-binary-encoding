@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-//go:generate java -Dsbe.output.dir=. -Dsbe.target.language=golang -Dsbe.go.generate.generate.flyweights=true -Dsbe.generate.ir=true -jar ../../../../sbe-all/build/libs/sbe-all-1.30.0-SNAPSHOT.jar ../../../../sbe-tool/src/test/resources/code-generation-schema.xml
+//go:generate java -Dsbe.output.dir=. -Dsbe.target.language=golang -Dsbe.go.generate.generate.flyweights=true -Dsbe.generate.ir=true -jar ../../../${SBE_JAR} ../../../../sbe-tool/src/test/resources/code-generation-schema.xml
 
 const SchemaFilename = "code-generation-schema.sbeir"
 const MsgBufferCapacity = 4 * 1024

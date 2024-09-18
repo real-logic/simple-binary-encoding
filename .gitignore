@@ -64,6 +64,7 @@ cppbuild/Release
 cppbuild/Win32
 
 # golang
+gocode/pkg
 gocode/*/pkg
 gocode/struct/src/*/*.go
 !gocode/struct/src/*/*_test.go
@@ -75,6 +76,7 @@ gocode/flyweight/src/*/*.go
 !gocode/flyweight/src/*/*_test.go
 gocode/flyweight/src/*/*/*.go
 !gocode/flyweight/src/*/*/*_test.go
+gocode/flyweight/src/otf/code-generation-schema.sbeir
 
 # csharp
 csharp/*/bin
