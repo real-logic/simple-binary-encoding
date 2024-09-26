@@ -56,8 +56,7 @@ public class DtoTest
         final ExpandableArrayBuffer inputBuffer = new ExpandableArrayBuffer();
         final int inputLength = encodeCar(inputBuffer, 0);
 
-        final CarDto dto =
-            CarDto.decodeFrom(inputBuffer, 0, (short)CarDecoder.BLOCK_LENGTH, (short)CarDecoder.SCHEMA_VERSION);
+        final CarDto dto = CarDto.decodeFrom(inputBuffer, 0, CarDecoder.BLOCK_LENGTH, CarDecoder.SCHEMA_VERSION);
 
         final ExpandableArrayBuffer outputBuffer = new ExpandableArrayBuffer();
         final int outputLength = CarDto.encodeWith(dto, outputBuffer, 0);

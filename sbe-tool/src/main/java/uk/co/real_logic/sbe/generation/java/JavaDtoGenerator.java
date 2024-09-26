@@ -470,7 +470,7 @@ public class JavaDtoGenerator implements CodeGenerator
             .append("\n")
             .append(indent).append("public static ").append(dtoClassName).append(" decodeFrom(")
             .append("DirectBuffer buffer, int offset, ")
-            .append("short actingBlockLength, short actingVersion)\n")
+            .append("int actingBlockLength, int actingVersion)\n")
             .append(indent).append("{\n")
             .append(indent).append(INDENT).append(decoderClassName).append(" decoder = new ")
             .append(decoderClassName).append("();\n")

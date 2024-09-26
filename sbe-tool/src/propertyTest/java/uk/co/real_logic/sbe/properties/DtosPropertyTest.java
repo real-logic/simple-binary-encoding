@@ -101,7 +101,7 @@ public class DtosPropertyTest
                     generatedClassLoader.loadClass(packageName + ".TestMessageDto");
 
                 final Method decodeFrom =
-                    dtoClass.getMethod("decodeFrom", DirectBuffer.class, int.class, short.class, short.class);
+                    dtoClass.getMethod("decodeFrom", DirectBuffer.class, int.class, int.class, int.class);
 
                 final Method encodeWith =
                     dtoClass.getMethod("encodeWithHeaderWith", dtoClass, MutableDirectBuffer.class, int.class);
@@ -109,8 +109,8 @@ public class DtosPropertyTest
                 final int inputLength = encodedMessage.length();
                 final ExpandableArrayBuffer inputBuffer = encodedMessage.buffer();
                 final MessageHeaderDecoder header = new MessageHeaderDecoder().wrap(inputBuffer, 0);
-                final short blockLength = (short)header.blockLength();
-                final short actingVersion = (short)header.version();
+                final int blockLength = header.blockLength();
+                final int actingVersion = header.version();
                 final Object dto = decodeFrom.invoke(null,
                     encodedMessage.buffer(), MessageHeaderDecoder.ENCODED_LENGTH, blockLength, actingVersion);
                 outputBuffer.setMemory(0, outputBuffer.capacity(), (byte)0);
