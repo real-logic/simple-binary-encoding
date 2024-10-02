@@ -16,4 +16,4 @@ jmh-generator-annprocess = { group = "org.openjdk.jmh", name = "jmh-generator-an
 
 [plugins]
 versions = { id = "com.github.ben-manes.versions", version = "0.51.0" }
-shadow = { id = "com.gradleup.shadow", version = "8.3.2" }
+shadow = { id = "com.gradleup.shadow", version = "8.3.3" }
