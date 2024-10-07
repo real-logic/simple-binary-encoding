@@ -18,6 +18,7 @@ package uk.co.real_logic.sbe.generation.golang;
 import org.agrona.generation.StringWriterOutputManager;
 import org.junit.jupiter.api.Test;
 import uk.co.real_logic.sbe.Tests;
+import uk.co.real_logic.sbe.generation.golang.struct.GolangGenerator;
 import uk.co.real_logic.sbe.ir.Ir;
 import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
@@ -28,7 +29,7 @@ import java.io.InputStream;
 import static org.junit.jupiter.api.Assertions.*;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
-class GolangGeneratorTest
+class GolangStructGeneratorTest
 {
     @Test
     @SuppressWarnings("MethodLength")

@@ -1,6 +1,5 @@
 /*
  * Copyright 2013-2024 Real Logic Limited.
- * Copyright (C) 2016 MarketFactory, Inc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.co.real_logic.sbe.generation.golang;
+package uk.co.real_logic.sbe.generation.golang.flyweight;
 
 import org.agrona.generation.OutputManager;
 import org.agrona.Verify;
@@ -29,7 +28,7 @@ import static java.io.File.separatorChar;
  * {@link OutputManager} for managing the creation of golang source files as the target of code generation.
  * The character encoding for the {@link java.io.Writer} is UTF-8.
  */
-public class GolangOutputManager implements OutputManager
+public class GolangFlyweightOutputManager implements OutputManager
 {
     private final File outputDir;
 
@@ -39,7 +38,7 @@ public class GolangOutputManager implements OutputManager
      * @param baseDirName   for the generated source code.
      * @param namespaceName for the generated source code relative to the baseDirName.
      */
-    public GolangOutputManager(final String baseDirName, final String namespaceName)
+    public GolangFlyweightOutputManager(final String baseDirName, final String namespaceName)
     {
         Verify.notNull(baseDirName, "baseDirName");
         Verify.notNull(namespaceName, "applicableNamespace");

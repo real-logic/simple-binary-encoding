@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.co.real_logic.sbe.generation.golang;
+package uk.co.real_logic.sbe.generation.golang.struct;
 
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.generation.CodeGenerator;
@@ -37,7 +37,7 @@ import java.util.TreeSet;
 
 import static uk.co.real_logic.sbe.PrimitiveType.CHAR;
 import static uk.co.real_logic.sbe.generation.Generators.toUpperFirstChar;
-import static uk.co.real_logic.sbe.generation.golang.GolangUtil.*;
+import static uk.co.real_logic.sbe.generation.golang.struct.GolangUtil.*;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectVarData;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectGroups;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectFields;
