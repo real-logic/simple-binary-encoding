@@ -54,23 +54,23 @@ public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
                 ir,
                 System.getProperty(JAVA_ENCODING_BUFFER_TYPE, JAVA_DEFAULT_ENCODING_BUFFER_TYPE),
                 System.getProperty(JAVA_DECODING_BUFFER_TYPE, JAVA_DEFAULT_DECODING_BUFFER_TYPE),
-                "true".equals(System.getProperty(JAVA_GROUP_ORDER_ANNOTATION)),
-                "true".equals(System.getProperty(JAVA_GENERATE_INTERFACES)),
-                "true".equals(System.getProperty(DECODE_UNKNOWN_ENUM_VALUES)),
-                "true".equals(System.getProperty(TYPES_PACKAGE_OVERRIDE)),
+                Boolean.getBoolean(JAVA_GROUP_ORDER_ANNOTATION),
+                Boolean.getBoolean(JAVA_GENERATE_INTERFACES),
+                Boolean.getBoolean(DECODE_UNKNOWN_ENUM_VALUES),
+                Boolean.getBoolean(TYPES_PACKAGE_OVERRIDE),
                 precedenceChecks(),
                 outputManager);
 
-            final JavaDtoGenerator dtoGenerator = new JavaDtoGenerator(ir, outputManager);
-
-            final CodeGenerator combinedGenerator = () ->
+            if (Boolean.getBoolean(JAVA_GENERATE_DTOS))
             {
-                codecGenerator.generate();
-                dtoGenerator.generate();
-            };
-
-            final boolean generateDtos = "true".equals(System.getProperty(JAVA_GENERATE_DTOS));
-            return generateDtos ? combinedGenerator : codecGenerator;
+                final JavaDtoGenerator dtoGenerator = new JavaDtoGenerator(ir, outputManager);
+                return () ->
+                {
+                    codecGenerator.generate();
+                    dtoGenerator.generate();
+                };
+            }
+            return codecGenerator;
         }
     },
 
@@ -100,19 +100,21 @@ public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
         {
             final NamespaceOutputManager outputManager = new NamespaceOutputManager(
                 outputDir, ir.applicableNamespace());
-            final boolean decodeUnknownEnumValues = "true".equals(System.getProperty(DECODE_UNKNOWN_ENUM_VALUES));
+            final boolean decodeUnknownEnumValues = Boolean.getBoolean(DECODE_UNKNOWN_ENUM_VALUES);
 
             final CodeGenerator codecGenerator = new CppGenerator(ir, decodeUnknownEnumValues, precedenceChecks(),
                 outputManager);
-            final CodeGenerator dtoGenerator = new CppDtoGenerator(ir, outputManager);
-            final CodeGenerator combinedGenerator = () ->
-            {
-                codecGenerator.generate();
-                dtoGenerator.generate();
-            };
 
-            final boolean generateDtos = "true".equals(System.getProperty(CPP_GENERATE_DTOS));
-            return generateDtos ? combinedGenerator : codecGenerator;
+            if (Boolean.getBoolean(CPP_GENERATE_DTOS))
+            {
+                final CodeGenerator dtoGenerator = new CppDtoGenerator(ir, outputManager);
+                return () ->
+                {
+                    codecGenerator.generate();
+                    dtoGenerator.generate();
+                };
+            }
+            return codecGenerator;
         }
     },
 
