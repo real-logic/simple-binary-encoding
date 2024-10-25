@@ -26,7 +26,7 @@ fn round_trip() -> SbeResult<()> {
     assert_eq!(SBE_TEMPLATE_ID, header.template_id());
     assert_eq!(SBE_SCHEMA_ID, header.schema_id());
 
-    let decoder = Issue972Decoder::default().header(header);
+    let decoder = Issue972Decoder::default().header(header, 0);
     if let Either::Right(composite) = decoder.new_field_decoder() {
         assert_eq!(2007, composite.f1().unwrap());
         assert_eq!(2012, composite.f2().unwrap());
