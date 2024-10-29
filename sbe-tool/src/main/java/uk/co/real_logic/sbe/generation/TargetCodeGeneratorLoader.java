@@ -21,8 +21,10 @@ import uk.co.real_logic.sbe.generation.common.PrecedenceChecks;
 import uk.co.real_logic.sbe.generation.cpp.CppDtoGenerator;
 import uk.co.real_logic.sbe.generation.cpp.CppGenerator;
 import uk.co.real_logic.sbe.generation.cpp.NamespaceOutputManager;
-import uk.co.real_logic.sbe.generation.golang.GolangGenerator;
-import uk.co.real_logic.sbe.generation.golang.GolangOutputManager;
+import uk.co.real_logic.sbe.generation.golang.struct.GolangGenerator;
+import uk.co.real_logic.sbe.generation.golang.struct.GolangOutputManager;
+import uk.co.real_logic.sbe.generation.golang.flyweight.GolangFlyweightGenerator;
+import uk.co.real_logic.sbe.generation.golang.flyweight.GolangFlyweightOutputManager;
 import uk.co.real_logic.sbe.generation.java.JavaDtoGenerator;
 import uk.co.real_logic.sbe.generation.java.JavaGenerator;
 import uk.co.real_logic.sbe.generation.java.JavaOutputManager;
@@ -128,7 +130,19 @@ public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
          */
         public CodeGenerator newInstance(final Ir ir, final String outputDir)
         {
-            return new GolangGenerator(ir, new GolangOutputManager(outputDir, ir.applicableNamespace()));
+            if ("true".equals(System.getProperty(GO_GENERATE_FLYWEIGHTS)))
+            {
+                return new GolangFlyweightGenerator(
+                    ir,
+                    "true".equals(System.getProperty(DECODE_UNKNOWN_ENUM_VALUES)),
+                    new GolangFlyweightOutputManager(outputDir, ir.applicableNamespace()));
+            }
+            else
+            {
+                return new GolangGenerator(
+                    ir,
+                    new GolangOutputManager(outputDir, ir.applicableNamespace()));
+            }
         }
     },
 

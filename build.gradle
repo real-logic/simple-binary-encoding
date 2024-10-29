@@ -700,7 +700,7 @@ tasks.register('generateGolangCodecTestComposite', JavaExec) {
     mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
     systemProperties(
-            'sbe.output.dir': 'gocode/src',
+            'sbe.output.dir': 'gocode/struct/src',
             'sbe.target.language': 'golang')
     args = ['sbe-tool/src/test/resources/composite-elements-schema-rc4.xml']
 }
@@ -709,7 +709,7 @@ tasks.register('generateGolangCodecTestBasic', JavaExec) {
     mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
     systemProperties(
-            'sbe.output.dir': 'gocode/src/basic',
+            'sbe.output.dir': 'gocode/struct/src/basic',
             'sbe.target.language': 'golang')
     args = ['sbe-tool/src/test/resources/basic-types-schema.xml']
 }
@@ -718,7 +718,7 @@ tasks.register('generateGolangCodecTestGroup', JavaExec) {
     mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
     systemProperties(
-            'sbe.output.dir': 'gocode/src/group',
+            'sbe.output.dir': 'gocode/struct/src/group',
             'sbe.target.language': 'golang')
     args = ['sbe-tool/src/test/resources/basic-group-schema.xml']
 }
@@ -727,7 +727,7 @@ tasks.register('generateGolangCodecTestVarData', JavaExec) {
     mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
     systemProperties(
-            'sbe.output.dir': 'gocode/src/vardata',
+            'sbe.output.dir': 'gocode/struct/src/vardata',
             'sbe.target.language': 'golang')
     args = ['sbe-tool/src/test/resources/basic-variable-length-schema.xml']
 }
@@ -736,7 +736,7 @@ tasks.register('generateGolangCodecsWithXIncludes', JavaExec) {
     mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
     systemProperties(
-            'sbe.output.dir': 'gocode/src',
+            'sbe.output.dir': 'gocode/struct/src',
             'sbe.target.language': 'golang',
             'sbe.xinclude.aware': 'true',
             'sbe.validation.xsd': validationXsdPath)
@@ -748,7 +748,87 @@ tasks.register('generateGolangCodecsWithXSD', JavaExec) {
     mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
     systemProperties(
-            'sbe.output.dir': 'gocode/src',
+            'sbe.output.dir': 'gocode/struct/src',
+            'sbe.target.language': 'golang',
+            'sbe.xinclude.aware': 'true',
+            'sbe.validation.xsd': validationXsdPath)
+    args = ['sbe-tool/src/test/resources/group-with-data-schema.xml',
+            'sbe-tool/src/test/resources/FixBinary.xml',
+            'sbe-tool/src/test/resources/issue435.xml',
+            'sbe-tool/src/test/resources/issue472.xml',
+            'sbe-tool/src/test/resources/issue483.xml',
+            'sbe-tool/src/test/resources/issue488.xml',
+            'sbe-tool/src/test/resources/issue560.xml',
+            'sbe-tool/src/test/resources/issue661.xml',
+            'sbe-tool/src/test/resources/issue847.xml',
+            'sbe-tool/src/test/resources/issue848.xml',
+            'sbe-tool/src/test/resources/issue849.xml',
+            'sbe-tool/src/test/resources/since-deprecated-test-schema.xml',
+            'sbe-tool/src/test/resources/example-bigendian-test-schema.xml',
+            'gocode/resources/example-composite.xml',
+            'gocode/resources/group-with-data-extension-schema.xml',
+            'gocode/resources/simple.xml']
+}
+
+tasks.register('generateGolangFlyweightCodecTestComposite', JavaExec) {
+    mainClass.set('uk.co.real_logic.sbe.SbeTool')
+    classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
+    systemProperties(
+            'sbe.output.dir': 'gocode/flyweight/src',
+            'sbe.go.generate.generate.flyweights': 'true',
+            'sbe.target.language': 'golang')
+    args = ['sbe-tool/src/test/resources/composite-elements-schema-rc4.xml']
+}
+
+tasks.register('generateGolangFlyweightCodecTestBasic', JavaExec) {
+    mainClass.set('uk.co.real_logic.sbe.SbeTool')
+    classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
+    systemProperties(
+            'sbe.output.dir': 'gocode/flyweight/src/basic',
+            'sbe.go.generate.generate.flyweights': 'true',
+            'sbe.target.language': 'golang')
+    args = ['sbe-tool/src/test/resources/basic-types-schema.xml']
+}
+
+tasks.register('generateGolangFlyweightCodecTestGroup', JavaExec) {
+    mainClass.set('uk.co.real_logic.sbe.SbeTool')
+    classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
+    systemProperties(
+            'sbe.output.dir': 'gocode/flyweight/src/group',
+            'sbe.go.generate.generate.flyweights': 'true',
+            'sbe.target.language': 'golang')
+    args = ['sbe-tool/src/test/resources/basic-group-schema.xml']
+}
+
+tasks.register('generateGolangFlyweightCodecTestVarData', JavaExec) {
+    mainClass.set('uk.co.real_logic.sbe.SbeTool')
+    classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
+    systemProperties(
+            'sbe.output.dir': 'gocode/flyweight/src/vardata',
+            'sbe.go.generate.generate.flyweights': 'true',
+            'sbe.target.language': 'golang')
+    args = ['sbe-tool/src/test/resources/basic-variable-length-schema.xml']
+}
+
+tasks.register('generateGolangFlyweightCodecsWithXIncludes', JavaExec) {
+    mainClass.set('uk.co.real_logic.sbe.SbeTool')
+    classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
+    systemProperties(
+            'sbe.output.dir': 'gocode/flyweight/src',
+            'sbe.go.generate.generate.flyweights': 'true',
+            'sbe.target.language': 'golang',
+            'sbe.xinclude.aware': 'true',
+            'sbe.validation.xsd': validationXsdPath)
+    args = ['sbe-samples/src/main/resources/example-schema.xml',
+            'sbe-samples/src/main/resources/example-extension-schema.xml']
+}
+
+tasks.register('generateGolangFlyweightCodecsWithXSD', JavaExec) {
+    mainClass.set('uk.co.real_logic.sbe.SbeTool')
+    classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
+    systemProperties(
+            'sbe.output.dir': 'gocode/flyweight/src',
+            'sbe.go.generate.generate.flyweights': 'true',
             'sbe.target.language': 'golang',
             'sbe.xinclude.aware': 'true',
             'sbe.validation.xsd': validationXsdPath)
@@ -780,6 +860,13 @@ tasks.register('generateGolangCodecs') {
             'generateGolangCodecTestComposite',
             'generateGolangCodecsWithXIncludes',
             'generateGolangCodecsWithXSD',
+            'generateGolangFlyweightCodecTestVarData',
+            'generateGolangFlyweightCodecTestGroup',
+            'generateGolangFlyweightCodecTestBasic',
+            'generateGolangFlyweightCodecTestComposite',
+            'generateGolangFlyweightCodecsWithXIncludes',
+            'generateGolangFlyweightCodecsWithXSD',
+	    'generateIrCodecs',
             ':sbe-all:jar'
 }
 
@@ -868,6 +955,7 @@ tasks.register('generateGolangIrCodecs', JavaExec) {
     systemProperties(
             'sbe.output.dir': 'sbe-tool/src/main/golang',
             'sbe.target.language': 'golang',
+	    'sbe.go.generate.generate.flyweights': true,
             'sbe.validation.xsd': validationXsdPath)
     args = ['sbe-tool/src/main/resources/sbe-ir.xml']
 }
