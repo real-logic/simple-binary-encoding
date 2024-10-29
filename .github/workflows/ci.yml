@@ -374,7 +374,8 @@ jobs:
           key: ${{ runner.os }}-gradle-wrapper-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}
       - name: Rust setup
         uses: dtolnay/rust-toolchain@stable
-        toolchain: ${{ matrix.rust }}
+        with:
+          toolchain: ${{ matrix.rust }}
       - name: Setup java 17 to run the Gradle script
         uses: actions/setup-java@v4
         with:
