@@ -1266,6 +1266,20 @@ public class RustGenerator implements CodeGenerator
         indent(writer, 0, "}\n");
 
         // From impl
+        generateFromImplForEnum(enumRustName, primitiveType, messageBody, writer);
+
+        // Into impl
+        generateIntoImplForEnum(enumRustName, primitiveType, messageBody, writer);
+
+        // FromStr impl
+        generateFromStrImplForEnum(enumRustName, primitiveType, messageBody, writer);
+
+        // Display impl
+        generateDisplayImplForEnum(enumRustName, primitiveType, messageBody, writer);
+    }
+
+    private static void generateFromImplForEnum(
+            final String enumRustName, final String primitiveType,final List<Token> messageBody, final Appendable writer) throws IOException {
         indent(writer, 0, "impl From<%s> for %s {\n", primitiveType, enumRustName);
         indent(writer, 1, "#[inline]\n");
         indent(writer, 1, "fn from(v: %s) -> Self {\n", primitiveType);
@@ -1283,8 +1297,10 @@ public class RustGenerator implements CodeGenerator
         indent(writer, 2, "}\n");
         indent(writer, 1, "}\n");
         indent(writer, 0, "}\n");
+    }
 
-        // Into impl
+    private static void generateIntoImplForEnum(
+            final String enumRustName, final String primitiveType,final List<Token> messageBody, final Appendable writer) throws IOException {
         indent(writer, 0, "impl Into<%s> for %s {\n", primitiveType, enumRustName);
         indent(writer, 1, "#[inline]\n");
         indent(writer, 1, "fn into(self) -> %s {\n", primitiveType);
@@ -1298,14 +1314,16 @@ public class RustGenerator implements CodeGenerator
         {
             final Encoding encoding = messageBody.get(0).encoding();
             final CharSequence nullVal = generateRustLiteral(encoding.primitiveType(),
-                encoding.applicableNullValue().toString());
+                    encoding.applicableNullValue().toString());
             indent(writer, 3, "Self::NullVal => %s,\n", nullVal);
         }
         indent(writer, 2, "}\n");
         indent(writer, 1, "}\n");
         indent(writer, 0, "}\n");
+    }
 
-        // FromStr impl
+    private static void generateFromStrImplForEnum(
+            final String enumRustName, final String primitiveType,final List<Token> messageBody, final Appendable writer) throws IOException{
         indent(writer, 0, "impl core::str::FromStr for %s {\n", enumRustName);
         indent(writer, 1, "type Err = ();\n\n");
         indent(writer, 1, "#[inline]\n");
@@ -1320,8 +1338,10 @@ public class RustGenerator implements CodeGenerator
         indent(writer, 2, "}\n");
         indent(writer, 1, "}\n");
         indent(writer, 0, "}\n");
+    }
 
-        // Display impl
+    private static void generateDisplayImplForEnum(
+            final String enumRustName, final String primitiveType,final List<Token> messageBody, final Appendable writer) throws IOException{
         indent(writer, 0, "impl core::fmt::Display for %s {\n", enumRustName);
         indent(writer, 1, "#[inline]\n");
         indent(writer, 1, "fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {\n", primitiveType);
