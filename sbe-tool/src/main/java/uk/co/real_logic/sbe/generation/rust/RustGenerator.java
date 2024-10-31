@@ -1298,7 +1298,7 @@ public class RustGenerator implements CodeGenerator
         {
             final Encoding encoding = messageBody.get(0).encoding();
             final CharSequence nullVal = generateRustLiteral(encoding.primitiveType(),
-                    encoding.applicableNullValue().toString());
+                encoding.applicableNullValue().toString());
             indent(writer, 3, "Self::NullVal => %s,\n", nullVal);
         }
         indent(writer, 2, "}\n");
