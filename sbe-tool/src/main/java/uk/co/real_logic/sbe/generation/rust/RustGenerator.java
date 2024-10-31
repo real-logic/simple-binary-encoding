@@ -1339,7 +1339,7 @@ public class RustGenerator implements CodeGenerator
         indent(writer, 0, "impl core::str::FromStr for %s {\n", enumRustName);
         indent(writer, 1, "type Err = ();\n\n");
         indent(writer, 1, "#[inline]\n");
-        indent(writer, 1, "fn from_str(v: &str) -> core::result::Result<Self, Self::Err> {\n", primitiveType);
+        indent(writer, 1, "fn from_str(v: &str) -> core::result::Result<Self, Self::Err> {\n");
         indent(writer, 2, "match v {\n");
         for (final Token token : messageBody)
         {
