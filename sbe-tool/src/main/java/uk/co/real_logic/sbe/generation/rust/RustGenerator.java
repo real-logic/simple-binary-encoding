@@ -1360,7 +1360,7 @@ public class RustGenerator implements CodeGenerator
     {
         indent(writer, 0, "impl core::fmt::Display for %s {\n", enumRustName);
         indent(writer, 1, "#[inline]\n");
-        indent(writer, 1, "fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {\n", primitiveType);
+        indent(writer, 1, "fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {\n");
         indent(writer, 2, "match self {\n");
         for (final Token token : messageBody)
         {
