@@ -175,7 +175,7 @@ public class RustGenerator implements CodeGenerator
             }
         }
 
-        libRsDef.generate();
+        libRsDef.generate(ir);
     }
 
     String blockLengthType()
