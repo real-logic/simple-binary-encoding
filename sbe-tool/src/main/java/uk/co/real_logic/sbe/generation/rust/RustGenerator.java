@@ -1284,6 +1284,27 @@ public class RustGenerator implements CodeGenerator
         indent(writer, 1, "}\n");
         indent(writer, 0, "}\n");
 
+        // Into impl
+        indent(writer, 0, "impl Into<%s> for %s {\n", primitiveType, enumRustName);
+        indent(writer, 1, "#[inline]\n");
+        indent(writer, 1, "fn into(self) -> %s {\n", primitiveType);
+        indent(writer, 2, "match self {\n");
+        for (final Token token : messageBody)
+        {
+            final Encoding encoding = token.encoding();
+            final String literal = generateRustLiteral(encoding.primitiveType(), encoding.constValue().toString());
+            indent(writer, 3, "Self::%s => %s, \n", token.name(), literal);
+        }
+        {
+            final Encoding encoding = messageBody.get(0).encoding();
+            final CharSequence nullVal = generateRustLiteral(encoding.primitiveType(),
+                    encoding.applicableNullValue().toString());
+            indent(writer, 3, "Self::NullVal => %s,\n", nullVal);
+        }
+        indent(writer, 2, "}\n");
+        indent(writer, 1, "}\n");
+        indent(writer, 0, "}\n");
+
         // FromStr impl
         indent(writer, 0, "impl core::str::FromStr for %s {\n", enumRustName);
         indent(writer, 1, "type Err = ();\n\n");
