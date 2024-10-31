@@ -1299,6 +1299,21 @@ public class RustGenerator implements CodeGenerator
         indent(writer, 2, "}\n");
         indent(writer, 1, "}\n");
         indent(writer, 0, "}\n");
+
+        // Display impl
+        indent(writer, 0, "impl core::fmt::Display for %s {\n", enumRustName);
+        indent(writer, 1, "#[inline]\n");
+        indent(writer, 1, "fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {\n", primitiveType);
+        indent(writer, 2, "match self {\n");
+        for (final Token token : messageBody)
+        {
+            indent(writer, 3, "Self::%1$s => write!(f, \"%1$s\"), \n", token.name());
+        }
+        // default => Err
+        indent(writer, 3, "Self::NullVal => write!(f, \"NullVal\"),\n");
+        indent(writer, 2, "}\n");
+        indent(writer, 1, "}\n");
+        indent(writer, 0, "}\n");
     }
 
     private static void generateComposites(
