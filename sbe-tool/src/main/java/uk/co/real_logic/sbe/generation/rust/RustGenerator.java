@@ -1283,6 +1283,22 @@ public class RustGenerator implements CodeGenerator
         indent(writer, 2, "}\n");
         indent(writer, 1, "}\n");
         indent(writer, 0, "}\n");
+
+        // FromStr impl
+        indent(writer, 0, "impl core::str::FromStr for %s {\n", enumRustName);
+        indent(writer, 1, "type Err = ();\n\n");
+        indent(writer, 1, "#[inline]\n");
+        indent(writer, 1, "fn from_str(v: &str) -> core::result::Result<Self, Self::Err> {\n", primitiveType);
+        indent(writer, 2, "match v {\n");
+        for (final Token token : messageBody)
+        {
+            indent(writer, 3, "\"%1$s\" => core::result::Result::Ok(Self::%1$s), \n", token.name());
+        }
+        // default => NullVal
+        indent(writer, 3, "_ => core::result::Result::Ok(Self::NullVal),\n");
+        indent(writer, 2, "}\n");
+        indent(writer, 1, "}\n");
+        indent(writer, 0, "}\n");
     }
 
     private static void generateComposites(
