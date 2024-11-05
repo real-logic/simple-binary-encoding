@@ -41,7 +41,7 @@ import static uk.co.real_logic.sbe.ir.GenerationUtil.collectGroups;
 import static uk.co.real_logic.sbe.ir.GenerationUtil.collectVarData;
 
 /**
- * DTO generator for the CSharp programming language.
+ * DTO generator for the C++ programming language.
  */
 public class CppDtoGenerator implements CodeGenerator
 {
@@ -52,7 +52,7 @@ public class CppDtoGenerator implements CodeGenerator
     private final OutputManager outputManager;
 
     /**
-     * Create a new C# DTO {@link CodeGenerator}.
+     * Create a new C++ DTO {@link CodeGenerator}.
      *
      * @param ir            for the messages and types.
      * @param outputManager for generating the DTOs to.
