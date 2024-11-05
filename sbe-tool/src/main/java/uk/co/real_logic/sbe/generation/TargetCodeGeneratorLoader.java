@@ -66,7 +66,10 @@ public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
 
             if (Boolean.getBoolean(JAVA_GENERATE_DTOS))
             {
-                final JavaDtoGenerator dtoGenerator = new JavaDtoGenerator(ir, shouldSupportTypesPackageNames, outputManager);
+                final JavaDtoGenerator dtoGenerator = new JavaDtoGenerator(
+                    ir,
+                    shouldSupportTypesPackageNames,
+                    outputManager);
                 return () ->
                 {
                     codecGenerator.generate();
