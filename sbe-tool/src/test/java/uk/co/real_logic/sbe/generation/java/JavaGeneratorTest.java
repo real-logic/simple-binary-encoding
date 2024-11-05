@@ -601,6 +601,42 @@ class JavaGeneratorTest
         }
     }
 
+    @Test
+    void dtosShouldReferenceTypesInDifferentPackages() throws Exception
+    {
+        try (InputStream in = Tests.getLocalResource("explicit-package-test-schema.xml"))
+        {
+            final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
+            final MessageSchema schema = parse(in, options);
+            final IrGenerator irg = new IrGenerator();
+            ir = irg.generate(schema);
+
+            outputManager.clear();
+            outputManager.setPackageName(ir.applicableNamespace());
+
+            final JavaGenerator generator = new JavaGenerator(
+                ir, BUFFER_NAME, READ_ONLY_BUFFER_NAME, false, false, false, true, outputManager
+            );
+            generator.generate();
+
+            final JavaDtoGenerator javaDtoGenerator = new JavaDtoGenerator(ir, true, outputManager);
+            javaDtoGenerator.generate();
+
+            final Map<String, CharSequence> sources = outputManager.getSources();
+            assertNotNull(sources.get("test.message.schema.TestMessageDto"));
+            assertNotNull(sources.get("test.message.schema.MessageHeaderDto"));
+            assertNotNull(sources.get("test.message.schema.common.CarDto"));
+            assertNotNull(sources.get("test.message.schema.common.EngineDto"));
+            assertNotNull(sources.get("outside.schema.FuelSpecDto"));
+            assertNotNull(sources.get("outside.schema.DaysDto"));
+            assertNotNull(sources.get("outside.schema.FuelTypeDto"));
+
+            assertNotNull(compile("test.message.schema.TestMessageDto"));
+            assertNotNull(compile("test.message.schema.common.CarDto"));
+            assertNotNull(compile("outside.schema.FuelSpecDto"));
+        }
+    }
+
     @ParameterizedTest
     @CsvSource(
         {

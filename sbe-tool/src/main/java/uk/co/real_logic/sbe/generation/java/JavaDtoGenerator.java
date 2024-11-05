@@ -24,12 +24,14 @@ import uk.co.real_logic.sbe.ir.Signal;
 import uk.co.real_logic.sbe.ir.Token;
 import org.agrona.LangUtil;
 import org.agrona.Verify;
-import org.agrona.generation.OutputManager;
+import org.agrona.generation.DynamicPackageOutputManager;
 
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import static uk.co.real_logic.sbe.generation.Generators.toLowerFirstChar;
@@ -49,21 +51,46 @@ public class JavaDtoGenerator implements CodeGenerator
     private static final String BASE_INDENT = "";
 
     private final Ir ir;
-    private final OutputManager outputManager;
+    private final DynamicPackageOutputManager outputManager;
+    private final boolean shouldSupportTypesPackageNames;
+    private final Set<String> packageNameByTypes = new HashSet<>();
 
     /**
-     * Create a new C# DTO {@link CodeGenerator}.
+     * Create a new Java DTO {@link CodeGenerator}.
      *
-     * @param ir            for the messages and types.
-     * @param outputManager for generating the DTOs to.
+     * @param ir                                for the messages and types.
+     * @param shouldSupportTypesPackageNames    generator support for types in their own package.
+     * @param outputManager                     for generating the DTOs to.
      */
-    public JavaDtoGenerator(final Ir ir, final OutputManager outputManager)
+    public JavaDtoGenerator(
+        final Ir ir,
+        final boolean shouldSupportTypesPackageNames,
+        final DynamicPackageOutputManager outputManager)
     {
+        this.shouldSupportTypesPackageNames = shouldSupportTypesPackageNames;
         Verify.notNull(ir, "ir");
         Verify.notNull(outputManager, "outputManager");
 
         this.ir = ir;
         this.outputManager = outputManager;
+    }
+
+    /**
+     * Fetch the type's explicit package - if set and should be supported.
+     *
+     * @param token the 0-th token of the type.
+     * @param ir    the intermediate representation.
+     * @return the overridden package name of the type if set and supported, or {@link Ir#applicableNamespace()}.
+     */
+    private String fetchTypesPackageName(final Token token, final Ir ir)
+    {
+        if (shouldSupportTypesPackageNames && token.packageName() != null)
+        {
+            outputManager.setPackageName(token.packageName());
+            return token.packageName();
+        }
+
+        return ir.applicableNamespace();
     }
 
     /**
@@ -110,9 +137,10 @@ public class JavaDtoGenerator implements CodeGenerator
             generateDisplay(classBuilder, encoderClassName, "computeEncodedLength()",
                 BASE_INDENT + INDENT);
 
+            final String packageName = fetchTypesPackageName(msgToken, ir);
             try (Writer out = outputManager.createOutput(dtoClassName))
             {
-                out.append(generateDtoFileHeader(ir.applicableNamespace()));
+                out.append(generateDtoFileHeader(packageName));
                 out.append("import org.agrona.DirectBuffer;\n");
                 out.append("import org.agrona.MutableDirectBuffer;\n");
                 out.append("import org.agrona.concurrent.UnsafeBuffer;\n\n");
@@ -1582,6 +1610,19 @@ public class JavaDtoGenerator implements CodeGenerator
 
     private void generateDtosForTypes() throws IOException
     {
+        if (shouldSupportTypesPackageNames)
+        {
+            for (final List<Token> tokens : ir.types())
+            {
+                final String packageName = tokens.get(0).packageName();
+
+                if (packageName != null)
+                {
+                    packageNameByTypes.add(packageName);
+                }
+            }
+        }
+
         for (final List<Token> tokens : ir.types())
         {
             switch (tokens.get(0).signal())
@@ -1607,10 +1648,11 @@ public class JavaDtoGenerator implements CodeGenerator
         final String encoderClassName = encoderName(name);
         final String decoderClassName = decoderName(name);
 
+        final String packageName = fetchTypesPackageName(tokens.get(0), ir);
         try (Writer out = outputManager.createOutput(className))
         {
             final List<Token> compositeTokens = tokens.subList(1, tokens.size() - 1);
-            out.append(generateDtoFileHeader(ir.applicableNamespace()));
+            out.append(generateDtoFileHeader(packageName));
             out.append("import org.agrona.DirectBuffer;\n");
             out.append("import org.agrona.MutableDirectBuffer;\n");
             out.append("import org.agrona.concurrent.UnsafeBuffer;\n\n");
@@ -1638,10 +1680,11 @@ public class JavaDtoGenerator implements CodeGenerator
         final String encoderClassName = encoderName(name);
         final String decoderClassName = decoderName(name);
 
+        final String packageName = fetchTypesPackageName(tokens.get(0), ir);
         try (Writer out = outputManager.createOutput(className))
         {
             final List<Token> setTokens = tokens.subList(1, tokens.size() - 1);
-            out.append(generateDtoFileHeader(ir.applicableNamespace()));
+            out.append(generateDtoFileHeader(packageName));
             out.append(generateDocumentation(BASE_INDENT, tokens.get(0)));
 
             final ClassBuilder classBuilder = new ClassBuilder(className, BASE_INDENT, "public final");
@@ -1795,12 +1838,34 @@ public class JavaDtoGenerator implements CodeGenerator
         }
     }
 
-    private static CharSequence generateDtoFileHeader(final String packageName)
+    private static StringBuilder generateImportStatements(final Set<String> packages, final String currentPackage)
+    {
+        final StringBuilder importStatements = new StringBuilder();
+
+        for (final String candidatePackage : packages)
+        {
+            if (!candidatePackage.equals(currentPackage))
+            {
+                importStatements.append("import ").append(candidatePackage).append(".*;\n");
+            }
+        }
+
+        if (!importStatements.isEmpty())
+        {
+            importStatements.append("\n\n");
+        }
+
+        return importStatements;
+    }
+
+    private CharSequence generateDtoFileHeader(final String packageName)
     {
         final StringBuilder sb = new StringBuilder();
 
         sb.append("/* Generated SBE (Simple Binary Encoding) message DTO */\n");
         sb.append("package ").append(packageName).append(";\n\n");
+
+        sb.append(generateImportStatements(packageNameByTypes, packageName));
 
         return sb;
     }

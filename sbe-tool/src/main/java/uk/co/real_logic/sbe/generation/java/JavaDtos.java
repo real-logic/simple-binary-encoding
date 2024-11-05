@@ -20,6 +20,8 @@ import uk.co.real_logic.sbe.generation.CodeGenerator;
 import uk.co.real_logic.sbe.generation.TargetCodeGenerator;
 import uk.co.real_logic.sbe.ir.Ir;
 
+import static uk.co.real_logic.sbe.SbeTool.TYPES_PACKAGE_OVERRIDE;
+
 /**
  * {@link CodeGenerator} factory for Java DTOs.
  */
@@ -30,6 +32,9 @@ public class JavaDtos implements TargetCodeGenerator
      */
     public CodeGenerator newInstance(final Ir ir, final String outputDir)
     {
-        return new JavaDtoGenerator(ir, new JavaOutputManager(outputDir, ir.applicableNamespace()));
+        return new JavaDtoGenerator(
+            ir,
+            Boolean.getBoolean(TYPES_PACKAGE_OVERRIDE),
+            new JavaOutputManager(outputDir, ir.applicableNamespace()));
     }
 }
