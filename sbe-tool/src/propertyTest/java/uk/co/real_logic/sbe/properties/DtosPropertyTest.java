@@ -214,7 +214,7 @@ public class DtosPropertyTest
             {
                 new CppGenerator(encodedMessage.ir(), true, outputManager)
                     .generate();
-                new CppDtoGenerator(encodedMessage.ir(), outputManager)
+                new CppDtoGenerator(encodedMessage.ir(), false, outputManager)
                     .generate();
             }
             catch (final Exception generationException)

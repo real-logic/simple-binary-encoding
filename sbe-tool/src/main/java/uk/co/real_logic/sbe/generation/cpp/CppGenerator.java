@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.nio.ByteOrder;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static uk.co.real_logic.sbe.generation.Generators.toLowerFirstChar;
 import static uk.co.real_logic.sbe.generation.Generators.toUpperFirstChar;
@@ -58,6 +59,8 @@ public class CppGenerator implements CodeGenerator
     private final boolean shouldDecodeUnknownEnumValues;
     private final PrecedenceChecks precedenceChecks;
     private final String precedenceChecksFlagName;
+    private final boolean shouldSupportTypesPackageNames;
+    private final Map<String, String> namespaceByType = new HashMap<>();
 
     /**
      * Create a new Cpp language {@link CodeGenerator}.
@@ -72,6 +75,7 @@ public class CppGenerator implements CodeGenerator
             ir,
             shouldDecodeUnknownEnumValues,
             PrecedenceChecks.newInstance(new PrecedenceChecks.Context()),
+            false,
             outputManager
         );
     }
@@ -79,15 +83,17 @@ public class CppGenerator implements CodeGenerator
     /**
      * Create a new Go language {@link CodeGenerator}.
      *
-     * @param ir                            for the messages and types.
-     * @param shouldDecodeUnknownEnumValues generate support for unknown enum values when decoding.
-     * @param precedenceChecks              whether and how to generate field precedence checks.
-     * @param outputManager                 for generating the codecs to.
+     * @param ir                             for the messages and types.
+     * @param shouldDecodeUnknownEnumValues  generate support for unknown enum values when decoding.
+     * @param precedenceChecks               whether and how to generate field precedence checks.
+     * @param shouldSupportTypesPackageNames generator support for types in their own package.
+     * @param outputManager                  for generating the codecs to.
      */
     public CppGenerator(
         final Ir ir,
         final boolean shouldDecodeUnknownEnumValues,
         final PrecedenceChecks precedenceChecks,
+        final boolean shouldSupportTypesPackageNames,
         final OutputManager outputManager)
     {
         Verify.notNull(ir, "ir");
@@ -97,6 +103,7 @@ public class CppGenerator implements CodeGenerator
         this.shouldDecodeUnknownEnumValues = shouldDecodeUnknownEnumValues;
         this.precedenceChecks = precedenceChecks;
         this.precedenceChecksFlagName = precedenceChecks.context().precedenceChecksFlagName();
+        this.shouldSupportTypesPackageNames = shouldSupportTypesPackageNames;
         this.outputManager = outputManager;
     }
 
@@ -140,6 +147,21 @@ public class CppGenerator implements CodeGenerator
         return typesToInclude;
     }
 
+    private String[] fetchTypesPackageName(final Token token, final Ir ir)
+    {
+        if (!shouldSupportTypesPackageNames)
+        {
+            return ir.namespaces();
+        }
+
+        if (token.packageName() != null)
+        {
+            return Ir.getNamespaces(token.packageName());
+        }
+
+        return ir.namespaces();
+    }
+
     private List<String> generateTypesToIncludes(final List<Token> tokens)
     {
         final List<String> typesToInclude = new ArrayList<>();
@@ -167,6 +189,22 @@ public class CppGenerator implements CodeGenerator
      */
     public void generate() throws IOException
     {
+        namespaceByType.clear();
+
+        if (shouldSupportTypesPackageNames)
+        {
+            for (final List<Token> tokens : ir.types())
+            {
+                final Token token = tokens.get(0);
+                final String packageName = token.packageName();
+
+                if (packageName != null)
+                {
+                    namespaceByType.put(token.applicableTypeName(), packageName);
+                }
+            }
+        }
+
         generateMessageHeaderStub();
         final List<String> typesToInclude = generateTypeStubs();
 
@@ -192,7 +230,8 @@ public class CppGenerator implements CodeGenerator
                 final List<Token> varData = new ArrayList<>();
                 collectVarData(messageBody, i, varData);
 
-                out.append(generateFileHeader(ir.namespaces(), className, typesToInclude));
+                final String[] namespaces = fetchTypesPackageName(msgToken, ir);
+                out.append(generateFileHeader(namespaces, className, typesToInclude));
                 out.append(generateClassDeclaration(className));
                 out.append(generateMessageFlyweightCode(className, msgToken, fieldPrecedenceModel));
                 out.append(generateFullyEncodedCheck(fieldPrecedenceModel));
@@ -205,7 +244,7 @@ public class CppGenerator implements CodeGenerator
                 sb.append(generateMessageLength(groups, varData, BASE_INDENT));
                 sb.append("};\n");
                 generateLookupTableDefinitions(sb, className, fieldPrecedenceModel);
-                sb.append(CppUtil.closingBraces(ir.namespaces().length)).append("#endif\n");
+                sb.append(CppUtil.closingBraces(namespaces.length)).append("#endif\n");
                 out.append(sb);
             }
         }
@@ -1277,7 +1316,8 @@ public class CppGenerator implements CodeGenerator
 
         try (Writer out = outputManager.createOutput(bitSetName))
         {
-            out.append(generateFileHeader(ir.namespaces(), bitSetName, null));
+            final String[] namespaces = fetchTypesPackageName(token, ir);
+            out.append(generateFileHeader(namespaces, bitSetName, null));
             out.append(generateClassDeclaration(bitSetName));
             out.append(generateFixedFlyweightCode(bitSetName, token.encodedLength()));
 
@@ -1322,7 +1362,7 @@ public class CppGenerator implements CodeGenerator
             out.append(generateChoices(bitSetName, tokens.subList(1, tokens.size() - 1)));
             out.append(generateChoicesDisplay(bitSetName, tokens.subList(1, tokens.size() - 1)));
             out.append("};\n");
-            out.append(CppUtil.closingBraces(ir.namespaces().length)).append("#endif\n");
+            out.append(CppUtil.closingBraces(namespaces.length)).append("#endif\n");
         }
     }
 
@@ -1333,7 +1373,8 @@ public class CppGenerator implements CodeGenerator
 
         try (Writer out = outputManager.createOutput(enumName))
         {
-            out.append(generateEnumFileHeader(ir.namespaces(), enumName));
+            final String[] namespaces = fetchTypesPackageName(enumToken, ir);
+            out.append(generateEnumFileHeader(namespaces, enumName));
             out.append(generateEnumDeclaration(enumName));
 
             out.append(generateEnumValues(tokens.subList(1, tokens.size() - 1), enumToken));
@@ -1343,29 +1384,31 @@ public class CppGenerator implements CodeGenerator
             out.append(generateEnumDisplay(tokens.subList(1, tokens.size() - 1), enumToken));
 
             out.append("};\n\n");
-            out.append(CppUtil.closingBraces(ir.namespaces().length)).append("\n#endif\n");
+            out.append(CppUtil.closingBraces(namespaces.length)).append("\n#endif\n");
         }
     }
 
     private void generateComposite(final List<Token> tokens) throws IOException
     {
-        final String compositeName = formatClassName(tokens.get(0).applicableTypeName());
+        final Token token = tokens.get(0);
+        final String compositeName = formatClassName(token.applicableTypeName());
 
         try (Writer out = outputManager.createOutput(compositeName))
         {
-            out.append(generateFileHeader(ir.namespaces(), compositeName,
+            final String[] namespaces = fetchTypesPackageName(token, ir);
+            out.append(generateFileHeader(namespaces, compositeName,
                 generateTypesToIncludes(tokens.subList(1, tokens.size() - 1))));
             out.append(generateClassDeclaration(compositeName));
-            out.append(generateFixedFlyweightCode(compositeName, tokens.get(0).encodedLength()));
+            out.append(generateFixedFlyweightCode(compositeName, token.encodedLength()));
 
             out.append(generateCompositePropertyElements(
                 compositeName, tokens.subList(1, tokens.size() - 1), BASE_INDENT));
 
             out.append(generateCompositeDisplay(
-                tokens.get(0).applicableTypeName(), tokens.subList(1, tokens.size() - 1)));
+                token.applicableTypeName(), tokens.subList(1, tokens.size() - 1)));
 
             out.append("};\n\n");
-            out.append(CppUtil.closingBraces(ir.namespaces().length)).append("\n#endif\n");
+            out.append(CppUtil.closingBraces(namespaces.length)).append("\n#endif\n");
         }
     }
 
@@ -1614,7 +1657,7 @@ public class CppGenerator implements CodeGenerator
             sinceVersion);
     }
 
-    private static CharSequence generateFileHeader(
+    private CharSequence generateFileHeader(
         final CharSequence[] namespaces,
         final String className,
         final List<String> typesToInclude)
@@ -1719,6 +1762,32 @@ public class CppGenerator implements CodeGenerator
         sb.append("\nnamespace ");
         sb.append(String.join(" {\nnamespace ", namespaces));
         sb.append(" {\n\n");
+
+        if (shouldSupportTypesPackageNames && typesToInclude != null && !typesToInclude.isEmpty())
+        {
+            final Set<String> namespacesToUse = namespaceByType
+                .entrySet()
+                .stream()
+                .filter(e -> typesToInclude.contains(e.getKey()))
+                .map(Map.Entry::getValue)
+                .collect(Collectors.toSet());
+
+            // remove the current namespace
+            namespacesToUse.remove(String.join(".", namespaces));
+
+            for (final String namespace : namespacesToUse)
+            {
+                sb
+                    .append("using namespace ")
+                    .append(namespace.replaceAll("\\.", "::"))
+                    .append(";\n");
+            }
+
+            if (!namespacesToUse.isEmpty())
+            {
+                sb.append("\n");
+            }
+        }
 
         return sb;
     }

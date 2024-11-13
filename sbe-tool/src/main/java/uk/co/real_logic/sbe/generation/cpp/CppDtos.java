@@ -31,6 +31,6 @@ public class CppDtos implements TargetCodeGenerator
      */
     public CodeGenerator newInstance(final Ir ir, final String outputDir)
     {
-        return new CppDtoGenerator(ir, new NamespaceOutputManager(outputDir, ir.applicableNamespace()));
+        return new CppDtoGenerator(ir, false, new NamespaceOutputManager(outputDir, ir.applicableNamespace()));
     }
 }
