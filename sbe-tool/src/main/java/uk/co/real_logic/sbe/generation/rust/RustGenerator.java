@@ -1266,6 +1266,24 @@ public class RustGenerator implements CodeGenerator
         indent(writer, 0, "}\n");
 
         // From impl
+        generateFromImplForEnum(enumRustName, primitiveType, messageBody, writer);
+
+        // Into impl
+        generateIntoImplForEnum(enumRustName, primitiveType, messageBody, writer);
+
+        // FromStr impl
+        generateFromStrImplForEnum(enumRustName, primitiveType, messageBody, writer);
+
+        // Display impl
+        generateDisplayImplForEnum(enumRustName, primitiveType, messageBody, writer);
+    }
+
+    private static void generateFromImplForEnum(
+        final String enumRustName,
+        final String primitiveType,
+        final List<Token> messageBody,
+        final Appendable writer) throws IOException
+    {
         indent(writer, 0, "impl From<%s> for %s {\n", primitiveType, enumRustName);
         indent(writer, 1, "#[inline]\n");
         indent(writer, 1, "fn from(v: %s) -> Self {\n", primitiveType);
@@ -1280,6 +1298,76 @@ public class RustGenerator implements CodeGenerator
 
         // default => NullVal
         indent(writer, 3, "_ => Self::NullVal,\n");
+        indent(writer, 2, "}\n");
+        indent(writer, 1, "}\n");
+        indent(writer, 0, "}\n");
+    }
+
+    private static void generateIntoImplForEnum(
+        final String enumRustName,
+        final String primitiveType,
+        final List<Token> messageBody,
+        final Appendable writer) throws IOException
+    {
+        indent(writer, 0, "impl Into<%s> for %s {\n", primitiveType, enumRustName);
+        indent(writer, 1, "#[inline]\n");
+        indent(writer, 1, "fn into(self) -> %s {\n", primitiveType);
+        indent(writer, 2, "match self {\n");
+        for (final Token token : messageBody)
+        {
+            final Encoding encoding = token.encoding();
+            final String literal = generateRustLiteral(encoding.primitiveType(), encoding.constValue().toString());
+            indent(writer, 3, "Self::%s => %s, \n", token.name(), literal);
+        }
+        {
+            final Encoding encoding = messageBody.get(0).encoding();
+            final CharSequence nullVal = generateRustLiteral(encoding.primitiveType(),
+                encoding.applicableNullValue().toString());
+            indent(writer, 3, "Self::NullVal => %s,\n", nullVal);
+        }
+        indent(writer, 2, "}\n");
+        indent(writer, 1, "}\n");
+        indent(writer, 0, "}\n");
+    }
+
+    private static void generateFromStrImplForEnum(
+        final String enumRustName,
+        final String primitiveType,
+        final List<Token> messageBody,
+        final Appendable writer) throws IOException
+    {
+        indent(writer, 0, "impl core::str::FromStr for %s {\n", enumRustName);
+        indent(writer, 1, "type Err = ();\n\n");
+        indent(writer, 1, "#[inline]\n");
+        indent(writer, 1, "fn from_str(v: &str) -> core::result::Result<Self, Self::Err> {\n");
+        indent(writer, 2, "match v {\n");
+        for (final Token token : messageBody)
+        {
+            indent(writer, 3, "\"%1$s\" => core::result::Result::Ok(Self::%1$s), \n", token.name());
+        }
+        // default => NullVal
+        indent(writer, 3, "_ => core::result::Result::Ok(Self::NullVal),\n");
+        indent(writer, 2, "}\n");
+        indent(writer, 1, "}\n");
+        indent(writer, 0, "}\n");
+    }
+
+    private static void generateDisplayImplForEnum(
+        final String enumRustName,
+        final String primitiveType,
+        final List<Token> messageBody,
+        final Appendable writer) throws IOException
+    {
+        indent(writer, 0, "impl core::fmt::Display for %s {\n", enumRustName);
+        indent(writer, 1, "#[inline]\n");
+        indent(writer, 1, "fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {\n");
+        indent(writer, 2, "match self {\n");
+        for (final Token token : messageBody)
+        {
+            indent(writer, 3, "Self::%1$s => write!(f, \"%1$s\"), \n", token.name());
+        }
+        // default => Err
+        indent(writer, 3, "Self::NullVal => write!(f, \"NullVal\"),\n");
         indent(writer, 2, "}\n");
         indent(writer, 1, "}\n");
         indent(writer, 0, "}\n");
