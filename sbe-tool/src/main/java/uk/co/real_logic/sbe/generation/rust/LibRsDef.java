@@ -23,6 +23,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.stream.Stream;
+import uk.co.real_logic.sbe.ir.Ir;
 
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 import static uk.co.real_logic.sbe.generation.rust.RustGenerator.*;
@@ -54,7 +55,7 @@ class LibRsDef
         this.schemaVersionType = schemaVersionType;
     }
 
-    void generate() throws IOException
+    void generate(final Ir ir) throws IOException
     {
         try (Writer libRs = outputManager.createOutput("lib"))
         {
@@ -83,6 +84,8 @@ class LibRsDef
                 indent(libRs, 0, "pub mod %s;\n", toLowerSnakeCase(mod));
             }
             indent(libRs, 0, "\n");
+
+            generateSbeSchemaConsts(libRs, ir);
 
             generateSbeErrorEnum(libRs);
             generateEitherEnum(libRs);
@@ -121,6 +124,17 @@ class LibRsDef
         indent(writer, 1, "fn get_limit(&self) -> usize;\n");
         indent(writer, 1, "fn set_limit(&mut self, limit: usize);\n");
         indent(writer, 0, "}\n\n");
+    }
+
+    static void generateSbeSchemaConsts(final Writer writer, final Ir ir) throws IOException
+    {
+        final String schemaIdType = rustTypeName(ir.headerStructure().schemaIdType());
+        final String schemaVersionType = rustTypeName(ir.headerStructure().schemaVersionType());
+        final String semanticVersion = ir.semanticVersion() == null ? "" : ir.semanticVersion();
+
+        indent(writer, 0, "pub const SBE_SCHEMA_ID: %s = %d;\n", schemaIdType, ir.id());
+        indent(writer, 0, "pub const SBE_SCHEMA_VERSION: %s = %d;\n", schemaVersionType, ir.version());
+        indent(writer, 0, "pub const SBE_SEMANTIC_VERSION: &str = \"%s\";\n\n", semanticVersion);
     }
 
     static void generateSbeErrorEnum(final Writer writer) throws IOException

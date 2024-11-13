@@ -266,3 +266,10 @@ fn encode_car_from_scratch() -> SbeResult<(usize, Vec<u8>)> {
     let limit = car.get_limit();
     Ok((limit, buffer))
 }
+
+#[test]
+fn test_issue_1018() {
+    assert_eq!(1, examples_baseline::SBE_SCHEMA_ID);
+    assert_eq!(0, examples_baseline::SBE_SCHEMA_VERSION);
+    assert_eq!("5.2", examples_baseline::SBE_SEMANTIC_VERSION);
+}
