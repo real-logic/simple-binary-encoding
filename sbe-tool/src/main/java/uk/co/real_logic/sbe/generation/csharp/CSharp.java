@@ -21,6 +21,8 @@ import uk.co.real_logic.sbe.generation.TargetCodeGenerator;
 import uk.co.real_logic.sbe.generation.TargetCodeGeneratorLoader;
 import uk.co.real_logic.sbe.ir.Ir;
 
+import static uk.co.real_logic.sbe.SbeTool.TYPES_PACKAGE_OVERRIDE;
+
 /**
  * {@link CodeGenerator} factory for the CSharp target programming language.
  */
@@ -33,15 +35,19 @@ public class CSharp implements TargetCodeGenerator
      */
     public CodeGenerator newInstance(final Ir ir, final String outputDir)
     {
+        final boolean shouldSupportTypesPackageNames = Boolean.getBoolean(TYPES_PACKAGE_OVERRIDE);
         final CSharpGenerator flyweightGenerator = new CSharpGenerator(
             ir,
             TargetCodeGeneratorLoader.precedenceChecks(),
+            shouldSupportTypesPackageNames,
             new CSharpNamespaceOutputManager(outputDir, ir.applicableNamespace()));
 
         if (GENERATE_DTOS)
         {
-            final CSharpDtoGenerator dtoGenerator =
-                new CSharpDtoGenerator(ir, new CSharpNamespaceOutputManager(outputDir, ir.applicableNamespace()));
+            final CSharpDtoGenerator dtoGenerator = new CSharpDtoGenerator(
+                ir,
+                shouldSupportTypesPackageNames,
+                new CSharpNamespaceOutputManager(outputDir, ir.applicableNamespace()));
 
             return () ->
             {

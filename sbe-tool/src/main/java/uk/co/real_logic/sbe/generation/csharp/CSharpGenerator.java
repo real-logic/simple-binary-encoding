@@ -60,6 +60,8 @@ public class CSharpGenerator implements CodeGenerator
     private final OutputManager outputManager;
     private final PrecedenceChecks precedenceChecks;
     private final String precedenceChecksFlagName;
+    private final boolean shouldSupportTypesPackageNames;
+    private final Set<String> packageNameByTypes = new HashSet<>();
 
     /**
      * Create a new C# language {@link CodeGenerator}.
@@ -72,6 +74,7 @@ public class CSharpGenerator implements CodeGenerator
         this(
             ir,
             PrecedenceChecks.newInstance(new PrecedenceChecks.Context()),
+            false,
             outputManager
         );
     }
@@ -79,13 +82,15 @@ public class CSharpGenerator implements CodeGenerator
     /**
      * Create a new C# language {@link CodeGenerator}.
      *
-     * @param ir               for the messages and types.
-     * @param precedenceChecks whether and how to perform field precedence checks.
-     * @param outputManager    for generating the codecs to.
+     * @param ir                             for the messages and types.
+     * @param precedenceChecks               whether and how to perform field precedence checks.
+     * @param shouldSupportTypesPackageNames generator support for types in their own package.
+     * @param outputManager                  for generating the codecs to.
      */
     public CSharpGenerator(
         final Ir ir,
         final PrecedenceChecks precedenceChecks,
+        final boolean shouldSupportTypesPackageNames,
         final OutputManager outputManager)
     {
         Verify.notNull(ir, "ir");
@@ -94,6 +99,7 @@ public class CSharpGenerator implements CodeGenerator
         this.ir = ir;
         this.precedenceChecks = precedenceChecks;
         this.precedenceChecksFlagName = precedenceChecks.context().precedenceChecksFlagName();
+        this.shouldSupportTypesPackageNames = shouldSupportTypesPackageNames;
         this.outputManager = outputManager;
     }
 
@@ -138,11 +144,42 @@ public class CSharpGenerator implements CodeGenerator
         }
     }
 
+    private String fetchTypesPackageName(final Token token, final Ir ir)
+    {
+        if (!shouldSupportTypesPackageNames)
+        {
+            return ir.applicableNamespace();
+        }
+
+        if (token.packageName() != null)
+        {
+            return token.packageName();
+        }
+
+        return ir.applicableNamespace();
+    }
+
     /**
      * {@inheritDoc}
      */
     public void generate() throws IOException
     {
+        packageNameByTypes.clear();
+
+        if (shouldSupportTypesPackageNames)
+        {
+            for (final List<Token> tokens : ir.types())
+            {
+                final Token token = tokens.get(0);
+                final String packageName = token.packageName();
+
+                if (packageName != null)
+                {
+                    packageNameByTypes.add(packageName);
+                }
+            }
+        }
+
         generateMessageHeaderStub();
         generateTypeStubs();
 
@@ -164,7 +201,7 @@ public class CSharpGenerator implements CodeGenerator
                 final List<Token> varData = new ArrayList<>();
                 collectVarData(messageBody, offset, varData);
 
-                out.append(generateFileHeader(ir.applicableNamespace()));
+                out.append(generateFileHeader(fetchTypesPackageName(msgToken, ir), packageNameByTypes));
                 out.append(generateDocumentation(BASE_INDENT, msgToken));
                 out.append(generateClassDeclaration(className));
                 out.append(generateMessageFlyweightCode(className, msgToken, fieldPrecedenceModel, BASE_INDENT));
@@ -662,7 +699,7 @@ public class CSharpGenerator implements CodeGenerator
 
         try (Writer out = outputManager.createOutput(enumName))
         {
-            out.append(generateFileHeader(ir.applicableNamespace()));
+            out.append(generateFileHeader(fetchTypesPackageName(enumToken, ir), packageNameByTypes));
             out.append(generateDocumentation(INDENT, enumToken));
             final String enumPrimitiveType = cSharpTypeName(enumToken.encoding().primitiveType());
             out.append(generateEnumDeclaration(enumName, enumPrimitiveType, true));
@@ -682,7 +719,7 @@ public class CSharpGenerator implements CodeGenerator
 
         try (Writer out = outputManager.createOutput(enumName))
         {
-            out.append(generateFileHeader(ir.applicableNamespace()));
+            out.append(generateFileHeader(fetchTypesPackageName(enumToken, ir), packageNameByTypes));
             out.append(generateDocumentation(INDENT, enumToken));
             final String enumPrimitiveType = cSharpTypeName(enumToken.encoding().primitiveType());
             out.append(generateEnumDeclaration(enumName, enumPrimitiveType, false));
@@ -696,14 +733,15 @@ public class CSharpGenerator implements CodeGenerator
 
     private void generateComposite(final List<Token> tokens) throws IOException
     {
-        final String compositeName = CSharpUtil.formatClassName(tokens.get(0).applicableTypeName());
+        final Token token = tokens.get(0);
+        final String compositeName = CSharpUtil.formatClassName(token.applicableTypeName());
 
         try (Writer out = outputManager.createOutput(compositeName))
         {
-            out.append(generateFileHeader(ir.applicableNamespace()));
-            out.append(generateDocumentation(INDENT, tokens.get(0)));
+            out.append(generateFileHeader(fetchTypesPackageName(token, ir), packageNameByTypes));
+            out.append(generateDocumentation(INDENT, token));
             out.append(generateClassDeclaration(compositeName));
-            out.append(generateFixedFlyweightCode(tokens.get(0).encodedLength()));
+            out.append(generateFixedFlyweightCode(token.encodedLength()));
             out.append(generateCompositePropertyElements(tokens.subList(1, tokens.size() - 1), BASE_INDENT));
 
             out.append(generateCompositeDisplay(tokens));
@@ -798,7 +836,7 @@ public class CSharpGenerator implements CodeGenerator
     {
         try (Writer out = outputManager.createOutput(META_ATTRIBUTE_ENUM))
         {
-            out.append(generateFileHeader(ir.applicableNamespace()));
+            out.append(generateFileHeader(ir.applicableNamespace(), null));
 
             out.append(
                 INDENT + "public enum MetaAttribute\n" +

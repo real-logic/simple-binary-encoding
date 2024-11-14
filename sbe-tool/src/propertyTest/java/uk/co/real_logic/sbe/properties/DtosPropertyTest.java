@@ -152,7 +152,7 @@ public class DtosPropertyTest
             {
                 new CSharpGenerator(encodedMessage.ir(), outputManager)
                     .generate();
-                new CSharpDtoGenerator(encodedMessage.ir(), outputManager)
+                new CSharpDtoGenerator(encodedMessage.ir(), false, outputManager)
                     .generate();
             }
             catch (final Exception generationException)

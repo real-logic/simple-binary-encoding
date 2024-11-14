@@ -18,6 +18,7 @@ package uk.co.real_logic.sbe.generation.csharp;
 import org.agrona.generation.StringWriterOutputManager;
 import org.junit.jupiter.api.Test;
 import uk.co.real_logic.sbe.Tests;
+import uk.co.real_logic.sbe.generation.common.PrecedenceChecks;
 import uk.co.real_logic.sbe.ir.Ir;
 import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
@@ -25,6 +26,8 @@ import uk.co.real_logic.sbe.xml.ParserOptions;
 
 import java.io.InputStream;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
@@ -42,40 +45,31 @@ class CSharpGeneratorTest
             final StringWriterOutputManager outputManager = new StringWriterOutputManager();
             outputManager.setPackageName(ir.applicableNamespace());
 
-            final CSharpGenerator generator = new CSharpGenerator(ir, outputManager);
+            final CSharpGenerator generator = new CSharpGenerator(
+                ir,
+                PrecedenceChecks.newInstance(new PrecedenceChecks.Context()),
+                true,
+                outputManager);
             generator.generate();
 
-            final CSharpDtoGenerator dtoGenerator = new CSharpDtoGenerator(ir, outputManager);
+            final CSharpDtoGenerator dtoGenerator = new CSharpDtoGenerator(ir, true, outputManager);
             dtoGenerator.generate();
 
             final java.util.Map<String, CharSequence> sources = outputManager.getSources();
-            /*
-            sources.forEach((s, cs) ->
-            {
-                System.out.println("----------------");
-                System.out.println("FILE :: " + s);
-                System.out.println("----------------");
-                System.out.println(cs);
-                System.out.println("----------------");
-            });
-             */
 
             assertNotNull(sources.get("test.message.schema.TestMessageDto"));
             assertNotNull(sources.get("test.message.schema.MessageHeaderDto"));
-            //assertNotNull(sources.get("test.message.schema.common.CarDto"));
-            //assertNotNull(sources.get("test.message.schema.common.EngineDto"));
             assertNotNull(sources.get("test.message.schema.CarDto"));
             assertNotNull(sources.get("test.message.schema.EngineDto"));
 
-            /*
-            assertNotNull(sources.get("outside.schema.FuelSpecDto"));
-            assertNotNull(sources.get("outside.schema.DaysDto"));
-            assertNotNull(sources.get("outside.schema.FuelTypeDto"));
+            String source;
 
-            assertNotNull(compile("test.message.schema.TestMessageDto"));
-            assertNotNull(compile("test.message.schema.common.CarDto"));
-            assertNotNull(compile("outside.schema.FuelSpecDto"));
-             */
+            source = sources.get("test.message.schema.TestMessageDto").toString();
+            assertThat(source, containsString("using Outside.Schema;"));
+
+            source = sources.get("test.message.schema.TestMessage").toString();
+            assertThat(source, containsString("using Outside.Schema;"));
+            assertThat(source, containsString("using Test.Message.Schema.Common;"));
         }
     }
 }

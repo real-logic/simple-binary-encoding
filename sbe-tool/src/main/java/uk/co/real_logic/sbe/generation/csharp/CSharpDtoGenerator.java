@@ -30,7 +30,9 @@ import org.agrona.generation.OutputManager;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import static uk.co.real_logic.sbe.generation.csharp.CSharpUtil.*;
@@ -49,20 +51,42 @@ public class CSharpDtoGenerator implements CodeGenerator
 
     private final Ir ir;
     private final OutputManager outputManager;
+    private final boolean shouldSupportTypesPackageNames;
+    private final Set<String> packageNameByTypes = new HashSet<>();
 
     /**
      * Create a new C# DTO {@link CodeGenerator}.
      *
      * @param ir            for the messages and types.
+     * @param shouldSupportTypesPackageNames generator support for types in their own package.
      * @param outputManager for generating the DTOs to.
      */
-    public CSharpDtoGenerator(final Ir ir, final OutputManager outputManager)
+    public CSharpDtoGenerator(
+        final Ir ir,
+        final boolean shouldSupportTypesPackageNames,
+        final OutputManager outputManager)
     {
         Verify.notNull(ir, "ir");
         Verify.notNull(outputManager, "outputManager");
 
         this.ir = ir;
+        this.shouldSupportTypesPackageNames = shouldSupportTypesPackageNames;
         this.outputManager = outputManager;
+    }
+
+    private String fetchTypesPackageName(final Token token, final Ir ir)
+    {
+        if (!shouldSupportTypesPackageNames)
+        {
+            return ir.applicableNamespace();
+        }
+
+        if (token.packageName() != null)
+        {
+            return token.packageName();
+        }
+
+        return ir.applicableNamespace();
     }
 
     /**
@@ -70,6 +94,22 @@ public class CSharpDtoGenerator implements CodeGenerator
      */
     public void generate() throws IOException
     {
+        packageNameByTypes.clear();
+
+        if (shouldSupportTypesPackageNames)
+        {
+            for (final List<Token> tokens : ir.types())
+            {
+                final Token token = tokens.get(0);
+                final String packageName = token.packageName();
+
+                if (packageName != null)
+                {
+                    packageNameByTypes.add(packageName);
+                }
+            }
+        }
+
         generateDtosForTypes();
 
         for (final List<Token> tokens : ir.messages())
@@ -110,7 +150,8 @@ public class CSharpDtoGenerator implements CodeGenerator
             try (Writer out = outputManager.createOutput(dtoClassName))
             {
                 out.append(generateFileHeader(
-                    ir.applicableNamespace(),
+                    fetchTypesPackageName(msgToken, ir),
+                    packageNameByTypes,
                     "#nullable enable\n\n",
                     "using System.Collections.Generic;\n",
                     "using System.Linq;\n"));
@@ -1360,13 +1401,16 @@ public class CSharpDtoGenerator implements CodeGenerator
 
     private void generateComposite(final List<Token> tokens) throws IOException
     {
-        final String name = tokens.get(0).applicableTypeName();
+        final Token token = tokens.get(0);
+        final String name = token.applicableTypeName();
         final String className = formatDtoClassName(name);
         final String codecClassName = formatClassName(name);
 
         try (Writer out = outputManager.createOutput(className))
         {
-            out.append(generateFileHeader(ir.applicableNamespace(),
+            out.append(generateFileHeader(
+                fetchTypesPackageName(token, ir),
+                packageNameByTypes,
                 "#nullable enable\n",
                 "using System.Collections.Generic;\n",
                 "using System.Linq;\n"));

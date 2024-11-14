@@ -30,6 +30,6 @@ public class CSharpDtos implements TargetCodeGenerator
      */
     public CodeGenerator newInstance(final Ir ir, final String outputDir)
     {
-        return new CSharpDtoGenerator(ir, new CSharpNamespaceOutputManager(outputDir, ir.applicableNamespace()));
+        return new CSharpDtoGenerator(ir, false, new CSharpNamespaceOutputManager(outputDir, ir.applicableNamespace()));
     }
 }
