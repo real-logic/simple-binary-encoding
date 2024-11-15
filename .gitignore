@@ -94,6 +94,7 @@ csharp/sbe-generated/since-deprecated
 csharp/sbe-generated/order_check
 csharp/sbe-generated/mktdata/*.cs
 csharp/sbe-generated/uk_co_real_logic_sbe_benchmarks_fix
+csharp/sbe-generated/test_message_schema
 csharp/sbe-tests/*.sbe
 csharp/nuget/
 csharp/csharp.sln.DotSettings.user

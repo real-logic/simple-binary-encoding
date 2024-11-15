@@ -50,20 +50,42 @@ public class CppDtoGenerator implements CodeGenerator
 
     private final Ir ir;
     private final OutputManager outputManager;
+    private final boolean shouldSupportTypesPackageNames;
+    private final Map<String, String> namespaceByType = new HashMap<>();
 
     /**
      * Create a new C++ DTO {@link CodeGenerator}.
      *
-     * @param ir            for the messages and types.
-     * @param outputManager for generating the DTOs to.
+     * @param ir                             for the messages and types.
+     * @param shouldSupportTypesPackageNames generator support for types in their own package.
+     * @param outputManager                  for generating the DTOs to.
      */
-    public CppDtoGenerator(final Ir ir, final OutputManager outputManager)
+    public CppDtoGenerator(
+        final Ir ir,
+        final boolean shouldSupportTypesPackageNames,
+        final OutputManager outputManager)
     {
         Verify.notNull(ir, "ir");
         Verify.notNull(outputManager, "outputManager");
 
         this.ir = ir;
+        this.shouldSupportTypesPackageNames = shouldSupportTypesPackageNames;
         this.outputManager = outputManager;
+    }
+
+    private String[] fetchTypesPackageName(final Token token, final Ir ir)
+    {
+        if (!shouldSupportTypesPackageNames)
+        {
+            return ir.namespaces();
+        }
+
+        if (token.packageName() != null)
+        {
+            return Ir.getNamespaces(token.packageName());
+        }
+
+        return ir.namespaces();
     }
 
     /**
@@ -71,6 +93,22 @@ public class CppDtoGenerator implements CodeGenerator
      */
     public void generate() throws IOException
     {
+        namespaceByType.clear();
+
+        if (shouldSupportTypesPackageNames)
+        {
+            for (final List<Token> tokens : ir.types())
+            {
+                final Token token = tokens.get(0);
+                final String packageName = token.packageName();
+
+                if (packageName != null)
+                {
+                    namespaceByType.put(token.applicableTypeName(), packageName);
+                }
+            }
+        }
+
         generateDtosForTypes();
 
         for (final List<Token> tokens : ir.messages())
@@ -116,13 +154,14 @@ public class CppDtoGenerator implements CodeGenerator
                 final Set<String> referencedTypes = generateTypesToIncludes(beginTypeTokensInSchema);
                 referencedTypes.add(codecClassName);
 
+                final String[] namespaces = fetchTypesPackageName(msgToken, ir);
                 out.append(generateDtoFileHeader(
-                    ir.namespaces(),
+                    namespaces,
                     className,
                     referencedTypes));
                 out.append(generateDocumentation(BASE_INDENT, msgToken));
                 classBuilder.appendTo(out);
-                out.append(CppUtil.closingBraces(ir.namespaces().length));
+                out.append(CppUtil.closingBraces(namespaces.length));
                 out.append("#endif\n");
             }
         }
@@ -1732,7 +1771,8 @@ public class CppDtoGenerator implements CodeGenerator
 
     private void generateComposite(final List<Token> tokens) throws IOException
     {
-        final String name = tokens.get(0).applicableTypeName();
+        final Token token = tokens.get(0);
+        final String name = token.applicableTypeName();
         final String className = formatDtoClassName(name);
         final String codecClassName = formatClassName(name);
 
@@ -1741,8 +1781,9 @@ public class CppDtoGenerator implements CodeGenerator
             final List<Token> compositeTokens = tokens.subList(1, tokens.size() - 1);
             final Set<String> referencedTypes = generateTypesToIncludes(compositeTokens);
             referencedTypes.add(codecClassName);
-            out.append(generateDtoFileHeader(ir.namespaces(), className, referencedTypes));
-            out.append(generateDocumentation(BASE_INDENT, tokens.get(0)));
+            final String[] namespaces = fetchTypesPackageName(token, ir);
+            out.append(generateDtoFileHeader(namespaces, className, referencedTypes));
+            out.append(generateDocumentation(BASE_INDENT, token));
 
             final ClassBuilder classBuilder = new ClassBuilder(className, BASE_INDENT);
 
@@ -1754,14 +1795,15 @@ public class CppDtoGenerator implements CodeGenerator
                 codecClassName + "::sbeSchemaVersion()", BASE_INDENT + INDENT);
 
             classBuilder.appendTo(out);
-            out.append(CppUtil.closingBraces(ir.namespaces().length));
+            out.append(CppUtil.closingBraces(namespaces.length));
             out.append("#endif\n");
         }
     }
 
     private void generateChoiceSet(final List<Token> tokens) throws IOException
     {
-        final String name = tokens.get(0).applicableTypeName();
+        final Token token = tokens.get(0);
+        final String name = token.applicableTypeName();
         final String className = formatDtoClassName(name);
         final String codecClassName = formatClassName(name);
 
@@ -1770,7 +1812,8 @@ public class CppDtoGenerator implements CodeGenerator
             final List<Token> setTokens = tokens.subList(1, tokens.size() - 1);
             final Set<String> referencedTypes = generateTypesToIncludes(setTokens);
             referencedTypes.add(codecClassName);
-            out.append(generateDtoFileHeader(ir.namespaces(), className, referencedTypes));
+            final String[] namespaces = fetchTypesPackageName(token, ir);
+            out.append(generateDtoFileHeader(namespaces, className, referencedTypes));
             out.append(generateDocumentation(BASE_INDENT, tokens.get(0)));
 
             final ClassBuilder classBuilder = new ClassBuilder(className, BASE_INDENT);
@@ -1780,7 +1823,7 @@ public class CppDtoGenerator implements CodeGenerator
             generateChoiceSetEncodeWith(classBuilder, className, codecClassName, setTokens, BASE_INDENT + INDENT);
 
             classBuilder.appendTo(out);
-            out.append(CppUtil.closingBraces(ir.namespaces().length));
+            out.append(CppUtil.closingBraces(namespaces.length));
             out.append("#endif\n");
         }
     }
@@ -1965,7 +2008,7 @@ public class CppDtoGenerator implements CodeGenerator
         }
     }
 
-    private static CharSequence generateDtoFileHeader(
+    private CharSequence generateDtoFileHeader(
         final CharSequence[] namespaces,
         final String className,
         final Collection<String> typesToInclude)
@@ -2009,6 +2052,32 @@ public class CppDtoGenerator implements CodeGenerator
         sb.append("\nnamespace ");
         sb.append(String.join(" {\nnamespace ", namespaces));
         sb.append(" {\n\n");
+
+        if (shouldSupportTypesPackageNames && typesToInclude != null && !typesToInclude.isEmpty())
+        {
+            final Set<String> namespacesToUse = namespaceByType
+                .entrySet()
+                .stream()
+                .filter(e -> typesToInclude.contains(e.getKey()))
+                .map(Map.Entry::getValue)
+                .collect(Collectors.toSet());
+
+            // remove the current namespace
+            namespacesToUse.remove(String.join(".", namespaces));
+
+            for (final String namespace : namespacesToUse)
+            {
+                sb
+                    .append("using namespace ")
+                    .append(namespace.replaceAll("\\.", "::"))
+                    .append(";\n");
+            }
+
+            if (!namespacesToUse.isEmpty())
+            {
+                sb.append("\n");
+            }
+        }
 
         return sb;
     }

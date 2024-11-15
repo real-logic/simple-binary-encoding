@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package uk.co.real_logic.sbe.generation.cpp;
+package uk.co.real_logic.sbe.generation.csharp;
 
 import org.agrona.generation.StringWriterOutputManager;
 import org.junit.jupiter.api.Test;
@@ -28,53 +28,11 @@ import java.io.InputStream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.not;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static uk.co.real_logic.sbe.xml.XmlSchemaParser.parse;
 
-class CppGeneratorTest
+class CSharpGeneratorTest
 {
-    @Test
-    void shouldUseGeneratedLiteralForConstantOneWhenGeneratingBitsetCode() throws Exception
-    {
-        try (InputStream in = Tests.getLocalResource("issue827.xml"))
-        {
-            final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
-            final MessageSchema schema = parse(in, options);
-            final IrGenerator irg = new IrGenerator();
-            final Ir ir = irg.generate(schema);
-            final StringWriterOutputManager outputManager = new StringWriterOutputManager();
-            outputManager.setPackageName(ir.applicableNamespace());
-
-            final CppGenerator generator = new CppGenerator(ir, false, outputManager);
-            generator.generate();
-
-            final String source = outputManager.getSource("issue827.FlagsSet").toString();
-            assertThat(source, not(containsString("1u << ")));
-            assertThat(source, containsString("UINT64_C(0x1) << "));
-        }
-    }
-
-    @Test
-    void shouldUseConstexprWhenInitializingSemanticVersion() throws Exception
-    {
-        try (InputStream in = Tests.getLocalResource("code-generation-schema.xml"))
-        {
-            final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
-            final MessageSchema schema = parse(in, options);
-            final IrGenerator irg = new IrGenerator();
-            final Ir ir = irg.generate(schema);
-            final StringWriterOutputManager outputManager = new StringWriterOutputManager();
-            outputManager.setPackageName(ir.applicableNamespace());
-
-            final CppGenerator generator = new CppGenerator(ir, false, outputManager);
-            generator.generate();
-
-            final String source = outputManager.getSource("code.generation.test.Car").toString();
-            assertThat(source, containsString("static constexpr const char* SBE_SEMANTIC_VERSION = \"5.2\""));
-        }
-    }
-
     @Test
     void dtosShouldReferenceTypesInDifferentPackages() throws Exception
     {
@@ -87,18 +45,18 @@ class CppGeneratorTest
             final StringWriterOutputManager outputManager = new StringWriterOutputManager();
             outputManager.setPackageName(ir.applicableNamespace());
 
-            final CppGenerator generator = new CppGenerator(
+            final CSharpGenerator generator = new CSharpGenerator(
                 ir,
-                false,
                 PrecedenceChecks.newInstance(new PrecedenceChecks.Context()),
                 true,
                 outputManager);
             generator.generate();
 
-            final CppDtoGenerator dtoGenerator = new CppDtoGenerator(ir, true, outputManager);
+            final CSharpDtoGenerator dtoGenerator = new CSharpDtoGenerator(ir, true, outputManager);
             dtoGenerator.generate();
 
             final java.util.Map<String, CharSequence> sources = outputManager.getSources();
+
             assertNotNull(sources.get("test.message.schema.TestMessageDto"));
             assertNotNull(sources.get("test.message.schema.MessageHeaderDto"));
             assertNotNull(sources.get("test.message.schema.CarDto"));
@@ -107,11 +65,11 @@ class CppGeneratorTest
             String source;
 
             source = sources.get("test.message.schema.TestMessageDto").toString();
-            assertThat(source, containsString("using namespace outside::schema;"));
+            assertThat(source, containsString("using Outside.Schema;"));
 
             source = sources.get("test.message.schema.TestMessage").toString();
-            assertThat(source, containsString("using namespace outside::schema;"));
-            assertThat(source, containsString("using namespace test::message::schema::common;"));
+            assertThat(source, containsString("using Outside.Schema;"));
+            assertThat(source, containsString("using Test.Message.Schema.Common;"));
         }
     }
 }

@@ -107,13 +107,21 @@ public enum TargetCodeGeneratorLoader implements TargetCodeGenerator
             final NamespaceOutputManager outputManager = new NamespaceOutputManager(
                 outputDir, ir.applicableNamespace());
             final boolean decodeUnknownEnumValues = Boolean.getBoolean(DECODE_UNKNOWN_ENUM_VALUES);
+            final boolean shouldSupportTypesPackageNames = Boolean.getBoolean(TYPES_PACKAGE_OVERRIDE);
 
-            final CodeGenerator codecGenerator = new CppGenerator(ir, decodeUnknownEnumValues, precedenceChecks(),
+            final CodeGenerator codecGenerator = new CppGenerator(
+                ir,
+                decodeUnknownEnumValues,
+                precedenceChecks(),
+                shouldSupportTypesPackageNames,
                 outputManager);
 
             if (Boolean.getBoolean(CPP_GENERATE_DTOS))
             {
-                final CodeGenerator dtoGenerator = new CppDtoGenerator(ir, outputManager);
+                final CodeGenerator dtoGenerator = new CppDtoGenerator(
+                    ir,
+                    shouldSupportTypesPackageNames,
+                    outputManager);
                 return () ->
                 {
                     codecGenerator.generate();

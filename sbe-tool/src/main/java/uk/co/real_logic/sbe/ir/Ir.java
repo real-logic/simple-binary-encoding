@@ -79,14 +79,7 @@ public class Ir
 
         captureTypes(headerTokens, 0, headerTokens.size() - 1);
 
-        if ("true".equals(System.getProperty(SbeTool.CPP_NAMESPACES_COLLAPSE)))
-        {
-            this.namespaces = new String[]{ (namespaceName == null ? packageName : namespaceName).replace(".", "_") };
-        }
-        else
-        {
-            this.namespaces = Pattern.compile("\\.").split(namespaceName == null ? packageName : namespaceName);
-        }
+        this.namespaces = Ir.getNamespaces(namespaceName == null ? packageName : namespaceName);
     }
 
     /**
@@ -277,6 +270,25 @@ public class Ir
                 tokens.get(beginIndex).componentTokenCount(componentTokenCount);
                 token.componentTokenCount(componentTokenCount);
             }
+        }
+    }
+
+    /**
+     * Construct an array of namespace strings based on the supplied namespaceName,
+     * accounting for the CPP_NAMESPACES_COLLAPSE option.
+     *
+     * @param namespaceName a namespace name that may contain period-separated nested namespaces
+     * @return an array of nested namespace strings
+     */
+    public static String[] getNamespaces(final String namespaceName)
+    {
+        if ("true".equals(System.getProperty(SbeTool.CPP_NAMESPACES_COLLAPSE)))
+        {
+            return new String[]{ namespaceName.replace(".", "_") };
+        }
+        else
+        {
+            return Pattern.compile("\\.").split(namespaceName);
         }
     }
 

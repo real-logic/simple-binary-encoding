@@ -20,6 +20,8 @@ import uk.co.real_logic.sbe.generation.CodeGenerator;
 import uk.co.real_logic.sbe.generation.TargetCodeGenerator;
 import uk.co.real_logic.sbe.ir.Ir;
 
+import static uk.co.real_logic.sbe.SbeTool.TYPES_PACKAGE_OVERRIDE;
+
 /**
  * {@link CodeGenerator} factory for CSharp DTOs.
  */
@@ -30,6 +32,11 @@ public class CSharpDtos implements TargetCodeGenerator
      */
     public CodeGenerator newInstance(final Ir ir, final String outputDir)
     {
-        return new CSharpDtoGenerator(ir, new CSharpNamespaceOutputManager(outputDir, ir.applicableNamespace()));
+        final boolean shouldSupportTypesPackageNames = Boolean.getBoolean(TYPES_PACKAGE_OVERRIDE);
+        return new CSharpDtoGenerator(
+            ir,
+            shouldSupportTypesPackageNames,
+            new CSharpNamespaceOutputManager(outputDir, ir.applicableNamespace())
+        );
     }
 }
