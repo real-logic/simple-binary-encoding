@@ -1265,10 +1265,10 @@ public class RustGenerator implements CodeGenerator
         indent(writer, 0, "}\n");
 
         // From impl
-        generateFromImplForEnum(enumRustName, primitiveType, messageBody, writer);
+        generateFromPrimitiveForEnum(enumRustName, primitiveType, messageBody, writer);
 
         // Into impl
-        generateIntoImplForEnum(enumRustName, primitiveType, messageBody, writer);
+        generateFromEnumForPrimitive(enumRustName, primitiveType, messageBody, writer);
 
         // FromStr impl
         generateFromStrImplForEnum(enumRustName, primitiveType, messageBody, writer);
@@ -1277,7 +1277,7 @@ public class RustGenerator implements CodeGenerator
         generateDisplayImplForEnum(enumRustName, primitiveType, messageBody, writer);
     }
 
-    private static void generateFromImplForEnum(
+    private static void generateFromPrimitiveForEnum(
         final String enumRustName,
         final String primitiveType,
         final List<Token> messageBody,
@@ -1302,27 +1302,29 @@ public class RustGenerator implements CodeGenerator
         indent(writer, 0, "}\n");
     }
 
-    private static void generateIntoImplForEnum(
+    private static void generateFromEnumForPrimitive(
         final String enumRustName,
         final String primitiveType,
         final List<Token> messageBody,
         final Appendable writer) throws IOException
     {
-        indent(writer, 0, "impl Into<%s> for %s {\n", primitiveType, enumRustName);
+        indent(writer, 0, "impl From<%s> for %s {\n", enumRustName, primitiveType);
         indent(writer, 1, "#[inline]\n");
-        indent(writer, 1, "fn into(self) -> %s {\n", primitiveType);
-        indent(writer, 2, "match self {\n");
+        indent(writer, 1, "fn from(v: %s) -> Self {\n", enumRustName);
+        indent(writer, 2, "match v {\n");
+
         for (final Token token : messageBody)
         {
             final Encoding encoding = token.encoding();
             final String literal = generateRustLiteral(encoding.primitiveType(), encoding.constValue().toString());
-            indent(writer, 3, "Self::%s => %s, \n", token.name(), literal);
+            indent(writer, 3, "%s::%s => %s, \n", enumRustName, token.name(), literal);
         }
+
         {
             final Encoding encoding = messageBody.get(0).encoding();
             final CharSequence nullVal = generateRustLiteral(encoding.primitiveType(),
-                encoding.applicableNullValue().toString());
-            indent(writer, 3, "Self::NullVal => %s,\n", nullVal);
+                    encoding.applicableNullValue().toString());
+            indent(writer, 3, "%s::NullVal => %s,\n", enumRustName, nullVal);
         }
         indent(writer, 2, "}\n");
         indent(writer, 1, "}\n");
@@ -1342,10 +1344,10 @@ public class RustGenerator implements CodeGenerator
         indent(writer, 2, "match v {\n");
         for (final Token token : messageBody)
         {
-            indent(writer, 3, "\"%1$s\" => core::result::Result::Ok(Self::%1$s), \n", token.name());
+            indent(writer, 3, "\"%1$s\" => Ok(Self::%1$s), \n", token.name());
         }
         // default => NullVal
-        indent(writer, 3, "_ => core::result::Result::Ok(Self::NullVal),\n");
+        indent(writer, 3, "_ => Ok(Self::NullVal),\n");
         indent(writer, 2, "}\n");
         indent(writer, 1, "}\n");
         indent(writer, 0, "}\n");
