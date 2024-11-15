@@ -1271,7 +1271,7 @@ public class RustGenerator implements CodeGenerator
         generateFromEnumForPrimitive(enumRustName, primitiveType, messageBody, writer);
 
         // FromStr impl
-        generateFromStrImplForEnum(enumRustName, primitiveType, messageBody, writer);
+        generateFromStrImplForEnum(enumRustName, messageBody, writer);
 
         // Display impl
         generateDisplayImplForEnum(enumRustName, primitiveType, messageBody, writer);
@@ -1333,7 +1333,6 @@ public class RustGenerator implements CodeGenerator
 
     private static void generateFromStrImplForEnum(
         final String enumRustName,
-        final String primitiveType,
         final List<Token> messageBody,
         final Appendable writer) throws IOException
     {
