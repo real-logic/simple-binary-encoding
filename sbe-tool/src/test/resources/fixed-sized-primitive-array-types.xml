@@ -32,7 +32,7 @@
 
         <type name="Fixed16u16" description="Array of 16 u16" length="16" primitiveType="uint16" />
         <type name="Fixed16u32" description="Array of 16 u32" length="16" primitiveType="uint32" />
-        <!-- <type name="Fixed16u64" description="Array of 16 u64" length="16" primitiveType="uint64" /> -->
+        <type name="Fixed16u64" description="Array of 16 u64" length="16" primitiveType="uint64" />
     </types>
 
     <sbe:message name="demo" id="1">
@@ -53,6 +53,6 @@
 
         <field name="fixed16u16" id="32" type="Fixed16u16"/>
         <field name="fixed16u32" id="33" type="Fixed16u32"/>
-        <!-- <field name="fixed16u64" id="34" type="Fixed16u64"/> -->
+        <field name="fixed16u64" id="34" type="Fixed16u64"/>
     </sbe:message>
 </sbe:messageSchema>
