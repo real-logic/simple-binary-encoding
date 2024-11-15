@@ -19,6 +19,7 @@ issue_987 = { path = "../generated/rust/issue987" }
 issue_1028 = { path = "../generated/rust/issue1028" }
 baseline_bigendian = { path = "../generated/rust/baseline-bigendian" }
 nested_composite_name = { path = "../generated/rust/nested-composite-name" }
+fixed_sized_primitive_array = { path = "../generated/rust/fixed_sized_primitive_array" }
 
 [dev-dependencies]
 criterion = "0.5"
