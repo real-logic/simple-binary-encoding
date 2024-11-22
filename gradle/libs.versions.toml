@@ -3,13 +3,13 @@ agrona = "1.23.1"
 checkstyle = "10.20.1"
 junit = "5.11.3"
 jmh = "1.37"
-gradle = "8.10.2"
+gradle = "8.11"
 
 [libraries]
 agrona = { group = "org.agrona", name = "agrona", version = { strictly = "[1.23.1, 2.0[", require = "1.23.1" } }
 mockito = { group = "org.mockito", name = "mockito-core", version = "5.14.2" }
 hamcrest = { group = "org.hamcrest", name = "hamcrest", version = "3.0" }
-jqwik = { group = "net.jqwik", name = "jqwik", version = "1.9.0" }
+jqwik = { group = "net.jqwik", name = "jqwik", version = "1.9.1" }
 json = { group = "org.json", name = "json", version = "20240303" }
 jmh-core = { group = "org.openjdk.jmh", name = "jmh-core", version.ref = "jmh" }
 jmh-generator-annprocess = { group = "org.openjdk.jmh", name = "jmh-generator-annprocess", version.ref = "jmh" }
