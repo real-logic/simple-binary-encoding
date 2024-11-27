@@ -13,15 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package uk.co.real_logic.sbe.ir;
 
-import org.junit.jupiter.api.Test;
 import uk.co.real_logic.sbe.PrimitiveType;
 import uk.co.real_logic.sbe.xml.IrGenerator;
 import uk.co.real_logic.sbe.xml.MessageSchema;
 import uk.co.real_logic.sbe.xml.ParserOptions;
+import org.junit.jupiter.api.Test;
 
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.List;
 
@@ -306,6 +308,32 @@ class BasicXmlIrGenerationTest
             /* assert the group node has the right IrId and xRefIrId, etc. */
             assertThat(tokens.get(dataEncIdx).signal(), is(Signal.ENCODING));
             assertThat(tokens.get(dataEncIdx).encoding().primitiveType(), is(PrimitiveType.CHAR));
+        }
+    }
+
+    @Test
+    void shouldRegenerateIrWithSameByteOrder() throws Exception
+    {
+        try (InputStream in = getLocalResource("example-bigendian-test-schema.xml"))
+        {
+            final MessageSchema schema = parse(in, ParserOptions.DEFAULT);
+            final IrGenerator generator = new IrGenerator();
+            final Ir firstIr = generator.generate(schema);
+            final ByteBuffer firstIrOutputBuffer = ByteBuffer.allocate(8 * 1024);
+
+            final int length;
+            try (IrEncoder firstIrEncoder = new IrEncoder(firstIrOutputBuffer, firstIr))
+            {
+                length = firstIrEncoder.encode();
+            }
+
+            final Ir secondIr;
+            try (IrDecoder firstIrDecoder = new IrDecoder(firstIrOutputBuffer.slice(0, length)))
+            {
+                secondIr = firstIrDecoder.decode();
+            }
+
+            assertThat(secondIr.byteOrder(), is(firstIr.byteOrder()));
         }
     }
 }
