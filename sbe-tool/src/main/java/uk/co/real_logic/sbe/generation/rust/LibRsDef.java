@@ -60,7 +60,7 @@ class LibRsDef
         try (Writer libRs = outputManager.createOutput("lib"))
         {
             indent(libRs, 0, "#![forbid(unsafe_code)]\n");
-            indent(libRs, 0, "#![allow(clippy::upper_case_acronyms)]\n");
+            indent(libRs, 0, "#![allow(clippy::all)]\n");
             indent(libRs, 0, "#![allow(non_camel_case_types)]\n\n");
             indent(libRs, 0, "#![allow(ambiguous_glob_reexports)]\n\n");
             indent(libRs, 0, "use ::core::{convert::TryInto};\n\n");
