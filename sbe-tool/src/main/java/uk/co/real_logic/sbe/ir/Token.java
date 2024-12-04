@@ -71,7 +71,7 @@ public class Token
     public static final int INVALID_ID = -1;
 
     /**
-     * Length not determined
+     * Length not determined.
      */
     public static final int VARIABLE_LENGTH = -1;
 
@@ -148,9 +148,9 @@ public class Token
     }
 
     /**
-     * Return the name of the token
+     * Return the name of the token.
      *
-     * @return name of the token
+     * @return name of the token.
      */
     public String name()
     {
@@ -158,7 +158,7 @@ public class Token
     }
 
     /**
-     * Return the packageName of the token
+     * Return the packageName of the token.
      *
      * @return packageName of the token or null, if it was not set explicitly.
      */
@@ -188,9 +188,9 @@ public class Token
     }
 
     /**
-     * Return the ID of the token assigned by the specification
+     * Return the ID of the token assigned by the specification.
      *
-     * @return ID of the token assigned by the specification
+     * @return ID of the token assigned by the specification.
      */
     public int id()
     {

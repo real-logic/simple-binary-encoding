@@ -19,7 +19,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
- * Various validation utilities used across parser, IR, and generator
+ * Various validation utilities used across parser, IR, and generator.
  */
 public class ValidationUtil
 {
@@ -228,7 +228,7 @@ public class ValidationUtil
      * <p>
      * <a href="http://docs.oracle.com/javase/specs/jls/se8/html/jls-3.html#jls-3.9">Java JLS</a>
      *
-     * @param value to check
+     * @param value to check.
      * @return true for validity as a Java name. false if not.
      */
     public static boolean isSbeJavaName(final String value)
@@ -391,6 +391,7 @@ public class ValidationUtil
     }
 
     /**
+     * C# keywords.
      * <a href="https://docs.microsoft.com/en-gb/dotnet/articles/csharp/language-reference/keywords/index">
      *     C# keywords</a>
      * Note this does not include the contextual keywords

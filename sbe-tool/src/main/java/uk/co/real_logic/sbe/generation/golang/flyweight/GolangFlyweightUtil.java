@@ -87,7 +87,7 @@ public class GolangFlyweightUtil
     }
 
     /**
-     * Map the name of a {@link uk.co.real_logic.sbe.PrimitiveType} to a Golang marhsalling function name.
+     * Map the name of a {@link uk.co.real_logic.sbe.PrimitiveType} to a Golang marshalling function name.
      *
      * @param primitiveType to map.
      * @return the name of the Java primitive that most closely maps.
@@ -114,8 +114,8 @@ public class GolangFlyweightUtil
             {
                 throw new IllegalStateException(
                     "Invalid property name='" + formattedValue +
-                        "' please correct the schema or consider setting system property: " +
-                        SbeTool.KEYWORD_APPEND_TOKEN);
+                    "' please correct the schema or consider setting system property: " +
+                    SbeTool.KEYWORD_APPEND_TOKEN);
             }
 
             formattedValue += keywordAppendToken;
@@ -142,16 +142,15 @@ public class GolangFlyweightUtil
     }
 
     /**
-     * Return the Golang formatted byte order encoding string to use to read for a given byte order and primitiveType
+     * Return the Golang formatted byte order encoding string to use to read for a given byte order and primitiveType.
      *
-     * @param byteOrder     of the {@link uk.co.real_logic.sbe.ir.Token}
-     * @param primitiveType of the {@link uk.co.real_logic.sbe.ir.Token}
-     * @return the string formatted as the byte ordering encoding
+     * @param byteOrder     of the {@link uk.co.real_logic.sbe.ir.Token}.
+     * @param primitiveType of the {@link uk.co.real_logic.sbe.ir.Token}.
+     * @return the string formatted as the byte ordering encoding.
      */
     public static String formatReadBytes(final ByteOrder byteOrder, final PrimitiveType primitiveType)
     {
-        final String suffix = (byteOrder == ByteOrder.BIG_ENDIAN ?
-            "BigEndian" : "LittleEndian");
+        final String suffix = byteOrder == ByteOrder.BIG_ENDIAN ? "BigEndian" : "LittleEndian";
 
         switch (primitiveType)
         {
@@ -182,16 +181,15 @@ public class GolangFlyweightUtil
     }
 
     /**
-     * Return the Golang formatted byte order encoding string to use to write for a given byte order and primitiveType
+     * Return the Golang formatted byte order encoding string to use to write for a given byte order and primitiveType.
      *
-     * @param byteOrder     of the {@link uk.co.real_logic.sbe.ir.Token}
-     * @param primitiveType of the {@link uk.co.real_logic.sbe.ir.Token}
-     * @return the string formatted as the byte ordering encoding
+     * @param byteOrder     of the {@link uk.co.real_logic.sbe.ir.Token}.
+     * @param primitiveType of the {@link uk.co.real_logic.sbe.ir.Token}.
+     * @return the string formatted as the byte ordering encoding.
      */
     public static String formatWriteBytes(final ByteOrder byteOrder, final PrimitiveType primitiveType)
     {
-        final String suffix = (byteOrder == ByteOrder.BIG_ENDIAN ?
-            "BigEndian" : "LittleEndian");
+        final String suffix = byteOrder == ByteOrder.BIG_ENDIAN ? "BigEndian" : "LittleEndian";
 
         switch (primitiveType)
         {
@@ -220,5 +218,4 @@ public class GolangFlyweightUtil
         }
         return "";
     }
-
 }

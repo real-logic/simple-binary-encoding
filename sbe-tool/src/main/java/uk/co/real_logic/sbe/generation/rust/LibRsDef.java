@@ -15,6 +15,8 @@
  */
 package uk.co.real_logic.sbe.generation.rust;
 
+import uk.co.real_logic.sbe.ir.Ir;
+
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.ByteOrder;
@@ -23,11 +25,15 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.stream.Stream;
-import uk.co.real_logic.sbe.ir.Ir;
 
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
-import static uk.co.real_logic.sbe.generation.rust.RustGenerator.*;
-import static uk.co.real_logic.sbe.generation.rust.RustUtil.*;
+import static uk.co.real_logic.sbe.generation.rust.RustGenerator.BUF_LIFETIME;
+import static uk.co.real_logic.sbe.generation.rust.RustGenerator.READ_BUF_TYPE;
+import static uk.co.real_logic.sbe.generation.rust.RustGenerator.WRITE_BUF_TYPE;
+import static uk.co.real_logic.sbe.generation.rust.RustUtil.TYPE_NAME_BY_PRIMITIVE_TYPE_MAP;
+import static uk.co.real_logic.sbe.generation.rust.RustUtil.indent;
+import static uk.co.real_logic.sbe.generation.rust.RustUtil.rustTypeName;
+import static uk.co.real_logic.sbe.generation.rust.RustUtil.toLowerSnakeCase;
 
 /**
  * Generates `lib.rs` specific code.
@@ -39,11 +45,11 @@ class LibRsDef
     private final String schemaVersionType;
 
     /**
-     * Create a new 'lib.rs' for the library being generated
+     * Create a new 'lib.rs' for the library being generated.
      *
      * @param outputManager     for generating the codecs to.
      * @param byteOrder         for the Encoding.
-     * @param schemaVersionType for acting_version type
+     * @param schemaVersionType for acting_version type.
      */
     LibRsDef(
         final RustOutputManager outputManager,
