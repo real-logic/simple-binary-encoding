@@ -103,6 +103,11 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         sbe_test(DtoTest codecs)
         target_compile_features(DtoTest PRIVATE cxx_std_17)
     endif()
+
+    # Check if the GCC version supports C++20
+    if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "11.0")
+        target_compile_features(CodeGenTest PRIVATE cxx_std_20)
+    endif()
 endif()
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "CLang")
@@ -111,12 +116,18 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "CLang")
         sbe_test(DtoTest codecs)
         target_compile_features(DtoTest PRIVATE cxx_std_17)
     endif()
+
+    # Check if CLang version supports C++20
+    if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "10.0")
+        target_compile_features(CodeGenTest PRIVATE cxx_std_20)
+    endif()
 endif()
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-    # Check if MSVC version supports C++17
+    # Check if MSVC version supports C++17 / C++20
     if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "19.14")
         sbe_test(DtoTest codecs)
         target_compile_options(DtoTest PRIVATE /std:c++17)
+        target_compile_options(CodeGenTest PRIVATE /std:c++20)
     endif()
 endif()

@@ -1083,3 +1083,65 @@ TEST_F(CodeGenTest, shouldAllowForMultipleIterations)
     std::string passFive = walkCar(carDecoder);
     EXPECT_EQ(passOne, passFive);
 }
+
+#ifdef SBE_USE_STRING_VIEW
+TEST_F(CodeGenTest, shouldBeAbleToUseStdStringViewMethods)
+{
+    std::string vehicleCode(VEHICLE_CODE, Car::vehicleCodeLength());
+
+    char buffer[BUFFER_LEN] = {};
+    std::uint64_t baseOffset = MessageHeader::encodedLength();
+    Car car;
+    car.wrapForEncode(buffer, baseOffset, sizeof(buffer));
+    car.putVehicleCode(std::string_view(vehicleCode));
+
+    car.sbeRewind();
+    EXPECT_EQ(car.getVehicleCodeAsStringView(), vehicleCode);
+}
+#endif
+
+#ifdef SBE_USE_SPAN
+TEST_F(CodeGenTest, shouldBeAbleToUseStdSpanViewMethods)
+{
+    char buffer[BUFFER_LEN] = {};
+
+    std::uint64_t baseOffset = MessageHeader::encodedLength();
+    Car car;
+    car.wrapForEncode(buffer, baseOffset, sizeof(buffer));
+
+    {
+        std::array<std::int32_t, Car::someNumbersLength()> numbers;
+        for (std::uint64_t i = 0; i < Car::someNumbersLength(); i++)
+        {
+            numbers[i] = static_cast<std::int32_t>(i);
+        }
+        car.putSomeNumbers(numbers);
+    }
+
+    car.sbeRewind();
+
+    {
+        std::span<const std::int32_t> numbers = car.getSomeNumbersAsSpan();
+        ASSERT_EQ(numbers.size(), Car::someNumbersLength());
+        for (std::uint64_t i = 0; i < numbers.size(); i++)
+        {
+            EXPECT_EQ(numbers[i], static_cast<std::int32_t>(i));
+        }
+    }
+}
+#endif
+
+#ifdef SBE_USE_SPAN
+TEST_F(CodeGenTest, shouldBeAbleToResolveStringLiterals)
+{
+    char buffer[BUFFER_LEN] = {};
+
+    std::uint64_t baseOffset = MessageHeader::encodedLength();
+    Car car;
+    car.wrapForEncode(buffer, baseOffset, sizeof(buffer));
+    car.putVehicleCode("ABCDE");
+
+    car.sbeRewind();
+    EXPECT_EQ(car.getVehicleCodeAsStringView(), "ABCDE");
+}
+#endif
