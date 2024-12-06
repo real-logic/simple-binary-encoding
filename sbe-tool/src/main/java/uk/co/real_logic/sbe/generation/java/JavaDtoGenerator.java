@@ -291,7 +291,7 @@ public class JavaDtoGenerator implements CodeGenerator
                 .append(indent).append("public List<").append(qualifiedDtoClassName).append("> ")
                 .append(formattedPropertyName).append("()\n")
                 .append(indent).append("{\n")
-                .append(indent).append(INDENT).append("return ").append(fieldName).append(";\n")
+                .append(indent).append(INDENT).append("return this.").append(fieldName).append(";\n")
                 .append(indent).append("}\n");
 
             classBuilder.appendPublic().append("\n")
@@ -299,7 +299,7 @@ public class JavaDtoGenerator implements CodeGenerator
                 .append(indent).append("public void ").append(formattedPropertyName).append("(")
                 .append("List<").append(qualifiedDtoClassName).append("> value)")
                 .append(indent).append("{\n")
-                .append(indent).append(INDENT).append(fieldName).append(" = value;\n")
+                .append(indent).append(INDENT).append("this.").append(fieldName).append(" = value;\n")
                 .append(indent).append("}\n");
         }
     }
@@ -350,7 +350,7 @@ public class JavaDtoGenerator implements CodeGenerator
                 .append(indent).append(INDENT).append("encodedLength += ")
                 .append(groupDecoderClassName).append(".sbeHeaderSize();\n\n")
                 .append(indent).append(INDENT).append("for (").append(groupDtoClassName).append(" group : ")
-                .append(fieldName).append(")\n")
+                .append("this.").append(fieldName).append(")\n")
                 .append(indent).append(INDENT).append("{\n")
                 .append(indent).append(INDENT).append(INDENT)
                 .append("encodedLength += group.computeEncodedLength();\n")
@@ -373,7 +373,7 @@ public class JavaDtoGenerator implements CodeGenerator
                 final String characterEncoding = varDataToken.encoding().characterEncoding();
                 final String lengthAccessor = characterEncoding == null ? ".length" : ".length()";
                 lengthBuilder.append(indent).append(INDENT).append("encodedLength += ")
-                    .append(fieldName).append(lengthAccessor);
+                    .append("this.").append(fieldName).append(lengthAccessor);
 
                 final int elementByteLength = varDataToken.encoding().primitiveType().size();
                 if (elementByteLength != 1)
@@ -1255,7 +1255,7 @@ public class JavaDtoGenerator implements CodeGenerator
             .append(indent).append("public ").append(typeName).append(" ")
             .append(formattedPropertyName).append("()\n")
             .append(indent).append("{\n")
-            .append(indent).append(INDENT).append("return ").append(fieldName).append(";\n")
+            .append(indent).append(INDENT).append("return this.").append(fieldName).append(";\n")
             .append(indent).append("}\n");
 
         classBuilder.appendPublic().append("\n")
@@ -1263,7 +1263,7 @@ public class JavaDtoGenerator implements CodeGenerator
             .append(indent).append("public void ")
             .append(formattedPropertyName).append("(").append(typeName).append(" value)\n")
             .append(indent).append("{\n")
-            .append(indent).append(INDENT).append(fieldName).append(" = value;\n")
+            .append(indent).append(INDENT).append("this.").append(fieldName).append(" = value;\n")
             .append(indent).append("}\n");
     }
 
@@ -1304,7 +1304,7 @@ public class JavaDtoGenerator implements CodeGenerator
                 .append(indent).append("public ").append(enumName).append(" ")
                 .append(formattedPropertyName).append("()\n")
                 .append(indent).append("{\n")
-                .append(indent).append(INDENT).append("return ").append(fieldName).append(";\n")
+                .append(indent).append(INDENT).append("return this.").append(fieldName).append(";\n")
                 .append(indent).append("}\n");
 
             classBuilder.appendPublic().append("\n")
@@ -1312,7 +1312,7 @@ public class JavaDtoGenerator implements CodeGenerator
                 .append(indent).append("public void ").append(formattedPropertyName)
                 .append("(").append(enumName).append(" value)\n")
                 .append(indent).append("{\n")
-                .append(indent).append(INDENT).append(fieldName).append(" = value;\n")
+                .append(indent).append(INDENT).append("this.").append(fieldName).append(" = value;\n")
                 .append(indent).append("}\n");
         }
     }
@@ -1382,7 +1382,7 @@ public class JavaDtoGenerator implements CodeGenerator
                 .append(indent).append("public ").append(typeName).append(" ")
                 .append(formattedPropertyName).append("()\n")
                 .append(indent).append("{\n")
-                .append(indent).append(INDENT).append("return ").append(fieldName).append(";\n")
+                .append(indent).append(INDENT).append("return this.").append(fieldName).append(";\n")
                 .append(indent).append("}\n");
 
             classBuilder.appendPublic().append("\n")
@@ -1391,7 +1391,7 @@ public class JavaDtoGenerator implements CodeGenerator
                 .append("(").append(typeName).append(" value)\n")
                 .append(indent).append("{\n")
                 .append(indent).append(INDENT).append(validateMethod).append("(value);\n")
-                .append(indent).append(INDENT).append(fieldName).append(" = value;\n")
+                .append(indent).append(INDENT).append("this.").append(fieldName).append(" = value;\n")
                 .append(indent).append("}\n");
 
             generateArrayValidateMethod(
@@ -1416,7 +1416,7 @@ public class JavaDtoGenerator implements CodeGenerator
                 .append(indent).append("public ").append(typeName).append(" ")
                 .append(formattedPropertyName).append("()\n")
                 .append(indent).append("{\n")
-                .append(indent).append(INDENT).append("return ").append(fieldName).append(";\n")
+                .append(indent).append(INDENT).append("return this.").append(fieldName).append(";\n")
                 .append(indent).append("}\n");
 
             classBuilder.appendPublic().append("\n")
@@ -1425,7 +1425,7 @@ public class JavaDtoGenerator implements CodeGenerator
                 .append(typeName).append(" value").append(")\n")
                 .append(indent).append("{\n")
                 .append(indent).append(INDENT).append(validateMethod).append("(value);\n")
-                .append(indent).append(INDENT).append(fieldName).append(" = value;\n")
+                .append(indent).append(INDENT).append("this.").append(fieldName).append(" = value;\n")
                 .append(indent).append("}\n");
 
             generateArrayValidateMethod(
@@ -1519,7 +1519,7 @@ public class JavaDtoGenerator implements CodeGenerator
             .append(indent).append("public ").append(typeName).append(" ")
             .append(formattedPropertyName).append("()\n")
             .append(indent).append("{\n")
-            .append(indent).append(INDENT).append("return ").append(fieldName).append(";\n")
+            .append(indent).append(INDENT).append("return this.").append(fieldName).append(";\n")
             .append(indent).append("}\n");
 
         classBuilder.appendPublic().append("\n")
@@ -1528,7 +1528,7 @@ public class JavaDtoGenerator implements CodeGenerator
             .append(typeName).append(" value)\n")
             .append(indent).append("{\n")
             .append(validationCall)
-            .append(indent).append(INDENT).append(fieldName).append(" = value;\n")
+            .append(indent).append(INDENT).append("this.").append(fieldName).append(" = value;\n")
             .append(indent).append("}\n");
     }
 
@@ -1590,14 +1590,14 @@ public class JavaDtoGenerator implements CodeGenerator
                     .append(indent).append("public ").append(dtoType).append(" ")
                     .append(formattedPropertyName).append("()\n")
                     .append(indent).append("{\n")
-                    .append(indent).append(INDENT).append("return ").append(fieldName).append(";\n")
+                    .append(indent).append(INDENT).append("return this.").append(fieldName).append(";\n")
                     .append(indent).append("}\n");
 
                 classBuilder.appendPublic().append("\n")
                     .append(indent).append("public void ").append(formattedPropertyName)
                     .append("(").append(dtoType).append(" value)\n")
                     .append(indent).append("{\n")
-                    .append(indent).append(INDENT).append(fieldName).append(" = value;\n")
+                    .append(indent).append(INDENT).append("this.").append(fieldName).append(" = value;\n")
                     .append(indent).append("}\n");
             }
         }
@@ -1777,7 +1777,7 @@ public class JavaDtoGenerator implements CodeGenerator
                     .append("\n")
                     .append(indent).append("public boolean ").append(formattedPropertyName).append("()\n")
                     .append(indent).append("{\n")
-                    .append(indent).append(INDENT).append("return ").append(fieldName).append(";\n")
+                    .append(indent).append(INDENT).append("return this.").append(fieldName).append(";\n")
                     .append(indent).append("}\n");
 
                 classBuilder.appendPublic()
@@ -1785,7 +1785,7 @@ public class JavaDtoGenerator implements CodeGenerator
                     .append(indent).append(dtoClassName).append(" ")
                     .append(formattedPropertyName).append("(boolean value)\n")
                     .append(indent).append("{\n")
-                    .append(indent).append(INDENT).append(fieldName).append(" = value;\n")
+                    .append(indent).append(INDENT).append("this.").append(fieldName).append(" = value;\n")
                     .append(indent).append(INDENT).append("return this;\n")
                     .append(indent).append("}\n");
             }
