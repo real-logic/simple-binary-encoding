@@ -243,7 +243,6 @@ public class CppGenerator implements CodeGenerator
                 generateDisplay(sb, msgToken.name(), fields, groups, varData);
                 sb.append(generateMessageLength(groups, varData, BASE_INDENT));
                 sb.append("};\n");
-                generateLookupTableDefinitions(sb, className, fieldPrecedenceModel);
                 sb.append(CppUtil.closingBraces(namespaces.length)).append("#endif\n");
                 out.append(sb);
             }
@@ -2975,12 +2974,8 @@ public class CppGenerator implements CodeGenerator
         }
 
         final StringBuilder sb = new StringBuilder();
-        sb.append(INDENT).append("static const std::string STATE_NAME_LOOKUP[")
-            .append(fieldPrecedenceModel.stateCount())
-            .append("];\n");
-        sb.append(INDENT).append("static const std::string STATE_TRANSITIONS_LOOKUP[")
-            .append(fieldPrecedenceModel.stateCount())
-            .append("];\n\n");
+
+        generateLookupTableDefinitions(sb, fieldPrecedenceModel);
 
         sb.append(INDENT).append("static std::string codecStateName(CodecState state)\n")
             .append(INDENT).append("{\n")
@@ -2997,7 +2992,6 @@ public class CppGenerator implements CodeGenerator
 
     private static void generateLookupTableDefinitions(
         final StringBuilder sb,
-        final String className,
         final FieldPrecedenceModel fieldPrecedenceModel)
     {
         if (null == fieldPrecedenceModel)
@@ -3005,19 +2999,17 @@ public class CppGenerator implements CodeGenerator
             return;
         }
 
-        sb.append("\n").append("const std::string ").append(className).append("::STATE_NAME_LOOKUP[")
-            .append(fieldPrecedenceModel.stateCount()).append("] =\n")
-            .append("{\n");
+        sb.append(INDENT).append("static constexpr const char *STATE_NAME_LOOKUP[] =\n")
+            .append(INDENT).append("{\n");
         fieldPrecedenceModel.forEachStateOrderedByStateNumber((state) ->
-            sb.append(INDENT).append("\"").append(state.name()).append("\",\n"));
-        sb.append("};\n\n");
+            sb.append(INDENT).append(INDENT).append("\"").append(state.name()).append("\",\n"));
+        sb.append(INDENT).append("};\n\n");
 
-        sb.append("const std::string ").append(className).append("::STATE_TRANSITIONS_LOOKUP[")
-            .append(fieldPrecedenceModel.stateCount()).append("] =\n")
-            .append("{\n");
+        sb.append(INDENT).append("static constexpr const char *STATE_TRANSITIONS_LOOKUP[] =\n")
+            .append(INDENT).append("{\n");
         fieldPrecedenceModel.forEachStateOrderedByStateNumber((state) ->
         {
-            sb.append(INDENT).append("\"");
+            sb.append(INDENT).append(INDENT).append("\"");
             final MutableBoolean isFirst = new MutableBoolean(true);
             final Set<String> transitionDescriptions = new HashSet<>();
             fieldPrecedenceModel.forEachTransitionFrom(state, (transitionGroup) ->
@@ -3038,7 +3030,7 @@ public class CppGenerator implements CodeGenerator
             });
             sb.append("\",\n");
         });
-        sb.append("};\n\n");
+        sb.append(INDENT).append("};\n\n");
     }
 
     private static CharSequence qualifiedStateCase(final FieldPrecedenceModel.State state)
