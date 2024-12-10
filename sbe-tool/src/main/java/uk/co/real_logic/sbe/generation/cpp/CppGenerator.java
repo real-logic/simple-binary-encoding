@@ -243,6 +243,7 @@ public class CppGenerator implements CodeGenerator
                 generateDisplay(sb, msgToken.name(), fields, groups, varData);
                 sb.append(generateMessageLength(groups, varData, BASE_INDENT));
                 sb.append("};\n");
+                generateLookupTableDefinitions(sb, className, fieldPrecedenceModel);
                 sb.append(CppUtil.closingBraces(namespaces.length)).append("#endif\n");
                 out.append(sb);
             }
@@ -2975,30 +2976,6 @@ public class CppGenerator implements CodeGenerator
 
         final StringBuilder sb = new StringBuilder();
 
-        generateLookupTableDefinitions(sb, fieldPrecedenceModel);
-
-        sb.append(INDENT).append("static std::string codecStateName(CodecState state)\n")
-            .append(INDENT).append("{\n")
-            .append(TWO_INDENT).append("return STATE_NAME_LOOKUP[static_cast<int>(state)];\n")
-            .append(INDENT).append("}\n\n");
-
-        sb.append(INDENT).append("static std::string codecStateTransitions(CodecState state)\n")
-            .append(INDENT).append("{\n")
-            .append(TWO_INDENT).append("return STATE_TRANSITIONS_LOOKUP[static_cast<int>(state)];\n")
-            .append(INDENT).append("}\n\n");
-
-        return sb;
-    }
-
-    private static void generateLookupTableDefinitions(
-        final StringBuilder sb,
-        final FieldPrecedenceModel fieldPrecedenceModel)
-    {
-        if (null == fieldPrecedenceModel)
-        {
-            return;
-        }
-
         sb.append(INDENT).append("static constexpr const char *STATE_NAME_LOOKUP[] =\n")
             .append(INDENT).append("{\n");
         fieldPrecedenceModel.forEachStateOrderedByStateNumber((state) ->
@@ -3031,6 +3008,37 @@ public class CppGenerator implements CodeGenerator
             sb.append("\",\n");
         });
         sb.append(INDENT).append("};\n\n");
+
+        sb.append(INDENT).append("static std::string codecStateName(CodecState state)\n")
+            .append(INDENT).append("{\n")
+            .append(TWO_INDENT).append("return STATE_NAME_LOOKUP[static_cast<int>(state)];\n")
+            .append(INDENT).append("}\n\n");
+
+        sb.append(INDENT).append("static std::string codecStateTransitions(CodecState state)\n")
+            .append(INDENT).append("{\n")
+            .append(TWO_INDENT).append("return STATE_TRANSITIONS_LOOKUP[static_cast<int>(state)];\n")
+            .append(INDENT).append("}\n\n");
+
+        return sb;
+    }
+
+    private static void generateLookupTableDefinitions(
+        final StringBuilder sb,
+        final String className,
+        final FieldPrecedenceModel fieldPrecedenceModel)
+    {
+        if (null == fieldPrecedenceModel)
+        {
+            return;
+        }
+
+        sb
+            .append("\nconstexpr const char *")
+            .append(className)
+            .append("::STATE_NAME_LOOKUP[];\n")
+            .append("constexpr const char *")
+            .append(className)
+            .append("::STATE_TRANSITIONS_LOOKUP[];\n\n");
     }
 
     private static CharSequence qualifiedStateCase(final FieldPrecedenceModel.State state)
