@@ -373,48 +373,12 @@ public class RustGenerator implements CodeGenerator
         final int arrayLength = typeToken.arrayLength();
         if (arrayLength > 1)
         {
-            indent(sb, level, "/// primitive array field '%s'\n", name);
-            indent(sb, level, "/// - min value: %s\n", encoding.applicableMinValue());
-            indent(sb, level, "/// - max value: %s\n", encoding.applicableMaxValue());
-            indent(sb, level, "/// - null value: %s\n", encoding.applicableNullValue());
-            indent(sb, level, "/// - characterEncoding: %s\n", encoding.characterEncoding());
-            indent(sb, level, "/// - semanticType: %s\n", encoding.semanticType());
-            indent(sb, level, "/// - encodedOffset: %d\n", typeToken.offset());
-            indent(sb, level, "/// - encodedLength: %d\n", typeToken.encodedLength());
-            indent(sb, level, "/// - version: %d\n", typeToken.version());
-            indent(sb, level, "#[inline]\n");
-            indent(sb, level, "pub fn %s(&mut self, value: &[%s; %d]) {\n",
-                formatFunctionName(name),
-                rustPrimitiveType,
-                arrayLength);
-
-            // NB: must create variable 'offset' before calling mutable self.get_buf_mut()
-            indent(sb, level + 1, "let offset = self.%s;\n", getBufOffset(typeToken));
-            indent(sb, level + 1, "let buf = self.get_buf_mut();\n");
-
-            if (rustPrimitiveType.equals("u8"))
-            {
-                indent(sb, level + 1, "buf.put_bytes_at(offset, value);\n");
-                indent(sb, level, "}\n\n");
-                return;
-            }
-
-            for (int i = 0; i < arrayLength; i++)
-            {
-                if (i == 0)
-                {
-                    indent(sb, level + 1, "buf.put_%s_at(offset, value[%d]);\n", rustPrimitiveType, i);
-                }
-                else
-                {
-                    indent(sb, level + 1, "buf.put_%s_at(offset + %d, value[%d]);\n",
-                        rustPrimitiveType,
-                        i * primitiveType.size(),
-                        i);
-                }
-            }
-
-            indent(sb, level, "}\n\n");
+            generatePrimitiveArrayEncoderWithRef(
+                sb, level, typeToken, name, encoding, primitiveType, rustPrimitiveType);
+            generatePrimitiveArrayEncoderWithSliceRef(
+                sb, level, typeToken, name, encoding, primitiveType, rustPrimitiveType, false);
+            generatePrimitiveArrayEncoderWithSliceRef(
+                sb, level, typeToken, name, encoding, primitiveType, rustPrimitiveType, true);
         }
         else
         {
@@ -444,6 +408,240 @@ public class RustGenerator implements CodeGenerator
                 indent(sb, level, "}\n\n");
             }
         }
+    }
+
+    private static void generatePrimitiveArrayEncoderWithRef(
+        final StringBuilder sb,
+        final int level,
+        final Token typeToken,
+        final String name,
+        final Encoding encoding,
+        final PrimitiveType primitiveType,
+        final String rustPrimitiveType) throws IOException
+    {
+        final int arrayLength = typeToken.arrayLength();
+        indent(sb, level, "/// primitive array field '%s'\n", name);
+        indent(sb, level, "/// - min value: %s\n", encoding.applicableMinValue());
+        indent(sb, level, "/// - max value: %s\n", encoding.applicableMaxValue());
+        indent(sb, level, "/// - null value: %s\n", encoding.applicableNullValue());
+        indent(sb, level, "/// - characterEncoding: %s\n", encoding.characterEncoding());
+        indent(sb, level, "/// - semanticType: %s\n", encoding.semanticType());
+        indent(sb, level, "/// - encodedOffset: %d\n", typeToken.offset());
+        indent(sb, level, "/// - encodedLength: %d\n", typeToken.encodedLength());
+        indent(sb, level, "/// - version: %d\n", typeToken.version());
+        indent(sb, level, "#[inline]\n");
+        indent(sb, level, "pub fn %s(&mut self, value: &[%s; %d]) {\n",
+            formatFunctionName(name), rustPrimitiveType, arrayLength);
+
+        // NB: must create variable 'offset' before calling mutable self.get_buf_mut()
+        indent(sb, level + 1, "let offset = self.%s;\n", getBufOffset(typeToken));
+        indent(sb, level + 1, "let buf = self.get_buf_mut();\n");
+
+        if (rustPrimitiveType.equals("u8"))
+        {
+            indent(sb, level + 1, "buf.put_bytes_at(offset, value);\n");
+            indent(sb, level, "}\n\n");
+            return;
+        }
+
+        for (int i = 0; i < arrayLength; i++)
+        {
+            if (i == 0)
+            {
+                indent(sb, level + 1, "buf.put_%s_at(offset, value[%d]);\n", rustPrimitiveType, i);
+            }
+            else
+            {
+                indent(sb, level + 1, "buf.put_%s_at(offset + %d, value[%d]);\n",
+                    rustPrimitiveType, i * primitiveType.size(), i);
+            }
+        }
+
+        indent(sb, level, "}\n\n");
+    }
+
+    private static void generatePrimitiveArrayEncoderWithSliceRefMethodBodyForU8(
+        final StringBuilder sb,
+        final int level,
+        final Token typeToken,
+        final String name,
+        final String rustPrimitiveType,
+        final String paddedName) throws IOException
+    {
+        final int arrayLength = typeToken.arrayLength();
+
+        indent(sb, level + 1, "match value.len() {\n");
+        for (int matchedLen = 0; matchedLen <= arrayLength; matchedLen++)
+        {
+            if (matchedLen == arrayLength)
+            {
+                indent(sb, level + 2, "_ => {\n");
+            }
+            else
+            {
+                indent(sb, level + 2, "%d => {\n", matchedLen);
+            }
+            indent(sb, level + 3, "// Copy all %d items from 'value' into '%s' of [%s; %d] \n",
+                matchedLen, name, rustPrimitiveType, arrayLength);
+            if (matchedLen != 0)
+            {
+                indent(sb, level + 3, "buf.put_slice_at(offset, value);\n");
+            }
+
+            indent(sb, level + 3, "\n");
+
+            if (paddedName.isEmpty())
+            {
+                indent(sb, level + 3, "// Leave %d left items unchanged\n", arrayLength - matchedLen);
+                indent(sb, level + 2, "}\n");
+                continue;
+            }
+
+            indent(sb, level + 3, "// Pad %d left items of '%s' with parameter \"%s\"\n",
+                arrayLength - matchedLen, name, paddedName);
+            if (matchedLen != arrayLength)
+            {
+                if (matchedLen == 0)
+                {
+                    indent(sb, level + 3, "buf.put_bytes_at(offset, &[%s; %d]);\n",
+                        paddedName, arrayLength - matchedLen);
+                }
+                else
+                {
+                    indent(sb, level + 3, "buf.put_bytes_at(offset + %d, &[%s; %d]);\n",
+                        matchedLen, paddedName, arrayLength - matchedLen);
+                }
+            }
+            indent(sb, level + 2, "}\n");
+        }
+        indent(sb, level + 1, "}\n");
+    }
+
+    private static void generatePrimitiveArrayEncoderWithSliceRefMethodBodyForNonU8(
+        final StringBuilder sb,
+        final int level,
+        final Token typeToken,
+        final String name,
+        final PrimitiveType primitiveType,
+        final String rustPrimitiveType,
+        final String paddedName) throws IOException
+    {
+        final int arrayLength = typeToken.arrayLength();
+
+        indent(sb, level + 1, "match value.len() {\n");
+        for (int matchedLen = 0; matchedLen <= arrayLength; matchedLen++)
+        {
+            if (matchedLen == arrayLength)
+            {
+                indent(sb, level + 2, "_ => {\n");
+            }
+            else
+            {
+                indent(sb, level + 2, "%d => {\n", matchedLen);
+            }
+            indent(sb, level + 3, "// Copy all %d items from 'value' into '%s' of [%s; %d] \n",
+                matchedLen, name, rustPrimitiveType, arrayLength);
+            if (matchedLen != 0)
+            {
+                for (int i = 0; i < matchedLen; i++)
+                {
+                    if (i == 0)
+                    {
+                        indent(sb, level + 3, "buf.put_%s_at(offset, value[%d]);\n", rustPrimitiveType, i);
+                    }
+                    else
+                    {
+                        indent(sb, level + 3, "buf.put_%s_at(offset + %d, value[%d]);\n",
+                            rustPrimitiveType, i * primitiveType.size(), i);
+                    }
+                }
+            }
+
+            indent(sb, level + 3, "\n");
+
+            if (paddedName.isEmpty())
+            {
+                indent(sb, level + 3, "// Leave %d left items unchanged\n", arrayLength - matchedLen);
+                indent(sb, level + 2, "}\n");
+                continue;
+            }
+
+            indent(sb, level + 3, "// Pad %d left items of '%s' with parameter \"%s\"\n",
+                arrayLength - matchedLen, name, paddedName);
+            if (matchedLen != arrayLength)
+            {
+                for (int i = matchedLen; i < arrayLength; i++)
+                {
+                    if (i == 0)
+                    {
+                        indent(sb, level + 3, "buf.put_%s_at(offset, %s);\n",
+                            rustPrimitiveType, paddedName);
+                    }
+                    else
+                    {
+                        indent(sb, level + 3, "buf.put_%s_at(offset + %d, %s);\n",
+                            rustPrimitiveType, i * primitiveType.size(), paddedName);
+                    }
+                }
+            }
+            indent(sb, level + 2, "}\n");
+        }
+        indent(sb, level + 1, "}\n");
+    }
+
+    private static void generatePrimitiveArrayEncoderWithSliceRef(
+        final StringBuilder sb,
+        final int level,
+        final Token typeToken,
+        final String name,
+        final Encoding encoding,
+        final PrimitiveType primitiveType,
+        final String rustPrimitiveType,
+        final boolean withPadding) throws IOException
+    {
+        final int arrayLength = typeToken.arrayLength();
+        indent(sb, level, "/// primitive array field '%s': copy at most %d items from slice %s padding\n",
+            name, arrayLength, withPadding ? "with" : "without");
+        indent(sb, level, "/// - min value: %s\n", encoding.applicableMinValue());
+        indent(sb, level, "/// - max value: %s\n", encoding.applicableMaxValue());
+        indent(sb, level, "/// - null value: %s\n", encoding.applicableNullValue());
+        indent(sb, level, "/// - characterEncoding: %s\n", encoding.characterEncoding());
+        indent(sb, level, "/// - semanticType: %s\n", encoding.semanticType());
+        indent(sb, level, "/// - encodedOffset: %d\n", typeToken.offset());
+        indent(sb, level, "/// - encodedLength: %d\n", typeToken.encodedLength());
+        indent(sb, level, "/// - version: %d\n", typeToken.version());
+        indent(sb, level, "#[inline]\n");
+
+        final String paddedName;
+        if (withPadding)
+        {
+            paddedName = "padded";
+            indent(sb, level, "pub fn %s_at_most_%d_items_from_slice_padded(&mut self, value: &[%s], %4$s: %3$s) {\n",
+                formatFunctionName(name), arrayLength, rustPrimitiveType, paddedName);
+        }
+        else
+        {
+            paddedName = "";
+            indent(sb, level, "pub fn %s_at_most_%d_items_from_slice(&mut self, value: &[%s]) {\n",
+                formatFunctionName(name), arrayLength, rustPrimitiveType);
+        }
+
+        // NB: must create variable 'offset' before calling mutable self.get_buf_mut()
+        indent(sb, level + 1, "let offset = self.%s;\n", getBufOffset(typeToken));
+        indent(sb, level + 1, "let buf = self.get_buf_mut();\n");
+
+        if (rustPrimitiveType.equals("u8"))
+        {
+            generatePrimitiveArrayEncoderWithSliceRefMethodBodyForU8(
+                sb, level, typeToken, name, rustPrimitiveType, paddedName);
+        }
+        else
+        {
+            generatePrimitiveArrayEncoderWithSliceRefMethodBodyForNonU8(
+                sb, level, typeToken, name, primitiveType, rustPrimitiveType, paddedName);
+        }
+
+        indent(sb, level, "}\n\n");
     }
 
     private static void generateEnumEncoder(
