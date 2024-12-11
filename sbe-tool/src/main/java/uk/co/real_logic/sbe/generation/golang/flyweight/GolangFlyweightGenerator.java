@@ -2174,7 +2174,6 @@ public class GolangFlyweightGenerator implements CodeGenerator
         final String schemaIdType = goTypeName(ir.headerStructure().schemaIdType());
         final String schemaVersionType = goTypeName(ir.headerStructure().schemaVersionType());
         final String semanticType = token.encoding().semanticType() == null ? "" : token.encoding().semanticType();
-        final String headerType = ir.headerStructure().tokens().get(0).name();
         final String semanticVersion = ir.semanticVersion() == null ? "" : ir.semanticVersion();
 
         sb.append("    buffer []byte\n" +
