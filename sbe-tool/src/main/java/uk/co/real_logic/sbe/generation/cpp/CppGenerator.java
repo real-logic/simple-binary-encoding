@@ -1201,7 +1201,7 @@ public class CppGenerator implements CodeGenerator
                 lengthCppType,
                 accessOrderListenerCall);
 
-            generateJsonEscapedStringGetter(sb, token, indent, propertyName, accessOrderListenerCall);
+            generateJsonEscapedStringGetter(sb, token, indent, propertyName);
 
             new Formatter(sb).format("\n" +
                 indent + "    #if __cplusplus >= 201703L\n" +
@@ -2307,7 +2307,7 @@ public class CppGenerator implements CodeGenerator
                 generateStringNotPresentCondition(propertyToken.version(), indent),
                 accessOrderListenerCall);
 
-            generateJsonEscapedStringGetter(sb, encodingToken, indent, propertyName, accessOrderListenerCall);
+            generateJsonEscapedStringGetter(sb, encodingToken, indent, propertyName);
 
             new Formatter(sb).format("\n" +
                 indent + "    #if __cplusplus >= 201703L\n" +
@@ -2381,14 +2381,12 @@ public class CppGenerator implements CodeGenerator
         final StringBuilder sb,
         final Token token,
         final String indent,
-        final String propertyName,
-        final CharSequence accessOrderListenerCall)
+        final String propertyName)
     {
         new Formatter(sb).format("\n" +
             indent + "    std::string get%1$sAsJsonEscapedString()\n" +
             indent + "    {\n" +
             "%2$s" +
-            "%3$s" +
             indent + "        std::ostringstream oss;\n" +
             indent + "        std::string s = get%1$sAsString();\n\n" +
             indent + "        for (const auto c : s)\n" +
@@ -2417,8 +2415,7 @@ public class CppGenerator implements CodeGenerator
             indent + "        return oss.str();\n" +
             indent + "    }\n",
             toUpperFirstChar(propertyName),
-            generateStringNotPresentCondition(token.version(), indent),
-            accessOrderListenerCall);
+            generateStringNotPresentCondition(token.version(), indent));
     }
 
     private void generateConstPropertyMethods(
@@ -2505,7 +2502,7 @@ public class CppGenerator implements CodeGenerator
             values,
             constantValue.length);
 
-        generateJsonEscapedStringGetter(sb, token, indent, propertyName, "");
+        generateJsonEscapedStringGetter(sb, token, indent, propertyName);
     }
 
     private CharSequence generateFixedFlyweightCode(final String className, final int size)
@@ -2654,33 +2651,12 @@ public class CppGenerator implements CodeGenerator
         return DISABLE_IMPLICIT_COPYING ? ctorAndCopyAssignmentDeletion : "";
     }
 
-    private static CharSequence generateConstructorsAndOperators(
+    private CharSequence generateConstructorsAndOperators(
         final String className,
         final FieldPrecedenceModel fieldPrecedenceModel)
     {
-        final String constructorWithCodecState = null == fieldPrecedenceModel ? "" : String.format(
-            "    %1$s(\n" +
-            "        char *buffer,\n" +
-            "        const std::uint64_t offset,\n" +
-            "        const std::uint64_t bufferLength,\n" +
-            "        const std::uint64_t actingBlockLength,\n" +
-            "        const std::uint64_t actingVersion,\n" +
-            "        CodecState codecState) :\n" +
-            "        m_buffer(buffer),\n" +
-            "        m_bufferLength(bufferLength),\n" +
-            "        m_offset(offset),\n" +
-            "        m_position(sbeCheckPosition(offset + actingBlockLength)),\n" +
-            "        m_actingBlockLength(actingBlockLength),\n" +
-            "        m_actingVersion(actingVersion),\n" +
-            "        m_codecState(codecState)\n" +
-            "    {\n" +
-            "    }\n\n",
-            className);
-
         return String.format(
             "    %1$s() = default;\n\n" +
-
-            "%2$s" +
 
             "    %1$s(\n" +
             "        char *buffer,\n" +
@@ -2695,6 +2671,7 @@ public class CppGenerator implements CodeGenerator
             "        m_actingBlockLength(actingBlockLength),\n" +
             "        m_actingVersion(actingVersion)\n" +
             "    {\n" +
+            "%2$s" +
             "    }\n\n" +
 
             "    %1$s(char *buffer, const std::uint64_t bufferLength) :\n" +
@@ -2711,7 +2688,7 @@ public class CppGenerator implements CodeGenerator
             "    {\n" +
             "    }\n\n",
             className,
-            constructorWithCodecState);
+            generateCodecStateTransitionForWrapping(fieldPrecedenceModel));
     }
 
     private CharSequence generateMessageFlyweightCode(
@@ -2728,26 +2705,25 @@ public class CppGenerator implements CodeGenerator
         final String semanticVersion = ir.semanticVersion() == null ? "" : ir.semanticVersion();
 
 
-        final String codecStateArgument = null == fieldPrecedenceModel ? "" : ", m_codecState";
-
         return String.format(
             "private:\n" +
+            "%14$s" +
             "%15$s" +
-            "%16$s" +
             "    char *m_buffer = nullptr;\n" +
             "    std::uint64_t m_bufferLength = 0;\n" +
             "    std::uint64_t m_offset = 0;\n" +
             "    std::uint64_t m_position = 0;\n" +
             "    std::uint64_t m_actingBlockLength = 0;\n" +
             "    std::uint64_t m_actingVersion = 0;\n" +
-            "%17$s" +
+            "%16$s" +
 
             "    inline std::uint64_t *sbePositionPtr() SBE_NOEXCEPT\n" +
             "    {\n" +
             "        return &m_position;\n" +
             "    }\n\n" +
 
-            "%22$s" +
+            "%19$s" +
+            "%21$s" +
 
             "public:\n" +
             "    static constexpr %1$s SBE_BLOCK_LENGTH = %2$s;\n" +
@@ -2775,7 +2751,7 @@ public class CppGenerator implements CodeGenerator
 
             "    using messageHeader = %12$s;\n\n" +
 
-            "%18$s" +
+            "%17$s" +
             "%11$s" +
 
             "    SBE_NODISCARD static SBE_CONSTEXPR %1$s sbeBlockLength() SBE_NOEXCEPT\n" +
@@ -2826,7 +2802,7 @@ public class CppGenerator implements CodeGenerator
             "        m_actingBlockLength = sbeBlockLength();\n" +
             "        m_actingVersion = sbeSchemaVersion();\n" +
             "        m_position = sbeCheckPosition(m_offset + m_actingBlockLength);\n" +
-            "%19$s" +
+            "%18$s" +
             "        return *this;\n" +
             "    }\n\n" +
 
@@ -2847,11 +2823,9 @@ public class CppGenerator implements CodeGenerator
             "        m_actingBlockLength = sbeBlockLength();\n" +
             "        m_actingVersion = sbeSchemaVersion();\n" +
             "        m_position = sbeCheckPosition(m_offset + m_actingBlockLength);\n" +
-            "%19$s" +
+            "%18$s" +
             "        return *this;\n" +
             "    }\n\n" +
-
-            "%20$s" +
 
             "    %10$s &wrapForDecode(\n" +
             "        char *buffer,\n" +
@@ -2866,7 +2840,7 @@ public class CppGenerator implements CodeGenerator
             "        m_actingBlockLength = actingBlockLength;\n" +
             "        m_actingVersion = actingVersion;\n" +
             "        m_position = sbeCheckPosition(m_offset + m_actingBlockLength);\n" +
-            "%21$s" +
+            "%20$s" +
             "        return *this;\n" +
             "    }\n\n" +
 
@@ -2903,7 +2877,7 @@ public class CppGenerator implements CodeGenerator
 
             "    SBE_NODISCARD std::uint64_t decodeLength() const\n" +
             "    {\n" +
-            "        %10$s skipper(m_buffer, m_offset, m_bufferLength, sbeBlockLength(), m_actingVersion%14$s);\n" +
+            "        %10$s skipper(m_buffer, m_offset, m_bufferLength, sbeBlockLength(), m_actingVersion);\n" +
             "        skipper.skip();\n" +
             "        return skipper.encodedLength();\n" +
             "    }\n\n" +
@@ -2940,14 +2914,13 @@ public class CppGenerator implements CodeGenerator
             generateConstructorsAndOperators(className, fieldPrecedenceModel),
             formatClassName(headerType),
             semanticVersion,
-            codecStateArgument,
             generateFieldOrderStateEnum(fieldPrecedenceModel),
             generateLookupTableDeclarations(fieldPrecedenceModel),
             generateFieldOrderStateMember(fieldPrecedenceModel),
             generateAccessOrderErrorType(fieldPrecedenceModel),
-            generateEncoderWrapListener(fieldPrecedenceModel),
-            generateDecoderWrapListener(fieldPrecedenceModel),
-            generateDecoderWrapListenerCall(fieldPrecedenceModel),
+            generateCodecStateTransitionForWrappingLatestVersion(fieldPrecedenceModel),
+            generateOnWrappedListener(fieldPrecedenceModel),
+            generateCodecStateTransitionForWrapping(fieldPrecedenceModel),
             generateHiddenCopyConstructor("    ", className));
     }
 
@@ -3118,7 +3091,7 @@ public class CppGenerator implements CodeGenerator
         return sb;
     }
 
-    private static CharSequence generateDecoderWrapListener(final FieldPrecedenceModel fieldPrecedenceModel)
+    private static CharSequence generateOnWrappedListener(final FieldPrecedenceModel fieldPrecedenceModel)
     {
         if (null == fieldPrecedenceModel)
         {
@@ -3131,7 +3104,7 @@ public class CppGenerator implements CodeGenerator
         }
 
         final StringBuilder sb = new StringBuilder();
-        sb.append(INDENT).append("void onWrapForDecode(std::uint64_t actingVersion)\n")
+        sb.append(INDENT).append("void onWrapped(std::uint64_t actingVersion)\n")
             .append(INDENT).append("{\n");
 
         final MutableBoolean actingVersionCanBeTooLowToBeValid = new MutableBoolean(true);
@@ -3168,7 +3141,7 @@ public class CppGenerator implements CodeGenerator
     }
 
 
-    private CharSequence generateDecoderWrapListenerCall(final FieldPrecedenceModel fieldPrecedenceModel)
+    private CharSequence generateCodecStateTransitionForWrapping(final FieldPrecedenceModel fieldPrecedenceModel)
     {
         if (null == fieldPrecedenceModel)
         {
@@ -3185,10 +3158,12 @@ public class CppGenerator implements CodeGenerator
             return sb;
         }
 
-        return generateAccessOrderListenerCall(fieldPrecedenceModel, TWO_INDENT, "onWrapForDecode", "actingVersion");
+        return generateAccessOrderListenerCall(fieldPrecedenceModel, TWO_INDENT, "onWrapped", "actingVersion");
     }
 
-    private CharSequence generateEncoderWrapListener(final FieldPrecedenceModel fieldPrecedenceModel)
+    private CharSequence generateCodecStateTransitionForWrappingLatestVersion(
+        final FieldPrecedenceModel fieldPrecedenceModel
+    )
     {
         if (null == fieldPrecedenceModel)
         {
