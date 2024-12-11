@@ -2375,7 +2375,7 @@ public class GolangFlyweightGenerator implements CodeGenerator
             generateLiteral(ir.headerStructure().schemaVersionType(), Integer.toString(ir.version())),
             semanticType,
             className,
-            generateConstructorsAndOperators(className)));
+            semanticVersion));
 
         return sb.toString();
     }
