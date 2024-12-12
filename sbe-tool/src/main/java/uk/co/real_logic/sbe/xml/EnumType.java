@@ -174,9 +174,9 @@ public class EnumType extends Type
     }
 
     /**
-     * The encodedLength (in octets) of the encodingType
+     * The encodedLength (in octets) of the encodingType.
      *
-     * @return encodedLength of the encodingType
+     * @return encodedLength of the encodingType.
      */
     public int encodedLength()
     {
@@ -191,7 +191,7 @@ public class EnumType extends Type
     /**
      * Get the {@link ValidValue} represented by a {@link PrimitiveValue}.
      *
-     * @param value to lookup
+     * @param value to lookup.
      * @return the {@link ValidValue} represented by a {@link PrimitiveValue} or null.
      */
     public ValidValue getValidValue(final PrimitiveValue value)
@@ -202,7 +202,7 @@ public class EnumType extends Type
     /**
      * Get the {@link ValidValue} represented by a string name.
      *
-     * @param name to lookup
+     * @param name to lookup.
      * @return the {@link ValidValue} represented by a string name or null.
      */
     public ValidValue getValidValue(final String name)
@@ -265,8 +265,8 @@ public class EnumType extends Type
         /**
          * Construct a ValidValue given the XML node and the encodingType.
          *
-         * @param node         that contains the validValue
-         * @param encodingType for the enum
+         * @param node         that contains the validValue.
+         * @param encodingType for the enum.
          */
         public ValidValue(final Node node, final PrimitiveType encodingType)
         {
@@ -310,9 +310,9 @@ public class EnumType extends Type
         }
 
         /**
-         * The sinceVersion value of the {@link ValidValue}
+         * The sinceVersion value of the {@link ValidValue}.
          *
-         * @return the sinceVersion value of the {@link ValidValue}
+         * @return the sinceVersion value of the {@link ValidValue}.
          */
         public int sinceVersion()
         {

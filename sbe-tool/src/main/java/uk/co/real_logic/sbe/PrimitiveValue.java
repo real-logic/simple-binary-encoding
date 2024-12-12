@@ -308,7 +308,7 @@ public class PrimitiveValue
     }
 
     /**
-     * Parse constant value string and set representation based on type
+     * Parse constant value string and set representation based on type.
      *
      * @param value         expressed as a String.
      * @param primitiveType that this is supposed to be.
@@ -367,7 +367,7 @@ public class PrimitiveValue
     }
 
     /**
-     * Parse constant value string and set representation based on type
+     * Parse constant value string and set representation based on type.
      *
      * @param value             expressed as a String.
      * @param primitiveType     that this is supposed to be.
@@ -392,7 +392,7 @@ public class PrimitiveValue
     }
 
     /**
-     * Parse constant value string and set representation based on type, length, and characterEncoding
+     * Parse constant value string and set representation based on type, length, and characterEncoding.
      *
      * @param value             expressed as a String.
      * @param length            of the type.
@@ -469,7 +469,7 @@ public class PrimitiveValue
     }
 
     /**
-     * Return byte array value for this PrimitiveValue given a particular type
+     * Return byte array value for this PrimitiveValue given a particular type.
      *
      * @param type of this value.
      * @return value expressed as a byte array.

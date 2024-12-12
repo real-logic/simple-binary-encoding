@@ -108,11 +108,11 @@ public class CUtil
     }
 
     /**
-     * Return the C99 formatted byte order encoding string to use for a given byte order and primitiveType
+     * Return the C99 formatted byte order encoding string to use for a given byte order and primitiveType.
      *
-     * @param byteOrder     of the {@link uk.co.real_logic.sbe.ir.Token}
-     * @param primitiveType of the {@link uk.co.real_logic.sbe.ir.Token}
-     * @return the string formatted as the byte ordering encoding
+     * @param byteOrder     of the {@link uk.co.real_logic.sbe.ir.Token}.
+     * @param primitiveType of the {@link uk.co.real_logic.sbe.ir.Token}.
+     * @return the string formatted as the byte ordering encoding.
      */
     public static String formatByteOrderEncoding(final ByteOrder byteOrder, final PrimitiveType primitiveType)
     {

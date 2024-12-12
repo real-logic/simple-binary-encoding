@@ -98,9 +98,9 @@ public class Message
     }
 
     /**
-     * Return the template schemaId of the message
+     * Return the template schemaId of the message.
      *
-     * @return schemaId of the message
+     * @return schemaId of the message.
      */
     public int id()
     {
@@ -108,9 +108,9 @@ public class Message
     }
 
     /**
-     * Return the name of the message
+     * Return the name of the message.
      *
-     * @return name of the message
+     * @return name of the message.
      */
     public String name()
     {
@@ -118,9 +118,9 @@ public class Message
     }
 
     /**
-     * The description of the message (if set) or null
+     * The description of the message (if set) or null.
      *
-     * @return description set by the message or null
+     * @return description set by the message or null.
      */
     public String description()
     {
@@ -128,9 +128,9 @@ public class Message
     }
 
     /**
-     * The semanticType of the message (if set) or null
+     * The semanticType of the message (if set) or null.
      *
-     * @return the semanticType of the message (if set) or null
+     * @return the semanticType of the message (if set) or null.
      */
     public String semanticType()
     {
@@ -158,9 +158,9 @@ public class Message
     }
 
     /**
-     * Return the list of fields in the message
+     * Return the list of fields in the message.
      *
-     * @return {@link java.util.List} of the Field objects in this Message
+     * @return {@link java.util.List} of the Field objects in this Message.
      */
     public List<Field> fields()
     {
