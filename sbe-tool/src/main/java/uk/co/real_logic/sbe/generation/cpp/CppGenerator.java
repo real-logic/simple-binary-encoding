@@ -694,6 +694,7 @@ public class CppGenerator implements CodeGenerator
 
         if (null != fieldPrecedenceModel)
         {
+            sb.append("#if defined(").append(precedenceChecksFlagName).append(")\n");
             new Formatter(sb).format(
                 indent + "    CodecState *m_codecStatePtr = nullptr;\n\n" +
 
@@ -710,19 +711,38 @@ public class CppGenerator implements CodeGenerator
                 indent + "    void codecState(CodecState codecState)\n" +
                 indent + "    {\n" +
                 indent + "        *m_codecStatePtr = codecState;\n" +
-                indent + "    }\n\n"
+                indent + "    }\n"
             );
+            sb.append("#else\n");
+            new Formatter(sb).format(
+                indent + "    CodecState codecState() const SBE_NOEXCEPT\n" +
+                indent + "    {\n" +
+                indent + "        return " + qualifiedStateCase(fieldPrecedenceModel.notWrappedState()) + ";\n" +
+                indent + "    }\n\n" +
+
+                indent + "    CodecState *codecStatePtr()\n" +
+                indent + "    {\n" +
+                indent + "        return nullptr;\n" +
+                indent + "    }\n\n" +
+
+                indent + "    void codecState(CodecState codecState)\n" +
+                indent + "    {\n" +
+                indent + "    }\n"
+            );
+            sb.append("#endif\n\n");
         }
 
         sb.append(generateHiddenCopyConstructor(indent + "    ", groupClassName));
 
         final String codecStateParameter = null == fieldPrecedenceModel ?
             ")\n" :
-            ",\n " + indent + "        CodecState *codecState)\n";
+            ",\n" + indent + "        CodecState *codecState)\n";
 
         final String codecStateAssignment = null == fieldPrecedenceModel ?
             "" :
-            indent + "        m_codecStatePtr = codecState;\n";
+            "#if defined(" + precedenceChecksFlagName + ")\n" +
+            indent + "        m_codecStatePtr = codecState;\n" +
+            "#endif\n";
 
         new Formatter(sb).format(
             indent + "public:\n" +
@@ -802,7 +822,9 @@ public class CppGenerator implements CodeGenerator
         {
             final String codecStateNullAssignment = null == fieldPrecedenceModel ?
                 "" :
-                indent + "        m_codecStatePtr = nullptr;\n";
+                "#if defined(" + precedenceChecksFlagName + ")\n" +
+                indent + "        m_codecStatePtr = nullptr;\n" +
+                "#endif\n";
 
             new Formatter(sb).format(
                 indent + "    inline void notPresent(std::uint64_t actingVersion)\n" +
