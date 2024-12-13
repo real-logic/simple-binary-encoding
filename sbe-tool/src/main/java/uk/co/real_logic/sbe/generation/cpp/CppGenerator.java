@@ -1728,8 +1728,10 @@ public class CppGenerator implements CodeGenerator
             "#endif\n\n" +
 
             "#if __cplusplus >= 202002L\n" +
-            "#  include <span>\n" +
-            "#  define SBE_USE_SPAN 1\n" +
+            "#  if defined(SBE_ENABLE_SPAN)\n" +
+            "#    include <span>\n" +
+            "#    define SBE_USE_SPAN 1\n" +
+            "#  endif\n" +
             "#endif\n\n" +
 
             "#if !defined(__STDC_LIMIT_MACROS)\n" +
