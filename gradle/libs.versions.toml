@@ -1,6 +1,6 @@
 [versions]
 agrona = "1.23.1"
-checkstyle = "10.20.2"
+checkstyle = "10.21.0"
 junit = "5.11.3"
 jmh = "1.37"
 gradle = "8.11.1"
