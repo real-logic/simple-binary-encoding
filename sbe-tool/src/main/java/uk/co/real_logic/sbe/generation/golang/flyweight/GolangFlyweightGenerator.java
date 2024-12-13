@@ -2174,7 +2174,6 @@ public class GolangFlyweightGenerator implements CodeGenerator
         final String schemaIdType = goTypeName(ir.headerStructure().schemaIdType());
         final String schemaVersionType = goTypeName(ir.headerStructure().schemaVersionType());
         final String semanticType = token.encoding().semanticType() == null ? "" : token.encoding().semanticType();
-        final String headerType = ir.headerStructure().tokens().get(0).name();
         final String semanticVersion = ir.semanticVersion() == null ? "" : ir.semanticVersion();
 
         sb.append("    buffer []byte\n" +
@@ -2236,7 +2235,7 @@ public class GolangFlyweightGenerator implements CodeGenerator
             "        %10$sSbeTemplateID      %3$s = %4$s\n" +
             "        %10$sSbeSchemaID        %5$s = %6$s\n" +
             "        %10$sSbeSchemaVersion   %7$s = %8$s\n" +
-            "        %10$sSbeSemanticVersion string = \"%13$s\"\n" +
+            "        %10$sSbeSemanticVersion string = \"%11$s\"\n" +
             "    )\n\n" +
 
             "    func (m *%10$s) SbeBlockLength() %1$s {\n" +
@@ -2260,7 +2259,7 @@ public class GolangFlyweightGenerator implements CodeGenerator
             "    }\n\n" +
 
             "    func (m *%10$s) SbeSemanticVersion() string {\n" +
-            "        return \"%13$s\"\n" +
+            "        return \"%11$s\"\n" +
             "    }\n\n" +
 
             "    func (m *%10$s) SbeSemanticType() string {\n" +
@@ -2375,9 +2374,8 @@ public class GolangFlyweightGenerator implements CodeGenerator
             generateLiteral(ir.headerStructure().schemaVersionType(), Integer.toString(ir.version())),
             semanticType,
             className,
-            generateConstructorsAndOperators(className),
-            formatClassName(headerType),
             semanticVersion));
+
         return sb.toString();
     }
 

@@ -114,4 +114,30 @@ class CppGeneratorTest
             assertThat(source, containsString("using namespace test::message::schema::common;"));
         }
     }
+
+    @Test
+    void shouldUseConstexprWhenDefiningPrecedenceChecksLookupTables() throws Exception
+    {
+        try (InputStream in = Tests.getLocalResource("code-generation-schema.xml"))
+        {
+            final ParserOptions options = ParserOptions.builder().stopOnError(true).build();
+            final MessageSchema schema = parse(in, options);
+            final IrGenerator irg = new IrGenerator();
+            final Ir ir = irg.generate(schema);
+            final StringWriterOutputManager outputManager = new StringWriterOutputManager();
+            outputManager.setPackageName(ir.applicableNamespace());
+
+            final CppGenerator generator = new CppGenerator(
+                ir,
+                false,
+                PrecedenceChecks.newInstance(new PrecedenceChecks.Context().shouldGeneratePrecedenceChecks(true)),
+                false,
+                outputManager);
+            generator.generate();
+
+            final String source = outputManager.getSource("code.generation.test.Car").toString();
+            assertThat(source, containsString("static constexpr const char *STATE_NAME_LOOKUP[] ="));
+            assertThat(source, containsString("static constexpr const char *STATE_TRANSITIONS_LOOKUP[] ="));
+        }
+    }
 }

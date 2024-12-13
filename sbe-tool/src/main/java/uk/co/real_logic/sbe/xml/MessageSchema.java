@@ -96,7 +96,7 @@ public class MessageSchema
     /**
      * The Schema headerType for message headers. This should be a {@link CompositeType}.
      *
-     * @return the Schema headerType for message headers
+     * @return the Schema headerType for message headers.
      */
     public CompositeType messageHeader()
     {
@@ -196,7 +196,7 @@ public class MessageSchema
     }
 
     /**
-     * Return the byte order specified by the messageSchema
+     * Return the byte order specified by the messageSchema.
      *
      * @return {@link ByteOrder} of the message encoding.
      */

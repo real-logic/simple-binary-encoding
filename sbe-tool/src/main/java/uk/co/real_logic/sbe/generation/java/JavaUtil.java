@@ -208,11 +208,11 @@ public class JavaUtil
     }
 
     /**
-     * Shortcut to append a line of generated code
+     * Shortcut to append a line of generated code.
      *
-     * @param builder string builder to which to append the line
-     * @param indent  current text indentation
-     * @param line    line to be appended
+     * @param builder string builder to which to append the line.
+     * @param indent  current text indentation.
+     * @param line    line to be appended.
      */
     public static void append(final StringBuilder builder, final String indent, final String line)
     {
@@ -533,5 +533,4 @@ public class JavaUtil
             }
         }
     }
-
 }

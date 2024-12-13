@@ -1,9 +1,15 @@
 <?xml version="1.0"?>
 <!DOCTYPE module PUBLIC "-//Puppy Crawl//DTD Check Configuration 1.3//EN"
-        "https://checkstyle.org/dtds/configuration_1_3.dtd">
+    "https://checkstyle.org/dtds/configuration_1_3.dtd">
 <module name="Checker">
     <module name="SuppressionFilter">
         <property name="file" value="${config_loc}/suppressions.xml"/>
+    </module>
+
+    <module name="SuppressWithPlainTextCommentFilter">
+        <property name="offCommentFormat" value="CHECKSTYLE\:OFF\:(\w+)"/>
+        <property name="onCommentFormat" value="CHECKSTYLE\:ON\:(\w+)"/>
+        <property name="checkFormat" value="$1"/>
     </module>
 
     <module name="SuppressWarningsFilter"/>
@@ -22,8 +28,8 @@
         <property name="ignorePattern" value="^[ \t]*\*.*@.*$"/>
     </module>
 
-    <module name="Header">
-        <property name="header" value="/*\n * Copyright 2013-2024 Real Logic Limited."/>
+    <module name="RegexpHeader">
+        <property name="header" value="/*\n * Copyright \d{4}(-\d{4})? (Real Logic|Adaptive Financial Consulting) Limited."/>
         <property name="fileExtensions" value="java"/>
     </module>
 
@@ -33,9 +39,13 @@
 
         <module name="SuppressWarningsHolder"/>
 
+        <module name="JavadocStyle"/>
+        <module name="JavadocType"/>
+        <module name="JavadocMethod"/>
         <module name="JavadocVariable">
             <property name="scope" value="public"/>
         </module>
+
         <module name="MissingJavadocType"/>
         <module name="MissingJavadocMethod"/>
         <module name="MissingJavadocPackage"/>

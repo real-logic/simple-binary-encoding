@@ -55,7 +55,7 @@ public class EncodedDataType extends Type
     /**
      * Construct a new encodedDataType from XML Schema.
      *
-     * @param node from the XML Schema Parsing
+     * @param node from the XML Schema Parsing.
      */
     public EncodedDataType(final Node node)
     {
@@ -258,9 +258,9 @@ public class EncodedDataType extends Type
     }
 
     /**
-     * Return the length attribute of the type
+     * Return the length attribute of the type.
      *
-     * @return length attribute of the type
+     * @return length attribute of the type.
      */
     public int length()
     {
@@ -268,9 +268,9 @@ public class EncodedDataType extends Type
     }
 
     /**
-     * Return the variableLength attribute of the type
+     * Return the variableLength attribute of the type.
      *
-     * @return variableLength boolean of the type
+     * @return variableLength boolean of the type.
      */
     public boolean isVariableLength()
     {
@@ -288,9 +288,9 @@ public class EncodedDataType extends Type
     }
 
     /**
-     * Return the primitiveType attribute of the type
+     * Return the primitiveType attribute of the type.
      *
-     * @return primitiveType attribute of the type
+     * @return primitiveType attribute of the type.
      */
     public PrimitiveType primitiveType()
     {
@@ -318,9 +318,9 @@ public class EncodedDataType extends Type
     }
 
     /**
-     * The constant value of the type if specified
+     * The constant value of the type if specified.
      *
-     * @return value of the constant for this type
+     * @return value of the constant for this type.
      */
     public PrimitiveValue constVal()
     {
@@ -333,9 +333,9 @@ public class EncodedDataType extends Type
     }
 
     /**
-     * The minValue of the type
+     * The minValue of the type.
      *
-     * @return value of the minValue
+     * @return value of the minValue.
      */
     public PrimitiveValue minValue()
     {
@@ -343,9 +343,9 @@ public class EncodedDataType extends Type
     }
 
     /**
-     * The maxValue of the type
+     * The maxValue of the type.
      *
-     * @return value of the maxValue
+     * @return value of the maxValue.
      */
     public PrimitiveValue maxValue()
     {
@@ -353,9 +353,9 @@ public class EncodedDataType extends Type
     }
 
     /**
-     * The nullValue of the type
+     * The nullValue of the type.
      *
-     * @return value of the nullValue primitiveType or type
+     * @return value of the nullValue primitiveType or type.
      */
     public PrimitiveValue nullValue()
     {
@@ -363,9 +363,9 @@ public class EncodedDataType extends Type
     }
 
     /**
-     * The character encoding of the type
+     * The character encoding of the type.
      *
-     * @return value representing the encoding
+     * @return value representing the encoding.
      */
     public String characterEncoding()
     {

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#include <sstream>
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
 #include "order_check/MultipleVarLength.h"
@@ -4954,4 +4955,96 @@ TEST_F(FieldAccessOrderCheckTest, allowsSkippingFutureGroupWhenDecodingFromVersi
 
     EXPECT_EQ(decoder.a(), 42);
     EXPECT_EQ(decoder.getBAsString(), "abc");
+}
+
+TEST_F(FieldAccessOrderCheckTest, worksWithWrappingConstructors1)
+{
+    MultipleVarLength encoder(m_buffer, BUFFER_LEN);
+    encoder.a(42);
+    encoder.putB("abc");
+    encoder.putC("def");
+    encoder.checkEncodingIsComplete();
+
+    MultipleVarLength decoder(m_buffer, BUFFER_LEN);
+    EXPECT_EQ(decoder.a(), 42);
+    EXPECT_EQ(decoder.getBAsString(), "abc");
+    EXPECT_EQ(decoder.getCAsString(), "def");
+}
+
+TEST_F(FieldAccessOrderCheckTest, worksWithWrappingConstructors2)
+{
+    MultipleVarLength encoder(
+        m_buffer,
+        BUFFER_LEN,
+        MultipleVarLength::sbeBlockLength(),
+        MultipleVarLength::sbeSchemaVersion()
+    );
+    encoder.a(42);
+    encoder.putB("abc");
+    encoder.putC("def");
+    encoder.checkEncodingIsComplete();
+
+    MultipleVarLength decoder(
+        m_buffer,
+        BUFFER_LEN,
+        MultipleVarLength::sbeBlockLength(),
+        MultipleVarLength::sbeSchemaVersion()
+    );
+    EXPECT_EQ(decoder.a(), 42);
+    EXPECT_EQ(decoder.getBAsString(), "abc");
+    EXPECT_EQ(decoder.getCAsString(), "def");
+}
+
+TEST_F(FieldAccessOrderCheckTest, worksWithWrappingConstructors3)
+{
+    MultipleVarLength encoder(
+        m_buffer,
+        OFFSET,
+        BUFFER_LEN,
+        MultipleVarLength::sbeBlockLength(),
+        MultipleVarLength::sbeSchemaVersion()
+    );
+    encoder.a(42);
+    encoder.putB("abc");
+    encoder.putC("def");
+    encoder.checkEncodingIsComplete();
+
+    MultipleVarLength decoder(
+        m_buffer,
+        OFFSET,
+        BUFFER_LEN,
+        MultipleVarLength::sbeBlockLength(),
+        MultipleVarLength::sbeSchemaVersion()
+    );
+    EXPECT_EQ(decoder.a(), 42);
+    EXPECT_EQ(decoder.getBAsString(), "abc");
+    EXPECT_EQ(decoder.getCAsString(), "def");
+}
+
+TEST_F(FieldAccessOrderCheckTest, worksWithInsertionOperator)
+{
+    MultipleVarLength encoder(
+        m_buffer,
+        OFFSET,
+        BUFFER_LEN,
+        MultipleVarLength::sbeBlockLength(),
+        MultipleVarLength::sbeSchemaVersion()
+    );
+    encoder.a(42);
+    encoder.putB("abc");
+    encoder.putC("def");
+    encoder.checkEncodingIsComplete();
+
+    MultipleVarLength decoder(
+        m_buffer,
+        BUFFER_LEN
+    );
+    std::stringstream stream;
+    stream << decoder;
+
+    const std::string expected = "\"a\": 42, \"b\": \"abc\", \"c\": \"def\"";
+    EXPECT_THAT(stream.str(), HasSubstr(expected));
+    EXPECT_EQ(decoder.a(), 42);
+    EXPECT_EQ(decoder.getBAsString(), "abc");
+    EXPECT_EQ(decoder.getCAsString(), "def");
 }

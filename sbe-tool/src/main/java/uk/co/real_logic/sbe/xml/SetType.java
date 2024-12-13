@@ -134,9 +134,9 @@ public class SetType extends Type
     }
 
     /**
-     * The encodedLength (in octets) of the encodingType
+     * The encodedLength (in octets) of the encodingType.
      *
-     * @return encodedLength of the encodingType
+     * @return encodedLength of the encodingType.
      */
     public int encodedLength()
     {
@@ -146,7 +146,7 @@ public class SetType extends Type
     /**
      * Get the {@link Choice} represented by a {@link PrimitiveValue}.
      *
-     * @param value to get
+     * @param value to get.
      * @return the {@link Choice} represented by a {@link PrimitiveValue} or null if not found.
      */
     public Choice getChoice(final PrimitiveValue value)
@@ -157,7 +157,7 @@ public class SetType extends Type
     /**
      * Get the {@link Choice} represented by a String name.
      *
-     * @param name to get
+     * @param name to get.
      * @return the {@link Choice} represented by a String name or null if not found.
      */
     public Choice getChoice(final String name)
@@ -209,10 +209,10 @@ public class SetType extends Type
         private final int deprecated;
 
         /**
-         * Construct a Choice given the XML node and the encodingType
+         * Construct a Choice given the XML node and the encodingType.
          *
-         * @param node         that contains the validValue
-         * @param encodingType for the enum
+         * @param node         that contains the validValue.
+         * @param encodingType for the enum.
          */
         public Choice(final Node node, final PrimitiveType encodingType)
         {
@@ -262,9 +262,9 @@ public class SetType extends Type
         }
 
         /**
-         * The sinceVersion value of the {@link Choice}
+         * The sinceVersion value of the {@link Choice}.
          *
-         * @return the sinceVersion value of the {@link Choice}
+         * @return the sinceVersion value of the {@link Choice}.
          */
         public int sinceVersion()
         {

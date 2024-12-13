@@ -70,7 +70,7 @@ public class RustUtil
         Verify.notNull(type, "type");
         Verify.notNull(value, "value");
         final String typeName = rustTypeName(type);
-        if (typeName == null)
+        if (null == typeName)
         {
             throw new IllegalArgumentException("Unknown Rust type name found for primitive " + type.primitiveName());
         }
@@ -178,7 +178,7 @@ public class RustUtil
 
     /**
      * Converts to 'snake_case' but will also handle when there are multiple
-     * upper case characters in a row 'UPPERCase' => 'upper_case'
+     * upper case characters in a row 'UPPERCase' => 'upper_case'.
      *
      * @param value to be formatted
      * @return the string formatted to 'lower_snake_case'
