@@ -1580,7 +1580,7 @@ public class RustGenerator implements CodeGenerator
         indent(out, 2, "offset: usize,\n");
         indent(out, 1, "}\n\n");
 
-        final int version = tokens.stream().findFirst().get().version();
+        final int version = tokens.get(1).version(); // skip BEGIN_COMPOSITE
         appendImplReaderForComposite(schemaVersionType, version, out, 1, decoderName);
 
         // impl<'a, P> start
