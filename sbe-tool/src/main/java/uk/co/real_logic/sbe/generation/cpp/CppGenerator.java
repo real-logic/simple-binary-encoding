@@ -49,6 +49,8 @@ public class CppGenerator implements CodeGenerator
 {
     private static final boolean DISABLE_IMPLICIT_COPYING = Boolean.parseBoolean(
         System.getProperty("sbe.cpp.disable.implicit.copying", "false"));
+    private static final boolean DISABLE_RAW_ARRAYS = Boolean.parseBoolean(
+        System.getProperty("sbe.cpp.disable.raw.arrays", "false"));
     private static final String BASE_INDENT = "";
     private static final String INDENT = "    ";
     private static final String TWO_INDENT = INDENT + INDENT;
@@ -1634,6 +1636,23 @@ public class CppGenerator implements CodeGenerator
             sinceVersion);
     }
 
+    private static CharSequence generateSpanFieldNotPresentCondition(
+        final int sinceVersion, final String indent, final String cppTypeName)
+    {
+        if (0 == sinceVersion)
+        {
+            return "";
+        }
+
+        return String.format(
+            indent + "        if (m_actingVersion < %1$d)\n" +
+            indent + "        {\n" +
+            indent + "            return std::span<const %2$s>();\n" +
+            indent + "        }\n\n",
+            sinceVersion,
+            cppTypeName);
+    }
+
     private static CharSequence generateStringNotPresentCondition(final int sinceVersion, final String indent)
     {
         if (0 == sinceVersion)
@@ -1703,8 +1722,18 @@ public class CppGenerator implements CodeGenerator
             "#if __cplusplus >= 201703L\n" +
             "#  include <string_view>\n" +
             "#  define SBE_NODISCARD [[nodiscard]]\n" +
+            "#  if !defined(SBE_USE_STRING_VIEW)\n" +
+            "#    define SBE_USE_STRING_VIEW 1\n" +
+            "#  endif\n" +
             "#else\n" +
             "#  define SBE_NODISCARD\n" +
+            "#endif\n\n" +
+
+            "#if __cplusplus >= 202002L\n" +
+            "#  include <span>\n" +
+            "#  if !defined(SBE_USE_SPAN)\n" +
+            "#    define SBE_USE_SPAN 1\n" +
+            "#  endif\n" +
             "#endif\n\n" +
 
             "#if !defined(__STDC_LIMIT_MACROS)\n" +
@@ -2258,12 +2287,38 @@ public class CppGenerator implements CodeGenerator
             accessOrderListenerCall);
 
         new Formatter(sb).format("\n" +
-            indent + "    %1$s &put%2$s(const char *const src)%7$s\n" +
+            indent + "    #ifdef SBE_USE_SPAN\n" +
+            indent + "    SBE_NODISCARD std::span<const %5$s> get%1$sAsSpan() const%7$s\n" +
             indent + "    {\n" +
+            "%3$s" +
             "%6$s" +
-            indent + "        std::memcpy(m_buffer + m_offset + %3$d, src, sizeof(%4$s) * %5$d);\n" +
+            indent + "        const char *buffer = m_buffer + m_offset + %4$d;\n" +
+            indent + "        return std::span<const %5$s>(reinterpret_cast<const %5$s*>(buffer), %2$d);\n" +
+            indent + "    }\n" +
+            indent + "    #endif\n",
+            toUpperFirstChar(propertyName),
+            arrayLength,
+            generateSpanFieldNotPresentCondition(propertyToken.version(), indent, cppTypeName),
+            offset,
+            cppTypeName,
+            accessOrderListenerCall,
+            noexceptDeclaration);
+
+        new Formatter(sb).format("\n" +
+            indent + "    #ifdef SBE_USE_SPAN\n" +
+            indent + "    template <std::size_t N>\n" +
+            indent + "    %1$s &put%2$s(std::span<const %4$s, N> src)%7$s\n" +
+            indent + "    {\n" +
+            indent + "        static_assert(N <= %5$d, \"array too large for put%2$s\");\n\n" +
+            "%6$s" +
+            indent + "        std::memcpy(m_buffer + m_offset + %3$d, src.data(), sizeof(%4$s) * N);\n" +
+            indent + "        for (std::size_t start = N; start < %5$d; ++start)\n" +
+            indent + "        {\n" +
+            indent + "            m_buffer[m_offset + %3$d + start] = 0;\n" +
+            indent + "        }\n\n" +
             indent + "        return *this;\n" +
-            indent + "    }\n",
+            indent + "    }\n" +
+            indent + "    #endif\n",
             containingClassName,
             toUpperFirstChar(propertyName),
             offset,
@@ -2271,6 +2326,79 @@ public class CppGenerator implements CodeGenerator
             arrayLength,
             accessOrderListenerCall,
             noexceptDeclaration);
+
+        if (encodingToken.encoding().primitiveType() != PrimitiveType.CHAR)
+        {
+            new Formatter(sb).format("\n" +
+                indent + "    #ifdef SBE_USE_SPAN\n" +
+                indent + "    %1$s &put%2$s(std::span<const %4$s> src)\n" +
+                indent + "    {\n" +
+                indent + "        const std::size_t srcLength = src.size();\n" +
+                indent + "        if (srcLength > %5$d)\n" +
+                indent + "        {\n" +
+                indent + "            throw std::runtime_error(\"array too large for put%2$s [E106]\");\n" +
+                indent + "        }\n\n" +
+
+                "%6$s" +
+                indent + "        std::memcpy(m_buffer + m_offset + %3$d, src.data(), sizeof(%4$s) * srcLength);\n" +
+                indent + "        for (std::size_t start = srcLength; start < %5$d; ++start)\n" +
+                indent + "        {\n" +
+                indent + "            m_buffer[m_offset + %3$d + start] = 0;\n" +
+                indent + "        }\n\n" +
+                indent + "        return *this;\n" +
+                indent + "    }\n" +
+                indent + "    #endif\n",
+                containingClassName,
+                toUpperFirstChar(propertyName),
+                offset,
+                cppTypeName,
+                arrayLength,
+                accessOrderListenerCall);
+        }
+
+        if (!DISABLE_RAW_ARRAYS)
+        {
+            new Formatter(sb).format("\n" +
+                indent + "    #ifdef SBE_USE_SPAN\n" +
+                indent + "    template <typename T>\n" +
+                // If std::span is available, redirect string literals to the std::span-accepting overload,
+                // where we can do compile-time bounds checking.
+                indent + "    %1$s &put%2$s(T&& src) %7$s requires\n" +
+                indent + "        (std::is_pointer_v<std::remove_reference_t<T>> &&\n" +
+                indent + "         !std::is_array_v<std::remove_reference_t<T>>)\n" +
+                indent + "    #else\n" +
+                indent + "    %1$s &put%2$s(const char *const src)%7$s\n" +
+                indent + "    #endif\n" +
+                indent + "    {\n" +
+                "%6$s" +
+                indent + "        std::memcpy(m_buffer + m_offset + %3$d, src, sizeof(%4$s) * %5$d);\n" +
+                indent + "        return *this;\n" +
+                indent + "    }\n",
+                containingClassName,
+                toUpperFirstChar(propertyName),
+                offset,
+                cppTypeName,
+                arrayLength,
+                accessOrderListenerCall,
+                noexceptDeclaration);
+
+        }
+        if (encodingToken.encoding().primitiveType() == PrimitiveType.CHAR)
+        {
+            // Resolve ambiguity of string literal arguments, which match both
+            // std::span<const char, N> and std::string_view overloads.
+            new Formatter(sb).format("\n" +
+                indent + "    #ifdef SBE_USE_SPAN\n" +
+                indent + "    template <std::size_t N>\n" +
+                indent + "    %1$s &put%2$s(const char (&src)[N])%3$s\n" +
+                indent + "    {\n" +
+                indent + "        return put%2$s(std::span<const char, N>(src));\n" +
+                indent + "    }\n" +
+                indent + "    #endif\n",
+                containingClassName,
+                toUpperFirstChar(propertyName),
+                noexceptDeclaration);
+        }
 
         if (arrayLength > 1 && arrayLength <= 4)
         {
@@ -2332,7 +2460,7 @@ public class CppGenerator implements CodeGenerator
             generateJsonEscapedStringGetter(sb, encodingToken, indent, propertyName);
 
             new Formatter(sb).format("\n" +
-                indent + "    #if __cplusplus >= 201703L\n" +
+                indent + "    #ifdef SBE_USE_STRING_VIEW\n" +
                 indent + "    SBE_NODISCARD std::string_view get%1$sAsStringView() const%6$s\n" +
                 indent + "    {\n" +
                 "%4$s" +
@@ -2354,7 +2482,7 @@ public class CppGenerator implements CodeGenerator
                 noexceptDeclaration);
 
             new Formatter(sb).format("\n" +
-                indent + "    #if __cplusplus >= 201703L\n" +
+                indent + "    #ifdef SBE_USE_STRING_VIEW\n" +
                 indent + "    %1$s &put%2$s(const std::string_view str)\n" +
                 indent + "    {\n" +
                 indent + "        const std::size_t srcLength = str.length();\n" +
