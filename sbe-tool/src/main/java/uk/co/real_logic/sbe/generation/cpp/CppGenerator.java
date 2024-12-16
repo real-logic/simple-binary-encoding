@@ -1722,14 +1722,16 @@ public class CppGenerator implements CodeGenerator
             "#if __cplusplus >= 201703L\n" +
             "#  include <string_view>\n" +
             "#  define SBE_NODISCARD [[nodiscard]]\n" +
-            "#  define SBE_USE_STRING_VIEW 1\n" +
+            "#  if !defined(SBE_USE_STRING_VIEW)\n" +
+            "#    define SBE_USE_STRING_VIEW 1\n" +
+            "#  endif\n" +
             "#else\n" +
             "#  define SBE_NODISCARD\n" +
             "#endif\n\n" +
 
             "#if __cplusplus >= 202002L\n" +
-            "#  if defined(SBE_ENABLE_SPAN)\n" +
-            "#    include <span>\n" +
+            "#  include <span>\n" +
+            "#  if !defined(SBE_USE_SPAN)\n" +
             "#    define SBE_USE_SPAN 1\n" +
             "#  endif\n" +
             "#endif\n\n" +
