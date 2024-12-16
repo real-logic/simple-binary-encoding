@@ -33,7 +33,7 @@ Example for Maven:
 ```xml
 <dependency>
     <groupId>uk.co.real-logic</groupId>
-    <artifactId>sbe-all</artifactId>
+    <artifactId>sbe-tool</artifactId>
     <version>${sbe.tool.version}</version>
 </dependency>
 ```
