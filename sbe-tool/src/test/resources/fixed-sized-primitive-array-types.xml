@@ -37,22 +37,37 @@
 
     <sbe:message name="demo" id="1">
         <field name="fixed16Char" id="1" type="Fixed16Char"/>
-        <field name="fixed16AsciiChar" id="2" type="Fixed16AsciiChar"/>
-        <field name="fixed16Gb18030Char" id="3" type="Fixed16Gb18030Char"/>
-        <field name="fixed16Utf8Char" id="4" type="Fixed16Utf8Char"/>
+        <field name="fixed16CharEnd" id="2" type="int32" description="End boundary of fixed16Char"/>
+        <field name="fixed16AsciiChar" id="3" type="Fixed16AsciiChar"/>
+        <field name="fixed16AsciiCharEnd" id="4" type="int32" description="End boundary of fixed16AsciiChar"/>
+        <field name="fixed16Gb18030Char" id="5" type="Fixed16Gb18030Char"/>
+        <field name="fixed16Gb18030CharEnd" id="6" type="int32" description="End boundary of fixed16Gb18030Char"/>
+        <field name="fixed16Utf8Char" id="7" type="Fixed16Utf8Char"/>
+        <field name="fixed16Utf8CharEnd" id="8" type="int32" description="End boundary of fixed16Utf8Char"/>
 
         <field name="fixed16U8" id="11" type="Fixed16U8"/>
-        <field name="fixed16AsciiU8" id="12" type="Fixed16AsciiU8"/>
-        <field name="fixed16Gb18030U8" id="13" type="Fixed16Gb18030U8"/>
-        <field name="fixed16Utf8U8" id="14" type="Fixed16Utf8U8"/>
+        <field name="fixed16U8End" id="12" type="int32" description="End boundary of fixed16U8"/>
+        <field name="fixed16AsciiU8" id="13" type="Fixed16AsciiU8"/>
+        <field name="fixed16AsciiU8End" id="14" type="int32" description="End boundary of fixed16AsciiU8"/>
+        <field name="fixed16Gb18030U8" id="15" type="Fixed16Gb18030U8"/>
+        <field name="fixed16Gb18030U8End" id="16" type="int32" description="End boundary of fixed16Gb18030U8"/>
+        <field name="fixed16Utf8U8" id="17" type="Fixed16Utf8U8"/>
+        <field name="fixed16Utf8U8End" id="18" type="int32" description="End boundary of fixed16Utf8U8"/>
 
         <field name="fixed16i8" id="21" type="Fixed16i8"/>
-        <field name="fixed16i16" id="22" type="Fixed16i16"/>
-        <field name="fixed16i32" id="23" type="Fixed16i32"/>
-        <field name="fixed16i64" id="24" type="Fixed16i64"/>
+        <field name="fixed16i8End" id="22" type="int32" description="End boundary of fixed16i8"/>
+        <field name="fixed16i16" id="23" type="Fixed16i16"/>
+        <field name="fixed16i16End" id="24" type="int32" description="End boundary of fixed16i16"/>
+        <field name="fixed16i32" id="25" type="Fixed16i32"/>
+        <field name="fixed16i32End" id="26" type="int32" description="End boundary of fixed16i32"/>
+        <field name="fixed16i64" id="27" type="Fixed16i64"/>
+        <field name="fixed16i64End" id="28" type="int32" description="End boundary of fixed16i64"/>
 
-        <field name="fixed16u16" id="32" type="Fixed16u16"/>
-        <field name="fixed16u32" id="33" type="Fixed16u32"/>
-        <field name="fixed16u64" id="34" type="Fixed16u64"/>
+        <field name="fixed16u16" id="33" type="Fixed16u16"/>
+        <field name="fixed16u16End" id="34" type="int32" description="End boundary of fixed16u16"/>
+        <field name="fixed16u32" id="35" type="Fixed16u32"/>
+        <field name="fixed16u32End" id="36" type="int32" description="End boundary of fixed16u32"/>
+        <field name="fixed16u64" id="37" type="Fixed16u64"/>
+        <field name="fixed16u64End" id="38" type="int32" description="End boundary of fixed16u64"/>
     </sbe:message>
 </sbe:messageSchema>
