@@ -35,6 +35,7 @@ shift $(($OPTIND - 1))
 [ -f "$SCHEMA" ] || (echo invalid schema "$SCHEMA"; exit 1)
 
 java \
+--add-opens java.base/jdk.internal.misc=ALL-UNNAMED \
 -Dsbe.output.dir="$OUTPUTDIR" \
 -Dsbe.generate.ir="false" \
 -Dsbe.target.language="golang" \
