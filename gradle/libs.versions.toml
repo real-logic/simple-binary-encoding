@@ -1,12 +1,12 @@
 [versions]
-agrona = "1.23.1"
+agrona = "2.0.0"
 checkstyle = "10.21.0"
 junit = "5.11.4"
 jmh = "1.37"
 gradle = "8.11.1"
 
 [libraries]
-agrona = { group = "org.agrona", name = "agrona", version = { strictly = "[1.23.1, 2.0[", require = "1.23.1" } }
+agrona = { group = "org.agrona", name = "agrona", version.ref = "agrona" }
 mockito = { group = "org.mockito", name = "mockito-core", version = "5.14.2" }
 hamcrest = { group = "org.hamcrest", name = "hamcrest", version = "3.0" }
 jqwik = { group = "net.jqwik", name = "jqwik", version = "1.9.2" }

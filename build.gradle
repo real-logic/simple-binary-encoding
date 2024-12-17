@@ -217,6 +217,7 @@ subprojects {
                     all {
                         testTask.configure {
                             useJUnitPlatform()
+                            jvmArgs('--add-opens', 'java.base/jdk.internal.misc=ALL-UNNAMED')
 
                             testLogging {
                                 for (def level : LogLevel.values())
@@ -303,6 +304,7 @@ project(':sbe-tool') {
                             minHeapSize = '2g'
                             maxHeapSize = '2g'
 
+                            jvmArgs('--add-opens', 'java.base/jdk.internal.misc=ALL-UNNAMED')
                             javaLauncher.set(toolchainLauncher)
 
                             systemProperty 'sbe.dll', "${rootProject.projectDir}/csharp/sbe-dll/bin/Release/netstandard2.0/SBE.dll"
