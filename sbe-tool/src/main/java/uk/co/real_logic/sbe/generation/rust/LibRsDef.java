@@ -277,6 +277,13 @@ class LibRsDef
         indent(writer, 2, "len\n");
         indent(writer, 1, "}\n");
 
+        indent(writer, 0, "}\n");
+
+        indent(writer, 0, "impl<%s> From<&%1$s mut %2$s<%1$s>> for &%1$s mut [u8] {\n", BUF_LIFETIME, WRITE_BUF_TYPE);
+        indent(writer, 1, "#[inline]\n");
+        indent(writer, 1, "fn from(buf: &%s mut %2$s<%1$s>) -> &%1$s mut [u8] {\n", BUF_LIFETIME, WRITE_BUF_TYPE);
+        indent(writer, 2, "buf.data\n");
+        indent(writer, 1, "}\n");
         indent(writer, 0, "}\n\n");
     }
 }
