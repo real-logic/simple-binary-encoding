@@ -319,6 +319,7 @@ project(':sbe-tool') {
         dependsOn 'compileJava'
         mainClass.set('uk.co.real_logic.sbe.SbeTool')
         classpath = sourceSets.main.runtimeClasspath
+        jvmArgs('--add-opens', 'java.base/jdk.internal.misc=ALL-UNNAMED')
         systemProperties(
                 'sbe.output.dir': generatedDir,
                 'sbe.target.language': 'Java',
@@ -335,6 +336,7 @@ project(':sbe-tool') {
         dependsOn 'compileJava'
         mainClass.set('uk.co.real_logic.sbe.SbeTool')
         classpath = sourceSets.main.runtimeClasspath
+        jvmArgs('--add-opens', 'java.base/jdk.internal.misc=ALL-UNNAMED')
         systemProperties(
                 'sbe.output.dir': generatedDir,
                 'sbe.target.language': 'java',
@@ -480,7 +482,7 @@ project(':sbe-samples') {
     sourceSets {
         generated {
             java.srcDir generatedDir
-            compileClasspath += project(':sbe-all').sourceSets.main.runtimeClasspath
+            compileClasspath += project(':sbe-tool').sourceSets.main.runtimeClasspath
         }
     }
 
@@ -489,7 +491,8 @@ project(':sbe-samples') {
 
     tasks.register('generateCodecs', JavaExec) {
         mainClass.set('uk.co.real_logic.sbe.SbeTool')
-        classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
+        classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
+        jvmArgs('--add-opens', 'java.base/jdk.internal.misc=ALL-UNNAMED')
         systemProperties(
                 'sbe.output.dir': generatedDir,
                 'sbe.target.language': 'Java',
@@ -505,6 +508,7 @@ project(':sbe-samples') {
         dependsOn 'compileJava'
         mainClass.set('uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStub')
         classpath = sourceSets.main.runtimeClasspath
+        jvmArgs('--add-opens', 'java.base/jdk.internal.misc=ALL-UNNAMED')
         systemProperties System.getProperties()
     }
 
@@ -512,6 +516,7 @@ project(':sbe-samples') {
         dependsOn 'compileJava'
         mainClass.set('uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStubExtension')
         classpath = sourceSets.main.runtimeClasspath
+        jvmArgs('--add-opens', 'java.base/jdk.internal.misc=ALL-UNNAMED')
         systemProperties System.getProperties()
     }
 
@@ -519,6 +524,7 @@ project(':sbe-samples') {
         dependsOn 'compileJava'
         mainClass.set('uk.co.real_logic.sbe.examples.OtfExample')
         classpath = sourceSets.main.runtimeClasspath
+        jvmArgs('--add-opens', 'java.base/jdk.internal.misc=ALL-UNNAMED')
         workingDir = 'src/main/resources'
     }
 
@@ -596,7 +602,7 @@ project(':sbe-benchmarks') {
     sourceSets {
         generated {
             java.srcDir 'build/generated-src'
-            compileClasspath += project(':sbe-all').sourceSets.main.runtimeClasspath
+            compileClasspath += project(':sbe-tool').sourceSets.main.runtimeClasspath
         }
     }
 
@@ -605,7 +611,8 @@ project(':sbe-benchmarks') {
 
     tasks.register('generateCodecs', JavaExec) {
         mainClass.set('uk.co.real_logic.sbe.SbeTool')
-        classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
+        classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
+        jvmArgs('--add-opens', 'java.base/jdk.internal.misc=ALL-UNNAMED')
         systemProperties(
                 'sbe.output.dir': 'build/generated-src',
                 'sbe.target.language': 'Java',
@@ -629,7 +636,8 @@ project(':sbe-benchmarks') {
 
 tasks.register('generateRustExamples', JavaExec) {
     mainClass.set('uk.co.real_logic.sbe.SbeTool')
-    classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
+    classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
+    jvmArgs('--add-opens', 'java.base/jdk.internal.misc=ALL-UNNAMED')
     systemProperties(
             'sbe.output.dir': 'generated/rust',
             'sbe.xinclude.aware': 'true',
@@ -644,7 +652,8 @@ tasks.register('generateRustExamples', JavaExec) {
 
 tasks.register('generateRustTestCodecs', JavaExec) {
     mainClass.set('uk.co.real_logic.sbe.SbeTool')
-    classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
+    classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
+    jvmArgs('--add-opens', 'java.base/jdk.internal.misc=ALL-UNNAMED')
     systemProperties(
             'sbe.output.dir': 'generated/rust',
             'sbe.xinclude.aware': 'true',
@@ -664,6 +673,7 @@ tasks.register('generateRustTestCodecs', JavaExec) {
 tasks.register('generateCarExampleDataFile', JavaExec) {
     mainClass.set('uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStub')
     classpath = project(':sbe-samples').sourceSets.main.runtimeClasspath
+    jvmArgs('--add-opens', 'java.base/jdk.internal.misc=ALL-UNNAMED')
     systemProperties('sbe.encoding.filename': 'rust/car_example_baseline_data.sbe')
     args = []
     standardOutput = new ByteArrayOutputStream()
@@ -672,6 +682,7 @@ tasks.register('generateCarExampleDataFile', JavaExec) {
 tasks.register('generateCarExampleExtensionDataFile', JavaExec) {
     mainClass.set('uk.co.real_logic.sbe.examples.ExampleUsingGeneratedStubExtension')
     classpath = project(':sbe-samples').sourceSets.main.runtimeClasspath
+    jvmArgs('--add-opens', 'java.base/jdk.internal.misc=ALL-UNNAMED')
     systemProperties('sbe.encoding.filename': 'rust/car_example_extension_data.sbe')
     args = []
     standardOutput = new ByteArrayOutputStream()
@@ -702,6 +713,7 @@ tasks.register('runRustTests', Exec) {
 tasks.register('generateGolangCodecTestComposite', JavaExec) {
     mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
+    jvmArgs('--add-opens', 'java.base/jdk.internal.misc=ALL-UNNAMED')
     systemProperties(
             'sbe.output.dir': 'gocode/struct/src',
             'sbe.target.language': 'golang')
@@ -711,6 +723,7 @@ tasks.register('generateGolangCodecTestComposite', JavaExec) {
 tasks.register('generateGolangCodecTestBasic', JavaExec) {
     mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
+    jvmArgs('--add-opens', 'java.base/jdk.internal.misc=ALL-UNNAMED')
     systemProperties(
             'sbe.output.dir': 'gocode/struct/src/basic',
             'sbe.target.language': 'golang')
@@ -720,6 +733,7 @@ tasks.register('generateGolangCodecTestBasic', JavaExec) {
 tasks.register('generateGolangCodecTestGroup', JavaExec) {
     mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
+    jvmArgs('--add-opens', 'java.base/jdk.internal.misc=ALL-UNNAMED')
     systemProperties(
             'sbe.output.dir': 'gocode/struct/src/group',
             'sbe.target.language': 'golang')
@@ -728,6 +742,7 @@ tasks.register('generateGolangCodecTestGroup', JavaExec) {
 
 tasks.register('generateGolangCodecTestVarData', JavaExec) {
     mainClass.set('uk.co.real_logic.sbe.SbeTool')
+    jvmArgs('--add-opens', 'java.base/jdk.internal.misc=ALL-UNNAMED')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
     systemProperties(
             'sbe.output.dir': 'gocode/struct/src/vardata',
@@ -738,6 +753,7 @@ tasks.register('generateGolangCodecTestVarData', JavaExec) {
 tasks.register('generateGolangCodecsWithXIncludes', JavaExec) {
     mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
+    jvmArgs('--add-opens', 'java.base/jdk.internal.misc=ALL-UNNAMED')
     systemProperties(
             'sbe.output.dir': 'gocode/struct/src',
             'sbe.target.language': 'golang',
@@ -750,6 +766,7 @@ tasks.register('generateGolangCodecsWithXIncludes', JavaExec) {
 tasks.register('generateGolangCodecsWithXSD', JavaExec) {
     mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
+    jvmArgs('--add-opens', 'java.base/jdk.internal.misc=ALL-UNNAMED')
     systemProperties(
             'sbe.output.dir': 'gocode/struct/src',
             'sbe.target.language': 'golang',
@@ -776,6 +793,7 @@ tasks.register('generateGolangCodecsWithXSD', JavaExec) {
 tasks.register('generateGolangFlyweightCodecTestComposite', JavaExec) {
     mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
+    jvmArgs('--add-opens', 'java.base/jdk.internal.misc=ALL-UNNAMED')
     systemProperties(
             'sbe.output.dir': 'gocode/flyweight/src',
             'sbe.go.generate.generate.flyweights': 'true',
@@ -786,6 +804,7 @@ tasks.register('generateGolangFlyweightCodecTestComposite', JavaExec) {
 tasks.register('generateGolangFlyweightCodecTestBasic', JavaExec) {
     mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
+    jvmArgs('--add-opens', 'java.base/jdk.internal.misc=ALL-UNNAMED')
     systemProperties(
             'sbe.output.dir': 'gocode/flyweight/src/basic',
             'sbe.go.generate.generate.flyweights': 'true',
@@ -796,6 +815,7 @@ tasks.register('generateGolangFlyweightCodecTestBasic', JavaExec) {
 tasks.register('generateGolangFlyweightCodecTestGroup', JavaExec) {
     mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
+    jvmArgs('--add-opens', 'java.base/jdk.internal.misc=ALL-UNNAMED')
     systemProperties(
             'sbe.output.dir': 'gocode/flyweight/src/group',
             'sbe.go.generate.generate.flyweights': 'true',
@@ -806,6 +826,7 @@ tasks.register('generateGolangFlyweightCodecTestGroup', JavaExec) {
 tasks.register('generateGolangFlyweightCodecTestVarData', JavaExec) {
     mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
+    jvmArgs('--add-opens', 'java.base/jdk.internal.misc=ALL-UNNAMED')
     systemProperties(
             'sbe.output.dir': 'gocode/flyweight/src/vardata',
             'sbe.go.generate.generate.flyweights': 'true',
@@ -816,6 +837,7 @@ tasks.register('generateGolangFlyweightCodecTestVarData', JavaExec) {
 tasks.register('generateGolangFlyweightCodecsWithXIncludes', JavaExec) {
     mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
+    jvmArgs('--add-opens', 'java.base/jdk.internal.misc=ALL-UNNAMED')
     systemProperties(
             'sbe.output.dir': 'gocode/flyweight/src',
             'sbe.go.generate.generate.flyweights': 'true',
@@ -829,6 +851,7 @@ tasks.register('generateGolangFlyweightCodecsWithXIncludes', JavaExec) {
 tasks.register('generateGolangFlyweightCodecsWithXSD', JavaExec) {
     mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
+    jvmArgs('--add-opens', 'java.base/jdk.internal.misc=ALL-UNNAMED')
     systemProperties(
             'sbe.output.dir': 'gocode/flyweight/src',
             'sbe.go.generate.generate.flyweights': 'true',
@@ -880,6 +903,7 @@ tasks.register('generateGolangCodecs') {
 tasks.register('generateCSharpCodecsWithXIncludes', JavaExec) {
     mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
+    jvmArgs('--add-opens', 'java.base/jdk.internal.misc=ALL-UNNAMED')
     systemProperties(
             'sbe.output.dir': 'csharp/sbe-generated',
             'sbe.target.language': 'uk.co.real_logic.sbe.generation.csharp.CSharp',
@@ -892,6 +916,7 @@ tasks.register('generateCSharpCodecsWithXIncludes', JavaExec) {
 tasks.register('generateCSharpTestCodecs', JavaExec) {
     mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
+    jvmArgs('--add-opens', 'java.base/jdk.internal.misc=ALL-UNNAMED')
     systemProperties(
             'sbe.output.dir': 'csharp/sbe-generated',
             'sbe.target.language': 'uk.co.real_logic.sbe.generation.csharp.CSharp',
@@ -912,6 +937,7 @@ tasks.register('generateCSharpTestCodecs', JavaExec) {
 tasks.register('generateCSharpTestDtos', JavaExec) {
     mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
+    jvmArgs('--add-opens', 'java.base/jdk.internal.misc=ALL-UNNAMED')
     systemProperties(
             'sbe.output.dir': 'csharp/sbe-generated',
             'sbe.target.language': 'uk.co.real_logic.sbe.generation.csharp.CSharpDtos',
@@ -924,6 +950,7 @@ tasks.register('generateCSharpTestDtos', JavaExec) {
 tasks.register('generateCSharpExplicitPackageOverrideCodecs', JavaExec) {
     mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
+    jvmArgs('--add-opens', 'java.base/jdk.internal.misc=ALL-UNNAMED')
     systemProperties(
             'sbe.output.dir': 'csharp/sbe-generated',
             'sbe.target.language': 'uk.co.real_logic.sbe.generation.csharp.CSharp',
@@ -936,6 +963,7 @@ tasks.register('generateCSharpExplicitPackageOverrideCodecs', JavaExec) {
 tasks.register('generateCSharpExplicitPackageOverrideDtos', JavaExec) {
     mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
+    jvmArgs('--add-opens', 'java.base/jdk.internal.misc=ALL-UNNAMED')
     systemProperties(
             'sbe.output.dir': 'csharp/sbe-generated',
             'sbe.target.language': 'uk.co.real_logic.sbe.generation.csharp.CSharpDtos',
@@ -956,7 +984,8 @@ tasks.register('generateCSharpCodecs') {
 tasks.register('generateJavaIrCodecs', JavaExec) {
     dependsOn 'computeOriginalIrHash'
     mainClass.set('uk.co.real_logic.sbe.SbeTool')
-    classpath = project(':sbe-all').sourceSets.main.runtimeClasspath
+    classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
+    jvmArgs('--add-opens', 'java.base/jdk.internal.misc=ALL-UNNAMED')
     systemProperties(
             'sbe.output.dir': 'sbe-tool/src/main/java',
             'sbe.target.language': 'Java',
@@ -970,6 +999,7 @@ tasks.register('generateJavaIrCodecs', JavaExec) {
 tasks.register('generateCppIrCodecs', JavaExec) {
     mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
+    jvmArgs('--add-opens', 'java.base/jdk.internal.misc=ALL-UNNAMED')
     systemProperties(
             'sbe.output.dir': 'sbe-tool/src/main/cpp',
             'sbe.target.language': 'cpp',
@@ -982,6 +1012,7 @@ tasks.register('generateCppIrCodecs', JavaExec) {
 tasks.register('generateGolangIrCodecs', JavaExec) {
     mainClass.set('uk.co.real_logic.sbe.SbeTool')
     classpath = project(':sbe-tool').sourceSets.main.runtimeClasspath
+    jvmArgs('--add-opens', 'java.base/jdk.internal.misc=ALL-UNNAMED')
     systemProperties(
             'sbe.output.dir': 'sbe-tool/src/main/golang',
             'sbe.target.language': 'golang',
@@ -999,7 +1030,7 @@ tasks.register('runJavaBenchmarks', Exec) {
     dependsOn 'sbe-benchmarks:jar'
     commandLine toolchainLauncher.get().executablePath,
             '-jar', 'sbe-benchmarks/build/libs/sbe-benchmarks.jar',
-            '-jvmArgs', '-Dagrona.disable.bounds.checks=true -XX:+UseParallelGC',
+            '-jvmArgs', '-Dagrona.disable.bounds.checks=true -XX:+UseParallelGC --add-opens java.base/jdk.internal.misc=ALL-UNNAMED',
             '-w', '1s', '-r', '1s', '-wi', '3', '-i', '5', '-tu', 'ns', '-f', '5'
 }
 
