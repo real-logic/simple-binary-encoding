@@ -416,7 +416,5 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: 17
-      - name: Generate codecs
-        run: ./gradlew generateGolangCodecs
-      - name: Go
+      - name: Test
         run: cd gocode && make
