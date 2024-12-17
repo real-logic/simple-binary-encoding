@@ -61,7 +61,7 @@ add_custom_command(
         ${ACCESS_ORDER_SCHEMA}
     sbe-jar ${SBE_JAR}
     COMMAND
-        ${Java_JAVA_EXECUTABLE}
+        ${Java_JAVA_EXECUTABLE} --add-opens java.base/jdk.internal.misc=ALL-UNNAMED
             -Dsbe.output.dir=${CXX_CODEC_TARGET_DIR}
             -Dsbe.generate.ir="true"
             -Dsbe.target.language="cpp"

@@ -28,7 +28,7 @@ find_package(Java REQUIRED)
 
 add_custom_command(OUTPUT ${CODECS}
     COMMAND
-        ${Java_JAVA_EXECUTABLE}
+        ${Java_JAVA_EXECUTABLE} --add-opens java.base/jdk.internal.misc=ALL-UNNAMED
             "-Dsbe.output.dir=${CMAKE_CURRENT_SOURCE_DIR}"
             "-Dsbe.target.language=CPP"
             "-jar" "${SBE_JAR}"

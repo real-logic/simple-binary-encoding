@@ -46,7 +46,7 @@ add_custom_command(
     OUTPUT ${GENERATED_CODECS}
     DEPENDS sbe-jar ${SBE_JAR} ${CODE_GENERATION_SCHEMA} ${CODE_GENERATION_SCHEMA_WITH_VERSION} ${GROUP_WITH_DATA_SCHEMA} ${ISSUE889_SCHEMA}
     COMMAND
-        ${Java_JAVA_EXECUTABLE}
+        ${Java_JAVA_EXECUTABLE} --add-opens java.base/jdk.internal.misc=ALL-UNNAMED
             -Dsbe.output.dir=${C_CODEC_TARGET_DIR}
             -Dsbe.target.language="C"
             -jar ${SBE_JAR}
