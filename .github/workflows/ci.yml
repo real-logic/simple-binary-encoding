@@ -416,5 +416,7 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: 17
-      - name: Test
+      - name: Generate jar
+        run: ./gradlew assemble
+      - name: Run tests
         run: cd gocode && make
