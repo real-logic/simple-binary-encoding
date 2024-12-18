@@ -383,10 +383,9 @@ public class RustGenerator implements CodeGenerator
             indent(sb, level, "/// - encodedLength: %d\n", typeToken.encodedLength());
             indent(sb, level, "/// - version: %d\n", typeToken.version());
             indent(sb, level, "#[inline]\n");
-            indent(sb, level, "pub fn %s(&mut self, value: &[%s; %d]) {\n",
+            indent(sb, level, "pub fn %s(&mut self, value: &[%s]) {\n",
                 formatFunctionName(name),
-                rustPrimitiveType,
-                arrayLength);
+                rustPrimitiveType);
 
             // NB: must create variable 'offset' before calling mutable self.get_buf_mut()
             indent(sb, level + 1, "let offset = self.%s;\n", getBufOffset(typeToken));
@@ -394,7 +393,11 @@ public class RustGenerator implements CodeGenerator
 
             if (rustPrimitiveType.equals("u8"))
             {
-                indent(sb, level + 1, "buf.put_bytes_at(offset, value);\n");
+                indent(sb, level + 1, "let mid = %d.min(value.len());\n", arrayLength);
+                indent(sb, level + 1, "buf.put_slice_at(offset, value.split_at(mid).0);\n");
+                indent(sb, level + 1, "for i in mid..%d {\n", arrayLength);
+                indent(sb, level + 2, "buf.put_u8_at(offset + (i * 1), %s_u8);\n", encoding.applicableNullValue());
+                indent(sb, level + 1, "}\n");
                 indent(sb, level, "}\n\n");
                 return;
             }
