@@ -361,7 +361,23 @@ public class RustGenerator implements CodeGenerator
         }
     }
 
-    private static void generatePrimitiveEncoder(
+    private static void generateRustDoc(
+        final StringBuilder sb,
+        final int level,
+        final Token typeToken,
+        final Encoding encoding) throws IOException
+    {
+        indent(sb, level, "/// - min value: %s\n", encoding.applicableMinValue());
+        indent(sb, level, "/// - max value: %s\n", encoding.applicableMaxValue());
+        indent(sb, level, "/// - null value: %s\n", encoding.applicableNullValue());
+        indent(sb, level, "/// - characterEncoding: %s\n", encoding.characterEncoding());
+        indent(sb, level, "/// - semanticType: %s\n", encoding.semanticType());
+        indent(sb, level, "/// - encodedOffset: %d\n", typeToken.offset());
+        indent(sb, level, "/// - encodedLength: %d\n", typeToken.encodedLength());
+        indent(sb, level, "/// - version: %d\n", typeToken.version());
+    }
+
+    private static void generatePrimitiveArrayEncoder(
         final StringBuilder sb,
         final int level,
         final Token typeToken,
@@ -371,37 +387,29 @@ public class RustGenerator implements CodeGenerator
         final PrimitiveType primitiveType = encoding.primitiveType();
         final String rustPrimitiveType = rustTypeName(primitiveType);
         final int arrayLength = typeToken.arrayLength();
-        if (arrayLength > 1)
+
+        indent(sb, level, "/// primitive array field '%s'\n", name);
+        generateRustDoc(sb, level, typeToken, encoding);
+        indent(sb, level, "#[inline]\n");
+        indent(sb, level, "pub fn %s(&mut self, value: &[%s]) {\n",
+            formatFunctionName(name), rustPrimitiveType);
+
+        // NB: must create variable 'offset' before calling mutable self.get_buf_mut()
+        indent(sb, level + 1, "debug_assert_eq!(%d, value.len());\n", arrayLength);
+        indent(sb, level + 1, "let offset = self.%s;\n", getBufOffset(typeToken));
+        indent(sb, level + 1, "let buf = self.get_buf_mut();\n");
+
+        if (rustPrimitiveType.equals("u8"))
         {
-            indent(sb, level, "/// primitive array field '%s'\n", name);
-            indent(sb, level, "/// - min value: %s\n", encoding.applicableMinValue());
-            indent(sb, level, "/// - max value: %s\n", encoding.applicableMaxValue());
-            indent(sb, level, "/// - null value: %s\n", encoding.applicableNullValue());
-            indent(sb, level, "/// - characterEncoding: %s\n", encoding.characterEncoding());
-            indent(sb, level, "/// - semanticType: %s\n", encoding.semanticType());
-            indent(sb, level, "/// - encodedOffset: %d\n", typeToken.offset());
-            indent(sb, level, "/// - encodedLength: %d\n", typeToken.encodedLength());
-            indent(sb, level, "/// - version: %d\n", typeToken.version());
-            indent(sb, level, "#[inline]\n");
-            indent(sb, level, "pub fn %s(&mut self, value: &[%s]) {\n",
-                formatFunctionName(name),
-                rustPrimitiveType);
-
-            // NB: must create variable 'offset' before calling mutable self.get_buf_mut()
-            indent(sb, level + 1, "let offset = self.%s;\n", getBufOffset(typeToken));
-            indent(sb, level + 1, "let buf = self.get_buf_mut();\n");
-
-            if (rustPrimitiveType.equals("u8"))
-            {
-                indent(sb, level + 1, "let mid = %d.min(value.len());\n", arrayLength);
-                indent(sb, level + 1, "buf.put_slice_at(offset, value.split_at(mid).0);\n");
-                indent(sb, level + 1, "for i in mid..%d {\n", arrayLength);
-                indent(sb, level + 2, "buf.put_u8_at(offset + (i * 1), %s_u8);\n", encoding.applicableNullValue());
-                indent(sb, level + 1, "}\n");
-                indent(sb, level, "}\n\n");
-                return;
-            }
-
+            indent(sb, level + 1, "let mid = %d.min(value.len());\n", arrayLength);
+            indent(sb, level + 1, "buf.put_slice_at(offset, value.split_at(mid).0);\n");
+            indent(sb, level + 1, "for i in mid..%d {\n", arrayLength);
+            indent(sb, level + 2, "buf.put_u8_at(offset + (i * 1), %s_u8);\n", encoding.applicableNullValue());
+            indent(sb, level + 1, "}\n");
+            indent(sb, level, "}\n\n");
+        }
+        else
+        {
             for (int i = 0; i < arrayLength; i++)
             {
                 if (i == 0)
@@ -419,34 +427,59 @@ public class RustGenerator implements CodeGenerator
 
             indent(sb, level, "}\n\n");
         }
-        else
-        {
-            if (encoding.presence() == Encoding.Presence.CONSTANT)
-            {
-                indent(sb, level, "// skipping CONSTANT %s\n\n", name);
-            }
-            else
-            {
-                indent(sb, level, "/// primitive field '%s'\n", name);
-                indent(sb, level, "/// - min value: %s\n", encoding.applicableMinValue());
-                indent(sb, level, "/// - max value: %s\n", encoding.applicableMaxValue());
-                indent(sb, level, "/// - null value: %s\n", encoding.applicableNullValue());
-                indent(sb, level, "/// - characterEncoding: %s\n", encoding.characterEncoding());
-                indent(sb, level, "/// - semanticType: %s\n", encoding.semanticType());
-                indent(sb, level, "/// - encodedOffset: %d\n", typeToken.offset());
-                indent(sb, level, "/// - encodedLength: %d\n", typeToken.encodedLength());
-                indent(sb, level, "/// - version: %d\n", typeToken.version());
-                indent(sb, level, "#[inline]\n");
-                indent(sb, level, "pub fn %s(&mut self, value: %s) {\n",
-                    formatFunctionName(name),
-                    rustPrimitiveType);
 
-                // NB: must create variable 'offset' before calling mutable self.get_buf_mut()
-                indent(sb, level + 1, "let offset = self.%s;\n", getBufOffset(typeToken));
-                indent(sb, level + 1, "self.get_buf_mut().put_%s_at(offset, value);\n", rustPrimitiveType);
-                indent(sb, level, "}\n\n");
-            }
+        indent(sb, level, "/// primitive array field '%s' from an Iterator\n", name);
+        generateRustDoc(sb, level, typeToken, encoding);
+        indent(sb, level, "#[inline]\n");
+        indent(sb, level, "pub fn %s_from_iter(&mut self, iter: impl Iterator<Item = %s>) {\n",
+            formatFunctionName(name), rustPrimitiveType);
+
+        indent(sb, level + 1, "let offset = self.%s;\n", getBufOffset(typeToken));
+        indent(sb, level + 1, "let buf = self.get_buf_mut();\n");
+        indent(sb, level + 1, "let iter = iter.chain(std::iter::repeat(%s_%s)).take(%d);\n",
+            encoding.applicableNullValue(), rustPrimitiveType, arrayLength);
+
+        indent(sb, level + 1, "for (i, v) in iter.enumerate() {\n");
+        indent(sb, level + 2, "buf.put_%s_at(offset + (i * %d), v);\n",
+            rustPrimitiveType, primitiveType.size());
+        indent(sb, level + 1, "}\n");
+        indent(sb, level, "}\n\n");
+    }
+
+    private static void generatePrimitiveEncoder(
+        final StringBuilder sb,
+        final int level,
+        final Token typeToken,
+        final String name) throws IOException
+    {
+        final int arrayLength = typeToken.arrayLength();
+        if (arrayLength > 1)
+        {
+            generatePrimitiveArrayEncoder(sb, level, typeToken, name);
+            return;
         }
+
+        final Encoding encoding = typeToken.encoding();
+        if (encoding.presence() == Encoding.Presence.CONSTANT)
+        {
+            indent(sb, level, "// skipping CONSTANT %s\n\n", name);
+            return;
+        }
+
+        final PrimitiveType primitiveType = encoding.primitiveType();
+        final String rustPrimitiveType = rustTypeName(primitiveType);
+
+        indent(sb, level, "/// primitive field '%s'\n", name);
+        generateRustDoc(sb, level, typeToken, encoding);
+        indent(sb, level, "#[inline]\n");
+        indent(sb, level, "pub fn %s(&mut self, value: %s) {\n",
+            formatFunctionName(name), rustPrimitiveType);
+
+        // NB: must create variable 'offset' before calling mutable self.get_buf_mut()
+        indent(sb, level + 1, "let offset = self.%s;\n", getBufOffset(typeToken));
+        indent(sb, level + 1, "self.get_buf_mut().put_%s_at(offset, value);\n", rustPrimitiveType);
+        indent(sb, level, "}\n\n");
+
     }
 
     private static void generateEnumEncoder(
