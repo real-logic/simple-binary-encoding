@@ -17,6 +17,7 @@ package uk.co.real_logic.sbe.generation.rust;
 
 import org.agrona.Verify;
 import uk.co.real_logic.sbe.PrimitiveType;
+import uk.co.real_logic.sbe.PrimitiveValue;
 import uk.co.real_logic.sbe.generation.Generators;
 import uk.co.real_logic.sbe.generation.rust.RustGenerator.CodecType;
 import uk.co.real_logic.sbe.ir.Encoding;
@@ -63,6 +64,11 @@ public class RustUtil
     static String rustTypeName(final PrimitiveType primitiveType)
     {
         return TYPE_NAME_BY_PRIMITIVE_TYPE_MAP.get(primitiveType);
+    }
+
+    static String generateRustLiteral(final PrimitiveType type, final PrimitiveValue value)
+    {
+        return generateRustLiteral(type, value.toString());
     }
 
     static String generateRustLiteral(final PrimitiveType type, final String value)
