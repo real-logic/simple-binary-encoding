@@ -74,7 +74,7 @@ fn test_encode_then_decode_u8_slice() {
                 let mut buffer = [uninit; 1024];
                 let mut encoder = create_encoder(&mut buffer);
 
-                encode_func(&mut encoder, each_slice.iter().map(|x| *x));
+                encode_func(&mut encoder, each_slice.into_iter().copied());
 
                 let end = 1i32;
                 end_encode_func(&mut encoder, end);
@@ -295,7 +295,7 @@ fn test_encode_then_decode_non_u8_signed_primitive_slice() {
                 let mut buffer = [uninit; 1024];
                 let mut encoder = create_encoder(&mut buffer);
 
-                encode_func(&mut encoder, each_slice.iter().map(|x| *x));
+                encode_func(&mut encoder, each_slice.into_iter().copied());
 
                 let end = 1i32;
                 end_encode_func(&mut encoder, end);
@@ -500,7 +500,7 @@ fn test_encode_then_decode_non_u8_unsigned_primitive_slice() {
                 let mut buffer = [uninit; 1024];
                 let mut encoder = create_encoder(&mut buffer);
 
-                encode_func(&mut encoder, each_slice.iter().map(|x| *x));
+                encode_func(&mut encoder, each_slice.into_iter().copied());
 
                 let end = 1i32;
                 end_encode_func(&mut encoder, end);
@@ -628,7 +628,7 @@ fn test_encode_then_decode_u8_slice_padded() {
                 let mut buffer = [uninit; 1024];
                 let mut encoder = create_encoder(&mut buffer);
 
-                encode_func(&mut encoder, each_slice.iter().map(|x| *x));
+                encode_func(&mut encoder, each_slice);
 
                 let end = 1i32;
                 end_encode_func(&mut encoder, end);
@@ -660,49 +660,49 @@ fn test_encode_then_decode_u8_slice_padded() {
     }
 
     run_encode_then_decode_for_array_of_u8_len_16!(
-        DemoEncoder::fixed_16_char_from_iter,
+        DemoEncoder::fixed_16_char_zero_padded,
         DemoDecoder::fixed_16_char,
         DemoEncoder::fixed_16_char_end,
         DemoDecoder::fixed_16_char_end,
     );
     run_encode_then_decode_for_array_of_u8_len_16!(
-        DemoEncoder::fixed_16_ascii_char_from_iter,
+        DemoEncoder::fixed_16_ascii_char_zero_padded,
         DemoDecoder::fixed_16_ascii_char,
         DemoEncoder::fixed_16_ascii_char_end,
         DemoDecoder::fixed_16_ascii_char_end,
     );
     run_encode_then_decode_for_array_of_u8_len_16!(
-        DemoEncoder::fixed_16_gb_18030_char_from_iter,
+        DemoEncoder::fixed_16_gb_18030_char_zero_padded,
         DemoDecoder::fixed_16_gb_18030_char,
         DemoEncoder::fixed_16_gb_18030_char_end,
         DemoDecoder::fixed_16_gb_18030_char_end,
     );
     run_encode_then_decode_for_array_of_u8_len_16!(
-        DemoEncoder::fixed_16_utf_8_char_from_iter,
+        DemoEncoder::fixed_16_utf_8_char_zero_padded,
         DemoDecoder::fixed_16_utf_8_char,
         DemoEncoder::fixed_16_utf_8_char_end,
         DemoDecoder::fixed_16_utf_8_char_end,
     );
     run_encode_then_decode_for_array_of_u8_len_16!(
-        DemoEncoder::fixed_16_u8_from_iter,
+        DemoEncoder::fixed_16_u8_zero_padded,
         DemoDecoder::fixed_16_u8,
         DemoEncoder::fixed_16_u8_end,
         DemoDecoder::fixed_16_u8_end,
     );
     run_encode_then_decode_for_array_of_u8_len_16!(
-        DemoEncoder::fixed_16_ascii_u8_from_iter,
+        DemoEncoder::fixed_16_ascii_u8_zero_padded,
         DemoDecoder::fixed_16_ascii_u8,
         DemoEncoder::fixed_16_ascii_u8_end,
         DemoDecoder::fixed_16_ascii_u8_end,
     );
     run_encode_then_decode_for_array_of_u8_len_16!(
-        DemoEncoder::fixed_16_gb_18030_u8_from_iter,
+        DemoEncoder::fixed_16_gb_18030_u8_zero_padded,
         DemoDecoder::fixed_16_gb_18030_u8,
         DemoEncoder::fixed_16_gb_18030_u8_end,
         DemoDecoder::fixed_16_gb_18030_u8_end,
     );
     run_encode_then_decode_for_array_of_u8_len_16!(
-        DemoEncoder::fixed_16_utf_8_u8_from_iter,
+        DemoEncoder::fixed_16_utf_8_u8_zero_padded,
         DemoDecoder::fixed_16_utf_8_u8,
         DemoEncoder::fixed_16_utf_8u_8_end,
         DemoDecoder::fixed_16_utf_8u_8_end,
@@ -846,7 +846,7 @@ fn test_encode_then_decode_non_u8_signed_primitive_slice_padded() {
                 let mut buffer = [uninit; 1024];
                 let mut encoder = create_encoder(&mut buffer);
 
-                encode_func(&mut encoder, each_slice.iter().map(|x| *x));
+                encode_func(&mut encoder, each_slice);
 
                 let end = 1i32;
                 end_encode_func(&mut encoder, end);
@@ -884,28 +884,28 @@ fn test_encode_then_decode_non_u8_signed_primitive_slice_padded() {
     }
 
     run_encode_then_decode_for_array_of_signed_len_16!(
-        DemoEncoder::fixed_16_i8_from_iter,
+        DemoEncoder::fixed_16_i8_zero_padded,
         DemoDecoder::fixed_16_i8,
         DemoEncoder::fixed_16_i8_end,
         DemoDecoder::fixed_16_i8_end,
         i8,
     );
     run_encode_then_decode_for_array_of_signed_len_16!(
-        DemoEncoder::fixed_16_i16_from_iter,
+        DemoEncoder::fixed_16_i16_zero_padded,
         DemoDecoder::fixed_16_i16,
         DemoEncoder::fixed_16_i16_end,
         DemoDecoder::fixed_16_i16_end,
         i16,
     );
     run_encode_then_decode_for_array_of_signed_len_16!(
-        DemoEncoder::fixed_16_i32_from_iter,
+        DemoEncoder::fixed_16_i32_zero_padded,
         DemoDecoder::fixed_16_i32,
         DemoEncoder::fixed_16_i32_end,
         DemoDecoder::fixed_16_i32_end,
         i32,
     );
     run_encode_then_decode_for_array_of_signed_len_16!(
-        DemoEncoder::fixed_16_i64_from_iter,
+        DemoEncoder::fixed_16_i64_zero_padded,
         DemoDecoder::fixed_16_i64,
         DemoEncoder::fixed_16_i64_end,
         DemoDecoder::fixed_16_i64_end,
@@ -1049,7 +1049,7 @@ fn test_encode_then_decode_non_u8_unsigned_primitive_slice_padded() {
                 let mut buffer = [uninit; 1024];
                 let mut encoder = create_encoder(&mut buffer);
 
-                encode_func(&mut encoder, each_slice.iter().map(|x| *x));
+                encode_func(&mut encoder, each_slice);
 
                 let end = 1i32;
                 end_encode_func(&mut encoder, end);
@@ -1087,21 +1087,21 @@ fn test_encode_then_decode_non_u8_unsigned_primitive_slice_padded() {
     }
 
     run_encode_then_decode_for_array_of_unsigned_len_16!(
-        DemoEncoder::fixed_16_u16_from_iter,
+        DemoEncoder::fixed_16_u16_zero_padded,
         DemoDecoder::fixed_16_u16,
         DemoEncoder::fixed_16_u16_end,
         DemoDecoder::fixed_16_u16_end,
         u16
     );
     run_encode_then_decode_for_array_of_unsigned_len_16!(
-        DemoEncoder::fixed_16_u32_from_iter,
+        DemoEncoder::fixed_16_u32_zero_padded,
         DemoDecoder::fixed_16_u32,
         DemoEncoder::fixed_16_u32_end,
         DemoDecoder::fixed_16_u32_end,
         u32
     );
     run_encode_then_decode_for_array_of_unsigned_len_16!(
-        DemoEncoder::fixed_16_u64_from_iter,
+        DemoEncoder::fixed_16_u64_zero_padded,
         DemoDecoder::fixed_16_u64,
         DemoEncoder::fixed_16_u64_end,
         DemoDecoder::fixed_16_u64_end,

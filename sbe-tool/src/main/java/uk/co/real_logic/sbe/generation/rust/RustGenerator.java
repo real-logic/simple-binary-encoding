@@ -383,6 +383,63 @@ public class RustGenerator implements CodeGenerator
         indent(sb, level, "/// - version: %d\n", typeToken.version());
     }
 
+    private static void generatePrimitiveArrayFromIterEncoder(
+            final StringBuilder sb,
+            final int level,
+            final Token typeToken,
+            final String name) throws IOException
+    {
+        final Encoding encoding = typeToken.encoding();
+        final PrimitiveType primitiveType = encoding.primitiveType();
+        final String rustPrimitiveType = rustTypeName(primitiveType);
+
+        indent(sb, level, "/// primitive array field '%s' from an Iterator\n", name);
+        generateRustDoc(sb, level, typeToken, encoding);
+        indent(sb, level, "#[inline]\n");
+        indent(sb, level, "pub fn %s_from_iter(&mut self, iter: impl Iterator<Item = %s>) {\n",
+                formatFunctionName(name), rustPrimitiveType);
+
+        indent(sb, level + 1, "let offset = self.%s;\n", getBufOffset(typeToken));
+        indent(sb, level + 1, "let buf = self.get_buf_mut();\n");
+        indent(sb, level + 1, "for (i, v) in iter.enumerate() {\n");
+
+        if (primitiveType.size() == 1)
+        {
+            indent(sb, level + 2, "buf.put_%s_at(offset + i, v);\n", rustPrimitiveType);
+        }
+        else
+        {
+            indent(sb, level + 2, "buf.put_%s_at(offset + i * %d, v);\n",
+                rustPrimitiveType, primitiveType.size());
+        }
+        indent(sb, level + 1, "}\n");
+        indent(sb, level, "}\n\n");
+    }
+
+    private static void generatePrimitiveArrayZeroPaddedEncoder(
+            final StringBuilder sb,
+            final int level,
+            final Token typeToken,
+            final String name) throws IOException
+    {
+        final Encoding encoding = typeToken.encoding();
+        final PrimitiveType primitiveType = encoding.primitiveType();
+        final String rustPrimitiveType = rustTypeName(primitiveType);
+        final int arrayLength = typeToken.arrayLength();
+
+        indent(sb, level, "/// primitive array field '%s' with zero padding\n", name);
+        generateRustDoc(sb, level, typeToken, encoding);
+        indent(sb, level, "#[inline]\n");
+        indent(sb, level, "pub fn %s_zero_padded(&mut self, value: &[%s]) {\n",
+            formatFunctionName(name), rustPrimitiveType);
+
+        indent(sb, level + 1, "let iter = value.iter().copied().chain(std::iter::repeat(0_%s)).take(%d);\n",
+            rustPrimitiveType, arrayLength);
+
+        indent(sb, level + 1, "self.%s_from_iter(iter);", formatFunctionName(name));
+        indent(sb, level, "}\n\n");
+    }
+
     private static void generatePrimitiveArrayEncoder(
         final StringBuilder sb,
         final int level,
@@ -393,6 +450,24 @@ public class RustGenerator implements CodeGenerator
         final PrimitiveType primitiveType = encoding.primitiveType();
         final String rustPrimitiveType = rustTypeName(primitiveType);
         final int arrayLength = typeToken.arrayLength();
+
+        indent(sb, level, "#[inline]\n");
+        indent(sb, level, "pub fn %s_at(&mut self, index: usize, value: %s) {\n",
+            formatFunctionName(name), rustPrimitiveType);
+        indent(sb, level + 1, "let offset = self.%s;\n", getBufOffset(typeToken));
+        indent(sb, level + 1, "let buf = self.get_buf_mut();\n");
+
+        if (primitiveType.size() == 1)
+        {
+            indent(sb, level + 1, "buf.put_%s_at(offset + index, value);\n",
+                rustPrimitiveType, primitiveType.size());
+        }
+        else
+        {
+            indent(sb, level + 1, "buf.put_%s_at(offset + index * %d, value);\n",
+                rustPrimitiveType, primitiveType.size());
+        }
+        indent(sb, level, "}\n\n");
 
         indent(sb, level, "/// primitive array field '%s'\n", name);
         generateRustDoc(sb, level, typeToken, encoding);
@@ -407,11 +482,7 @@ public class RustGenerator implements CodeGenerator
 
         if (rustPrimitiveType.equals("u8"))
         {
-            indent(sb, level + 1, "let mid = %d.min(value.len());\n", arrayLength);
-            indent(sb, level + 1, "buf.put_slice_at(offset, value.split_at(mid).0);\n");
-            indent(sb, level + 1, "for i in mid..%d {\n", arrayLength);
-            indent(sb, level + 2, "buf.put_u8_at(offset + (i * 1), %s);\n", rustNullLiteral(encoding));
-            indent(sb, level + 1, "}\n");
+            indent(sb, level + 1, "buf.put_slice_at(offset, value);\n");
             indent(sb, level, "}\n\n");
         }
         else
@@ -434,22 +505,8 @@ public class RustGenerator implements CodeGenerator
             indent(sb, level, "}\n\n");
         }
 
-        indent(sb, level, "/// primitive array field '%s' from an Iterator\n", name);
-        generateRustDoc(sb, level, typeToken, encoding);
-        indent(sb, level, "#[inline]\n");
-        indent(sb, level, "pub fn %s_from_iter(&mut self, iter: impl Iterator<Item = %s>) {\n",
-            formatFunctionName(name), rustPrimitiveType);
-
-        indent(sb, level + 1, "let offset = self.%s;\n", getBufOffset(typeToken));
-        indent(sb, level + 1, "let buf = self.get_buf_mut();\n");
-        indent(sb, level + 1, "let iter = iter.chain(std::iter::repeat(%s)).take(%d);\n",
-            rustNullLiteral(encoding), arrayLength);
-
-        indent(sb, level + 1, "for (i, v) in iter.enumerate() {\n");
-        indent(sb, level + 2, "buf.put_%s_at(offset + (i * %d), v);\n",
-            rustPrimitiveType, primitiveType.size());
-        indent(sb, level + 1, "}\n");
-        indent(sb, level, "}\n\n");
+        generatePrimitiveArrayFromIterEncoder(sb, level, typeToken, name);
+        generatePrimitiveArrayZeroPaddedEncoder(sb, level, typeToken, name);
     }
 
     private static void generatePrimitiveEncoder(
@@ -485,7 +542,6 @@ public class RustGenerator implements CodeGenerator
         indent(sb, level + 1, "let offset = self.%s;\n", getBufOffset(typeToken));
         indent(sb, level + 1, "self.get_buf_mut().put_%s_at(offset, value);\n", rustPrimitiveType);
         indent(sb, level, "}\n\n");
-
     }
 
     private static void generateEnumEncoder(
