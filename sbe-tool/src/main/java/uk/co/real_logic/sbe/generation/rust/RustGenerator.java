@@ -384,10 +384,10 @@ public class RustGenerator implements CodeGenerator
     }
 
     private static void generatePrimitiveArrayFromIterEncoder(
-            final StringBuilder sb,
-            final int level,
-            final Token typeToken,
-            final String name) throws IOException
+        final StringBuilder sb,
+        final int level,
+        final Token typeToken,
+        final String name) throws IOException
     {
         final Encoding encoding = typeToken.encoding();
         final PrimitiveType primitiveType = encoding.primitiveType();
@@ -397,7 +397,7 @@ public class RustGenerator implements CodeGenerator
         generateRustDoc(sb, level, typeToken, encoding);
         indent(sb, level, "#[inline]\n");
         indent(sb, level, "pub fn %s_from_iter(&mut self, iter: impl Iterator<Item = %s>) {\n",
-                formatFunctionName(name), rustPrimitiveType);
+            formatFunctionName(name), rustPrimitiveType);
 
         indent(sb, level + 1, "let offset = self.%s;\n", getBufOffset(typeToken));
         indent(sb, level + 1, "let buf = self.get_buf_mut();\n");
@@ -417,10 +417,10 @@ public class RustGenerator implements CodeGenerator
     }
 
     private static void generatePrimitiveArrayZeroPaddedEncoder(
-            final StringBuilder sb,
-            final int level,
-            final Token typeToken,
-            final String name) throws IOException
+        final StringBuilder sb,
+        final int level,
+        final Token typeToken,
+        final String name) throws IOException
     {
         final Encoding encoding = typeToken.encoding();
         final PrimitiveType primitiveType = encoding.primitiveType();

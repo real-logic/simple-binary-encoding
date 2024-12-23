@@ -101,7 +101,7 @@ class RustUtilTest
     @Test
     void generateRustLiteralNullValueParam()
     {
-        assertThrows(NullPointerException.class, () -> generateRustLiteral(INT8, (String) null));
+        assertThrows(NullPointerException.class, () -> generateRustLiteral(INT8, (String)null));
     }
 
     @Test
