@@ -436,7 +436,7 @@ public class RustGenerator implements CodeGenerator
         indent(sb, level + 1, "let iter = value.iter().copied().chain(std::iter::repeat(0_%s)).take(%d);\n",
             rustPrimitiveType, arrayLength);
 
-        indent(sb, level + 1, "self.%s_from_iter(iter);", formatFunctionName(name));
+        indent(sb, level + 1, "self.%s_from_iter(iter);\n", formatFunctionName(name));
         indent(sb, level, "}\n\n");
     }
 
