@@ -459,8 +459,7 @@ public class RustGenerator implements CodeGenerator
 
         if (primitiveType.size() == 1)
         {
-            indent(sb, level + 1, "buf.put_%s_at(offset + index, value);\n",
-                rustPrimitiveType, primitiveType.size());
+            indent(sb, level + 1, "buf.put_%s_at(offset + index, value);\n", rustPrimitiveType);
         }
         else
         {
