@@ -88,6 +88,7 @@ class RustUtilTest
         assertEquals("0xff_u8", generateRustLiteral(UINT8, UINT8.nullValue().toString()));
         assertEquals("0xffff_u16", generateRustLiteral(UINT16, UINT16.nullValue().toString()));
         assertEquals("0xffffffff_u32", generateRustLiteral(UINT32, UINT32.nullValue().toString()));
+        assertEquals("0xffffffffffffffff_u64", generateRustLiteral(UINT64, UINT64.nullValue()));
         assertEquals("0xffffffffffffffff_u64", generateRustLiteral(UINT64, UINT64.nullValue().toString()));
     }
 
@@ -100,7 +101,7 @@ class RustUtilTest
     @Test
     void generateRustLiteralNullValueParam()
     {
-        assertThrows(NullPointerException.class, () -> generateRustLiteral(INT8, null));
+        assertThrows(NullPointerException.class, () -> generateRustLiteral(INT8, (String)null));
     }
 
     @Test
