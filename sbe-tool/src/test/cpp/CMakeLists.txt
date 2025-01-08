@@ -43,6 +43,8 @@ set(DTO_SCHEMA ${CODEC_SCHEMA_DIR}/dto-test-schema.xml)
 set(ISSUE835_SCHEMA ${CODEC_SCHEMA_DIR}/issue835.xml)
 set(ISSUE889_SCHEMA ${CODEC_SCHEMA_DIR}/issue889.xml)
 set(ACCESS_ORDER_SCHEMA ${CODEC_SCHEMA_DIR}/field-order-check-schema.xml)
+set(VERSIONED_MESSAGE_V1_SCHEMA ${CODEC_SCHEMA_DIR}/versioned-message-v1.xml)
+set(VERSIONED_MESSAGE_V2_SCHEMA ${CODEC_SCHEMA_DIR}/versioned-message-v2.xml)
 
 set(GENERATED_CODECS
     ${CXX_CODEC_TARGET_DIR}
@@ -59,6 +61,8 @@ add_custom_command(
         ${ISSUE835_SCHEMA}
         ${ISSUE889_SCHEMA}
         ${ACCESS_ORDER_SCHEMA}
+        ${VERSIONED_MESSAGE_V1_SCHEMA}
+        ${VERSIONED_MESSAGE_V2_SCHEMA}
     sbe-jar ${SBE_JAR}
     COMMAND
         ${Java_JAVA_EXECUTABLE} --add-opens java.base/jdk.internal.misc=ALL-UNNAMED
@@ -79,6 +83,8 @@ add_custom_command(
             ${ISSUE835_SCHEMA}
             ${ISSUE889_SCHEMA}
             ${ACCESS_ORDER_SCHEMA}
+            ${VERSIONED_MESSAGE_V1_SCHEMA}
+            ${VERSIONED_MESSAGE_V2_SCHEMA}
 )
 
 add_custom_target(codecs DEPENDS ${GENERATED_CODECS})
@@ -96,6 +102,7 @@ sbe_test(Issue835Test codecs)
 sbe_test(Issue889Test codecs)
 sbe_test(FieldAccessOrderCheckTest codecs)
 target_compile_definitions(FieldAccessOrderCheckTest PRIVATE SBE_ENABLE_PRECEDENCE_CHECKS_IN_TESTS)
+sbe_test(VersionedMessageTest codecs)
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     # Check if the GCC version supports C++17

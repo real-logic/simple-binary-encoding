@@ -3027,7 +3027,7 @@ public class CppGenerator implements CodeGenerator
 
             "    SBE_NODISCARD std::uint64_t decodeLength() const\n" +
             "    {\n" +
-            "        %10$s skipper(m_buffer, m_offset, m_bufferLength, sbeBlockLength(), m_actingVersion);\n" +
+            "        %10$s skipper(m_buffer, m_offset, m_bufferLength, m_actingBlockLength, m_actingVersion);\n" +
             "        skipper.skip();\n" +
             "        return skipper.encodedLength();\n" +
             "    }\n\n" +

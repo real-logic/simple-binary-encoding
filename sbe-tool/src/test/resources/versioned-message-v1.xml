@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<messageSchema package="versmsg"
+               id="1"
+               version="1"
+               semanticVersion="1"
+               description="Unit Test"
+               byteOrder="littleEndian">
+    <types>
+        <composite name="messageHeader" description="Message identifiers and length of message root">
+            <type name="blockLength" primitiveType="uint16"/>
+            <type name="templateId" primitiveType="uint16"/>
+            <type name="schemaId" primitiveType="uint16"/>
+            <type name="version" primitiveType="uint16"/>
+        </composite>
+        <composite name="varStringEncoding">
+            <type name="length" primitiveType="uint16"/>
+            <type name="varData" primitiveType="uint8" length="0" characterEncoding="UTF-8"/>
+        </composite>
+    </types>
+    <message name="VersionedMessageV1" id="50001" description="A versioned message" blockLength="8">
+        <field name="FieldA1" id="1" type="uint32" semanticType="int"/>
+        <field name="FieldB1" id="2" type="uint32" semanticType="int"/>
+        <data name="String1" id="10" type="varStringEncoding"/>
+    </message>
+</messageSchema>
