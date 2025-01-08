@@ -5048,3 +5048,43 @@ TEST_F(FieldAccessOrderCheckTest, worksWithInsertionOperator)
     EXPECT_EQ(decoder.getBAsString(), "abc");
     EXPECT_EQ(decoder.getCAsString(), "def");
 }
+
+TEST_F(FieldAccessOrderCheckTest, shouldThrowExceptionWhenNotWrapped)
+{
+    MultipleVarLength encoder;
+    encoder.wrapForEncode(m_buffer, OFFSET, BUFFER_LEN);
+    encoder.a(42);
+    encoder.putB("abc");
+    encoder.putC("def");
+    encoder.checkEncodingIsComplete();
+
+    MultipleVarLength decoder;
+
+    EXPECT_THROW(
+        {
+            try
+            {
+                decoder.decodeLength();
+            }
+            catch (const std::exception &e)
+            {
+                EXPECT_THAT(
+                    e.what(),
+                    HasSubstr("Illegal access. Cannot call \"decodeLength()\" in state: NOT_WRAPPED")
+                );
+                throw;
+            }
+        },
+        std::logic_error
+    );
+
+    decoder.wrapForDecode(
+        m_buffer,
+        OFFSET,
+        MultipleVarLength::sbeBlockLength(),
+        MultipleVarLength::sbeSchemaVersion(),
+        BUFFER_LEN
+    );
+
+    decoder.decodeLength();
+}
