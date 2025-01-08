@@ -536,6 +536,18 @@ public class CppGenerator implements CodeGenerator
             .append(fieldPrecedenceModel.generatedRepresentationClassName()).append(".\");\n");
     }
 
+    private static void generateAccessOrderException(
+        final StringBuilder sb,
+        final String indent,
+        final String action)
+    {
+        sb.append(indent).append("throw AccessOrderError(")
+            .append("std::string(\"Illegal access. \") + \n")
+            .append(indent).append(INDENT)
+            .append("\"Cannot call \\\"").append(action)
+            .append("()\\\" in state: \" + codecStateName(codecState()));\n");
+    }
+
     private static void generateAccessOrderListenerMethodForNextGroupElement(
         final StringBuilder sb,
         final FieldPrecedenceModel fieldPrecedenceModel,
@@ -3027,6 +3039,7 @@ public class CppGenerator implements CodeGenerator
 
             "    SBE_NODISCARD std::uint64_t decodeLength() const\n" +
             "    {\n" +
+            "%22$s" +
             "        %10$s skipper(m_buffer, m_offset, m_bufferLength, m_actingBlockLength, m_actingVersion);\n" +
             "        skipper.skip();\n" +
             "        return skipper.encodedLength();\n" +
@@ -3071,7 +3084,8 @@ public class CppGenerator implements CodeGenerator
             generateCodecStateTransitionForWrappingLatestVersion(fieldPrecedenceModel),
             generateOnWrappedListener(fieldPrecedenceModel),
             generateCodecStateTransitionForWrapping(fieldPrecedenceModel),
-            generateHiddenCopyConstructor("    ", className));
+            generateHiddenCopyConstructor("    ", className),
+            generateCheckForNotWrappedState("decodeLength", fieldPrecedenceModel));
     }
 
     private CharSequence generateAccessOrderErrorType(final FieldPrecedenceModel fieldPrecedenceModel)
@@ -3309,6 +3323,31 @@ public class CppGenerator implements CodeGenerator
         }
 
         return generateAccessOrderListenerCall(fieldPrecedenceModel, TWO_INDENT, "onWrapped", "actingVersion");
+    }
+
+    private CharSequence generateCheckForNotWrappedState(
+        final String action,
+        final FieldPrecedenceModel fieldPrecedenceModel)
+    {
+        if (null == fieldPrecedenceModel)
+        {
+            return "";
+        }
+
+        final StringBuilder sb = new StringBuilder();
+        sb.append("#if defined(").append(precedenceChecksFlagName).append(")\n")
+            .append(TWO_INDENT)
+                .append("if (codecState() == ")
+                .append(qualifiedStateCase(fieldPrecedenceModel.notWrappedState()))
+                .append(")\n")
+            .append(TWO_INDENT).append("{\n");
+
+        generateAccessOrderException(sb, THREE_INDENT, action);
+
+        sb.append(TWO_INDENT).append("}\n")
+            .append("#endif\n");
+
+        return sb;
     }
 
     private CharSequence generateCodecStateTransitionForWrappingLatestVersion(
