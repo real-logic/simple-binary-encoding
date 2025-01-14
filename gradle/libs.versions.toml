@@ -1,5 +1,5 @@
 [versions]
-agrona = "2.0.0"
+agrona = "2.0.1"
 checkstyle = "10.21.1"
 junit = "5.11.4"
 jmh = "1.37"
