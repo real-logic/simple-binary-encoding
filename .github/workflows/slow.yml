@@ -7,6 +7,11 @@ on:
       - '**'
   schedule:
     - cron: '0 12 * * *'
+  pull_request:
+    types: [opened, synchronize]
+    branches:
+      - master
+      - 'release/**'
 
 concurrency:
   group: slow-${{ github.workflow }}-${{ github.ref }}
