@@ -14,6 +14,7 @@ concurrency:
 
 env:
   GRADLE_OPTS: '-Dorg.gradle.daemon=false -Dorg.gradle.java.installations.auto-detect=false -Dorg.gradle.warning.mode=fail'
+  JAVA_VERSION: '17'
 
 permissions:
   contents: read
@@ -42,11 +43,11 @@ jobs:
           java -Xinternalversion
           echo "BUILD_JAVA_HOME=${JAVA_HOME}" >> $GITHUB_ENV
           echo "BUILD_JAVA_VERSION=${{ matrix.java }}" >> $GITHUB_ENV
-      - name: Setup java 17 to run the Gradle script
+      - name: Setup java to run Gradle script
         uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
-          java-version: 17
+          java-version: ${{ env.JAVA_VERSION }}
       - name: Setup dotnet
         uses: actions/setup-dotnet@v2
         with:
