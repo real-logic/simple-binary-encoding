@@ -55,17 +55,17 @@ jobs:
         run: ./csharp/build.sh
       - name: Run property tests
         run: ./gradlew propertyTest
-      - name: Copy test logs (Unix)
+      - name: Copy test logs
         id: copy_test_logs
         if: failure()
         run: |
-          echo "file=build/distributions/test_logs.tbz2" >> $GITHUB_OUTPUT
+          ${{ runner.os == 'Windows' && 'echo "file=build/distributions/test_logs.tbz2" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append' || 'echo "file=build/distributions/test_logs.tbz2" >> $GITHUB_OUTPUT' }}
           ./gradlew tarTestLogs
-      - name: Upload crash logs (Unix)
+      - name: Upload crash logs
         if: always() && steps.copy_test_logs.outputs.file == 'build/distributions/test_logs.tbz2'
         uses: actions/upload-artifact@v4
         with:
-          name: crash-logs-${{ matrix.os }}-property-tests
+          name: crash-logs-${{ matrix.os }}-property-tests-java-${{matrix.java}}-dotnet-${{matrix.dotnet}}
           path: ${{ steps.copy_test_logs.outputs.file }}
       - name: Upload test results
         uses: actions/upload-artifact@v4
