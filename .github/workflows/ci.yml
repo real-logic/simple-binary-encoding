@@ -28,7 +28,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: [ '17', '21' ]
+        java: [ '17', '21', '23' ]
         os: [ 'ubuntu-24.04', 'windows-latest', 'macos-latest' ]
     steps:
       - name: Checkout code
@@ -52,18 +52,49 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: ${{ matrix.java }}
-      - name: Setup BUILD_JAVA_HOME & BUILD_JAVA_VERSION
+      - name: Setup BUILD_JAVA_HOME & BUILD_JAVA_VERSION (Unix)
+        if: runner.os != 'Windows'
         run: |
           java -Xinternalversion
           echo "BUILD_JAVA_HOME=${JAVA_HOME}" >> $GITHUB_ENV
           echo "BUILD_JAVA_VERSION=${{ matrix.java }}" >> $GITHUB_ENV
-      - name: Setup java 17 to run the Gradle script
+      - name: Setup BUILD_JAVA_HOME & BUILD_JAVA_VERSION (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          java -Xinternalversion
+          echo "BUILD_JAVA_HOME=$env:JAVA_HOME" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
+          echo "BUILD_JAVA_VERSION=${{ matrix.java }}" | Out-File $env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Setup java
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: 17
       - name: Build with Gradle
-        run: ./gradlew --stacktrace
+        run: ./gradlew
+      - name: Copy test logs (Unix)
+        id: copy_test_logs
+        if: failure() && runner.os != 'Windows'
+        run: |
+          echo "file=build/distributions/test_logs.tbz2" >> $GITHUB_OUTPUT
+          ./gradlew tarTestLogs
+      - name: Upload crash logs (Unix)
+        if: always() && steps.copy_test_logs.outputs.file == 'build/distributions/test_logs.tbz2'
+        uses: actions/upload-artifact@v4
+        with:
+          name: crash-logs-${{ matrix.os }}-java-${{ matrix.java }}
+          path: ${{ steps.copy_test_logs.outputs.file }}
+      - name: Copy test logs (Windows)
+        id: copy_test_logs_windows
+        if: runner.os == 'Windows' && failure()
+        run: |
+          echo "file=build/distributions/test_logs.tbz2" | Out-File $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          ./gradlew tarTestLogs
+      - name: Upload crash logs (Windows)
+        if: runner.os == 'Windows' && always() && steps.copy_test_logs_windows.outputs.file == 'build/distributions/test_logs.tbz2'
+        uses: actions/upload-artifact@v4
+        with:
+          name: crash-logs-${{ matrix.os }}-java-${{ matrix.java }}
+          path: ${{ steps.copy_test_logs_windows.outputs.file }}
 
   csharp-build:
     name: C# ${{ matrix.dotnet }}

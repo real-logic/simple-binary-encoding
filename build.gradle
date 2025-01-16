@@ -1079,6 +1079,28 @@ tasks.named('build').configure {
     dependsOn 'verifyJavaIrCodecsInSync'
 }
 
+tasks.register('copyTestLogs', Copy) {
+    from '.'
+    include '**/build/test-output/**'
+    include '**/*.hprof'
+    include '**/*.log'
+    include '**/*.tlog'
+    include '**/build/reports/tests/**'
+    include '**/build/test-results/**/*'
+    include 'LICENSE'
+    exclude 'build'
+    into 'build/test_logs'
+
+    includeEmptyDirs = false
+}
+
+tasks.register('tarTestLogs', Tar) {
+    dependsOn tasks.named('copyTestLogs')
+    archiveBaseName.set('test_logs')
+    from 'build/test_logs'
+    compression Compression.BZIP2
+}
+
 def isNonStable = { String version ->
     def stableKeyword = ['RELEASE', 'FINAL', 'GA'].any { it -> version.toUpperCase().contains(it) }
     def regex = /^[0-9,.v-]+(-r)?$/

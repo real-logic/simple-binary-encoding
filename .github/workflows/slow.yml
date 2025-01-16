@@ -55,9 +55,21 @@ jobs:
         run: ./csharp/build.sh
       - name: Run property tests
         run: ./gradlew propertyTest
+      - name: Copy test logs (Unix)
+        id: copy_test_logs
+        if: failure()
+        run: |
+          echo "file=build/distributions/test_logs.tbz2" >> $GITHUB_OUTPUT
+          ./gradlew tarTestLogs
+      - name: Upload crash logs (Unix)
+        if: always() && steps.copy_test_logs.outputs.file == 'build/distributions/test_logs.tbz2'
+        uses: actions/upload-artifact@v4
+        with:
+          name: crash-logs-${{ matrix.os }}-property-tests
+          path: ${{ steps.copy_test_logs.outputs.file }}
       - name: Upload test results
         uses: actions/upload-artifact@v4
-        if: success() || failure()
+        if: always()
         with:
           name: property-tests
           path: sbe-tool/build/reports/tests/propertyTest
