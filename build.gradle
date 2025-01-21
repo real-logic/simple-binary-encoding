@@ -150,10 +150,10 @@ allprojects {
         resolutionStrategy {
             failOnVersionConflict()
             // patching conflicting Checkstyle dependencies
-            force "org.codehaus.plexus:plexus-utils:3.3.0",
-                  "org.apache.commons:commons-lang3:3.8.1",
-                  "org.apache.httpcomponents:httpcore:4.4.14",
-                  "commons-codec:commons-codec:1.15"
+            force libs.commons.codec,
+                  libs.commons.lang3,
+                  libs.httpcore,
+                  libs.plexus.utils
         }
     }
 
@@ -284,7 +284,7 @@ project(':sbe-tool') {
                     implementation files("${layout.buildDirectory.get()}/classes/java/generated")
                     implementation libs.hamcrest
                     implementation libs.mockito
-                    implementation platform("org.junit:junit-bom:${libs.versions.junit.get()}")
+                    implementation platform(libs.junit.bom)
                     implementation "org.junit.jupiter:junit-jupiter-params"
                 }
             }
