@@ -199,7 +199,7 @@ subprojects {
     }
 
     javadoc {
-        failOnError false
+        failOnError = false
         title = '<h1>Simple Binary Encoding (SBE)</h1>'
         options.bottom = '<i>Copyright &#169; 2013-2025 Real Logic Limited. All Rights Reserved.</i>'
         options.encoding = 'UTF-8'
@@ -389,7 +389,7 @@ project(':sbe-tool') {
 
         repositories {
             maven {
-                url(!isReleaseVersion ? snapshotsRepoUrl : releasesRepoUrl)
+                url = !isReleaseVersion ? snapshotsRepoUrl : releasesRepoUrl
                 credentials {
                     username = ossrhUsername
                     password = ossrhPassword
@@ -459,7 +459,7 @@ project(':sbe-all') {
         }
         repositories {
             maven {
-                url(!isReleaseVersion ? snapshotsRepoUrl : releasesRepoUrl)
+                url = !isReleaseVersion ? snapshotsRepoUrl : releasesRepoUrl
                 credentials {
                     username = ossrhUsername
                     password = ossrhPassword
@@ -579,7 +579,7 @@ project(':sbe-samples') {
 
         repositories {
             maven {
-                url(!isReleaseVersion ? snapshotsRepoUrl : releasesRepoUrl)
+                url = !isReleaseVersion ? snapshotsRepoUrl : releasesRepoUrl
                 credentials {
                     username = ossrhUsername
                     password = ossrhPassword
