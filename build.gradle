@@ -79,12 +79,12 @@ def projectPom = {
     name = 'sbe'
     description = 'FIX/SBE - OSI layer 6 presentation for encoding and decoding application messages' +
         ' in binary format for low-latency applications.'
-    url = 'https://github.com/real-logic/simple-binary-encoding'
+    url = 'https://github.com/aeron-io/simple-binary-encoding'
 
     scm {
-        connection = 'scm:git:github.com/real-logic/simple-binary-encoding.git'
-        developerConnection = 'scm:git:github.com/real-logic/simple-binary-encoding.git'
-        url = 'github.com/real-logic/simple-binary-encoding.git'
+        connection = 'scm:git:github.com/aeron-io/simple-binary-encoding.git'
+        developerConnection = 'scm:git:github.com/aeron-io/simple-binary-encoding.git'
+        url = 'github.com/aeron-io/simple-binary-encoding.git'
     }
 
     licenses {
