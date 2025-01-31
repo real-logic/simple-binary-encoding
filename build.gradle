@@ -361,7 +361,7 @@ project(':sbe-tool') {
             'Specification-Version': '1.0',
             'Implementation-Title': 'SBE',
             'Implementation-Version': sbeVersion,
-            'Implementation-Vendor': 'Adaptive Financial Consulting',
+            'Implementation-Vendor': 'Adaptive Financial Consulting Limited',
             'Automatic-Module-Name': 'uk.co.real_logic.sbe.tool'
         )
     }
@@ -423,7 +423,7 @@ project(':sbe-all') {
             'Specification-Version': '1.0',
             'Implementation-Title': 'SBE',
             'Implementation-Version': sbeVersion,
-            'Implementation-Vendor': 'Adaptive Financial Consulting',
+            'Implementation-Vendor': 'Adaptive Financial Consulting Limited',
             'Automatic-Module-Name': 'uk.co.real_logic.sbe.all'
         )
     }
@@ -548,7 +548,7 @@ project(':sbe-samples') {
             'Specification-Version': '1.0',
             'Implementation-Title': 'SBE',
             'Implementation-Version': sbeVersion,
-            'Implementation-Vendor': 'Adaptive Financial Consulting',
+            'Implementation-Vendor': 'Adaptive Financial Consulting Limited',
             'Automatic-Module-Name': 'uk.co.real_logic.sbe.samples'
         )
     }
