@@ -240,6 +240,7 @@ public class IrDecoder implements AutoCloseable
             .byteOrder(mapByteOrder(tokenDecoder.byteOrder()))
             .presence(mapPresence(tokenDecoder.presence()));
 
+        tokenBuilder.deprecated(tokenDecoder.deprecated());
         tokenBuilder.name(tokenDecoder.name());
 
         encBuilder.constValue(get(valBuffer, type, tokenDecoder.getConstValue(valArray, 0, valArray.length)));

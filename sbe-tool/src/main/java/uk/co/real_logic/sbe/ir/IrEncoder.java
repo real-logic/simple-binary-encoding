@@ -192,7 +192,8 @@ public class IrEncoder implements AutoCloseable
             .signal(mapSignal(token.signal()))
             .primitiveType(mapPrimitiveType(type))
             .byteOrder(mapByteOrder(encoding.byteOrder()))
-            .presence(mapPresence(encoding.presence()));
+            .presence(mapPresence(encoding.presence()))
+            .deprecated(token.deprecated());
 
         try
         {
