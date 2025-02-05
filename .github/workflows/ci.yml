@@ -28,6 +28,7 @@ jobs:
   java-build:
     name: Java ${{ matrix.java }} (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
@@ -90,6 +91,7 @@ jobs:
   csharp-build:
     name: C# ${{ matrix.dotnet }}
     runs-on: ubuntu-24.04
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
@@ -140,6 +142,7 @@ jobs:
   cpp-gcc-2004-build:
     name: C++ GCC ${{ matrix.version }} (Ubuntu 20.04)
     runs-on: ubuntu-20.04
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
@@ -179,6 +182,7 @@ jobs:
   cpp-gcc-2404-build:
     name: C++ GCC ${{ matrix.version }} (Ubuntu 24.04)
     runs-on: ubuntu-24.04
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
@@ -219,6 +223,7 @@ jobs:
   cpp-clang-2004-build:
     name: C++ Clang ${{ matrix.version }} (Ubuntu 20.04)
     runs-on: ubuntu-20.04
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
@@ -261,6 +266,7 @@ jobs:
   cpp-clang-2404-build:
     name: C++ Clang ${{ matrix.version }} (Ubuntu 24.04)
     runs-on: ubuntu-24.04
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
@@ -303,6 +309,7 @@ jobs:
   cpp-clang-macos-build:
     name: C++ Xcode ${{ matrix.version }} (macOS)
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
@@ -338,6 +345,7 @@ jobs:
   cpp-msvc-build:
     name: C++ MSVC (Windows)
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
@@ -373,6 +381,7 @@ jobs:
   rust-build:
     name: Rust ${{ matrix.rust }}
     runs-on: ubuntu-24.04
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
@@ -408,6 +417,7 @@ jobs:
   golang-build:
     name: Golang ${{ matrix.version }}
     runs-on: ubuntu-24.04
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
