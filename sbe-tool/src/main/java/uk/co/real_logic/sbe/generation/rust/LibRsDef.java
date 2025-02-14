@@ -69,6 +69,8 @@ class LibRsDef
             indent(libRs, 0, "#![allow(clippy::all)]\n");
             indent(libRs, 0, "#![allow(non_camel_case_types)]\n\n");
             indent(libRs, 0, "#![allow(ambiguous_glob_reexports)]\n\n");
+            indent(libRs, 0, "#![allow(unused_mut)]\n\n");
+            indent(libRs, 0, "#![allow(dropping_references)]\n\n");
             indent(libRs, 0, "use ::core::{convert::TryInto};\n\n");
 
             final ArrayList<String> modules = new ArrayList<>();
@@ -76,10 +78,10 @@ class LibRsDef
             {
                 walk
                     .filter(Files::isRegularFile)
-                    .map((path) -> path.getFileName().toString())
-                    .filter((fileName) -> fileName.endsWith(".rs"))
-                    .filter((fileName) -> !fileName.equals("lib.rs"))
-                    .map((fileName) -> fileName.substring(0, fileName.length() - 3))
+                    .map(path -> path.getFileName().toString())
+                    .filter(fileName -> fileName.endsWith(".rs"))
+                    .filter(fileName -> !fileName.equals("lib.rs"))
+                    .map(fileName -> fileName.substring(0, fileName.length() - 3))
                     .sorted()
                     .forEach(modules::add);
             }
@@ -98,7 +100,7 @@ class LibRsDef
 
             generateEncoderTraits(libRs);
             generateDecoderTraits(schemaVersionType, libRs);
-
+            generateHumanReadableTrait(libRs);
             generateReadBuf(libRs, byteOrder);
             generateWriteBuf(libRs, byteOrder);
         }
@@ -129,6 +131,13 @@ class LibRsDef
         indent(writer, 0, "pub trait Decoder<'a>: Reader<'a> {\n");
         indent(writer, 1, "fn get_limit(&self) -> usize;\n");
         indent(writer, 1, "fn set_limit(&mut self, limit: usize);\n");
+        indent(writer, 0, "}\n\n");
+    }
+
+    static void generateHumanReadableTrait(final Writer writer) throws IOException
+    {
+        indent(writer, 0, "pub trait HumanReadable: Sized {\n");
+        indent(writer, 1, "fn human_readable(self) -> SbeResult<(Self, String)>;\n");
         indent(writer, 0, "}\n\n");
     }
 
