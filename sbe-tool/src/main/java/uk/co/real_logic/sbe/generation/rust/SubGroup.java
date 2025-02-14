@@ -41,7 +41,8 @@ class SubGroup implements RustGenerator.ParentDef
         this.groupToken = groupToken;
     }
 
-    public SubGroup addSubGroup(final String name, final int level, final Token groupToken)
+	@Override
+	public SubGroup addSubGroup(final String name, final int level, final Token groupToken)
     {
         final SubGroup subGroup = new SubGroup(name, level, groupToken);
         subGroups.add(subGroup);
@@ -233,6 +234,8 @@ class SubGroup implements RustGenerator.ParentDef
         RustGenerator.generateDecoderVarData(sb, varData, level, true);
 
         indent(sb, level - 1, "}\n\n"); // close impl
+
+        RustGenerator.generateDecoderDisplay(sb, name, null, fields, groups, varData, level - 1);
     }
 
     void appendTo(final Appendable dest) throws IOException
